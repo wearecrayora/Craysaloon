@@ -1,0 +1,23 @@
+{
+  "@@locale": "hi",
+
+  "appTitle": "क्रे सैलॉन",
+  "joinTitle": "अपना सैलॉन खोजें",
+  "joinScanQr": "सैलॉन का QR कोड स्कैन करें",
+  "joinEnterCode": "या सैलॉन कोड डालें",
+  "joinCodeHint": "CRAY-XXXXXX",
+  "joinConfirmTitle": "आप {salonName} से जुड़ रहे हैं",
+  "joinCodeInvalid": "यह कोड किसी सैलॉन से मेल नहीं खाया। जाँच कर दोबारा कोशिश करें।",
+  "joinAlreadyBound": "यह नंबर पहले से एक सैलॉन में रजिस्टर्ड है।",
+  "phoneTitle": "आपका मोबाइल नंबर",
+  "otpTitle": "6 अंकों का कोड डालें",
+  "otpSentTo": "{phone} पर भेजा गया",
+  "walletBalance": "उपलब्ध क्रेडिट",
+  "walletOnlyAtSalon": "केवल {salonName} में उपयोग योग्य। नकद नहीं निकाला जा सकता।",
+  "addMoneyPaidNeverExpires": "आपके द्वारा भुगतान किया गया पैसा कभी समाप्त नहीं होता।",
+  "addMoneyBonusExpires": "आपका {bonus} बोनस {date} को समाप्त होगा।",
+  "markComplete": "पूरा हुआ",
+  "needsAttention": "ध्यान देने की ज़रूरत",
+  "offlineBanner": "आप ऑफ़लाइन हैं। आपके बदलाव सहेज लिए गए हैं और सिंक हो जाएंगे।",
+  "retry": "दोबारा कोशिश करें"
+}

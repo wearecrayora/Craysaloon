@@ -1,0 +1,11 @@
+{
+  "name": "@cray/design-tokens",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Shared design tokens for the Cray Salon app and console. One schema, two consumers (ARCHITECTURE 7.2).",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "bun test",
+    "check": "bun test"
+  }
+}

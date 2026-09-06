@@ -1,0 +1,37 @@
+name: craysalon
+description: "Cray Salon - multi-tenant, white-labelled salon retention app."
+publish_to: 'none'
+
+# Bumped on each Play release. See PHASES.md M13.
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # i18n. en / hi / hi_Latn from day one (RULES.md 12A.7, DESIGN.md 5.3).
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
+  # State. AsyncNotifier for async state; no setState for anything shared
+  # (ARCHITECTURE.md 9.1).
+  flutter_riverpod: ^3.0.4
+
+  # Tenant-scoped access ONLY through SupabaseGateway in data/remote
+  # (RULES.md 3.7 - CI fails the build on .from( elsewhere).
+  supabase_flutter: ^2.12.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Required for gen-l10n to run from l10n.yaml.
+  generate: true

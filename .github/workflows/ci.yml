@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    name: Structural gates and secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Structural gates (RULES.md)
+        run: ./scripts/lint-gates.sh
+      - name: Secret scan
+        run: ./scripts/secret-scan.sh
+      - name: Localisation parity
+        run: ./scripts/l10n-check.sh
+
+  design-tokens:
+    name: Design tokens
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Test
+        working-directory: packages/design-tokens
+        run: bun test
+
+  app:
+    name: Flutter app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          if [ -f app/pubspec.yaml ]; then echo "exists=true" >> "$GITHUB_OUTPUT";
+          else echo "exists=false" >> "$GITHUB_OUTPUT"; fi
+      - uses: subosito/flutter-action@v2
+        if: steps.check.outputs.exists == 'true'
+        with:
+          channel: stable
+          cache: true
+      - if: steps.check.outputs.exists == 'true'
+        working-directory: app
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+
+  # Wired at M1. The cross-tenant leak test, the binding-exclusivity test and
+  # the money test are RELEASE GATES - never skipped, never narrowed (RULES 12).
+  database:
+    name: Database (RLS, binding, money)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          if compgen -G "supabase/tests/**/*.sql" > /dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT";
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT";
+          fi
+        shell: bash
+      - name: Not yet - no pgTAP tests
+        if: steps.check.outputs.exists == 'false'
+        run: echo "No database tests yet. Wired at M1."
+      - uses: supabase/setup-cli@v1
+        if: steps.check.outputs.exists == 'true'
+        with:
+          version: latest
+      - name: Start local stack and run pgTAP
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          supabase start
+          supabase test db

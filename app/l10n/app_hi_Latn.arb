@@ -1,0 +1,23 @@
+{
+  "@@locale": "hi_Latn",
+
+  "appTitle": "Cray Salon",
+  "joinTitle": "Apna salon dhundhein",
+  "joinScanQr": "Salon ka QR code scan kijiye",
+  "joinEnterCode": "Ya salon code daaliye",
+  "joinCodeHint": "CRAY-XXXXXX",
+  "joinConfirmTitle": "Aap {salonName} se jud rahe hain",
+  "joinCodeInvalid": "Yeh code kisi salon se match nahi hua. Check karke dobara try kijiye.",
+  "joinAlreadyBound": "Yeh number pehle se ek salon mein registered hai.",
+  "phoneTitle": "Aapka mobile number",
+  "otpTitle": "6 digit ka code daaliye",
+  "otpSentTo": "{phone} par bheja gaya",
+  "walletBalance": "Available credit",
+  "walletOnlyAtSalon": "Sirf {salonName} mein use kar sakte hain. Cash nahi nikal sakte.",
+  "addMoneyPaidNeverExpires": "Aapka paid paisa kabhi expire nahi hota.",
+  "addMoneyBonusExpires": "Aapka {bonus} bonus {date} ko expire hoga.",
+  "markComplete": "Complete karein",
+  "needsAttention": "Dhyan dijiye",
+  "offlineBanner": "Aap offline hain. Aapke changes save ho gaye hain, sync ho jayenge.",
+  "retry": "Dobara try kijiye"
+}

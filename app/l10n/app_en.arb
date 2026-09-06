@@ -1,0 +1,77 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Cray Salon",
+  "@appTitle": {
+    "description": "Fallback app title. Once a customer is bound, the salon's displayName replaces this everywhere (DESIGN.md 2.1)."
+  },
+
+  "joinTitle": "Find your salon",
+  "@joinTitle": { "description": "U2 - salon code entry. Shown BEFORE login (RULES.md 4.1)." },
+
+  "joinScanQr": "Scan the salon's QR code",
+  "@joinScanQr": {},
+
+  "joinEnterCode": "Or enter the salon code",
+  "@joinEnterCode": {},
+
+  "joinCodeHint": "CRAY-XXXXXX",
+  "@joinCodeHint": {},
+
+  "joinConfirmTitle": "You're joining {salonName}",
+  "@joinConfirmTitle": {
+    "description": "U3 - the salon is named before binding. Never translate salonName.",
+    "placeholders": { "salonName": { "type": "String", "example": "Studio Nine Salon" } }
+  },
+
+  "joinCodeInvalid": "That code didn't match a salon. Check it and try again.",
+  "@joinCodeInvalid": { "description": "Never blame the user (DESIGN.md 8)." },
+
+  "joinAlreadyBound": "This number is already registered with a salon.",
+  "@joinAlreadyBound": {
+    "description": "MUST NOT name the other salon - that is a cross-tenant leak (RULES.md 4.4)."
+  },
+
+  "phoneTitle": "Your mobile number",
+  "@phoneTitle": {},
+
+  "otpTitle": "Enter the 6-digit code",
+  "@otpTitle": {},
+
+  "otpSentTo": "Sent to {phone}",
+  "@otpSentTo": { "placeholders": { "phone": { "type": "String", "example": "+91 98765 43210" } } },
+
+  "walletBalance": "Available credit",
+  "@walletBalance": {},
+
+  "walletOnlyAtSalon": "Usable only at {salonName}. Cannot be withdrawn as cash.",
+  "@walletOnlyAtSalon": {
+    "description": "Shown with every balance. Never show a balance alone (DESIGN.md 6.1).",
+    "placeholders": { "salonName": { "type": "String" } }
+  },
+
+  "addMoneyPaidNeverExpires": "Money you pay never expires.",
+  "@addMoneyPaidNeverExpires": {
+    "description": "Disclosure block, above the pay button (RULES.md 5.3.6)."
+  },
+
+  "addMoneyBonusExpires": "Your {bonus} bonus expires on {date}.",
+  "@addMoneyBonusExpires": {
+    "placeholders": {
+      "bonus": { "type": "String", "example": "₹50" },
+      "date": { "type": "String", "example": "4 March 2027" }
+    }
+  },
+
+  "markComplete": "Mark complete",
+  "@markComplete": { "description": "One tap, no confirm dialog (DESIGN.md 6.4)." },
+
+  "needsAttention": "Needs attention",
+  "@needsAttention": { "description": "O3 - rejected offline actions. Never dropped silently." },
+
+  "offlineBanner": "You're offline. Your changes are saved and will sync.",
+  "@offlineBanner": {},
+
+  "retry": "Try again",
+  "@retry": {}
+}
