@@ -25,7 +25,8 @@ session — drift between the documents is how a rule quietly dies.
 
 ## Stack (do not substitute without asking)
 
-- **App:** Flutter / Dart, install-first Android, Play Store
+- **App:** Flutter / Dart, install-first. **Android ships first (cost), iOS-ready from day one.**
+  `app/ios` exists and CI builds it on a macOS runner every commit - never let it rot
 - **Console:** Next.js on Vercel
 - **Auth:** Supabase Auth, phone OTP
 - **OTP delivery:** Message Central via Supabase's **Send SMS Hook**, routed to **the salon's own
@@ -79,8 +80,12 @@ Full list in `RULES.md`. The ones most often broken:
     Rejected actions surface in "Needs attention", never dropped.
 14. Consent is per-purpose and withdrawable. The **salon** is the Data Fiduciary; Crayora is the
     Processor. Never hard-delete a financial record — archive and anonymise.
-15. **The launcher icon cannot be changed at runtime.** In-app branding + pinned shortcut is the
-    Tier 1 answer. Do not attempt anything else.
+15. **The launcher icon cannot be changed at runtime** on either platform. Android: in-app
+    branding + pinned home-screen shortcut. **iOS has no equivalent** - in-app branding only.
+    Do not attempt anything else.
+15b. **Android ships first; the code stays iOS-compatible.** Never write platform-specific code
+    outside a platform abstraction, and never let `app/ios` fall out of sync. CI builds iOS on a
+    macOS runner because nobody here has a Mac.
 16. **The OTP message cannot be branded** — its template belongs to Message Central. Do not write
     code that templates, brands or validates it.
 

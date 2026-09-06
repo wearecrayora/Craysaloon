@@ -63,7 +63,7 @@
 | O9 | `/staff` | Staff + working hours | 5 |
 | O10 | `/settings/rules` | **Wallet bonus rule + bonus expiry**, reminder cycles, cancellation policy | 7 |
 | O11 | `/settings/hours` | Working hours, holidays | 5 |
-| O12 | `/billing` | Subscription status, plan, messaging spend | 11 |
+| O12 | `/billing` | Subscription status, plan, **messaging spend per channel beside reminder conversion** (never one without the other), marketing-escalation setting (SMS default / WhatsApp opt-in) | 11 |
 | O13 | `/salon` | Salon profile — display name, branding *(read-only)* | 4 |
 
 > **O5 shows a balance and cannot change it.** There is no adjust control, no endpoint, and no
@@ -88,7 +88,7 @@
 | K5 | `/salons/:id/branding` | **Branding studio** — live preview, contrast gate, publish | 2 |
 | K6 | `/salons/:id/catalogue` | Services, add-ons, staff, rules | 2 |
 | K7 | `/salons/:id/credentials` | **Write-only** secrets + *Test connection* | 2 |
-| K8 | `/salons/:id/messaging` | **RCS agent status**, WhatsApp template status, send/ack rates per channel, **OTP fallback count** | 8 |
+| K8 | `/salons/:id/messaging` | WhatsApp template status, RCS agent status, send/ack rates **and cost per channel**, **OTP fallback count** | 8 |
 | K9 | `/salons/:id/qr` | QR pack — regenerate, download PDF | 2 |
 | K10 | `/salons/:id/billing` | Record offline setup fee · **activate** · subscription · dunning | 11 |
 | K11 | `/salons/:id/support` | **Support mode** — time-boxed, reason, masked PII | 12 |
@@ -258,7 +258,7 @@ being logged.
 | `create-payment-order` | Client | user JWT | Compute the amount **server-side** |
 | `dispatcher` | `pg_cron`, 1 min | service role | Drain `domain_events` → `pgmq` |
 | `worker` | `pgmq` | service role | Idempotent handlers; dead-letter → Sentry |
-| `notification-send` | worker | service role | The channel ladder **push -> RCS -> WhatsApp -> SMS**; salon credentials; `rcs_capable()` cached capability gate; skip an unverified RCS agent or unapproved WhatsApp cleanly |
+| `notification-send` | worker | service role | The **category-aware** ladder: utility = push -> WhatsApp Utility -> SMS; marketing = push -> SMS -> WhatsApp Marketing (owner opt-in only). Salon credentials; skips unapproved WhatsApp cleanly; RCS rung designed but unpriced |
 | `escalation-sweep` | `pg_cron`, 1 min | service role | Promote unacked pushes past their window |
 | `export-customer-data` | RPC job | service role | JSON+CSV → R2 → 7-day signed URL |
 | `qr-pack-render` | Console | service role | PDF → R2 → signed URL |

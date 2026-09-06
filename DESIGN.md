@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Applies to** | Flutter app (customer / owner / staff) and the Next.js console |
+| **Applies to** | Flutter app (customer / owner / staff), **Android and iOS**, and the Next.js console |
 | **Companions** | `RULES.md` (binding) · `ARCHITECTURE.md` (mechanisms) · `Cray-Salon-PRD-v4.md` (scope) · `PHASES.md` (order) · `IMPLEMENTATION.md` (screen inventory) |
 | **Authoritative for** | design tokens, typography, layout, components, motion, chart rules |
 | **Status** | Binding. §3 and §14 are not stylistic opinions |
@@ -29,6 +29,14 @@ Design for the actual room, not for a screenshot.
 
 Two facts about the device that are not negotiable: **the network is unreliable** and **the phone
 is slow**. Every screen has an offline state, and no screen may depend on an animation completing.
+
+**Android ships first; the design is written for both.** The launch is Android-only for cost
+reasons, not design ones (`RULES.md` §8.11). **One design language — these tokens — renders on
+both platforms.** For a white-labelled app the salon's identity matters more than platform-native
+chrome, and maintaining two design languages would double the surface for half the benefit. What
+we *do* respect per platform: safe areas, back-gesture behaviour, text-scaling limits, and the
+launcher-icon reality (`ARCHITECTURE.md` §7.3) — where iOS has no equivalent of the Android
+pinned shortcut, so its branding is in-app only.
 
 ---
 

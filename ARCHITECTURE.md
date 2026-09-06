@@ -46,7 +46,7 @@ request. See **RULES.md §2**.
 ## 1. Scope
 
 Cray Salon is a **multi-tenant, per-salon white-labelled SaaS retention loop** for Indian local
-salons: an install-first Android app (Flutter) plus a Crayora operations console (Next.js on
+salons: an install-first Flutter app - **Android at launch, iOS-ready** - plus a Crayora operations console (Next.js on
 Vercel), on a managed serverless backend (Supabase). Many salons, one codebase, one database,
 hard row-level isolation — and to each customer it looks like their own salon's app.
 
@@ -817,11 +817,17 @@ backward-compatible; the app ignores unknown keys.
 
 Three options, and what we do with each:
 
-| Option | Result | Verdict |
-|---|---|---|
-| `activity-alias` swapping | Real launcher icon, but only from a fixed set baked into the APK; needs an app release per salon | **Rejected** — doesn't scale, OEM-fragile |
-| **Pinned home-screen shortcut** with a runtime bitmap | A home-screen icon showing the salon's logo and name, created from the downloaded logo | **Tier 1 — this is what we ship** |
-| **Per-salon signed APK** built by CI | A genuine launcher icon, app name and package id, own Play listing | **Tier 3 premium** (PRD §10.11) |
+| Option | Platform | Result | Verdict |
+|---|---|---|---|
+| `activity-alias` swapping | Android | Real launcher icon, but only from a set baked into the APK; needs a release per salon | **Rejected** — doesn't scale, OEM-fragile |
+| **Pinned home-screen shortcut** with a runtime bitmap | **Android only** | A home-screen icon showing the salon's logo and name, built from the downloaded logo | **Tier 1 — what we ship on Android** |
+| `setAlternateIconName` | iOS | A real icon swap, but the icons must be **bundled at build time** — the same dead end as `activity-alias` | **Rejected** — cannot work for unknown salons |
+| **Per-salon signed build** | Both | A genuine launcher icon, app name and bundle id, own store listing | **Tier 3 premium** (PRD §10.11) |
+
+**iOS has no Tier 1 answer, and it is not something we can engineer around.** There is no API to
+add a home-screen icon programmatically. On iOS the salon's branding lives entirely inside the
+app — splash, theme, header, notifications — and the home-screen icon stays Crayora's until a
+per-salon build. Do not let anyone promise an owner otherwise.
 
 **Tier 1 mechanism.** After binding, the app calls
 `ShortcutManagerCompat.requestPinShortcut()` with
@@ -1078,18 +1084,21 @@ no notification row exists yet.
 
 ```
 resolve consent (per-purpose, from the consents ledger)
-  └─ marketing && !opted_in                     -> stop, record suppressed
-  └─ push: any valid FCM token?                 -> send (platform FCM), await ACK (§12.3)
-       └─ acked within window                   -> done  (cost 0 to everyone)
-       └─ not acked / token invalid             -> escalate
-            └─ RCS: salon.rcs_agent_status == verified
-                 && rcs_capable(phone)  (cached, §12.2a)
-                 && (utility purpose OR marketing opt-in)   -> send via THE SALON'S RCS agent
-            └─ WhatsApp: salon.whatsapp_template_status == approved
-                 && (utility purpose OR marketing opt-in)
-                 && template exists for this locale         -> send via THE SALON'S WABA
-            └─ SMS: send via THE SALON'S Message Central
-            └─ else                                          -> stop, record `no_channel_available`
+  └─ marketing && !opted_in            -> stop, record suppressed
+  └─ push: any valid FCM token?        -> send (platform FCM), await ACK (§12.3)
+       └─ acked within window          -> done                          Rs 0
+       └─ not acked / token invalid    -> escalate BY CATEGORY:
+
+     UTILITY  (booking confirmation, receipt, wallet, referral)
+       └─ WhatsApp Utility, template approved for this locale           Rs 0.17
+       └─ SMS                                                           Rs 0.22
+
+     MARKETING  (reminders, lifecycle, campaigns)
+       └─ SMS                                          [default]        Rs 0.22
+       └─ WhatsApp Marketing   only if the owner has opted in           Rs 1.28
+            (salons.messaging_prefs.marketing_escalation = 'whatsapp')
+
+       └─ no channel available          -> stop, record `no_channel_available`
 ```
 
 #### 12.2a RCS — why it sits above WhatsApp, and what makes it conditional
@@ -1125,6 +1134,44 @@ speculated RCS might remove that paperwork; it does not.
 `rcs_agent_status`, and the ladder skips the RCS rung until it is `verified` — the same
 degradation pattern as WhatsApp, and it blocks nothing.
 
+#### 12.2b Why the order differs by category — the actual prices
+
+Message Central, India, at roughly Rs 90 to the dollar:
+
+| Channel | USD | INR | Note |
+|---|---|---|---|
+| Push (FCM) | 0 | **Rs 0** | Platform-level, both OS |
+| WhatsApp **Utility** | 0.00184 | **Rs 0.17** | **Cheaper than SMS** |
+| WhatsApp **Authentication** | 0.00184 | **Rs 0.17** | 45% cheaper than SMS OTP |
+| SMS | 0.002381 | **Rs 0.22** | |
+| OTP over SMS | 0.00332 | **Rs 0.30** | |
+| WhatsApp **Marketing** | 0.01416 | **Rs 1.28** | **6x SMS** |
+
+Two facts drive the design, and the first contradicts the obvious assumption:
+
+**WhatsApp Utility is cheaper than SMS.** SMS is not the cheap last resort — for booking
+confirmations and receipts, WhatsApp is cheaper *and* richer *and* branded. SMS sits below it
+only for reach.
+
+**WhatsApp Marketing costs 6x SMS**, and marketing (reminders) is the highest-volume category in
+the product. For a salon with 300 active customers on a monthly reminder cycle:
+
+| Escalation path | Monthly |
+|---|---|
+| Push, acknowledged | **Rs 0** |
+| Escalate to SMS | Rs 65 |
+| Escalate to WhatsApp Marketing | **Rs 384** |
+
+Rs 384 is most of a Starter subscription. So marketing escalation **defaults to SMS**, and
+WhatsApp Marketing is an owner opt-in — because a rich WhatsApp reminder may well convert better,
+and Rs 1.28 to drive a Rs 400 haircut is fine ROI *if it converts*. The owner should decide from
+their own numbers, so the dashboard shows **messaging cost beside reminder conversion rate**
+(§6.8). That pairing is the point: neither figure means anything alone.
+
+**OTP goes WhatsApp-first** (Rs 0.17, falling back to SMS at Rs 0.30). Every customer who joins
+pays an OTP, and so does every returning login — it is the one cost every single user incurs.
+Message Central handles the fallback, so reliability on the login path is not traded away.
+
 **The ladder must degrade, never block.** A newly activated salon typically has neither WhatsApp
 templates approved yet. That salon still
 works completely: **login is unaffected** (OTP needs neither, §5.2) and push carries every
@@ -1132,9 +1179,14 @@ notification. Escalations that find no available channel are recorded as `no_cha
 rather than retried forever or raised as errors. The console surfaces the count, which doubles as
 the nudge to finish the salon's Meta paperwork if the volume justifies it.
 
-OTP sits outside this ladder entirely: always SMS, never queued, never escalated, always
+OTP sits outside this ladder entirely: never queued, never escalated by the sweep, always
 rate-limited, and sent from **the salon's** Message Central account via `resolve_otp_sender()`
 (§5.2). It has no consent gate — it is the authentication factor, not a message.
+
+Its own channel order is **WhatsApp Authentication (Rs 0.17) then SMS (Rs 0.30)**, using Message
+Central's own multi-channel fallback rather than logic of ours. This is the one cost every user
+incurs — at join and at every return login — so a 45% saving on it compounds faster than
+anything else in the ladder.
 
 ### 12.3 Push delivery cannot be trusted — the ack protocol
 
@@ -1175,10 +1227,13 @@ What follows from that:
 - **Push-first is now a customer-facing benefit.** Every acked push is money the *owner* did not
   spend. That is a materially better sales line than the v2.0 framing, and the dashboard should
   say it out loud: *"push saved you ₹X this month."*
-- **OTP is now a salon cost, which changes who needs protecting.** A leaked salon code lets a
-  stranger burn *the owner's* SMS credit, so per-salon daily OTP caps are not a nicety — they are
-  the owner's spending limit, and they belong on the owner's dashboard next to the rest of their
-  messaging spend.
+- **OTP is now a salon cost, which changes who needs protecting.** At Rs 0.17-0.30 a send, a
+  leaked salon code lets a stranger burn *the owner's* credit. Per-salon daily OTP caps are not a
+  nicety — they are the owner's spending limit, and they belong on the dashboard next to the rest
+  of their messaging spend.
+- **Cost and conversion are reported together, never apart.** A salon looking at Rs 384 of
+  WhatsApp Marketing needs to see the reminder conversion it bought. A salon looking at a
+  conversion rate needs to see what it cost. Either number alone invites the wrong decision.
 - **Fallback volume is Crayora's only messaging line item**, and it is a health metric rather
   than a cost centre: a rising fallback count means a salon's Message Central account is
   degrading and someone should call them before customers notice.

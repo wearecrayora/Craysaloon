@@ -9,7 +9,7 @@
 | **Document type** | PRD + implementation brief for Claude Code |
 | **Version** | 4.7 (business model corrected; v3 gaps closed; join flow salon-code-first; decisions closed and legally reviewed — §16A; no DLT anywhere; message-control tiers — §12.1a; **RCS added to the channel ladder — §12.1b**) |
 | **Status** | Ready to build |
-| **Platform** | Android (install-first), Flutter + Next.js admin console on Vercel |
+| **Platform** | Flutter — **Android at launch, iOS-ready from day one** (install-first) + Next.js admin console on Vercel |
 | **Prepared** | September 2026 |
 | **Companions** | `ARCHITECTURE.md` — the *how* · `DESIGN.md` — visual rules · `PHASES.md` — build order · `IMPLEMENTATION.md` — screens & API · **`RULES.md` — binding, read every session** |
 
@@ -657,6 +657,9 @@ Cards: today's revenue, today's bookings, avg bill, repeat/new this month, walle
 outstanding credit, reminder-generated bookings. Plus barber revenue, top-20 customers,
 due-for-visit, popular services/add-ons, referrals, cancelled/missed, **customer bind rate**.
 One-tap: add customer, walk-in booking, **mark complete**, send reminder, cancel booking, export.
+**Messaging spend is shown beside reminder conversion** — cost per channel this month, and the
+bookings those reminders produced. Neither number is shown without the other: cost alone invites
+switching off reminders, conversion alone invites spending Rs 1.28 a message without noticing.
 **Cohort retention view** (30/60/90-day return %, wallet vs non-wallet) ships in MVP. Settings
 the owner controls here: catalogue, staff, cycles, wallet bonus rule and **credit expiry**.
 
@@ -805,9 +808,24 @@ by a super-admin, and only with a reason.
 
 ## 12. Messaging & notification strategy
 
-**Channel priority:** Push (FCM, free, platform-level) → **RCS** (the salon's own verified agent —
-cheaper than WhatsApp and natively branded) → WhatsApp (the salon's own WhatsApp Business account)
-→ SMS (the salon's own Message Central account). Every paid rung is billed to the salon.
+**Channel priority is category-aware**, because WhatsApp's own pricing is. Push is always first
+and free; every paid rung is billed to the salon.
+
+| Category | Order | Cost per message |
+|---|---|---|
+| **Utility** — confirmations, receipts, referral | push → **WhatsApp Utility** → SMS | Rs 0 → Rs 0.17 → Rs 0.22 |
+| **Marketing** — reminders, lifecycle, campaigns | push → **SMS** → WhatsApp Marketing *(owner opt-in)* | Rs 0 → Rs 0.22 → Rs 1.28 |
+| **OTP** | WhatsApp Auth → SMS | Rs 0.17 → Rs 0.30 |
+
+**WhatsApp Utility is cheaper than SMS** (Rs 0.17 vs Rs 0.22), so for confirmations and receipts
+it wins on cost *and* richness *and* branding. **WhatsApp Marketing costs 6x SMS** (Rs 1.28 vs
+Rs 0.22), and marketing is the high-volume category — for 300 customers on a monthly reminder, the
+difference is Rs 384/month against Rs 65, which is most of a Starter subscription.
+
+So **marketing escalation defaults to SMS**, with WhatsApp Marketing as an owner setting. A rich
+WhatsApp reminder may convert better, and Rs 1.28 to drive a Rs 400 haircut is fine ROI *if it
+converts* — so the owner dashboard shows **messaging cost beside reminder conversion rate** and
+lets them decide from their own numbers (§9.5).
 
 ### 12.1b RCS — rich, branded, and cheaper (v4.7)
 
@@ -1435,7 +1453,8 @@ RULES.md section 2 lists capabilities that DELIBERATELY DO NOT EXIST. Check it b
 building anything that sounds reasonable but is absent.
 
 ## Stack (do not substitute without asking)
-- App: Flutter / Dart (install-first Android; Play Store)
+- App: Flutter / Dart, install-first. ANDROID SHIPS FIRST for cost reasons; the code
+  stays iOS-compatible and app/ios must never rot (RULES 8.11)
 - Admin console: Next.js on Vercel
 - Auth: Supabase Auth (phone OTP)
 - OTP delivery: Message Central via Supabase's Send SMS Hook, routed to THE SALON'S

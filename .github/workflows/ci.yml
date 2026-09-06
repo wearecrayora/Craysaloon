@@ -55,6 +55,33 @@ jobs:
           flutter analyze
           flutter test
 
+  # The app launches on Android first for cost reasons, but the code must stay
+  # iOS-buildable (RULES.md 8.11). Nobody here has a Mac, so this runner IS the
+  # iOS compatibility check - without it, breakage is discovered months later.
+  #
+  # --no-codesign needs no Apple Developer account. macOS runners are free for
+  # public repositories; if this repo is ever made private they bill at a 10x
+  # multiplier, so revisit then.
+  ios:
+    name: iOS builds (compatibility only - not shipped yet)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          if [ -d app/ios ]; then echo "exists=true" >> "$GITHUB_OUTPUT";
+          else echo "exists=false" >> "$GITHUB_OUTPUT"; fi
+      - uses: subosito/flutter-action@v2
+        if: steps.check.outputs.exists == 'true'
+        with:
+          channel: stable
+          cache: true
+      - if: steps.check.outputs.exists == 'true'
+        working-directory: app
+        run: |
+          flutter pub get
+          flutter build ios --no-codesign --debug
+
   # Wired at M1. The cross-tenant leak test, the binding-exclusivity test and
   # the money test are RELEASE GATES - never skipped, never narrowed (RULES 12).
   database:

@@ -51,7 +51,7 @@ missing; they are absent on purpose. If a ticket asks for one, escalate rather t
 | A Crayora-held balance, float, or payout flow | Would make Crayora an unlicensed payment aggregator |
 | Credit usable at a salon other than the issuer | Would make the wallet a semi-closed PPI, requiring authorisation |
 | A "switch salon" / "join another salon" screen or API | Binding is exclusive; changes are audited Crayora-support actions only |
-| Runtime launcher-icon replacement | Android compiles the launcher icon into the APK. Use the pinned home-screen shortcut |
+| Runtime launcher-icon replacement | Both platforms compile the icon at build time. Android: use the pinned home-screen shortcut. **iOS has no equivalent at all** - in-app branding only (RULES 8.11) |
 | OTP templating, branding, or validation | The OTP template and sender belong to Message Central and cannot be changed by code |
 | An in-app owner self-signup or self-provisioning wizard | Crayora provisions salons; owners do not |
 | A hard delete of any row in `invoices`, `payments`, `wallet_transactions`, `loyalty_ledger` | Statutory retention. Archive and anonymise instead |
@@ -258,9 +258,21 @@ match. We cannot validate wording — that is an operator checklist item.
 
 ### 7.3 The channel ladder
 
-7.3.1 Order: consent check → **push** → **RCS** → WhatsApp → SMS. RCS sits above WhatsApp because
-it is cheaper and natively brand-verified, but its reach is conditional — check `rcs_capable(phone)`
-(cached) before spending a send, and fall through when it is not.
+7.3.1 **The order depends on the category, because WhatsApp's pricing does.** Push always first
+(Rs 0). Then:
+
+| Category | Escalation | Why |
+|---|---|---|
+| **Utility** (confirmations, receipts) | WhatsApp Utility (Rs 0.17) → SMS (Rs 0.22) | WhatsApp Utility is **cheaper than SMS**, and richer, and branded |
+| **Marketing** (reminders, lifecycle) | **SMS (Rs 0.22)** → WhatsApp Marketing (Rs 1.28) **only on owner opt-in** | WhatsApp Marketing is **6x SMS**, and marketing is the high-volume category |
+| **OTP** | WhatsApp Auth (Rs 0.17) → SMS (Rs 0.30) | The one cost every user incurs; provider handles the fallback |
+
+7.3.1a Marketing escalation **defaults to SMS**. WhatsApp Marketing is an owner setting, and the
+dashboard shows **cost beside reminder conversion** so the owner switches on evidence, not a hunch.
+Never show one of those numbers without the other.
+
+7.3.1b RCS is designed into the ladder but **unpriced — do not build it until it has a number**
+(§22 Q-G). Its reach is conditional too: check `rcs_capable(phone)` (cached) before spending a send.
 
 7.3.2 **Never trust FCM's response as delivery.** It confirms acceptance by Google, nothing more.
 Every push carries a `delivery_id`; the app acks on receipt; escalation happens only after an
@@ -307,8 +319,17 @@ lies about what the customer sees.
 
 8.7 The cached document is authoritative offline — the app stays branded.
 
-8.8 **The launcher icon cannot be changed at runtime.** Offer the pinned home-screen shortcut with
-the salon's logo and name. A per-salon signed APK is the only real alternative and is deferred.
+8.8 **The launcher icon cannot be changed at runtime**, on either platform. Android: offer the
+pinned home-screen shortcut with the salon's logo and name. **iOS: there is no equivalent** - you
+cannot add a home-screen icon programmatically, and alternate app icons must be bundled at build
+time, which a white-label app with unknown salons cannot do. On iOS the branding is in-app only
+until a per-salon build.
+
+8.11 **Android ships first; the code stays iOS-compatible.** The launch is Android-only for cost
+reasons, not architectural ones. Never write platform-specific code outside a platform abstraction,
+never assume Android in shared code, and never let `app/ios` fall out of sync. CI builds iOS on a
+macOS runner precisely because nobody here has a Mac - if that job goes red, fix it then, not
+months later.
 
 8.9 Notification small icon stays a generic monochrome mark (Android renders it as a silhouette).
 Large icon, title and channel name are the salon's.
