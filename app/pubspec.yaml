@@ -24,6 +24,7 @@ dependencies:
   # Tenant-scoped access ONLY through SupabaseGateway in data/remote
   # (RULES.md 3.7 - CI fails the build on .from( elsewhere).
   supabase_flutter: ^2.12.1
+  sentry_flutter: ^9.29.0
 
 dev_dependencies:
   flutter_test:

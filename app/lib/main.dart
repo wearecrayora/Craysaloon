@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/observability/sentry_setup.dart';
 import 'l10n/app_localizations.dart';
 
 /// M0 scaffold.
@@ -9,8 +10,12 @@ import 'l10n/app_localizations.dart';
 /// renders in en / hi / hi_Latn (PHASES.md M0). There is deliberately no
 /// product content here yet - screens arrive from M4 onward, and the theme
 /// becomes salon-driven at M4 (DESIGN.md 3).
-void main() {
-  runApp(const ProviderScope(child: CraySalonApp()));
+Future<void> main() async {
+  // Sentry wraps the app when a DSN is configured, and is a no-op when it is
+  // not. Observability is never a boot dependency (core/observability).
+  await runWithObservability(() async {
+    runApp(const ProviderScope(child: CraySalonApp()));
+  });
 }
 
 /// Hinglish is a SCRIPT variant, not a country variant: it must be built with

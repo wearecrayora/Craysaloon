@@ -5,6 +5,12 @@ cd "$(dirname "$0")/.."
 fail=0
 
 # Known credential shapes. .env is gitignored, so scan only tracked files.
+#
+# Three files legitimately contain credential SHAPES and are excluded by name:
+#   scripts/secret-scan.sh           - the patterns themselves
+#   .env.example                     - documents the shape, holds no values
+#   app/test/observability_test.dart - fixtures proving the scrubber redacts
+#                                      them. Fixtures must be obviously fake.
 patterns=(
   'sb_secret_[A-Za-z0-9_-]{10,}'
   'service_role'
@@ -21,7 +27,8 @@ files=$(git ls-files 2>/dev/null || true)
 for p in "${patterns[@]}"; do
   hits=$(echo "$files" | xargs grep -nEI "$p" 2>/dev/null \
          | grep -v '^scripts/secret-scan.sh:' \
-         | grep -v '^\.env\.example:' || true)
+         | grep -v '^\.env\.example:' \
+         | grep -v '^app/test/observability_test.dart:' || true)
   if [ -n "$hits" ]; then
     echo "LEAK [$p]"; echo "$hits" | sed 's/^/  /'; fail=1
   fi
