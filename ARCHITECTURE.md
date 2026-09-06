@@ -861,9 +861,9 @@ highest-value target in the system and is treated accordingly.
 - Secrets go into **Supabase Vault**. `salon_integrations` holds only a reference and
   non-sensitive metadata:
   `(salon_id, provider, vault_secret_id, public_key_id, last4, sender_id,
-  whatsapp_template_status, status, last_tested_at)`, where
-  `provider ∈ {razorpay, message_central, whatsapp}`. There is no DLT field and no per-salon SMS
-  header — Message Central is top-up-and-send and owns the OTP sender and template (§12.5a).
+  whatsapp_template_status, rcs_agent_id, rcs_agent_status, status, last_tested_at)`, where
+  `provider ∈ {razorpay, message_central, whatsapp, rcs}`. There is no DLT field and no per-salon
+  SMS header — Message Central is top-up-and-send and owns the OTP sender and template (§12.5a).
 - **Status fields are not secrets** and are readable by the console for its readiness indicator
   (§5.7); the Vault reference is not readable by anything but a service-role Edge Function.
 - `salon_integrations` has RLS enabled and forced with **no policies for tenant roles** — an
@@ -1069,7 +1069,7 @@ OTP (§5.2), there is no longer a class of message that must come from Crayora:
 
 | | Account | Paid by | Carries |
 |---|---|---|---|
-| **Salon** | That salon's own Message Central + WhatsApp Business account (§8) | **The salon** | **Everything** — first OTP, later OTPs, staff logins, confirmations, reminders, receipts, referrals, lifecycle |
+| **Salon** | That salon's own Message Central account — carrying **SMS, RCS and WhatsApp** (§8) | **The salon** | **Everything** — first OTP, later OTPs, staff logins, confirmations, reminders, receipts, referrals, lifecycle |
 | **Platform** | Crayora's Message Central | Crayora | **Fault fallback only** — the salon's credentials are missing, untested, or a send failed. Never a normal state, so every occurrence is logged, counted **and alerted** (§5.2) |
 
 Every send resolves credentials from `salon_integrations` for the notification's `salon_id`;
@@ -1082,12 +1082,48 @@ resolve consent (per-purpose, from the consents ledger)
   └─ push: any valid FCM token?                 -> send (platform FCM), await ACK (§12.3)
        └─ acked within window                   -> done  (cost 0 to everyone)
        └─ not acked / token invalid             -> escalate
-            └─ salon.whatsapp_template_status == approved
+            └─ RCS: salon.rcs_agent_status == verified
+                 && rcs_capable(phone)  (cached, §12.2a)
+                 && (utility purpose OR marketing opt-in)   -> send via THE SALON'S RCS agent
+            └─ WhatsApp: salon.whatsapp_template_status == approved
                  && (utility purpose OR marketing opt-in)
                  && template exists for this locale         -> send via THE SALON'S WABA
-            └─ else                                          -> send SMS via THE SALON'S MC
+            └─ SMS: send via THE SALON'S Message Central
             └─ else                                          -> stop, record `no_channel_available`
 ```
+
+#### 12.2a RCS — why it sits above WhatsApp, and what makes it conditional
+
+RCS (Rich Communication Services) delivers a branded, rich message **into the phone's default
+Messages app** — no app install needed. Message Central's *RCS Now* carries it on the salon's own
+account, alongside SMS and WhatsApp.
+
+It sits **above WhatsApp** in the ladder for three reasons: it is cheaper per message, it carries
+the salon's verified name and logo natively (a real white-label win over unbranded SMS), and it
+needs nothing installed on the customer's phone.
+
+**But its reach is conditional**, which WhatsApp's is not. RCS requires a supporting carrier, a
+supporting device, and Google Messages as the default SMS app. So the ladder must decide *before*
+spending a send:
+
+- **`rcs_capable(phone)`** — if Message Central exposes a capability check, use it and cache the
+  answer per phone hash with a long TTL (capability changes when someone swaps handset, not
+  hourly). A cache miss costs one lookup, not one wasted message.
+- **If no capability API exists**, attempt RCS and treat non-delivery inside a short window as a
+  miss, then escalate. This is strictly worse — it spends a send to learn the answer — so prefer
+  the capability check if it exists (§22 Q-G).
+- **If Message Central performs its own automatic SMS fallback**, RCS and SMS collapse into a
+  single rung and the explicit SMS step is removed. Confirm this before building (§22 Q-G) — a
+  provider-side fallback that we *also* implement would double-send.
+
+**RCS agent verification is per salon.** Each salon's own Message Central portal means its own RCS
+agent, verified with Google and the carriers. This is a **third** per-salon onboarding item
+alongside the WhatsApp templates — not a replacement for it. An earlier note in this document
+speculated RCS might remove that paperwork; it does not.
+
+`salon_integrations` therefore gains an `rcs` provider row with `rcs_agent_id` and
+`rcs_agent_status`, and the ladder skips the RCS rung until it is `verified` — the same
+degradation pattern as WhatsApp, and it blocks nothing.
 
 **The ladder must degrade, never block.** A newly activated salon typically has neither WhatsApp
 templates approved yet. That salon still
@@ -1168,6 +1204,7 @@ provisioning task, and where it is simply unavailable.
 |---|---|---|---|
 | **Push (FCM)** | **Us** | `message_templates` — full body text, per locale | **Full and guaranteed:** title, body, salon logo as large icon, salon accent colour, per-salon channel name |
 | **WhatsApp** | **The operator, in the Message Central dashboard**, per salon account at setup | `message_templates` stores only the **template identifier and variable order** — never body text | **Full**, once the operator writes the salon's name into the template. Not enforceable by us |
+| **RCS** | Same — authored and verified in the Message Central portal, per salon agent | Template identifier + variable order; plus the agent's own verified name and logo | **Full and native** — the RCS agent carries the salon's verified brand, so even the sender chrome is the salon's |
 | **OTP SMS** | **Message Central. Fixed.** | Nowhere in our system | **None.** Neither body nor sender header |
 
 **The OTP cannot be branded, and no code should try.** There is no hook, no variable, and no
@@ -1410,6 +1447,7 @@ carry regulatory weight, and where each is enforced. Treat these as load-bearing
 | **Books of account preserved** | Purge splits personal from financial; financial rows move to an anonymised restricted archive (§13.2) | Tax-record breach on one side, DPDP breach on the other |
 | **Consent is per-purpose and withdrawable** | Append-only `consents` ledger; the channel ladder's first step (§12.2, §15.4) | DPDP §6–7 |
 | **Salon is Data Fiduciary, Crayora is Processor** | Per-salon grievance contact rendered in the app; export and erasure executed under the salon's instruction; DPA in the contract | DPDP §8(2) — a processor without a valid contract makes the Fiduciary non-compliant |
+| **RCS agent verification** | `rcs_agent_status` gates the RCS rung; verification is per salon with Google and carriers (§12.2a) | Sending from an unverified agent |
 | **Salon identity on every message we control** | `{{salon}}` is required in every **push** template, validated at seed time; WhatsApp wording is an operator checklist item; the OTP is out of scope (§12.5a) | An unbranded notification undermines the white-label promise |
 | **Telecom registration** | Carried by Message Central under its own registrations — top-up-and-send, no per-salon DLT. Confirm contractually (PRD §16A.5) | Sending commercial messages under registrations that do not cover the traffic |
 | **GST at redemption, not top-up** | Top-up emits a receipt; only a completed visit emits an `invoices` row with a per-salon per-year sequential number; paid and bonus lots are tracked separately so consideration and discount are distinguishable | Wrong time of supply; unsupportable discount treatment |
@@ -1555,6 +1593,7 @@ invariants.
 | **ADR-26** | **Activation is a manual operator action, decoupled from payment** | Auto-activate on a recorded fee; auto-activate on provisioning | The fee is collected offline, so no event exists to trigger on. Making it explicit also gives Crayora a deliberate final check before a salon meets customers |
 | **ADR-27** *(revised v2.3)* | **Bonus expiry only, owner-configured, captured onto each lot at issue. Paid credit cannot expire — the field is removed** | Owner may expire paid credit with disclosure; Crayora sets expiry in the console | Expiring money the customer paid is an unfair contract term under the Consumer Protection Act 2019 and weakens the closed-loop position. Removing the field beats defaulting it off (cf. ADR-23). Capturing terms at issue makes retroactive expiry impossible |
 | **ADR-30** | **Purge deletes personal and operational data; financial records are archived and anonymised for the statutory period** | Delete everything at 90 days; keep everything identifiable | Deleting books of account breaches tax rules; retaining them identifiable breaches DPDP. DPDP allows retention required by other law, so separating identity from ledger satisfies both |
+| **ADR-33** | **RCS sits above WhatsApp in the ladder, gated on a cached capability check** | Below WhatsApp; or replacing SMS outright | Cheaper than WhatsApp and natively brand-verified, so it should be tried first — but its reach is conditional on carrier, device and default SMS app, unlike WhatsApp's. Gating on capability avoids paying for a send to discover the answer. Whether it replaces the SMS rung depends on provider-side fallback (§22 Q-G) |
 | **ADR-32** *(revised v2.6)* | **The OTP is accepted as unbrandable; salon identity on that step is carried by the app screen, not the SMS** | Inject the salon name into the OTP body; register a per-salon sender header | Neither is available: the OTP template and header belong to Message Central and cannot be changed by code. Moving the branding into the app is possible precisely because the salon code now precedes login (ADR-28) — the two decisions reinforce each other |
 | **ADR-31** | **Per-salon settlement and single-salon redeemability are treated as licensing boundaries, not design preferences** | Central collection with payouts; portable credit across salons | Central collection would make Crayora a payment aggregator needing RBI authorisation; portable credit would make the wallet a semi-closed PPI. Both are recorded here so a future "simplification" is recognised as a licensing change |
 | **ADR-28** | **Salon code before login; OTP routed to the salon by a server-side `join_intents` lookup** | Login first, then code (v2.1); pass the code as client metadata on `signInWithOtp` | Knowing the salon pre-auth is what allows the *first* OTP to come from the salon, and it brands the login screen. Resolving server-side rather than from client metadata keeps the routing untrusted-input-free — and lets us **refuse** OTP with no salon context, which removes the generic flood surface instead of merely rate-limiting it |
@@ -1632,6 +1671,13 @@ The eleven gaps found reading PRD v3, plus four raised by the v4 model. All are 
 | **Q-D** | **Crayora sets up the salon's Message Central and WhatsApp Business accounts and authors that salon's WhatsApp templates in the Message Central dashboard** as part of the paid setup | §8, §12.5a, PRD §16A.5 |
 | **Q-E** | **Salons send OTP from their own account immediately; the platform account is a fault-only fallback, always alerted.** No registration dependency — Message Central is top-up-and-send | §5.2, §12.1, ADR-29 |
 | **Q-F** | **Yes** — branding only, `active` salons only, rate-limited | §5.6 |
+
+### Open again (v2.7 — RCS)
+
+| # | Question | Why it matters | Assumption until answered | Needed by |
+|---|---|---|---|---|
+| **Q-G** | Three things about Message Central's **RCS Now**: does it expose a **capability check**? does it perform **automatic SMS fallback**? what is it **priced at** versus WhatsApp and SMS? | Decides whether the RCS rung is capability-gated or attempt-and-see, whether it replaces the SMS rung entirely, and whether it belongs above WhatsApp at all | Capability check exists · no provider-side auto-fallback · cheaper than WhatsApp | **M8** |
+| **Q-H** | Is RCS agent verification per salon, and how long does it take? | It is a third per-salon onboarding item alongside WhatsApp templates. If it is slow, salons run on push + WhatsApp until it lands — which the ladder already tolerates | Per salon, days to weeks, non-blocking | **M2** |
 
 **No open architectural questions remain.** What is left is professional sign-off, not design:
 the ⚖️ items in PRD §16A.7 — counsel on the non-PPI / non-payment-aggregator position and the

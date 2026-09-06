@@ -245,6 +245,7 @@ pending join intent → existing binding → owner/staff record → **refuse**.
 |---|---|---|---|
 | **Push** | Us, entirely | Full body text per locale | **Full and guaranteed** |
 | **WhatsApp** | The operator, in the **Message Central dashboard**, per salon at setup | Template ID and variable order only — **never body text** | Full, once written there |
+| **RCS** | The operator, in the Message Central portal, per salon agent | Template id + variable order | **Full and native** — the verified agent carries the salon's name and logo |
 | **OTP SMS** | Message Central. Fixed | Nothing | **None** |
 
 7.2.1 Never write code that templates, brands or validates an OTP body. There is no hook.
@@ -257,7 +258,9 @@ match. We cannot validate wording — that is an operator checklist item.
 
 ### 7.3 The channel ladder
 
-7.3.1 Order: consent check → **push** → WhatsApp → SMS.
+7.3.1 Order: consent check → **push** → **RCS** → WhatsApp → SMS. RCS sits above WhatsApp because
+it is cheaper and natively brand-verified, but its reach is conditional — check `rcs_capable(phone)`
+(cached) before spending a send, and fall through when it is not.
 
 7.3.2 **Never trust FCM's response as delivery.** It confirms acceptance by Google, nothing more.
 Every push carries a `delivery_id`; the app acks on receipt; escalation happens only after an

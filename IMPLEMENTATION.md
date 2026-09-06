@@ -88,7 +88,7 @@
 | K5 | `/salons/:id/branding` | **Branding studio** — live preview, contrast gate, publish | 2 |
 | K6 | `/salons/:id/catalogue` | Services, add-ons, staff, rules | 2 |
 | K7 | `/salons/:id/credentials` | **Write-only** secrets + *Test connection* | 2 |
-| K8 | `/salons/:id/messaging` | WhatsApp template status, send/ack rates, **OTP fallback count** | 8 |
+| K8 | `/salons/:id/messaging` | **RCS agent status**, WhatsApp template status, send/ack rates per channel, **OTP fallback count** | 8 |
 | K9 | `/salons/:id/qr` | QR pack — regenerate, download PDF | 2 |
 | K10 | `/salons/:id/billing` | Record offline setup fee · **activate** · subscription · dunning | 11 |
 | K11 | `/salons/:id/support` | **Support mode** — time-boxed, reason, masked PII | 12 |
@@ -258,7 +258,7 @@ being logged.
 | `create-payment-order` | Client | user JWT | Compute the amount **server-side** |
 | `dispatcher` | `pg_cron`, 1 min | service role | Drain `domain_events` → `pgmq` |
 | `worker` | `pgmq` | service role | Idempotent handlers; dead-letter → Sentry |
-| `notification-send` | worker | service role | The channel ladder; salon credentials; skip unapproved WhatsApp cleanly |
+| `notification-send` | worker | service role | The channel ladder **push -> RCS -> WhatsApp -> SMS**; salon credentials; `rcs_capable()` cached capability gate; skip an unverified RCS agent or unapproved WhatsApp cleanly |
 | `escalation-sweep` | `pg_cron`, 1 min | service role | Promote unacked pushes past their window |
 | `export-customer-data` | RPC job | service role | JSON+CSV → R2 → 7-day signed URL |
 | `qr-pack-render` | Console | service role | PDF → R2 → signed URL |
@@ -415,7 +415,7 @@ Feature → surfaces → server calls → milestone. Use this to check nothing i
 | Offline queue §15 | O1, O3 | outbox + `idempotency_keys` | 6 |
 | Wallet §9.1 | C1–C4, O5, O10 | `create-payment-order`, `rzp-webhook`, ledger callers | 7 |
 | Wallet correction §8.5 | K13 | `wallet_correct` | 7 |
-| Reminders §9.2 | push only | Automations A, C, K · `ack_notification` | 8 |
+| Reminders §9.2 | push only | Automations A, C, K · `ack_notification` · ladder incl. RCS | 8 |
 | Refer & Earn §9.4 | C11 | `referral_release_reward` (D) | 9 |
 | Dashboard §9.5 | O6 | `daily_salon_metrics`, `retention_cohorts` (E) | 10 |
 | Billing §14 | O12, K10, K14 | Automation I | 11 |
