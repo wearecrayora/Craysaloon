@@ -48,8 +48,11 @@ uri = "https://khabztodwqamgywsfeel.supabase.co/functions/v1/sms-hook"
 enabled = false  # flipped on at M3 - injects app_role / salon_id / perms / cver
 uri = "pg-functions://postgres/public/custom_access_token_hook"
 
-[functions]
-enabled = true
+# NOTE: there is deliberately no [functions] block. In config.toml `[functions]`
+# is a MAP OF FUNCTION NAMES (e.g. [functions.sms-hook] verify_jwt = false), not
+# a section with `enabled`. Writing `[functions] enabled = true` makes the whole
+# file unparseable - which failed CI at `supabase start` with nothing but
+# CliConfigParseError to go on. Per-function config arrives at M3.
 
 [storage]
 enabled = false  # files live in Cloudflare R2, not Supabase Storage

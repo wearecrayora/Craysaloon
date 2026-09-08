@@ -113,10 +113,10 @@ jobs:
         working-directory: scripts/db
         run: npm install --no-audit --no-fund
 
-      - name: Apply every migration FROM ZERO
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
-        run: node scripts/db/run.mjs migrate
+      # `supabase start` applies supabase/migrations itself, against a database
+      # that begins empty - so starting successfully IS the "applies from zero"
+      # gate. Running our own migrate step here would try to re-apply them and
+      # fail on `create type ... already exists`.
 
       - name: Run the release gates
         env:
