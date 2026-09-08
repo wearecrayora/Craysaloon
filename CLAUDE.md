@@ -109,10 +109,16 @@ Full list in `RULES.md`. The ones most often broken:
 Each feature passes its PRD acceptance criteria, the milestone gates in `PHASES.md`, and the
 per-screen checklist in `IMPLEMENTATION.md` §7.
 
-**Hard CI gates:** the catalogue-driven cross-tenant leak test, the binding-exclusivity test, and
-the money test — plus the leak test's **negative control**, which creates an unprotected table on
-purpose and requires the leak test to go red. Never skipped, never deleted, never narrowed to
-pass. A gate that has only ever been seen passing is not known to be a gate.
+**Hard CI gates:** the catalogue-driven cross-tenant leak test, the binding-exclusivity test, the
+money test, the index-scope test and the admin-plane test — plus their **negative controls**,
+which create an unprotected table and an unaudited `app_admin` function on purpose and require the
+matching gate to go red. Never skipped, never deleted, never narrowed to pass. A gate that has
+only ever been seen passing is not known to be a gate.
+
+**Adding a function to `app_admin`?** Call `app_admin.close_privileges()` at the end of that
+migration. `CREATE FUNCTION` grants EXECUTE to PUBLIC, and `ALTER DEFAULT PRIVILEGES` does not
+stick on this database (migration 0020), so the admin plane is closed by an action, not a
+property.
 
 ## Build order
 

@@ -455,6 +455,12 @@ A change is not done until all of these hold.
       raise for every role; the ledger-caller set equals the five in §5.2; no paid lot can expire
 - [ ] **Index scope test** — every composite index on a tenant table leads with `salon_id`, or is
       named and justified as an exemption (§3.1)
+- [ ] **Admin plane test** — no `app_admin` function is reachable by a tenant role; every mutating
+      one writes `audit_log` in the same transaction (§6.5); provisioning is atomic (§6.2);
+      `activate_salon` is the only door to `active` (§6.3); nothing reads a credential back
+- [ ] **Negative controls** — an unprotected tenant table makes the leak test go red, and an
+      `app_admin` function that mutates without auditing makes the admin-plane gate go red
+      (`node scripts/db/negative-control.mjs`)
 - [ ] **The leak test's negative control** — an unprotected table makes the leak test go red
       (`node scripts/db/negative-control.mjs`). A gate only ever seen passing is not a gate
 - [ ] Migrations apply from zero onto an empty database in CI (`node scripts/db/run.mjs migrate`

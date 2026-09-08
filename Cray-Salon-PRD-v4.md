@@ -485,8 +485,12 @@ against the database on every write, so a stale token cannot outlive a revocatio
   **encrypted credential references** (never plaintext, never readable by any tenant role),
   sender metadata, `whatsapp_template_status`, last_tested_at, status. *No DLT field and no
   per-salon SMS header — Message Central owns the OTP sender and template (§12.1a).*
-- **`users`** — id (= Auth uid), salon_id, role (owner/manager/staff), permissions jsonb, name,
-  phone, active.
+- **`users`** — id (internal uuid), **`auth_user_id` (nullable, attached at first OTP login)**,
+  salon_id, role (owner/manager/staff), permissions jsonb, name,
+  phone, phone_hash, active. *`id` was originally specified as the Auth uid. It cannot be: the
+  console creates the owner's row at provisioning, days before that person first opens the app
+  (§6.2), so there is no Auth user to point at yet. Migration 0018 moved the Auth link to
+  `auth_user_id`, the same shape `customers` has always used.*
 - **`customer_identities`** — **global, cross-tenant**: phone_hash (unique), salon_id,
   customer_id, bound_at. *This one table is what makes binding exclusive (§6.5) — one row per
   phone means one active binding per phone.*

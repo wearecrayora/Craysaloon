@@ -490,8 +490,23 @@ designed around it.
 
 ### 5.7 Provisioning (D5) — console-only, still no SQL
 
-`app_admin.provision_salon(payload jsonb)` runs **one transaction**, callable only by the
-console's server half:
+`app_admin.provision_salon(...)` runs **one transaction**, callable only by the console's server
+half. The signature is named scalars for the fields the form always collects, plus a `p_settings
+jsonb` for the shapeless ones (working hours, wallet/reward/loyalty rules, cancellation policy):
+
+```
+app_admin.provision_salon(
+  p_actor_admin_id uuid, p_legal_name text, p_display_name text,
+  p_owner_name text, p_owner_phone text, p_plan text, p_setup_fee_paise bigint,
+  p_phone text, p_email text, p_address text, p_gst_number text,
+  p_timezone text, p_languages text[], p_settings jsonb
+) returns jsonb   -- {salon_id, join_code, owner_user_id, status}
+```
+
+Steps 1, 6, 7 and 9 below are **implemented** (migration 0017). Steps 2, 3, 4, 5 and 8 arrive with
+the console screens that collect them — branding, catalogue, rules and credentials are all edited
+after provisioning anyway (PRD 6.2: "everything is editable afterwards"), and the QR pack needs
+R2. The transaction boundary is what matters and it is already in place:
 
 1. Insert `salons` (status `setup`) — the tenant now exists and is RLS-isolated from that instant.
 2. Insert `salon_branding` (version 1) and seed `message_templates` for the chosen locales.
@@ -890,6 +905,25 @@ highest-value target in the system and is treated accordingly.
 
 The **pepper** used for `customer_identities.phone_hash` (§5.4) lives in Vault under the same
 regime, and is never rotated without a planned re-hash migration.
+
+### 8.2a Closing the admin plane is an action, not a property
+
+`CREATE FUNCTION` grants `EXECUTE` to `PUBLIC`. So a function added to `app_admin` is callable by
+every authenticated tenant user from the moment it is created.
+
+The obvious fix does not work here. `ALTER DEFAULT PRIVILEGES IN SCHEMA app_admin REVOKE EXECUTE
+ON FUNCTIONS FROM PUBLIC` records no `pg_default_acl` row on this database and has no effect
+(migration 0019 claimed otherwise and was wrong; 0020 documents the evidence). An event trigger
+would work but needs superuser, and `postgres` is not one on Supabase.
+
+So every migration that adds a function to `app_admin` **must call
+`app_admin.close_privileges()`**, which revokes from `public`/`anon`/`authenticated`, grants to
+`service_role`, and then *verifies* the result rather than assuming it. Forgetting is caught twice:
+the guard at the end of 0017 and 0020 fails that migration, and the admin-plane release gate goes
+red.
+
+This was found by the negative control, not by review: the canary function it creates to test the
+audit gate also tripped `no app_admin function is executable by anon or authenticated`.
 
 ### 8.3 Per-salon webhooks
 
@@ -1691,6 +1725,7 @@ invariants.
 | ADR-13 | Supabase Auth retained; Message Central via the Send-SMS hook | Fully custom OTP + custom JWT minting | Keeps sessions, refresh rotation and hook-based claims; far less security surface to own |
 | ADR-14 | Offline covers capture, never money or binding | Offline wallet writes; offline binding | A reconstructed ledger is unauditable; a global uniqueness decision cannot be made on a device |
 | **ADR-34** | **No local Supabase stack: hosted for development, a bare `supabase/postgres` container in CI, migrations and pgTAP driven by `scripts/db/run.mjs`** | `supabase start` locally and in CI; `supabase db reset` to prove migrations | The full stack is a large opaque dependency whose only failure signal was "Start a clean local stack: failed" with unreadable logs. The gates need Postgres, pgTAP and the Supabase roles — not Studio, Kong, GoTrue, Realtime or Storage. CI asserts the roles' `rolbypassrls` flags match production rather than setting them, because setting them would make CI's isolation guarantees true by construction |
+| **ADR-35** | **The admin plane is a separate schema (`app_admin`) whose functions are closed by an explicit `close_privileges()` call, and every mutating one writes `audit_log` in the same transaction** | Admin RPCs in `public` behind a role check; a route handler that writes the audit as a second statement; relying on default privileges to close the schema | `public` is what PostgREST exposes, so an admin function there is one missing grant from being tenant-callable. A separate audit statement can be forgotten; a combined one cannot. And default privileges were *tested* and do not stick here, so closure is an action the release gate verifies rather than a property assumed |
 
 ---
 

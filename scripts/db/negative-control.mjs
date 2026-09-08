@@ -1,4 +1,4 @@
-// NEGATIVE CONTROL for the cross-tenant leak test.
+// NEGATIVE CONTROLS for the gates that can silently stop working.
 //
 // PHASES.md M1 does not say "the leak test passes". It says "a deliberately
 // unprotected test table makes it FAIL" - and that is the harder half. A gate
@@ -15,6 +15,11 @@
 //
 // Everything runs inside transactions that are always rolled back, so the
 // canary never outlives the run even against the shared hosted database.
+//
+// The same treatment is applied to the admin plane's audit gate: an
+// app_admin function that mutates without auditing must make it go red,
+// because RULES 6.5 is otherwise just a convention that a hurried session can
+// forget.
 //
 //   node scripts/db/negative-control.mjs
 
@@ -40,6 +45,23 @@ const MUST_FAIL = [
 ];
 
 const LEAK_TEST = 'supabase/tests/rls/leak_test.sql';
+const ADMIN_TEST = 'supabase/tests/admin/admin_plane_test.sql';
+
+// A function in app_admin that mutates a table and never writes audit_log -
+// exactly the mistake RULES 6.5 exists to prevent.
+const AUDIT_CANARY = `
+  create function app_admin.canary_unaudited_change(p_salon_id uuid)
+  returns void
+  language sql
+  security definer
+  set search_path = ''
+  as $canary$
+    update public.salons set updated_at = now() where id = p_salon_id;
+  $canary$;
+`;
+
+const ADMIN_MUST_FAIL = [/writes audit_log in the same transaction/];
+
 
 class Rollback extends Error {
   constructor(lines) {
@@ -48,14 +70,14 @@ class Rollback extends Error {
   }
 }
 
-const body = await readFile(path.join(ROOT, LEAK_TEST), 'utf8');
 const sql = connect(postgres, await requireDatabaseUrl());
 
-async function runLeakTest(withCanary) {
+async function runTest(testPath, canarySql) {
+  const body = await readFile(path.join(ROOT, testPath), 'utf8');
   let lines = [];
   await sql
     .begin(async (tx) => {
-      if (withCanary) await tx.unsafe(CANARY);
+      if (canarySql) await tx.unsafe(canarySql);
       const rows = await tx.unsafe(body);
       const flat = Array.isArray(rows[0]) ? rows.flat() : rows;
       lines = flat.map((r) => Object.values(r)[0]).filter((v) => typeof v === 'string');
@@ -70,42 +92,58 @@ async function runLeakTest(withCanary) {
 const failures = (lines) => lines.filter((l) => /^not ok/.test(l));
 const passes = (lines) => lines.filter((l) => /^ok /.test(l));
 
-try {
-  // 1. Baseline. If the schema is already failing the leak test, this tool
-  //    would report a "detection" that is really just the pre-existing
-  //    failure, so refuse to draw any conclusion from it.
-  const clean = await runLeakTest(false);
-  console.log(`baseline (no canary):  ${passes(clean).length} ok, ${failures(clean).length} not ok`);
+async function check(label, testPath, canarySql, mustFail) {
+  const clean = await runTest(testPath, null);
+  console.log(`\n${label}`);
+  console.log(`  baseline:      ${passes(clean).length} ok, ${failures(clean).length} not ok`);
+
+  // If the gate is already failing, any "detection" below is really just the
+  // pre-existing failure, so refuse to draw a conclusion from it.
   if (failures(clean).length > 0) {
-    for (const l of failures(clean)) console.log(`  ${l}`);
-    console.error(
-      '\nThe leak test is already failing without the canary. Fix that first -' +
-        '\nuntil it passes clean, this control proves nothing.',
-    );
-    process.exit(1);
+    for (const l of failures(clean)) console.log(`    ${l}`);
+    console.error(`  ${label} is already failing without a canary. Fix that first.`);
+    return false;
   }
 
-  // 2. Now break the schema on purpose.
-  const dirty = await runLeakTest(true);
-  console.log(
-    `with an unprotected table: ${passes(dirty).length} ok, ${failures(dirty).length} not ok`,
-  );
-  for (const l of failures(dirty)) console.log(`  ${l}`);
+  const dirty = await runTest(testPath, canarySql);
+  console.log(`  with canary:   ${passes(dirty).length} ok, ${failures(dirty).length} not ok`);
+  for (const l of failures(dirty)) console.log(`    ${l}`);
 
-  const undetected = MUST_FAIL.filter((rx) => !failures(dirty).some((l) => rx.test(l)));
-
+  const undetected = mustFail.filter((rx) => !failures(dirty).some((l) => rx.test(l)));
   if (undetected.length > 0) {
-    console.error('\nNEGATIVE CONTROL FAILED - the leak test did NOT catch an unprotected table.');
-    for (const rx of undetected) console.error(`  no failure matched ${rx}`);
-    console.error(
-      '\nA table with salon_id, no RLS and no policies was visible to the gate' +
-        '\nand the gate stayed green. Every isolation guarantee in this repo rests' +
-        '\non that test, so treat this as a production defect, not a test defect.',
-    );
-    process.exit(1);
+    console.error(`  ${label} did NOT catch the canary:`);
+    for (const rx of undetected) console.error(`    no failure matched ${rx}`);
+    return false;
   }
+  return true;
+}
 
-  console.log('\nNEGATIVE CONTROL PASSED - an unprotected table makes the leak test fail.');
+try {
+  const results = [
+    await check(
+      'leak test / an unprotected tenant table',
+      LEAK_TEST,
+      CANARY,
+      MUST_FAIL,
+    ),
+    await check(
+      'admin plane / an app_admin function that mutates without auditing',
+      ADMIN_TEST,
+      AUDIT_CANARY,
+      ADMIN_MUST_FAIL,
+    ),
+  ];
+
+  if (results.every(Boolean)) {
+    console.log('\nNEGATIVE CONTROLS PASSED - both gates go red when they should.');
+  } else {
+    console.error(
+      '\nNEGATIVE CONTROL FAILED. A gate stayed green while the thing it exists' +
+        '\nto catch was present. Treat this as a production defect, not a test' +
+        '\ndefect: every guarantee resting on that gate is currently unverified.',
+    );
+    process.exitCode = 1;
+  }
 } finally {
   await sql.end({ timeout: 5 });
 }
