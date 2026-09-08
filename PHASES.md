@@ -103,9 +103,9 @@ not deferred to M13; and the money-disclosure UI (DESIGN §6.2) ships **with** M
 | | |
 |---|---|
 | **Read** | `RULES.md` · PRD §0, Appendix A · ARCHITECTURE §17, §18 |
-| **Build** | Monorepo per ARCHITECTURE §17 · `CLAUDE.md`, and all four docs at the root · Flutter app boots · Supabase local (`supabase start`) · FCM wired · i18n scaffold with `en` / `hi` / `hi_Latn` · **`packages/design-tokens`** (schema only) · Sentry in app and functions · CI skeleton |
+| **Build** | Monorepo per ARCHITECTURE §17 · `CLAUDE.md`, and all four docs at the root · Flutter app boots · **hosted** Supabase dev project reachable via `scripts/db/run.mjs` (option A — no local stack, no Docker) · FCM wired · i18n scaffold with `en` / `hi` / `hi_Latn` · **`packages/design-tokens`** (schema only) · Sentry in app and functions · CI skeleton |
 | **Not yet** | Any screen with real content. Any table |
-| **Done when** | App boots to a placeholder in all three locales · `supabase db reset` succeeds · CI runs and is green · secret scan wired |
+| **Done when** | App boots to a placeholder in all three locales · `node scripts/db/run.mjs migrate` applies cleanly to the hosted project · CI runs and is green · secret scan wired |
 
 ### M1 — Schema, RLS, and the leak test
 
@@ -113,8 +113,8 @@ not deferred to M13; and the money-disclosure UI (DESIGN §6.2) ships **with** M
 |---|---|
 | **Read** | `RULES.md` §3 · PRD §7, §8 · ARCHITECTURE §5.3, §5.8, §6.1, §6.2 |
 | **Build** | Every Tier 1 table with `salon_id` · `enable` **and** `force` RLS everywhere · `app.current_salon_id()`, `app.salon_writable()` · the `app` schema helpers · `customer_identities` + `binding_events` with **zero policies** · ledger tables with revoked grants **and** the blocking trigger · the booking exclusion constraint · the reminder `cycle_key` unique index · **the catalogue-driven leak test** |
-| **Not yet** | Tier 2/3 tables. They are designed (PRD §8.3) but not created |
-| **Done when** | Leak test passes structurally *and* behaviourally · a deliberately unprotected test table makes it **fail** · migrations apply from zero · CI gate wired |
+| **Not yet** | Tier 2/3 **feature** tables — `packages`, `customer_packages`, `package_redemptions`, `waitlist`, `feedback`, `invoices`, `photos`, `gift_cards`, `campaigns`, `branches`. Designed (PRD §8.3), not created. The Tier 1 **infrastructure** listed alongside them in §8.3 — `audit_log`, `loyalty_ledger`, `notification_tokens` and the machinery tables — **is** created here, for the reasons in §8.3 |
+| **Done when** | Leak test passes structurally *and* behaviourally · a deliberately unprotected test table makes it **fail** — automated as `scripts/db/negative-control.mjs` and run in CI, not verified once by hand · migrations apply from zero onto an empty database in CI · CI gate wired |
 
 > **What usually goes wrong here:** someone omits `force row level security` because `enable`
 > "worked". It works until a migration or a service-role connection reads the table, and then it

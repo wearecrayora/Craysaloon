@@ -62,7 +62,29 @@ missing; they are absent on purpose. If a ticket asks for one, escalate rather t
 ## 3. Tenancy and isolation
 
 3.1 `salon_id uuid not null` on every tenant table, and the **first column of every composite
-index**.
+index that serves a tenant query**.
+
+The reason is not tidiness. Forced RLS adds an implicit `salon_id = app.current_salon_id()` to
+every tenant query, so an index that does not lead with `salon_id` cannot serve it, and the
+fallback scan gets slower with every salon onboarded.
+
+Three kinds of index are exempt, because leading with `salon_id` would make them **wrong**, not
+merely redundant:
+
+- **Global uniqueness constraints.** Webhook idempotency (`webhook_events (provider, event_id)`)
+  must hold across every salon. Adding `salon_id` would let the same provider event be replayed
+  under a second tenant — a security defect, not an optimisation.
+- **Partial indexes over the global rows**, defined `where salon_id is null` (the default message
+  templates). There is nothing to lead with.
+- **Natural-key primary keys of join tables**, where `salon_id` is implied by the other columns
+  and a separate `(salon_id, …)` index serves the lookups — as `service_addons` does.
+
+Enforced by `supabase/tests/rls/index_scope_test.sql`, which is catalogue-driven and carries the
+exemptions by name. A new violation fails CI and has to be argued for in that file.
+
+> This rule originally said "every composite index", full stop. An audit found four indexes
+> breaking it and concluded all four were correct — the rule was wrong. Following it literally
+> would have opened the webhook replay hole described above.
 
 3.2 `enable row level security` **and** `force row level security` on every tenant table. Without
 `force`, the table owner bypasses RLS and a migration silently sees everything.
@@ -431,7 +453,14 @@ A change is not done until all of these hold.
       the error names no salon
 - [ ] **Money test** — no owner/manager-reachable function writes to a ledger; `UPDATE`/`DELETE`
       raise for every role; the ledger-caller set equals the five in §5.2; no paid lot can expire
-- [ ] Migrations apply from zero (`supabase db reset`)
+- [ ] **Index scope test** — every composite index on a tenant table leads with `salon_id`, or is
+      named and justified as an exemption (§3.1)
+- [ ] **The leak test's negative control** — an unprotected table makes the leak test go red
+      (`node scripts/db/negative-control.mjs`). A gate only ever seen passing is not a gate
+- [ ] Migrations apply from zero onto an empty database in CI (`node scripts/db/run.mjs migrate`
+      against a fresh container — never `db reset`, which would wipe the shared dev project)
+- [ ] CI steps run under `pipefail` (GATE-6). Without it, `cmd | tee log` takes `tee`'s exit code
+      and every piped gate reports success regardless of result
 - [ ] Secret scan clean, including the APK and the Vercel client bundle
 - [ ] Lints: domain purity, no `.from(` outside `data/remote/`, no raw `Color(0x…)`
 

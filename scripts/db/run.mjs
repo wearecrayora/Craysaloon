@@ -10,39 +10,17 @@
 //   node run.mjs sql "..."    one-off statement
 //
 // Reads DATABASE_URL from the repo .env. Never prints it.
+//
+// THE ledger is public.schema_migrations, written here. `supabase db push`
+// keeps its own in supabase_migrations.schema_migrations; running both would
+// mean two disagreeing records of what has been applied, so db-push.sh
+// delegates to this file rather than to the CLI.
 
 import postgres from 'postgres';
 import { readFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-
-const ROOT = path.resolve(import.meta.dirname, '../..');
-
-async function loadEnv() {
-  // CI points DATABASE_URL at a local Supabase stack and has no .env, so the
-  // environment always wins and a missing file is not an error there.
-  const file = path.join(ROOT, '.env');
-  if (!existsSync(file)) return { ...process.env };
-  const env = {};
-  for (const line of (await readFile(file, 'utf8')).split('\n')) {
-    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)$/);
-    if (m) env[m[1]] = m[2].trim().replace(/^["']|["']$/g, '');
-  }
-  // Environment beats .env: CI overrides without editing anything.
-  return { ...env, ...process.env };
-}
-
-function connect(url) {
-  return postgres(url, {
-    max: 1,
-    // Migrations contain multi-statement DDL; prepared statements would break
-    // it, and the pooler does not support them anyway.
-    prepare: false,
-    idle_timeout: 20,
-    connect_timeout: 30,
-    onnotice: () => {},
-  });
-}
+import { ROOT, requireDatabaseUrl, connect } from './env.mjs';
 
 // --- migrate ---------------------------------------------------------------
 
@@ -157,20 +135,8 @@ class RollbackAfterTest extends Error {
 // --- main ------------------------------------------------------------------
 
 const [command, arg] = process.argv.slice(2);
-const env = await loadEnv();
-const url = env.DATABASE_URL;
+const sql = connect(postgres, await requireDatabaseUrl());
 
-if (!url) {
-  console.error(
-    'DATABASE_URL is not set in .env.\n' +
-      'Supabase dashboard > Project Settings > Database > Connection string > URI.\n' +
-      'Use the DIRECT connection (port 5432) - the transaction pooler does not\n' +
-      'support all the DDL these migrations need.',
-  );
-  process.exit(1);
-}
-
-const sql = connect(url);
 try {
   if (command === 'migrate') await migrate(sql);
   else if (command === 'test') await runTests(sql);
@@ -181,10 +147,8 @@ try {
     const body = await readFile(path.join(ROOT, arg), 'utf8');
     await sql.unsafe(body);
     console.log(`applied ${arg}`);
-  }
-  else {
-    console.error(
-      'usage: node run.mjs migrate | test | sql "<statement>" | file <path.sql>');
+  } else {
+    console.error('usage: node run.mjs migrate | test | sql "<statement>" | file <path.sql>');
     process.exit(1);
   }
 } finally {

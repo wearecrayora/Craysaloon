@@ -1,4 +1,18 @@
-# Cray Salon — Complete PRD & Build Brief (v3)
+> ## ⚠ SUPERSEDED — do not build from this document
+>
+> The current PRD is **`Cray-Salon-PRD-v4.md`**. This v3 is kept only as history.
+>
+> It predates two decisions that changed the product's shape:
+>
+> - **The business model.** v3 assumes owners self-onboard. They do not: Crayora sells and
+>   provisions each salon from the super-admin console, and activation is a deliberate human
+>   action (ARCHITECTURE ADR-17, ADR-26).
+> - **The login order.** v3 authenticates first. The salon code now comes **before** login, so
+>   the OTP can be sent from the salon's own Message Central account (ADR-28, ADR-32).
+>
+> Anything in here that contradicts v4, `RULES.md` or `ARCHITECTURE.md` is wrong by definition.
+
+# Cray Salon — Complete PRD & Build Brief (v3, superseded)
 
 **A multi-tenant SaaS retention platform for local salons — full feature set, built to be implemented by Claude Code**
 

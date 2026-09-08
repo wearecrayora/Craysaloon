@@ -502,7 +502,7 @@ against the database on every write, so a stale token cannot outlive a revocatio
 
 | Table | Fields |
 |---|---|
-| `customers` | name, phone, auth_user_id, consent jsonb (per-purpose), birthday?, anniversary?, created_at, last_visit, loyalty_points, tier, language |
+| `customers` | name, phone (the salon's own copy, for contacting them), phone_hash (peppered HMAC, the key to the global binding), auth_user_id, birthday?, anniversary?, created_at, last_visit, loyalty_points, tier, language. **Consent is not a column here** — see `consents` below |
 | `services` | name, category, price, duration, repeat_cycle_days, active, image_url? |
 | `add_ons` | name, price, extra_duration, relevant_service_ids, active, staff_availability |
 | `staff` | name, working_hours jsonb, skills text[], commission_rule jsonb, active |
@@ -517,6 +517,18 @@ against the database on every write, so a stale token cannot outlive a revocatio
 | `reminders` | customer_id, service_id, type, scheduled_time, channel, delivery_status, booking_created, **cycle_key** |
 | **`notifications` / `notification_deliveries`** | **NEW —** intent vs. per-channel attempt, with **`acked_at`** (§12) |
 
+**Supporting tables, also Tier 1 — created in M1.** These were implied by the specs above rather
+than listed, and are recorded here so the PRD matches the schema:
+
+| Table | Why it exists |
+|---|---|
+| `consents` | **Append-only per-purpose consent events**; current state is the latest row per purpose. A `jsonb` column on `customers` cannot be append-only, and DPDP requires consent to be per-purpose and withdrawable with a provable history (RULES 11.6) |
+| `wallet_accounts` | Per-customer balance **cache** of the ledger, written only by `app.wallet_post` under a row lock. The ledger remains the source of truth; this exists so a balance read is not a full ledger sum |
+| `service_addons` | Join table replacing `add_ons.relevant_service_ids`. An array cannot carry a foreign key, so it cannot stop an add-on pointing at a deleted or cross-tenant service |
+| `staff_schedules` / `staff_time_off` | `staff.working_hours jsonb` cannot be checked by the database. The no-double-booking exclusion constraint needs real rows to exclude against |
+| `message_templates` | Per-salon message bodies with a Crayora default (`salon_id is null`). Push bodies live here; WhatsApp and RCS text lives at the provider, so only the provider template id is stored |
+| `customer_service_intervals` | Median days between visits per customer per service, with a sample size. This is what makes a reminder due-date personal rather than a fixed cycle |
+
 > **Why `booking_items` matters:** a booking must remember what it cost *at the time*. Without
 > snapshotting, editing a service price silently rewrites past revenue and breaks every
 > dashboard number.
@@ -529,6 +541,19 @@ non-cash)*, `campaigns`, `branches`, `audit_log`, `notification_tokens`.
 
 Machinery tables (see `ARCHITECTURE.md` §6.2, §9): `domain_events`, `jobs`, `idempotency_keys`,
 `webhook_events`, `rate_limit_counters`, `daily_salon_metrics`, `retention_cohorts`.
+
+> **Built in M1, despite being listed here.** Tier is a **feature** ordering, not a schema
+> ordering, and four of these are Tier 1 infrastructure that later features sit on top of:
+> `audit_log` (ADR-18 requires the audit row to be written in the same transaction as every admin
+> mutation, from the console's first day), `loyalty_ledger` (append-only from the start —
+> retrofitting immutability onto a table that already has history is not possible),
+> `notification_tokens` (push is Tier 1 infra per §10.1), and every machinery table.
+>
+> Creating them in M1 costs nothing — an empty table with forced RLS and no policies is
+> unreachable — and it means the leak test, the money test and the grant model cover them from
+> the day they exist rather than the day they are first used. The remaining §8.3 tables
+> (`packages`, `customer_packages`, `package_redemptions`, `waitlist`, `feedback`, `invoices`,
+> `photos`, `gift_cards`, `campaigns`, `branches`) are **not** created.
 
 ### 8.4 Status enums (never delete — use statuses)
 

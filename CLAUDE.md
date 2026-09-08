@@ -110,7 +110,9 @@ Each feature passes its PRD acceptance criteria, the milestone gates in `PHASES.
 per-screen checklist in `IMPLEMENTATION.md` §7.
 
 **Hard CI gates:** the catalogue-driven cross-tenant leak test, the binding-exclusivity test, and
-the money test. Never skipped, never deleted, never narrowed to pass.
+the money test — plus the leak test's **negative control**, which creates an unprotected table on
+purpose and requires the leak test to go red. Never skipped, never deleted, never narrowed to
+pass. A gate that has only ever been seen passing is not known to be a gate.
 
 ## Build order
 

@@ -164,6 +164,13 @@ jobs:
         run: |
           node scripts/db/run.mjs test 2>&1 | tee -a /tmp/ci.log
 
+      # PHASES.md M1: "a deliberately unprotected test table makes it FAIL".
+      # Running the gates is half the requirement; proving they can still go
+      # red is the half that catches a gate which has quietly stopped working.
+      - name: Prove the leak test can fail
+        run: |
+          node scripts/db/negative-control.mjs 2>&1 | tee -a /tmp/ci.log
+
       # Actions logs require repo admin, which the developer environment does
       # not have, so a failure here is invisible from outside. Publishing the
       # captured output as an issue makes it readable through the public API.

@@ -1548,36 +1548,61 @@ licensing question, not a design question. Second: never add a code path that de
 ## 17. Repository layout
 
 ```
-/                      CLAUDE.md, ARCHITECTURE.md, Cray-Salon-PRD-v4.md, README.md
-/app                   Flutter application (§9.1)
-/console               Next.js admin console (Vercel)
+/                      README.md, CLAUDE.md, RULES.md, PHASES.md, IMPLEMENTATION.md,
+                       DESIGN.md, ARCHITECTURE.md, Cray-Salon-PRD-v4.md
+/app                   Flutter application (§9.1) — android/ and ios/ both live, CI builds both
+/console               Next.js admin console (Vercel)                            [from M2]
 /packages
   /design-tokens       shared branding token schema — consumed by app AND console (§7.2)
+/scripts               lint-gates.sh, secret-scan.sh, l10n-check.sh, build-apk.sh, db-push.sh
+  /db                  run.mjs (migrate | test | sql | file), negative-control.mjs, env.mjs
 /supabase
   /migrations          forward-only SQL, one concern per file
-  /functions           Edge Functions (Deno); shared/ for common code
-  /tests               pgTAP: rls/ (incl. the leak + binding tests), ledgers/, bookings/, automations/
-  /seed                demo + fixture data
+  /ci                  bootstrap.sql — the roles and auth schema the CI image does not ship
+  /functions           Edge Functions (Deno); shared/ for common code            [from M3]
+  /tests               pgTAP: rls/ (leak + binding), money/, and later bookings/, automations/
+  /seed                demo + fixture data                                       [from M2]
 /docs
-  /adr                 architecture decision records (§20)
-  /runbooks            operational procedures
+  /adr                 architecture decision records (§20)                       [not yet split out]
+  /runbooks            operational procedures                                    [from M6]
 ```
+
+Entries marked `[from Mn]` do not exist yet and are listed so the shape is agreed in advance.
+Everything unmarked exists today. `Cray-Salon-PRD-v3.md` is also present at the root and is
+**superseded** — it predates the sales-led business model and the code-before-login reorder.
 
 ---
 
 ## 18. Environments, CI/CD, testing
 
-**Environments:** `local` (`supabase start`, providers stubbed) → `staging` (own Supabase project
-+ Vercel preview, provider sandboxes, simulated payments) → `production`.
+**Environments:** `development` (the **hosted** Supabase dev project, providers stubbed) →
+`staging` (own Supabase project + Vercel preview, provider sandboxes, simulated payments) →
+`production`.
+
+**There is no local stack.** `supabase start` is not used, and `supabase db reset` is never run
+against anything: development shares one hosted project, so a reset would wipe other people's
+data. Migrations and pgTAP are driven by `scripts/db/run.mjs`, which speaks to Postgres directly
+— pgTAP tests are just SQL returning TAP rows, and nothing about that needs Docker. Every test
+file runs inside a transaction that is rolled back, so seeded fixtures never persist.
+
+**One migration ledger: `public.schema_migrations`**, written by `run.mjs`. `supabase db push`
+keeps a separate ledger in `supabase_migrations.schema_migrations`; using both would leave two
+disagreeing records of what has been applied, so `scripts/db-push.sh` delegates to `run.mjs`
+rather than to the CLI (ADR-34).
 
 **Pipeline (every PR):**
 
 1. `dart analyze` + custom lints (domain purity; no `.from(` outside `data/remote/`; no raw
    `Color(0x…)` outside the token layer)
 2. Flutter unit + widget tests
-3. `supabase db reset` against the migration set — proving migrations apply from zero
-4. **pgTAP suite, including the cross-tenant leak test and the binding-exclusivity test — a hard
-   gate**
+3. Every migration applied **from zero** onto an empty `supabase/postgres` service container,
+   bootstrapped by `supabase/ci/bootstrap.sql` — proving the schema does not depend on state
+   that only exists on the dev project
+4. **pgTAP suite, including the cross-tenant leak test, the binding-exclusivity test and the
+   money test — a hard gate**
+4a. **The leak test's negative control** (`scripts/db/negative-control.mjs`): an unprotected
+   table is created on purpose and the leak test must go red. A gate only ever observed passing
+   is not known to be a gate
 5. Edge Function tests (Deno)
 6. Console tests + type-check; secret scan on the client bundle
 7. Secret scan on the repo
@@ -1665,6 +1690,7 @@ invariants.
 | ADR-12 | Grace/suspension enforced in RLS | UI-only gating | Business rules that exist only in the UI are not business rules |
 | ADR-13 | Supabase Auth retained; Message Central via the Send-SMS hook | Fully custom OTP + custom JWT minting | Keeps sessions, refresh rotation and hook-based claims; far less security surface to own |
 | ADR-14 | Offline covers capture, never money or binding | Offline wallet writes; offline binding | A reconstructed ledger is unauditable; a global uniqueness decision cannot be made on a device |
+| **ADR-34** | **No local Supabase stack: hosted for development, a bare `supabase/postgres` container in CI, migrations and pgTAP driven by `scripts/db/run.mjs`** | `supabase start` locally and in CI; `supabase db reset` to prove migrations | The full stack is a large opaque dependency whose only failure signal was "Start a clean local stack: failed" with unreadable logs. The gates need Postgres, pgTAP and the Supabase roles — not Studio, Kong, GoTrue, Realtime or Storage. CI asserts the roles' `rolbypassrls` flags match production rather than setting them, because setting them would make CI's isolation guarantees true by construction |
 
 ---
 
