@@ -1,0 +1,150 @@
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import { requireAdmin } from '@/server/auth';
+import { activateSalon, provisionSalon, recordSetupFee, setSalonStatus } from '@/server/admin-db';
+
+/**
+ * Server actions. Every one of them calls requireAdmin() FIRST and passes the
+ * resulting id into the app_admin function, which writes audit_log in the same
+ * transaction as the mutation (RULES 6.5). There is no code path here that
+ * mutates anything without an attributable actor.
+ */
+
+export type ActionState = { error?: string; ok?: string; joinCode?: string };
+
+// An Indian mobile number, in any of the forms a person actually types. The
+// database canonicalises and rejects too - this is only so the operator sees a
+// useful message instead of a Postgres exception.
+const phone = z
+  .string()
+  .trim()
+  .regex(/^(?:\+?0*91[\s-]?)?[6-9]\d{9}$/u, 'Not a valid Indian mobile number');
+
+const ProvisionSchema = z.object({
+  legalName: z.string().trim().min(2, 'Legal name is required'),
+  displayName: z
+    .string()
+    .trim()
+    .min(2, 'Display name is required - it appears in every message the customer sees'),
+  ownerName: z.string().trim().min(2, "The owner's name is required"),
+  ownerPhone: phone,
+  plan: z.string().trim().min(1, 'Plan is required'),
+  setupFeeRupees: z.coerce.number().int().min(0, 'The setup fee cannot be negative'),
+  phone: z.string().trim().optional().or(z.literal('')),
+  email: z.string().trim().email('Not a valid email').optional().or(z.literal('')),
+  address: z.string().trim().optional().or(z.literal('')),
+  gstNumber: z.string().trim().optional().or(z.literal('')),
+  timezone: z.string().trim().default('Asia/Kolkata'),
+});
+
+function fieldsOf(form: FormData) {
+  return Object.fromEntries(form.entries());
+}
+
+function message(e: unknown): string {
+  const raw = e instanceof Error ? e.message : String(e);
+  // app_admin functions raise with an `app_admin: ` prefix and a sentence
+  // written for a human. Show that sentence; hide anything else, which would
+  // be a Postgres internal the operator can do nothing with.
+  const m = /app_admin: (.+)/s.exec(raw);
+  if (m?.[1]) return m[1].trim();
+  if (/phone_hash: /.test(raw)) return 'That phone number is not a valid Indian mobile number.';
+  return 'Something went wrong. The action was not applied.';
+}
+
+export async function provisionAction(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const admin = await requireAdmin();
+
+  const parsed = ProvisionSchema.safeParse(fieldsOf(form));
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? 'Check the form' };
+  }
+  const v = parsed.data;
+
+  try {
+    const result = await provisionSalon(admin.id, {
+      legalName: v.legalName,
+      displayName: v.displayName,
+      ownerName: v.ownerName,
+      ownerPhone: v.ownerPhone,
+      plan: v.plan,
+      // Money is integer paise everywhere (ADR-06). The form collects rupees
+      // because that is what the operator was told on the phone.
+      setupFeePaise: v.setupFeeRupees * 100,
+      phone: v.phone || null,
+      email: v.email || null,
+      address: v.address || null,
+      gstNumber: v.gstNumber || null,
+      timezone: v.timezone,
+    });
+
+    revalidatePath('/');
+    return {
+      ok: `${v.displayName} provisioned in setup.`,
+      joinCode: result.join_code,
+    };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function activateAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const reason = String(form.get('reason') ?? '').trim() || null;
+
+  try {
+    await activateSalon(admin.id, salonId, reason);
+    revalidatePath('/');
+    return { ok: 'Salon activated.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function suspendAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const status = String(form.get('status') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+
+  if (status !== 'grace' && status !== 'suspended') {
+    return { error: 'Status must be grace or suspended.' };
+  }
+  if (!reason) {
+    return { error: 'A reason is required - this stops a real business taking bookings.' };
+  }
+
+  try {
+    await setSalonStatus(admin.id, salonId, status, reason);
+    revalidatePath('/');
+    return { ok: `Salon moved to ${status}.` };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function setupFeeAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const status = String(form.get('status') ?? '');
+  const reference = String(form.get('reference') ?? '').trim() || null;
+  const paidOn = String(form.get('paidOn') ?? '').trim() || null;
+
+  if (status !== 'unpaid' && status !== 'paid' && status !== 'waived') {
+    return { error: 'Status must be unpaid, paid or waived.' };
+  }
+
+  try {
+    await recordSetupFee(admin.id, salonId, status, reference, paidOn);
+    revalidatePath('/');
+    return { ok: 'Setup fee recorded.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}

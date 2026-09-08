@@ -22,7 +22,11 @@ supabase/.temp/
 # Env and secrets - NEVER commit
 .env
 .env.*
+# Shape documentation, never values. These are committed on purpose so a new
+# environment can be set up without guessing which variables exist.
 !.env.example
+!*.env.example
+!console/.env.local.example
 *.pem
 *.p8
 *.jks

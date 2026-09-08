@@ -1389,7 +1389,7 @@ sold  ──(fee paid offline: cash / bank transfer)──> recorded in console
 
 ## 14. The Crayora console (Next.js on Vercel) — D5, D9
 
-**No salon can exist without it, so it is built at Milestone 3, before any customer-facing
+**No salon can exist without it, so it is built at M2, before any customer-facing
 surface.**
 
 ### 14.1 Shape
