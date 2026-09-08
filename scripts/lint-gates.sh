@@ -4,6 +4,8 @@
 #   2. Design tokens   - no raw Color(0x..) outside the token layer  (RULES 12A.8)
 #   3. Domain purity   - domain/ must not import supabase            (ARCH 9.1)
 #   4. Spacing scale   - flag off-scale EdgeInsets                   (DESIGN 4.1)
+#   5. .env untracked  - a secret must never enter the index         (RULES 8.1)
+#   6. CI pipefail     - a piped CI step must be able to fail        (RULES 12)
 set -uo pipefail
 cd "$(dirname "$0")/.."
 fail=0
@@ -45,6 +47,25 @@ printf '\n[GATE-5] .env must never be tracked\n'
 if git ls-files --error-unmatch .env >/dev/null 2>&1; then
   note ".env IS TRACKED - remove it from the index immediately"; fail=1
 else note "ok"; fi
+
+printf '\n[GATE-6] CI must run steps under pipefail\n'
+# Three times in M1 a check reported success while doing nothing: a leak test
+# that never switched role, a grant assertion that named four of twenty tables,
+# and `gates | tee log` taking tee's exit code. Only the last is mechanical
+# enough to gate, so gate it. Without pipefail in the workflow's shell default,
+# every piped step in CI is a gate that cannot fail.
+WF=.github/workflows/ci.yml
+if [ -f "$WF" ]; then
+  if grep -qE '^\s*shell:\s+bash\s+-e[a-z]*o\s+pipefail' "$WF"; then
+    note "ok"
+  else
+    note "$WF has no 'shell: bash -eo pipefail {0}' default - every piped"
+    note "step in CI would report success regardless of result"
+    fail=1
+  fi
+else
+  note "no workflow yet"
+fi
 
 printf '\n%s\n' "$([ $fail -eq 0 ] && echo 'ALL GATES PASS' || echo 'GATES FAILED')"
 exit $fail

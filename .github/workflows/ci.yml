@@ -13,6 +13,16 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# GitHub's default shell is `bash -e`, which does NOT set pipefail: in
+# `cmd | tee log` the step takes tee's exit code and reports success no matter
+# what cmd did. That silently disarmed the release gates once already. Setting
+# it here means it cannot be forgotten per step; GATE-6 fails the build if this
+# disappears. Deliberately not -u: unset-variable strictness is a separate
+# decision and would break steps for unrelated reasons.
+defaults:
+  run:
+    shell: bash -eo pipefail {0}
+
 jobs:
   gates:
     name: Structural gates and secret scan
@@ -133,7 +143,6 @@ jobs:
 
       - name: Probe the container before touching it
         run: |
-          set -o pipefail
           node scripts/db/run.mjs sql "select version()" 2>&1 | tee -a /tmp/ci.log
           node scripts/db/run.mjs sql "select current_user, session_user, usesuper from pg_user where usename = current_user" 2>&1 | tee -a /tmp/ci.log
           node scripts/db/run.mjs sql "select nspname from pg_namespace where nspname in ('auth','extensions','vault','public') order by 1" 2>&1 | tee -a /tmp/ci.log
@@ -142,24 +151,17 @@ jobs:
           node scripts/db/run.mjs sql "select to_regclass('auth.users') is not null as auth_users_present, has_schema_privilege(current_user, 'auth', 'CREATE') as can_create_in_auth" 2>&1 | tee -a /tmp/ci.log
 
       - name: Bootstrap the Supabase roles and auth schema
-        # set -o pipefail, or `| tee` swallows the exit code and a failed
-        # bootstrap reports success.
         run: |
-          set -o pipefail
           node scripts/db/run.mjs file supabase/ci/bootstrap.sql 2>&1 | tee -a /tmp/ci.log
 
       - name: Apply every migration FROM ZERO
         # Piped like the rest so a migration failure reaches the diagnostics
         # issue instead of only the Actions log we cannot read.
         run: |
-          set -o pipefail
           node scripts/db/run.mjs migrate 2>&1 | tee -a /tmp/ci.log
 
       - name: Run the release gates
-        # Without pipefail this reports success even when a gate fails, which
-        # would be worse than having no gate at all.
         run: |
-          set -o pipefail
           node scripts/db/run.mjs test 2>&1 | tee -a /tmp/ci.log
 
       # Actions logs require repo admin, which the developer environment does
