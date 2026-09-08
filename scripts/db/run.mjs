@@ -175,8 +175,16 @@ try {
   if (command === 'migrate') await migrate(sql);
   else if (command === 'test') await runTests(sql);
   else if (command === 'sql') console.table(await sql.unsafe(arg));
+  else if (command === 'file') {
+    // Run a whole .sql file outside the migration ledger - used by CI to
+    // bootstrap the roles and auth schema the image does not ship.
+    const body = await readFile(path.join(ROOT, arg), 'utf8');
+    await sql.unsafe(body);
+    console.log(`applied ${arg}`);
+  }
   else {
-    console.error('usage: node run.mjs migrate | test | sql "<statement>"');
+    console.error(
+      'usage: node run.mjs migrate | test | sql "<statement>" | file <path.sql>');
     process.exit(1);
   }
 } finally {

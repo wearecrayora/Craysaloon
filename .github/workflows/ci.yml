@@ -85,16 +85,37 @@ jobs:
   # RELEASE GATES: cross-tenant isolation, binding exclusivity, money.
   # Never skipped, never deleted, never narrowed to pass (RULES.md 12).
   #
-  # This job is also the only place "migrations apply from zero" is verified.
-  # Development runs against a SHARED hosted project (PHASES.md option A),
-  # where that can never be proven without dropping everyone's data. CI gets a
-  # throwaway stack, so it starts empty every time.
+  # This job is also the only place "migrations apply from zero" is verified:
+  # development runs against a SHARED hosted project (PHASES.md option A),
+  # where proving it would mean dropping everyone's data.
   #
-  # `supabase start` needs Docker, which GitHub runners have and the developer
-  # machine deliberately does not.
+  # Runs against the supabase/postgres image rather than a full `supabase
+  # start` stack. The gates need Postgres, pgTAP and the Supabase roles - not
+  # Studio, Kong, GoTrue, Realtime or Storage. The full stack failed here four
+  # times with no signal beyond "failed", and logs we could not read; this is
+  # smaller, faster, and every part of it is something we can reason about.
+  # The image tag matches the hosted project's Postgres version.
   database:
     name: Database gates (leak, binding, money)
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: supabase/postgres:17.6.1.169
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
+
     steps:
       - uses: actions/checkout@v4
 
@@ -102,27 +123,15 @@ jobs:
         with:
           node-version: '22'
 
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      - name: Start a clean local stack
-        run: supabase start
-
       - name: Install the runner's dependencies
         working-directory: scripts/db
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
 
-      # `supabase start` applies supabase/migrations itself, against a database
-      # that begins empty - so starting successfully IS the "applies from zero"
-      # gate. Running our own migrate step here would try to re-apply them and
-      # fail on `create type ... already exists`.
+      - name: Bootstrap the Supabase roles and auth schema
+        run: node scripts/db/run.mjs file supabase/ci/bootstrap.sql
+
+      - name: Apply every migration FROM ZERO
+        run: node scripts/db/run.mjs migrate
 
       - name: Run the release gates
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
         run: node scripts/db/run.mjs test
-
-      - name: Stop the stack
-        if: always()
-        run: supabase stop --no-backup
