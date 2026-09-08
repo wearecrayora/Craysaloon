@@ -137,6 +137,13 @@ jobs:
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
         run: npm run build
 
+      # RULES 12 wants the scan run against the CLIENT BUNDLE, not only the
+      # repo. A credential does not have to be committed to reach a user - it
+      # only has to be read at build time and inlined, which is precisely what
+      # a mistyped NEXT_PUBLIC_ variable would do.
+      - name: Secret scan the built bundle
+        run: ./scripts/secret-scan.sh
+
   database:
     name: Database gates (leak, binding, money)
     runs-on: ubuntu-latest
@@ -166,7 +173,7 @@ jobs:
           node-version: '22'
 
       - name: Install the runner's dependencies
-        working-directory: scripts/db
+        working-directory: scripts
         run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
 
       - name: Probe the container before touching it

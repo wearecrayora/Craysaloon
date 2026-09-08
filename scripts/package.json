@@ -1,0 +1,9 @@
+{
+  "name": "@cray/scripts",
+  "private": true,
+  "type": "module",
+  "description": "Node tooling for migrations, release gates and console bootstrap. One package root so scripts/db and scripts/console share it.",
+  "dependencies": {
+    "postgres": "^3.4.7"
+  }
+}

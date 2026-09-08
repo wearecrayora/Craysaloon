@@ -1,7 +1,0 @@
-{
-  "name": "@cray/db",
-  "private": true,
-  "type": "module",
-  "description": "Runs migrations and pgTAP against the hosted project. No Docker, no psql.",
-  "dependencies": { "postgres": "^3.4.7" }
-}
