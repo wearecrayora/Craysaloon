@@ -19,14 +19,17 @@ import path from 'node:path';
 const ROOT = path.resolve(import.meta.dirname, '../..');
 
 async function loadEnv() {
+  // CI points DATABASE_URL at a local Supabase stack and has no .env, so the
+  // environment always wins and a missing file is not an error there.
   const file = path.join(ROOT, '.env');
-  if (!existsSync(file)) throw new Error('No .env at the repo root.');
+  if (!existsSync(file)) return { ...process.env };
   const env = {};
   for (const line of (await readFile(file, 'utf8')).split('\n')) {
     const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)$/);
     if (m) env[m[1]] = m[2].trim().replace(/^["']|["']$/g, '');
   }
-  return env;
+  // Environment beats .env: CI overrides without editing anything.
+  return { ...env, ...process.env };
 }
 
 function connect(url) {

@@ -82,30 +82,47 @@ jobs:
           flutter pub get
           flutter build ios --no-codesign --debug
 
-  # Wired at M1. The cross-tenant leak test, the binding-exclusivity test and
-  # the money test are RELEASE GATES - never skipped, never narrowed (RULES 12).
+  # RELEASE GATES: cross-tenant isolation, binding exclusivity, money.
+  # Never skipped, never deleted, never narrowed to pass (RULES.md 12).
+  #
+  # This job is also the only place "migrations apply from zero" is verified.
+  # Development runs against a SHARED hosted project (PHASES.md option A),
+  # where that can never be proven without dropping everyone's data. CI gets a
+  # throwaway stack, so it starts empty every time.
+  #
+  # `supabase start` needs Docker, which GitHub runners have and the developer
+  # machine deliberately does not.
   database:
-    name: Database (RLS, binding, money)
+    name: Database gates (leak, binding, money)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: check
-        run: |
-          if compgen -G "supabase/tests/**/*.sql" > /dev/null; then
-            echo "exists=true" >> "$GITHUB_OUTPUT";
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT";
-          fi
-        shell: bash
-      - name: Not yet - no pgTAP tests
-        if: steps.check.outputs.exists == 'false'
-        run: echo "No database tests yet. Wired at M1."
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - uses: supabase/setup-cli@v1
-        if: steps.check.outputs.exists == 'true'
         with:
           version: latest
-      - name: Start local stack and run pgTAP
-        if: steps.check.outputs.exists == 'true'
-        run: |
-          supabase start
-          supabase test db
+
+      - name: Start a clean local stack
+        run: supabase start
+
+      - name: Install the runner's dependencies
+        working-directory: scripts/db
+        run: npm install --no-audit --no-fund
+
+      - name: Apply every migration FROM ZERO
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+        run: node scripts/db/run.mjs migrate
+
+      - name: Run the release gates
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+        run: node scripts/db/run.mjs test
+
+      - name: Stop the stack
+        if: always()
+        run: supabase stop --no-backup
