@@ -9,6 +9,7 @@ import {
   provisionSalon,
   publishBranding,
   recordSetupFee,
+  setIntegrationSecret,
   setSalonStatus,
 } from '@/server/admin-db';
 
@@ -217,6 +218,51 @@ export async function publishBrandingAction(
       ok: `Published. Installed apps will re-theme on their next launch.`,
       version,
       warnings: gate.warnings,
+    };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+
+const PROVIDERS = ['razorpay', 'message_central', 'whatsapp', 'rcs'] as const;
+type Provider = (typeof PROVIDERS)[number];
+
+/**
+ * Store a per-salon credential. Write-only, all the way down: this action
+ * takes a secret and returns nothing about it but its last four characters,
+ * which the console already displays.
+ *
+ * The secret is never echoed back into the form, never logged, and never put
+ * in the returned state - a rejected action must not hand the value back to
+ * the browser for a "retry with the same value" convenience, because that is
+ * how a credential ends up in a React server-action payload and then in a
+ * browser devtools tab.
+ */
+export async function setSecretAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+
+  const salonId = String(form.get('salonId') ?? '');
+  const provider = String(form.get('provider') ?? '') as Provider;
+  const secret = String(form.get('secret') ?? '');
+  const publicKeyId = String(form.get('publicKeyId') ?? '').trim() || null;
+  const senderId = String(form.get('senderId') ?? '').trim() || null;
+
+  if (!PROVIDERS.includes(provider)) {
+    return { error: 'Unknown provider.' };
+  }
+  if (!secret.trim()) {
+    return { error: 'Paste the credential before saving.' };
+  }
+
+  try {
+    await setIntegrationSecret(admin.id, salonId, provider, secret, publicKeyId, senderId);
+    revalidatePath(`/salon/${salonId}/credentials`);
+    revalidatePath('/');
+    return {
+      ok:
+        `Saved for ${provider.replace('_', ' ')}. It cannot be read back - the console ` +
+        `only ever shows the last four characters.`,
     };
   } catch (e) {
     return { error: message(e) };

@@ -899,7 +899,7 @@ highest-value target in the system and is treated accordingly.
 |---|---|
 | **Write** | Console server route → `app_admin.set_integration_secret(...)`. Write-only; the API has no read counterpart |
 | **Display** | Provider, `last4`, status and `last_tested_at` only |
-| **Test** | Server-side call to the provider; returns pass/fail and a reason — never the credential |
+| **Test** | Server-side call to the provider; returns pass/fail and a reason — never the credential. **Arrives with Edge Functions (M3).** The console cannot do this itself without reading the secret, which is exactly what §8.1 forbids and GATE-7 fails the build over, so `app_admin.record_integration_test` exists and waits for a caller that can legitimately decrypt |
 | **Rotate** | Writes a new Vault secret and flips the reference. The previous secret is retained for a short grace window so in-flight webhooks still verify, then destroyed |
 | **Revoke** | Reference cleared, secret destroyed, salon marked as needing credentials; payment flows fail closed |
 

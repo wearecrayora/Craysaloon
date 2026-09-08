@@ -67,5 +67,32 @@ else
   note "no workflow yet"
 fi
 
+printf '\n[GATE-7] no client of the database may read a stored secret\n'
+# ARCHITECTURE 8.2: per-salon credentials are write-only. The pgTAP
+# admin-plane gate asserts no app_admin function touches a decrypted secret;
+# this is the other half - the console and the app must not reach into Vault
+# directly either. The realistic failure is not malice, it is a "Test
+# connection" or a support screen that needs the value and takes the shortest
+# path to it.
+#
+# Two deliberate distinctions, so the gate flags what actually leaks:
+#
+#   * comment lines are skipped. A gate that trips on the sentence explaining
+#     it is a gate that teaches people to delete the explanation.
+#   * `vault_secret_id is not null` is allowed. Asking WHETHER a credential
+#     exists is what the UI needs; obtaining one is what is forbidden. A bare
+#     read of the column still fails, because that is the first step of
+#     joining it to the plaintext view.
+SECRET_CODE=$(grep -rnI --include='*.ts' --include='*.tsx' --include='*.dart' -E 'decrypted_secret|vault_secret_id' console app/lib 2>/dev/null | grep -vE ':[0-9]+: *(//|\*|/\*|#|--)' || true)
+SECRET_READERS=$(printf '%s' "$SECRET_CODE" | grep -vE 'vault_secret_id +is +(not +)?null' || true)
+if [ -n "$SECRET_READERS" ]; then
+  note "$SECRET_READERS"
+  note "credentials are write-only - decryption belongs in an Edge Function at"
+  note "the moment of use, never in the console or the app"
+  fail=1
+else
+  note "ok"
+fi
+
 printf '\n%s\n' "$([ $fail -eq 0 ] && echo 'ALL GATES PASS' || echo 'GATES FAILED')"
 exit $fail

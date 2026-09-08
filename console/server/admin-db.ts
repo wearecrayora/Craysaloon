@@ -251,6 +251,36 @@ export async function listSalons(): Promise<SalonRow[]> {
      order by s.created_at desc`;
 }
 
+export type IntegrationRow = {
+  provider: 'razorpay' | 'message_central' | 'whatsapp' | 'rcs';
+  status: 'missing' | 'untested' | 'ok' | 'failing';
+  last4: string | null;
+  public_key_id: string | null;
+  sender_id: string | null;
+  whatsapp_template_status: string | null;
+  last_tested_at: string | null;
+  has_secret: boolean;
+};
+
+/**
+ * Everything the console is allowed to know about a salon's credentials.
+ *
+ * Note what is NOT selected: vault_secret_id. Not because reading a uuid would
+ * leak anything by itself, but because the moment it is in scope somebody will
+ * join it to vault.decrypted_secrets to build a "just show me the key" screen.
+ * `has_secret` answers the only question the UI actually has.
+ */
+export async function listIntegrations(salonId: string): Promise<IntegrationRow[]> {
+  const sql = client();
+  return sql<IntegrationRow[]>`
+    select provider::text, status::text, last4, public_key_id, sender_id,
+           whatsapp_template_status::text, last_tested_at,
+           (vault_secret_id is not null) as has_secret
+      from public.salon_integrations
+     where salon_id = ${salonId}::uuid
+     order by provider`;
+}
+
 /**
  * Identity check for the console's own auth. `platform_admins` has forced RLS
  * and no policies, so a tenant-role client genuinely cannot read it - which is

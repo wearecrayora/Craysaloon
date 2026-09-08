@@ -8,7 +8,7 @@
 -- no credential can be read back. Each is asserted here against the catalogue,
 -- so a function added tomorrow is covered tomorrow.
 
-select plan(19);
+select plan(22);
 
 select set_config('app.phone_hash_pepper', 'admin-test-pepper', true);
 
@@ -251,6 +251,40 @@ select throws_ok(
       '{"brand":{}}'::jsonb)$$,
   'P0001', null,
   'branding without a displayName is refused - every message renders it'
+);
+
+-- ---------------------------------------------------------------------------
+-- Credentials are write-only (ARCHITECTURE 8.2)
+-- ---------------------------------------------------------------------------
+
+select lives_ok(
+  $$select app_admin.set_integration_secret(
+      '11111111-aaaa-4000-8000-000000000001',
+      (select id from public.salons where display_name = 'Provision Test'),
+      'razorpay', 'not-a-real-key-SECRETVALUE-9876', 'rzp_key_id_public', null)$$,
+  'an operator can store a per-salon credential'
+);
+
+-- What the console is allowed to see afterwards: the last four characters and
+-- a status. Not the value, and not a way back to it.
+select results_eq(
+  $$select si.last4, si.status::text, si.vault_secret_id is not null
+      from public.salon_integrations si
+      join public.salons s on s.id = si.salon_id
+     where s.display_name = 'Provision Test' and si.provider = 'razorpay'$$,
+  $$values ('9876', 'untested', true)$$,
+  'storing a secret records only last4 and a status, and marks it untested'
+);
+
+-- THE assertion. An audit row that quoted the credential would defeat the
+-- whole write-only design, and audit_log is readable by more people than Vault
+-- is.
+select is(
+  (select count(*)::int from public.audit_log
+    where action = 'integration.secret_set'
+      and (before_state::text || after_state::text) like '%SECRETVALUE%'),
+  0,
+  'the audit trail records THAT a credential was set, never what it was'
 );
 
 select * from finish();

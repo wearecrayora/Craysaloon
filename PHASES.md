@@ -137,7 +137,7 @@ claim — *it looks like the salon's own app* — is either true or not.
 |---|---|
 | **Read** | `RULES.md` §6, §11 · PRD §6.2, §6.3, §11, §16A.1 · ARCHITECTURE §5.7, §8, §14 · `DESIGN.md` §3, §12 |
 | **Build** | Next.js on Vercel, MFA admin auth against `platform_admins` · **every mutation through an `app_admin.*` function that writes `audit_log` in the same transaction** · the provisioning flow as **one transaction** · branding studio with live preview from `packages/design-tokens` · **publish-time contrast gate** · Vault-backed write-only credentials with *Test connection* · salon code generation + printable QR pack to R2 · owner invite · **manual activation** as a separate deliberate action |
-| **Not yet** | Billing screens (M11) · support mode (M12) · platform metrics (M11) · transfer/unbind (M4) |
+| **Not yet** | Billing screens (M11) · support mode (M12) · platform metrics (M11) · transfer/unbind (M4) · **“Test connection” (M3)** — verifying a credential means *using* it, and decryption belongs inside an Edge Function at the moment of use (§8.1). Storing is write-only and done; a stored credential simply stays `untested` until then, and the console says so rather than implying otherwise |
 | **Done when** | Someone who has never seen the codebase provisions a salon end to end in <30 min · no step touches SQL · a saved secret cannot be read back through UI or API · a failing palette **blocks** publish · `setup → active` happens only by explicit human action · every action appears in `audit_log` |
 
 ### M3 — Salon-code-first auth ⭐
