@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/observability/sentry_setup.dart';
+import 'core/push/push_setup.dart';
 import 'l10n/app_localizations.dart';
 
 /// M0 scaffold.
@@ -14,6 +15,10 @@ Future<void> main() async {
   // Sentry wraps the app when a DSN is configured, and is a no-op when it is
   // not. Observability is never a boot dependency (core/observability).
   await runWithObservability(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    // Push is initialised but not yet used: the ladder is M8. Like Sentry, a
+    // missing configuration disables it rather than stopping the app.
+    await Push.init();
     runApp(const ProviderScope(child: CraySalonApp()));
   });
 }

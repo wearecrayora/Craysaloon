@@ -2,6 +2,23 @@ plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    // Declared here so it lands on this module's classpath; applied
+    // conditionally below. Declaring it in settings.gradle.kts alone is NOT
+    // enough for `apply(plugin = ...)` to resolve it.
+    id("com.google.gms.google-services") apply false
+}
+
+// google-services.json is gitignored: it carries an AIza... API key, and this
+// is a public repository. Applying the plugin unconditionally would therefore
+// break the build for every fresh clone and for CI.
+//
+// So it is applied only when the file is actually present. Without it the app
+// still builds and runs - push is simply inactive, which matches how Sentry
+// behaves without a DSN. Push is never a build or boot dependency.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+} else {
+    logger.lifecycle("google-services.json absent - building WITHOUT push (FCM disabled).")
 }
 
 android {
