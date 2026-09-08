@@ -38,3 +38,5 @@ Thumbs.db
 # Vendored agent skills - reinstall with the command in CLAUDE.md
 .agents/
 .claude/skills/
+
+scripts/db/node_modules/

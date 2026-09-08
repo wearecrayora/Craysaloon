@@ -13,7 +13,8 @@ fail=0
 #                                      them. Fixtures must be obviously fake.
 patterns=(
   'sb_secret_[A-Za-z0-9_-]{10,}'
-  'service_role'
+  # No bare 'service_role' pattern: that is a legitimate Postgres role name in
+  # GRANT statements. The real legacy key is a JWT, caught by eyJ below.
   'rzp_live_[A-Za-z0-9]{10,}'
   'rzp_test_[A-Za-z0-9]{10,}'
   'BEGIN [A-Z ]*PRIVATE KEY'
