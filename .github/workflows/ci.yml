@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: read
-  issues: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -143,49 +142,27 @@ jobs:
 
       - name: Probe the container before touching it
         run: |
-          node scripts/db/run.mjs sql "select version()" 2>&1 | tee -a /tmp/ci.log
-          node scripts/db/run.mjs sql "select current_user, session_user, usesuper from pg_user where usename = current_user" 2>&1 | tee -a /tmp/ci.log
-          node scripts/db/run.mjs sql "select nspname from pg_namespace where nspname in ('auth','extensions','vault','public') order by 1" 2>&1 | tee -a /tmp/ci.log
-          node scripts/db/run.mjs sql "select rolname, rolsuper, rolbypassrls from pg_roles where rolname in ('postgres','anon','authenticated','service_role') order by 1" 2>&1 | tee -a /tmp/ci.log
-          node scripts/db/run.mjs sql "select name, default_version, installed_version from pg_available_extensions where name = 'pgtap'" 2>&1 | tee -a /tmp/ci.log
-          node scripts/db/run.mjs sql "select to_regclass('auth.users') is not null as auth_users_present, has_schema_privilege(current_user, 'auth', 'CREATE') as can_create_in_auth" 2>&1 | tee -a /tmp/ci.log
+          node scripts/db/run.mjs sql "select version()"
+          node scripts/db/run.mjs sql "select current_user, session_user, usesuper from pg_user where usename = current_user"
+          node scripts/db/run.mjs sql "select nspname from pg_namespace where nspname in ('auth','extensions','vault','public') order by 1"
+          node scripts/db/run.mjs sql "select rolname, rolsuper, rolbypassrls from pg_roles where rolname in ('postgres','anon','authenticated','service_role') order by 1"
+          node scripts/db/run.mjs sql "select name, default_version, installed_version from pg_available_extensions where name = 'pgtap'"
+          node scripts/db/run.mjs sql "select to_regclass('auth.users') is not null as auth_users_present, has_schema_privilege(current_user, 'auth', 'CREATE') as can_create_in_auth"
 
       - name: Bootstrap the Supabase roles and auth schema
-        run: |
-          node scripts/db/run.mjs file supabase/ci/bootstrap.sql 2>&1 | tee -a /tmp/ci.log
+        run: node scripts/db/run.mjs file supabase/ci/bootstrap.sql
 
       - name: Apply every migration FROM ZERO
         # Piped like the rest so a migration failure reaches the diagnostics
         # issue instead of only the Actions log we cannot read.
-        run: |
-          node scripts/db/run.mjs migrate 2>&1 | tee -a /tmp/ci.log
+        run: node scripts/db/run.mjs migrate
 
       - name: Run the release gates
-        run: |
-          node scripts/db/run.mjs test 2>&1 | tee -a /tmp/ci.log
+        run: node scripts/db/run.mjs test
 
       # PHASES.md M1: "a deliberately unprotected test table makes it FAIL".
       # Running the gates is half the requirement; proving they can still go
       # red is the half that catches a gate which has quietly stopped working.
       - name: Prove the leak test can fail
-        run: |
-          node scripts/db/negative-control.mjs 2>&1 | tee -a /tmp/ci.log
+        run: node scripts/db/negative-control.mjs
 
-      # Actions logs require repo admin, which the developer environment does
-      # not have, so a failure here is invisible from outside. Publishing the
-      # captured output as an issue makes it readable through the public API.
-      # Temporary scaffolding: delete once `gh auth login` is set up locally.
-      - name: Publish diagnostics on failure
-        if: failure()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          {
-            echo "Commit: ${{ github.sha }}"
-            echo "Run: ${{ github.run_id }}"
-            echo
-            echo '```'
-            tail -c 40000 /tmp/ci.log 2>/dev/null || echo "(no output captured)"
-            echo '```'
-          } > /tmp/body.md
-          gh issue create --title "CI database gates failed (${{ github.sha }})"                           --body-file /tmp/body.md --label "" || true
