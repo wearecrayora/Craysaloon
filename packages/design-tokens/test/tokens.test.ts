@@ -56,7 +56,14 @@ describe("chart palette is capped and fixed", () => {
   });
   test("sequential ramp is monotonic in lightness", () => {
     const ls = CHART.sequential.map((h) => hexToOklch(h).L);
-    for (let i = 1; i < ls.length; i++) expect(ls[i]).toBeLessThan(ls[i - 1]);
+    // Pairwise, so the type checker sees two defined values rather than two
+    // possibly-undefined index reads.
+    for (let i = 1; i < ls.length; i++) {
+      const prev = ls[i - 1];
+      const cur = ls[i];
+      if (prev === undefined || cur === undefined) throw new Error("ramp has a hole");
+      expect(cur).toBeLessThan(prev);
+    }
   });
   test("diverging midpoint is neutral, not a hue", () => {
     expect(hexToOklch(CHART.diverging.midLight).C).toBeLessThan(0.02);
@@ -150,7 +157,10 @@ describe("publish gate", () => {
     (b.brand.light as any).primary = "teal";
     const r = validateBranding(b);
     expect(r.ok).toBe(false);
-    expect(r.failures[0].rule).toBe("hex");
+    // noUncheckedIndexedAccess: failures[0] can be undefined to the type
+    // checker, and asserting on a possibly-absent element would pass
+    // vacuously if the array were ever empty.
+    expect(r.failures.map((f) => f.rule)).toContain("hex");
   });
 
   test("a missing display name is blocked - every message renders it", () => {

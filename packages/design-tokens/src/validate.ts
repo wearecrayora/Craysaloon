@@ -4,7 +4,8 @@
 import { contrast } from "./color.js";
 import { CONTRAST_MIN } from "./fixed.js";
 import { deriveBrandInk, deriveOnColor, resolveTokens } from "./derive.js";
-import type { BrandInput, GateFailure, GateResult, Mode } from "./schema.js";
+import type { BrandInput, GateFailure, GateResult } from "./schema.js";
+import type { Mode } from "./fixed.js";
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 

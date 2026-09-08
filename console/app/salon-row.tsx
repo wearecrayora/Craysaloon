@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState, useState } from 'react';
+import Link from 'next/link';
 import type { SalonRow as Row } from '@/server/admin-db';
 import { activateAction, suspendAction, type ActionState } from './actions';
 
@@ -33,7 +34,10 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
         <td>
           {salon.integrations_ok}/{salon.integrations_total} tested
         </td>
-        <td style={{ textAlign: 'right' }}>
+        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+          <Link href={`/salon/${salon.id}/branding`} style={{ fontSize: 13, marginRight: 10 }}>
+            Branding
+          </Link>
           <button type="button" className="secondary" onClick={() => setOpen((v) => !v)}>
             {open ? 'Close' : 'Manage'}
           </button>

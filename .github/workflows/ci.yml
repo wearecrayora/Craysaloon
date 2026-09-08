@@ -43,9 +43,18 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - name: Test
+      - name: Install
         working-directory: packages/design-tokens
-        run: bun test
+        run: bun install --frozen-lockfile
+
+      # `bun test` strips types without checking them, so the package shipped
+      # two broken imports (Mode from schema.js, where it does not exist) that
+      # nothing noticed until the console tried to compile it. Types are half
+      # of what this package is - the console and the app share its schema - so
+      # the check has to include them.
+      - name: Typecheck and test
+        working-directory: packages/design-tokens
+        run: bun run check
 
   app:
     name: Flutter app

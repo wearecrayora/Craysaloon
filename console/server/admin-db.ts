@@ -169,6 +169,41 @@ export async function setIntegrationSecret(
       ${publicKeyId}, ${senderId})`;
 }
 
+/**
+ * Writes tokens and bumps salon_branding.version in one statement. Whether the
+ * palette MAY be published is decided before this is called, by
+ * validateBranding() from the shared token package - one implementation of the
+ * contrast rule, shared with the app so the preview cannot lie (ADR-22).
+ */
+export async function publishBranding(
+  actorAdminId: string,
+  salonId: string,
+  tokens: SettingsJson,
+): Promise<number> {
+  const sql = client();
+  const [row] = await sql<{ publish_branding: number }[]>`
+    select app_admin.publish_branding(
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${sql.json(tokens)})`;
+  if (!row) throw new Error('publish_branding returned no row');
+  return row.publish_branding;
+}
+
+export type SalonBranding = { version: number; tokens: SettingsJson } | null;
+
+export async function getSalon(salonId: string) {
+  const sql = client();
+  const [row] = await sql<{ id: string; display_name: string; status: string }[]>`
+    select id, display_name, status::text from public.salons where id = ${salonId}::uuid`;
+  return row ?? null;
+}
+
+export async function getBranding(salonId: string): Promise<SalonBranding> {
+  const sql = client();
+  const [row] = await sql<{ version: number; tokens: SettingsJson }[]>`
+    select version, tokens from public.salon_branding where salon_id = ${salonId}::uuid`;
+  return row ?? null;
+}
+
 export async function recordIntegrationTest(
   actorAdminId: string,
   salonId: string,

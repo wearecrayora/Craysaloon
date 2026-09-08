@@ -8,7 +8,7 @@
 -- no credential can be read back. Each is asserted here against the catalogue,
 -- so a function added tomorrow is covered tomorrow.
 
-select plan(16);
+select plan(19);
 
 select set_config('app.phone_hash_pepper', 'admin-test-pepper', true);
 
@@ -218,6 +218,39 @@ select is(
     where app_admin.generate_join_code() !~ '^CRAY-[A-HJKMNP-Z2-9]{6}$'),
   0,
   '200 generated codes all avoid 0, 1, I, L and O'
+);
+
+-- ---------------------------------------------------------------------------
+-- Branding publish: the version is what re-themes installed apps
+-- ---------------------------------------------------------------------------
+
+select is(
+  app_admin.publish_branding(
+    '11111111-aaaa-4000-8000-000000000001',
+    (select id from public.salons where display_name = 'Provision Test'),
+    '{"displayName":"Provision Test","brand":{"light":{"primary":"#1f6f5c"}}}'::jsonb),
+  1,
+  'the first publish is version 1'
+);
+
+-- Monotonic on purpose: an app that has seen version 7 must never be handed a
+-- different version 7.
+select is(
+  app_admin.publish_branding(
+    '11111111-aaaa-4000-8000-000000000001',
+    (select id from public.salons where display_name = 'Provision Test'),
+    '{"displayName":"Provision Test","brand":{"light":{"primary":"#123456"}}}'::jsonb),
+  2,
+  'republishing bumps the version rather than overwriting it'
+);
+
+select throws_ok(
+  $$select app_admin.publish_branding(
+      '11111111-aaaa-4000-8000-000000000001',
+      (select id from public.salons where display_name = 'Provision Test'),
+      '{"brand":{}}'::jsonb)$$,
+  'P0001', null,
+  'branding without a displayName is refused - every message renders it'
 );
 
 select * from finish();

@@ -6,6 +6,11 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "bun test",
-    "check": "bun test"
+    "check": "tsc --noEmit && bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "typescript": "^5.9.0"
   }
 }

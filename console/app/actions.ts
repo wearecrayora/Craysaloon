@@ -2,8 +2,15 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { validateBranding, type BrandInput } from '@cray/design-tokens';
 import { requireAdmin } from '@/server/auth';
-import { activateSalon, provisionSalon, recordSetupFee, setSalonStatus } from '@/server/admin-db';
+import {
+  activateSalon,
+  provisionSalon,
+  publishBranding,
+  recordSetupFee,
+  setSalonStatus,
+} from '@/server/admin-db';
 
 /**
  * Server actions. Every one of them calls requireAdmin() FIRST and passes the
@@ -13,6 +20,15 @@ import { activateSalon, provisionSalon, recordSetupFee, setSalonStatus } from '@
  */
 
 export type ActionState = { error?: string; ok?: string; joinCode?: string };
+
+export type PublishState = {
+  error?: string;
+  ok?: string;
+  version?: number;
+  /** Gate output, rendered as-is so the operator sees the measured ratios. */
+  failures?: { rule: string; detail: string; measured?: number; required?: number }[];
+  warnings?: { rule: string; detail: string; measured?: number; required?: number }[];
+};
 
 // An Indian mobile number, in any of the forms a person actually types. The
 // database canonicalises and rejects too - this is only so the operator sees a
@@ -144,6 +160,64 @@ export async function setupFeeAction(_prev: ActionState, form: FormData): Promis
     await recordSetupFee(admin.id, salonId, status, reference, paidOn);
     revalidatePath('/');
     return { ok: 'Setup fee recorded.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+
+/**
+ * Publish branding. DESIGN 3.3 and ARCHITECTURE 14.2: a failing palette BLOCKS
+ * publish. Not a warning, not an override.
+ *
+ * The gate runs HERE, on the server, rather than in the studio component. The
+ * browser already runs the same check for live feedback, but a check that only
+ * runs in a browser is advice: anything that can post a form can skip it.
+ *
+ * Warnings are different from failures on purpose. "Your primary is nearly the
+ * same as the surface" is a judgement about how the app will look; refusing to
+ * publish over it would be the token package overruling a designer. Contrast
+ * failures are not judgement - they are the difference between text a customer
+ * can read and text they cannot.
+ */
+export async function publishBrandingAction(
+  _prev: PublishState,
+  form: FormData,
+): Promise<PublishState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+
+  let input: BrandInput;
+  try {
+    input = JSON.parse(String(form.get('branding') ?? '')) as BrandInput;
+  } catch {
+    return { error: 'The branding payload was not valid JSON.' };
+  }
+
+  const gate = validateBranding(input);
+  if (!gate.ok) {
+    return {
+      error:
+        'Publish blocked: this palette fails contrast. A customer would not be able to read ' +
+        'parts of their own salon app.',
+      failures: gate.failures,
+      warnings: gate.warnings,
+    };
+  }
+
+  try {
+    const version = await publishBranding(
+      admin.id,
+      salonId,
+      input as unknown as Record<string, never>,
+    );
+    revalidatePath(`/salon/${salonId}/branding`);
+    revalidatePath('/');
+    return {
+      ok: `Published. Installed apps will re-theme on their next launch.`,
+      version,
+      warnings: gate.warnings,
+    };
   } catch (e) {
     return { error: message(e) };
   }

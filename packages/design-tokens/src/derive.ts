@@ -8,8 +8,12 @@ import { contrast, hexToOklch, mix, withLightness } from "./color.js";
 import {
   CHART, CONTRAST_MIN, DEVANAGARI_LINE_HEIGHT_BONUS, MOTION, SPACING, STATUS, SURFACE,
 } from "./fixed.js";
-import type { BrandInput, Mode, ResolvedTokens } from "./schema.js";
-import type { Mode as _M } from "./fixed.js";
+// Mode lives in fixed.ts, not schema.ts. This file imported it from schema and
+// separately aliased the real one as an unused `_M` - which type-checks to
+// nothing, because the package had never been type-checked at all: `bun test`
+// strips types without verifying them.
+import type { BrandInput, ResolvedTokens } from "./schema.js";
+import type { Mode } from "./fixed.js";
 
 /** Black or white, whichever reaches 4.5:1. Never chosen by a human. */
 export function deriveOnColor(bg: string): string | null {
