@@ -27,7 +27,7 @@ jobs:
     name: Structural gates and secret scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Structural gates (RULES.md)
         run: ./scripts/lint-gates.sh
       - name: Secret scan
@@ -39,7 +39,7 @@ jobs:
     name: Design tokens
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -51,7 +51,7 @@ jobs:
     name: Flutter app
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: check
         run: |
           if [ -f app/pubspec.yaml ]; then echo "exists=true" >> "$GITHUB_OUTPUT";
@@ -79,7 +79,7 @@ jobs:
     name: iOS builds (compatibility only - not shipped yet)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: check
         run: |
           if [ -d app/ios ]; then echo "exists=true" >> "$GITHUB_OUTPUT";
@@ -130,9 +130,9 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
 
