@@ -138,7 +138,8 @@ jobs:
           node scripts/db/run.mjs sql "select current_user, session_user, usesuper from pg_user where usename = current_user" 2>&1 | tee -a /tmp/ci.log
           node scripts/db/run.mjs sql "select nspname from pg_namespace where nspname in ('auth','extensions','vault','public') order by 1" 2>&1 | tee -a /tmp/ci.log
           node scripts/db/run.mjs sql "select rolname, rolsuper, rolbypassrls from pg_roles where rolname in ('postgres','anon','authenticated','service_role') order by 1" 2>&1 | tee -a /tmp/ci.log
-          node scripts/db/run.mjs sql "select extname from pg_available_extensions where name = 'pgtap'" 2>&1 | tee -a /tmp/ci.log || true
+          node scripts/db/run.mjs sql "select name, default_version, installed_version from pg_available_extensions where name = 'pgtap'" 2>&1 | tee -a /tmp/ci.log
+          node scripts/db/run.mjs sql "select to_regclass('auth.users') is not null as auth_users_present, has_schema_privilege(current_user, 'auth', 'CREATE') as can_create_in_auth" 2>&1 | tee -a /tmp/ci.log
 
       - name: Bootstrap the Supabase roles and auth schema
         # set -o pipefail, or `| tee` swallows the exit code and a failed
@@ -148,7 +149,11 @@ jobs:
           node scripts/db/run.mjs file supabase/ci/bootstrap.sql 2>&1 | tee -a /tmp/ci.log
 
       - name: Apply every migration FROM ZERO
-        run: node scripts/db/run.mjs migrate
+        # Piped like the rest so a migration failure reaches the diagnostics
+        # issue instead of only the Actions log we cannot read.
+        run: |
+          set -o pipefail
+          node scripts/db/run.mjs migrate 2>&1 | tee -a /tmp/ci.log
 
       - name: Run the release gates
         # Without pipefail this reports success even when a gate fails, which
