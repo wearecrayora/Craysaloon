@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+  issues: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -127,11 +131,38 @@ jobs:
         working-directory: scripts/db
         run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
 
+      - name: Probe the container before touching it
+        run: |
+          node scripts/db/run.mjs sql "select version()" 2>&1 | tee -a /tmp/ci.log
+          node scripts/db/run.mjs sql "select current_user, session_user, usesuper from pg_user where usename = current_user" 2>&1 | tee -a /tmp/ci.log
+          node scripts/db/run.mjs sql "select nspname from pg_namespace where nspname in ('auth','extensions','vault','public') order by 1" 2>&1 | tee -a /tmp/ci.log
+          node scripts/db/run.mjs sql "select rolname, rolsuper, rolbypassrls from pg_roles where rolname in ('postgres','anon','authenticated','service_role') order by 1" 2>&1 | tee -a /tmp/ci.log
+          node scripts/db/run.mjs sql "select extname from pg_available_extensions where name = 'pgtap'" 2>&1 | tee -a /tmp/ci.log || true
+
       - name: Bootstrap the Supabase roles and auth schema
-        run: node scripts/db/run.mjs file supabase/ci/bootstrap.sql
+        run: node scripts/db/run.mjs file supabase/ci/bootstrap.sql 2>&1 | tee -a /tmp/ci.log
 
       - name: Apply every migration FROM ZERO
         run: node scripts/db/run.mjs migrate
 
       - name: Run the release gates
-        run: node scripts/db/run.mjs test
+        run: node scripts/db/run.mjs test 2>&1 | tee -a /tmp/ci.log
+
+      # Actions logs require repo admin, which the developer environment does
+      # not have, so a failure here is invisible from outside. Publishing the
+      # captured output as an issue makes it readable through the public API.
+      # Temporary scaffolding: delete once `gh auth login` is set up locally.
+      - name: Publish diagnostics on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "Commit: ${{ github.sha }}"
+            echo "Run: ${{ github.run_id }}"
+            echo
+            echo '```'
+            tail -c 40000 /tmp/ci.log 2>/dev/null || echo "(no output captured)"
+            echo '```'
+          } > /tmp/body.md
+          gh issue create --title "CI database gates failed (${{ github.sha }})"                           --body-file /tmp/body.md --label "" || true
