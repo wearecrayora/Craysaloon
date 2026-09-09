@@ -8,7 +8,7 @@
 -- no credential can be read back. Each is asserted here against the catalogue,
 -- so a function added tomorrow is covered tomorrow.
 
-select plan(22);
+select plan(26);
 
 select set_config('app.phone_hash_pepper', 'admin-test-pepper', true);
 
@@ -285,6 +285,59 @@ select is(
       and (before_state::text || after_state::text) like '%SECRETVALUE%'),
   0,
   'the audit trail records THAT a credential was set, never what it was'
+);
+
+-- ---------------------------------------------------------------------------
+-- Catalogue
+-- ---------------------------------------------------------------------------
+
+select isnt(
+  app_admin.upsert_service(
+    '11111111-aaaa-4000-8000-000000000001',
+    (select id from public.salons where display_name = 'Provision Test'),
+    null, 'Haircut', 40000, 30, 'hair', 42, true),
+  null,
+  'an operator can add a service to the catalogue'
+);
+
+-- Cross-tenant guard: naming another salon's row must not silently create one.
+select throws_ok(
+  $$select app_admin.upsert_service(
+      '11111111-aaaa-4000-8000-000000000001',
+      'eeeeeeee-0000-4000-8000-00000000dead',
+      (select id from public.services
+        where salon_id = (select id from public.salons where display_name = 'Provision Test')
+        limit 1),
+      'Stolen', 100, 10, null, null, true)$$,
+  'P0001', null,
+  'a service id from another salon cannot be edited through a different salon'
+);
+
+-- ---------------------------------------------------------------------------
+-- Bonus expiry is the OWNER's, set in the app - not the console's
+-- ---------------------------------------------------------------------------
+--
+-- RULES 5.3.3 and CLAUDE.md 7. PRD 6.2 used to list it as a console field,
+-- which is exactly the kind of drift that quietly moves a decision away from
+-- the person whose money it is. Enforced here rather than described.
+
+select throws_ok(
+  $$select app_admin.set_salon_rules(
+      '11111111-aaaa-4000-8000-000000000001',
+      (select id from public.salons where display_name = 'Provision Test'),
+      '{"bonus_expiry_days": 90}'::jsonb)$$,
+  'P0001', null,
+  'the console cannot set bonus expiry - that belongs to the owner, in the app'
+);
+
+-- And it cannot be smuggled inside a rule the console IS allowed to set.
+select throws_ok(
+  $$select app_admin.set_salon_rules(
+      '11111111-aaaa-4000-8000-000000000001',
+      (select id from public.salons where display_name = 'Provision Test'),
+      '{"wallet_rule": {"topup_paise": 50000, "bonus_paise": 5000, "expires_days": 90}}'::jsonb)$$,
+  'P0001', null,
+  'nor hidden inside wallet_rule'
 );
 
 select * from finish();

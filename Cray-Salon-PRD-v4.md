@@ -248,7 +248,7 @@ The operator fills one guided, multi-step form. Everything is editable afterward
 | **Identity** | Legal name, **display name** (used in every message and in the app), address, phone, email, GST number (optional), timezone, languages |
 | **Branding** | Logo (square, ≥1024px), wordmark, splash image, **primary / secondary / accent colours** (light and dark), **heading + body font from a curated Google Fonts allow-list**, corner radius, notification large-icon |
 | **Catalogue** | Services (name, price, duration, repeat cycle), add-ons (price, extra duration, relevance), staff (name, hours, skills) |
-| **Rules** | Wallet rule (e.g. ₹500 → +₹50), bonus expiry, reward rule, loyalty rule, default reminder cycle, cancellation policy |
+| **Rules** | Wallet rule (e.g. ₹500 → +₹50), reward rule, loyalty rule, default reminder cycle, cancellation policy. **Not bonus expiry** — that is the owner's, set in the app and captured onto each lot at issue (§8.5, RULES 5.3.3, ARCHITECTURE 14.2). This row listed it as a console field, which contradicted every other document and the decision it records |
 | **Integrations** | **The salon's own Razorpay** key id, key secret and webhook secret · **the salon's own Message Central** account credentials (top-up-and-send; no DLT) · **the salon's own WhatsApp Business** sender, with templates authored in the Message Central dashboard and submitted for Meta approval · **the salon's own RCS agent, verified with Google and the carriers** · Google review link |
 | **Commercials** | Plan, **setup fee amount + the note/reference for the offline payment** (cash or bank transfer, collected outside the system), billing start date |
 | **Owner account** | Owner name + phone → creates the owner user and sends an SMS invite |

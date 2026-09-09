@@ -38,6 +38,9 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
           <Link href={`/salon/${salon.id}/branding`} style={{ fontSize: 13, marginRight: 10 }}>
             Branding
           </Link>
+          <Link href={`/salon/${salon.id}/catalogue`} style={{ fontSize: 13, marginRight: 10 }}>
+            Catalogue
+          </Link>
           <Link href={`/salon/${salon.id}/credentials`} style={{ fontSize: 13, marginRight: 10 }}>
             Credentials
           </Link>

@@ -251,6 +251,144 @@ export async function listSalons(): Promise<SalonRow[]> {
      order by s.created_at desc`;
 }
 
+// ---------------------------------------------------------------------------
+// Catalogue and rules
+// ---------------------------------------------------------------------------
+
+export type ServiceRow = {
+  id: string;
+  name: string;
+  category: string | null;
+  price_paise: string;
+  duration_minutes: number;
+  repeat_cycle_days: number | null;
+  active: boolean;
+};
+
+export type AddOnRow = {
+  id: string;
+  name: string;
+  price_paise: string;
+  extra_duration_minutes: number;
+  active: boolean;
+};
+
+export type StaffRow = { id: string; name: string; skills: string[]; active: boolean };
+
+export type SalonRules = {
+  wallet_rule: unknown;
+  reward_rule: unknown;
+  loyalty_rule: unknown;
+  default_reminder_cycle_days: number;
+  cancellation_policy: string | null;
+};
+
+export async function listServices(salonId: string): Promise<ServiceRow[]> {
+  const sql = client();
+  return sql<ServiceRow[]>`
+    select id, name, category, price_paise::text, duration_minutes, repeat_cycle_days, active
+      from public.services where salon_id = ${salonId}::uuid
+     order by active desc, name`;
+}
+
+export async function listAddOns(salonId: string): Promise<AddOnRow[]> {
+  const sql = client();
+  return sql<AddOnRow[]>`
+    select id, name, price_paise::text, extra_duration_minutes, active
+      from public.add_ons where salon_id = ${salonId}::uuid
+     order by active desc, name`;
+}
+
+export async function listStaff(salonId: string): Promise<StaffRow[]> {
+  const sql = client();
+  return sql<StaffRow[]>`
+    select id, name, skills, active
+      from public.staff where salon_id = ${salonId}::uuid
+     order by active desc, name`;
+}
+
+export async function getRules(salonId: string): Promise<SalonRules | null> {
+  const sql = client();
+  const [row] = await sql<SalonRules[]>`
+    select wallet_rule, reward_rule, loyalty_rule,
+           default_reminder_cycle_days, cancellation_policy
+      from public.salons where id = ${salonId}::uuid`;
+  return row ?? null;
+}
+
+export async function upsertService(
+  actorAdminId: string,
+  salonId: string,
+  v: {
+    id: string | null;
+    name: string;
+    pricePaise: number;
+    durationMinutes: number;
+    category: string | null;
+    repeatCycleDays: number | null;
+    active: boolean;
+  },
+): Promise<string> {
+  const sql = client();
+  const [row] = await sql<{ upsert_service: string }[]>`
+    select app_admin.upsert_service(
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${v.id}::uuid, ${v.name},
+      ${v.pricePaise}, ${v.durationMinutes}, ${v.category},
+      ${v.repeatCycleDays}, ${v.active})`;
+  if (!row) throw new Error('upsert_service returned no row');
+  return row.upsert_service;
+}
+
+export async function upsertAddOn(
+  actorAdminId: string,
+  salonId: string,
+  v: {
+    id: string | null;
+    name: string;
+    pricePaise: number;
+    extraDurationMinutes: number;
+    active: boolean;
+  },
+): Promise<string> {
+  const sql = client();
+  const [row] = await sql<{ upsert_add_on: string }[]>`
+    select app_admin.upsert_add_on(
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${v.id}::uuid, ${v.name},
+      ${v.pricePaise}, ${v.extraDurationMinutes}, ${v.active})`;
+  if (!row) throw new Error('upsert_add_on returned no row');
+  return row.upsert_add_on;
+}
+
+export async function upsertStaff(
+  actorAdminId: string,
+  salonId: string,
+  v: { id: string | null; name: string; skills: string[]; active: boolean },
+): Promise<string> {
+  const sql = client();
+  const [row] = await sql<{ upsert_staff: string }[]>`
+    select app_admin.upsert_staff(
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${v.id}::uuid, ${v.name},
+      ${sql.array(v.skills)}, ${v.active})`;
+  if (!row) throw new Error('upsert_staff returned no row');
+  return row.upsert_staff;
+}
+
+/**
+ * Bonus expiry is NOT among the keys this accepts, and the database refuses a
+ * payload that mentions expiry at all. That is the owner's setting, made in
+ * the app (RULES 5.3.3); paid credit never expires.
+ */
+export async function setSalonRules(
+  actorAdminId: string,
+  salonId: string,
+  rules: SettingsJson,
+): Promise<void> {
+  const sql = client();
+  await sql`
+    select app_admin.set_salon_rules(
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${sql.json(rules)})`;
+}
+
 export type IntegrationRow = {
   provider: 'razorpay' | 'message_central' | 'whatsapp' | 'rcs';
   status: 'missing' | 'untested' | 'ok' | 'failing';

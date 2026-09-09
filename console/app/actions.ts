@@ -10,7 +10,11 @@ import {
   publishBranding,
   recordSetupFee,
   setIntegrationSecret,
+  setSalonRules,
   setSalonStatus,
+  upsertAddOn,
+  upsertService,
+  upsertStaff,
 } from '@/server/admin-db';
 
 /**
@@ -264,6 +268,143 @@ export async function setSecretAction(_prev: ActionState, form: FormData): Promi
         `Saved for ${provider.replace('_', ' ')}. It cannot be read back - the console ` +
         `only ever shows the last four characters.`,
     };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+
+// ---------------------------------------------------------------------------
+// Catalogue
+// ---------------------------------------------------------------------------
+
+// Rupees in the form, paise in the database. The operator was quoted a price
+// in rupees on the phone; storing anything but integer paise is how rounding
+// bugs get in (ADR-06).
+const rupeesToPaise = (v: FormDataEntryValue | null) =>
+  Math.round(Number(String(v ?? '0')) * 100);
+
+const id = (v: FormDataEntryValue | null) => {
+  const s = String(v ?? '').trim();
+  return s === '' ? null : s;
+};
+
+export async function upsertServiceAction(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const name = String(form.get('name') ?? '').trim();
+  const pricePaise = rupeesToPaise(form.get('priceRupees'));
+  const durationMinutes = Number(form.get('durationMinutes') ?? 0);
+  const repeat = String(form.get('repeatCycleDays') ?? '').trim();
+
+  if (!name) return { error: 'A service needs a name.' };
+  if (!Number.isFinite(pricePaise) || pricePaise < 0) return { error: 'Price is not a number.' };
+  if (!Number.isInteger(durationMinutes) || durationMinutes <= 0) {
+    return { error: 'A service must take some time.' };
+  }
+
+  try {
+    await upsertService(admin.id, salonId, {
+      id: id(form.get('id')),
+      name,
+      pricePaise,
+      durationMinutes,
+      category: String(form.get('category') ?? '').trim() || null,
+      repeatCycleDays: repeat === '' ? null : Number(repeat),
+      active: form.get('active') === 'on',
+    });
+    revalidatePath(`/salon/${salonId}/catalogue`);
+    return { ok: `Saved ${name}.` };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function upsertAddOnAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const name = String(form.get('name') ?? '').trim();
+  const pricePaise = rupeesToPaise(form.get('priceRupees'));
+
+  if (!name) return { error: 'An add-on needs a name.' };
+  if (!Number.isFinite(pricePaise) || pricePaise < 0) return { error: 'Price is not a number.' };
+
+  try {
+    await upsertAddOn(admin.id, salonId, {
+      id: id(form.get('id')),
+      name,
+      pricePaise,
+      extraDurationMinutes: Number(form.get('extraDurationMinutes') ?? 0) || 0,
+      active: form.get('active') === 'on',
+    });
+    revalidatePath(`/salon/${salonId}/catalogue`);
+    return { ok: `Saved ${name}.` };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function upsertStaffAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const name = String(form.get('name') ?? '').trim();
+  if (!name) return { error: 'A staff member needs a name.' };
+
+  const skills = String(form.get('skills') ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  try {
+    await upsertStaff(admin.id, salonId, {
+      id: id(form.get('id')),
+      name,
+      skills,
+      active: form.get('active') === 'on',
+    });
+    revalidatePath(`/salon/${salonId}/catalogue`);
+    return { ok: `Saved ${name}.` };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+/**
+ * Operating rules. Note what is absent and stays absent: bonus expiry. It is
+ * the owner's setting, made in the app and captured onto each lot at issue
+ * (RULES 5.3.3), and paid credit never expires at all. The database refuses a
+ * payload that so much as mentions expiry, so a field added here by accident
+ * fails loudly rather than quietly relocating that decision.
+ */
+export async function setRulesAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+
+  const topup = rupeesToPaise(form.get('walletTopupRupees'));
+  const bonus = rupeesToPaise(form.get('walletBonusRupees'));
+  const cycle = Number(form.get('reminderCycleDays') ?? 0);
+
+  if (!Number.isFinite(topup) || topup <= 0) {
+    return { error: 'The wallet top-up threshold must be a positive amount.' };
+  }
+  if (!Number.isFinite(bonus) || bonus < 0) {
+    return { error: 'The bonus cannot be negative.' };
+  }
+  if (!Number.isInteger(cycle) || cycle <= 0) {
+    return { error: 'The reminder cycle must be a whole number of days.' };
+  }
+
+  try {
+    await setSalonRules(admin.id, salonId, {
+      wallet_rule: { topup_paise: topup, bonus_paise: bonus },
+      default_reminder_cycle_days: cycle,
+      cancellation_policy: String(form.get('cancellationPolicy') ?? '').trim() || null,
+    });
+    revalidatePath(`/salon/${salonId}/catalogue`);
+    return { ok: 'Rules saved.' };
   } catch (e) {
     return { error: message(e) };
   }
