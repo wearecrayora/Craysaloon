@@ -455,6 +455,9 @@ A change is not done until all of these hold.
       raise for every role; the ledger-caller set equals the five in §5.2; no paid lot can expire
 - [ ] **Index scope test** — every composite index on a tenant table leads with `salon_id`, or is
       named and justified as an exemption (§3.1)
+- [ ] **Pepper test** — `app.phone_hash` works with **no session GUC set**, proving the pepper is
+      configured in Vault rather than supplied by the test. Every other test sets the GUC, so all
+      of them passed against a database that could not have provisioned a single salon
 - [ ] **Admin plane test** — no `app_admin` function is reachable by a tenant role; every mutating
       one writes `audit_log` in the same transaction (§6.5); provisioning is atomic (§6.2);
       `activate_salon` is the only door to `active` (§6.3); nothing reads a credential back
