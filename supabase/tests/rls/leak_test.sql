@@ -57,7 +57,11 @@ select is(
       and c.relname not in (
         'customer_identities', 'binding_events', 'join_intents',
         'salon_integrations', 'domain_events', 'jobs',
-        'idempotency_keys', 'webhook_events'
+        'idempotency_keys', 'webhook_events',
+        -- ADR-36: in-flight Message Central verifications. Cross-tenant
+        -- machinery like join_intents - touched only by the OTP Edge
+        -- Functions as service_role, never by a tenant.
+        'otp_challenges'
       )),
   0,
   'every tenant table has policies, or is a documented no-policy table'
@@ -70,7 +74,8 @@ select is(
      from pg_policy p
      join pg_class c on c.oid = p.polrelid
     where c.relname in ('customer_identities', 'binding_events',
-                        'join_intents', 'salon_integrations')),
+                        'join_intents', 'salon_integrations',
+                        'otp_challenges')),
   0,
   'cross-tenant and secret tables have NO policies at all'
 );

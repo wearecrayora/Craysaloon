@@ -219,27 +219,56 @@ mid-session — salon suspension, role change, permission change, a fresh bindin
 is re-checked in the database, never trusted from the token alone. Binding and transfer both bump
 `cver`, which forces the client to refresh and pick up its new `salon_id`.
 
-**OTP delivery — the Send SMS Hook (confirmed, v2.1).** Supabase Auth keeps ownership of code
-generation, sessions and refresh rotation; only *delivery* is ours:
+**OTP — Message Central owns the code; Supabase issues the session afterwards (v2.7, ADR-36).**
 
-1. An Edge Function `sms-hook` receives `{ sms, user }` — `sms.to` is the number,
-   `sms.metadata.token` is the code Supabase generated — and forwards it to Message Central.
-2. The **platform** fallback credentials live in Edge Function secrets
-   (`MESSAGE_CENTRAL_AUTH_KEY`, `MESSAGE_CENTRAL_CUSTOMER_ID`); **per-salon** credentials come
-   from Vault via `salon_integrations` (§8). Neither ever reaches the app.
-3. Dashboard: *Authentication → Hooks → Send SMS hook* (HTTPS, pointing at the deployed
-   function), then *Authentication → Providers → Phone → delivery = Hook*.
-4. `supabase.auth.signInWithOtp()` then works unchanged on the client.
+The v2.1 design used Supabase's Send SMS Hook and marked it "confirmed". What had been confirmed
+was that the hook *exists*. Nobody had checked whether Message Central could deliver a code it did
+not generate — and it cannot. The hook hands the function Supabase's OTP and expects it delivered
+verbatim; Message Central's VerifyNow generates its **own** OTP, and `/verification/v3/send`
+takes no parameter for a caller's code (checked against their API docs, 2026-09-15). Their
+MessageNow SMS product does accept free text, but for India it needs a sender ID and a registered
+template or DLT entity — exactly the registration VerifyNow avoids, because its OTPs go out under
+**Message Central's own DLT-registered name** (confirmed by Message Central directly, 2026-09-15).
+Supabase's built-in phone login needs Twilio, MessageBird, Vonage or TextLocal, all of which need
+DLT for Indian numbers.
 
-Three hardening requirements the happy-path setup omits, all mandatory:
+So Message Central generates, sends **and verifies** the OTP. Supabase Auth keeps the part it is
+genuinely good at — issuing, signing (ES256) and refreshing the session — and issues one only after
+Message Central has confirmed the code.
 
-- **Verify the hook signature.** Supabase signs hook requests; the function must reject anything
-  unsigned or mis-signed. An open hook URL is a free-SMS machine pointed at Crayora's Message
-  Central bill.
-- **Never log `sms.metadata.token`**, and never include it in a Sentry breadcrumb or an error
-  payload.
-- **Rate-limit before sending** (§15.3) — the hook is the last place to stop an OTP flood, and
-  every send is real money.
+```
+app                         otp-send (Edge Fn)                 Message Central
+ │ resolve_join_code → theme
+ │ start_join(code, phone)  ── join_intents (new customers only)
+ │ POST otp-send {phone} ───► resolve_otp_sender(phone)
+ │                            intent → binding → staff → REFUSE
+ │                            salon creds from Vault ────────► /verification/v3/send
+ │                            (fail → platform account + ALERT)  ◄── verificationId
+ │ ◄── opaque challenge_id ────── otp_challenges row
+ │
+ │ POST otp-verify {challenge_id, code}
+ │                            attempts ≤ 5, not expired ───────► /verification/v3/validateOtp
+ │                            VERIFICATION_COMPLETED only   ◄──
+ │                            find/create auth user for phone_hash
+ │                            admin.generateLink → verifyOtp(token_hash)
+ │ ◄── Supabase session ────────── challenge consumed
+```
+
+Properties, each verified or asserted by a gate:
+
+- **The session mint sends nothing and cannot be replayed.** `auth.admin.generateLink` returns a
+  single-use token without sending an email; `verifyOtp({token_hash})` exchanges it for an
+  ES256-signed session with a refresh token; a second exchange of the same token is refused.
+  Checked against the live project, 2026-09-15.
+- **`auth.users` holds no plaintext phone number.** The Auth identity is a synthetic address,
+  `<hex of phone_hash>@phone.craysalon.invalid`, derived from the peppered HMAC (§5.4). The
+  `.invalid` TLD is reserved (RFC 2606) and can never be delivered to.
+- **The challenge is bound server-side** to the phone hash and the salon. At verify time the client
+  names neither, so it cannot validate a code against a verification it did not start, or move a
+  login to a different salon.
+- **At most five attempts per challenge**, a short expiry, and the rate limits in `start_join` and
+  `otp-send`. Message Central's own validation throttling sits behind them, not instead of them.
+- **Never logged:** the OTP, the Message Central token, the `verificationId`, the session.
 
 **Sender routing (v2.2) — how the hook knows which salon's account to send from.** The hook is
 invoked by GoTrue and receives only `sms.to` and the token; it gets no client-supplied context,
@@ -1722,10 +1751,11 @@ invariants.
 | ADR-10 | Catalogue-driven leak test | Hand-written per-table tests | Manual tests rot; this covers a new table the day it is created |
 | ADR-11 | Admin plane fully separate, service-role server-side only | Super-admin as a privileged tenant role | A tenant role that can cross tenants defeats the isolation model |
 | ADR-12 | Grace/suspension enforced in RLS | UI-only gating | Business rules that exist only in the UI are not business rules |
-| ADR-13 | Supabase Auth retained; Message Central via the Send-SMS hook | Fully custom OTP + custom JWT minting | Keeps sessions, refresh rotation and hook-based claims; far less security surface to own |
+| ADR-13 *(superseded by ADR-36)* | Supabase Auth retained; Message Central via the Send-SMS hook | Fully custom OTP + custom JWT minting | Keeps sessions, refresh rotation and hook-based claims; far less security surface to own |
 | ADR-14 | Offline covers capture, never money or binding | Offline wallet writes; offline binding | A reconstructed ledger is unauditable; a global uniqueness decision cannot be made on a device |
 | **ADR-34** | **No local Supabase stack: hosted for development, a bare `supabase/postgres` container in CI, migrations and pgTAP driven by `scripts/db/run.mjs`** | `supabase start` locally and in CI; `supabase db reset` to prove migrations | The full stack is a large opaque dependency whose only failure signal was "Start a clean local stack: failed" with unreadable logs. The gates need Postgres, pgTAP and the Supabase roles — not Studio, Kong, GoTrue, Realtime or Storage. CI asserts the roles' `rolbypassrls` flags match production rather than setting them, because setting them would make CI's isolation guarantees true by construction |
 | **ADR-35** | **The admin plane is a separate schema (`app_admin`) whose functions are closed by an explicit `close_privileges()` call, and every mutating one writes `audit_log` in the same transaction** | Admin RPCs in `public` behind a role check; a route handler that writes the audit as a second statement; relying on default privileges to close the schema | `public` is what PostgREST exposes, so an admin function there is one missing grant from being tenant-callable. A separate audit statement can be forgotten; a combined one cannot. And default privileges were *tested* and do not stick here, so closure is an action the release gate verifies rather than a property assumed |
+| **ADR-36** | **Message Central generates, sends and verifies the OTP; Supabase Auth issues the session only after Message Central confirms it** | The Send SMS Hook (ADR-13) delivering Supabase's code; Supabase phone login via Twilio or similar; dropping Supabase Auth entirely | VerifyNow cannot deliver a code it did not generate, so the hook could not work. Every Supabase SMS provider needs DLT for Indian numbers, which VerifyNow avoids by sending under its own registered name. Dropping Supabase Auth would mean hand-building token signing, refresh and expiry and re-proving every RLS guarantee, all of which read the session token. Minting via generateLink + verifyOtp keeps a stock Supabase session, sends nothing, and was verified single-use |
 
 ---
 
@@ -1767,7 +1797,7 @@ The eleven gaps found reading PRD v3, plus four raised by the v4 model. All are 
 
 | Was | Ruling | Landed in |
 |---|---|---|
-| Q1 — Send SMS Hook viable? | **Yes, confirmed.** Edge Function + hook config, with signature verification added | §5.2, ADR-13 |
+| Q1 — Send SMS Hook viable? | **No — superseded (ADR-36).** Supabase has the hook; Message Central cannot deliver a code it did not generate. The original answer below confirmed the first half only. Original: **Yes, confirmed.** Edge Function + hook config, with signature verification added | §5.2, ADR-13 |
 | Q2 — setup fee flat or tiered? | **Neither matters to the system** — collected manually offline, recorded, activation decoupled | §5.7, §13.2, ADR-26 |
 | Q3 — should unbind exist? | **Yes, plus a support-mediated transfer.** No self-service path | §5.4, ADR-15 |
 | Q4 — white-label APK distribution | **Deferred.** Built manually and separately when a salon needs one | §7.3 |

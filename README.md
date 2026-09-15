@@ -52,11 +52,14 @@ cannot come to depend on state that only exists on the dev project.
 
 ## The gates that must never be weakened
 
-Six database gates fail the build. They are never skipped, deleted, or narrowed to pass:
+Seven database gates fail the build. They are never skipped, deleted, or narrowed to pass:
 
 - **Cross-tenant leak test** — catalogue-driven, so a table added today is covered today
 - **Binding exclusivity** — one phone number, exactly one salon, no switch path anywhere
 - **Money** — ledgers are append-only, and neither owner nor manager can reach one
+- **Join flow and OTP** — an unknown code and a salon in setup look identical; no salon context
+  means no SMS; codes are checked only against a server-issued challenge; only accounts the
+  server created are ever adopted
 - **Index scope** — tenant indexes lead with `salon_id`, or are named and justified
 - **Admin plane** — no tenant role can reach `app_admin`, every admin mutation is audited in the
   same transaction, provisioning is atomic, and no credential can be read back

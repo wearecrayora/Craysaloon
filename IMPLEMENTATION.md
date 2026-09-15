@@ -253,7 +253,8 @@ being logged.
 
 | Function | Trigger | Identity | Must |
 |---|---|---|---|
-| `sms-hook` | GoTrue Send-SMS hook | service role | **Verify the hook signature** · resolve sender via `resolve_otp_sender` · never log the token · rate-limit before send · fall back to platform + alert |
+| `otp-send` | App, pre-auth | publishable key | Resolve sender via `resolve_otp_sender` (intent → binding → staff → **refuse**) · salon's Message Central creds from Vault at the moment of use · VerifyNow `/verification/v3/send` · on failure, platform account **and alert** · store an `otp_challenges` row · return an opaque challenge id |
+| `otp-verify` | App, pre-auth | publishable key | ≤5 attempts, not expired · VerifyNow `/verification/v3/validateOtp` · **only** on `VERIFICATION_COMPLETED`: find/create the Auth user for the phone hash, `admin.generateLink` → `verifyOtp(token_hash)` → session · consume the challenge (ADR-36) |
 | `rzp-webhook/{token}` | Razorpay, **per salon** | service role | Resolve salon **from the path token**, never the body · verify with that salon's secret · dedupe on `event_id` · re-verify amount |
 | `create-payment-order` | Client | user JWT | Compute the amount **server-side** |
 | `dispatcher` | `pg_cron`, 1 min | service role | Drain `domain_events` → `pgmq` |
@@ -282,7 +283,7 @@ scan/type code ──► app.resolve_join_code        (anon, rate-limited)
                         ▼
                    app.start_join(code, phone)   ──► join_intents (15 min)
                         │
-                   signInWithOtp ──► sms-hook ──► resolve_otp_sender
+                   otp-send ──► resolve_otp_sender ──► VerifyNow
                         │                              │ intent → salon
                         │                              ▼
                         │                     salon's Message Central
@@ -387,7 +388,7 @@ Automation A ──► reminders row (unique on salon+customer+service+cycle_key
 
 /supabase/
   migrations/    0001_schema · 0002_rls · 0003_functions · 0004_constraints …
-  functions/     sms-hook · rzp-webhook · create-payment-order · dispatcher ·
+  functions/     otp-send · otp-verify · rzp-webhook · create-payment-order · dispatcher ·
                  worker · notification-send · escalation-sweep ·
                  export-customer-data · qr-pack-render · _shared/
   tests/         rls/ (leak + binding) · money/ · bookings/ · automations/
@@ -406,7 +407,7 @@ Feature → surfaces → server calls → milestone. Use this to check nothing i
 |---|---|---|---|
 | Provisioning §6.2 | K3, K5–K7, K9 | `provision_salon`, `publish_branding`, `set_integration_secret`, `qr-pack-render` | 2 |
 | Activation §6.2 | K10 | `record_setup_fee`, `activate_salon` | 2/11 |
-| Join & binding §6.4–6.5 | U2–U6 | `resolve_join_code`, `start_join`, `sms-hook`, `bind_customer` | 3–4 |
+| Join & binding §6.4–6.5 | U2–U6 | `resolve_join_code`, `start_join`, `otp-send`, `otp-verify`, `bind_customer` | 3–4 |
 | White-label §6.6 | all app screens, K5 | `get_branding` | 4 |
 | Transfer / unbind §6.5 | K12 | `unbind_customer`, `transfer_customer` | 4 |
 | Catalogue §8.2 | O7–O9, K6 | table CRUD (RLS) | 5 |

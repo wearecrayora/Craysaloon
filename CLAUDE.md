@@ -28,10 +28,13 @@ session — drift between the documents is how a rule quietly dies.
 - **App:** Flutter / Dart, install-first. **Android ships first (cost), iOS-ready from day one.**
   `app/ios` exists and CI builds it on a macOS runner every commit - never let it rot
 - **Console:** Next.js on Vercel
-- **Auth:** Supabase Auth, phone OTP
-- **OTP delivery:** Message Central via Supabase's **Send SMS Hook**, routed to **the salon's own
-  account** (salon code is entered BEFORE login). Crayora's account is a logged, alerted fallback.
-  **No DLT registration anywhere** — Message Central is top-up-and-send
+- **Auth:** Supabase Auth for **sessions** — the OTP itself is Message Central's (below)
+- **OTP:** **Message Central VerifyNow generates, sends and verifies the code**, from **the
+  salon's own account** (salon code is entered BEFORE login); Crayora's account is a logged,
+  alerted fallback. Supabase Auth then issues the session, only after Message Central confirms
+  (ADR-36). **There is no Send SMS Hook and no Supabase phone OTP** — VerifyNow cannot deliver a
+  code it did not generate. **No DLT registration anywhere**: OTPs go out under Message
+  Central's own DLT-registered name
 - **DB + isolation:** Supabase Postgres + Row-Level Security
 - **Files:** Cloudflare R2 (logos, photos, invoices, QR packs) — signed URLs for private objects
 - **Serverless + all messaging/payment calls:** Supabase Edge Functions
@@ -110,7 +113,7 @@ Each feature passes its PRD acceptance criteria, the milestone gates in `PHASES.
 per-screen checklist in `IMPLEMENTATION.md` §7.
 
 **Hard CI gates:** the catalogue-driven cross-tenant leak test, the binding-exclusivity test, the
-money test, the index-scope test and the admin-plane test — plus their **negative controls**,
+money test, the index-scope test, the admin-plane test, the join-flow test and the OTP test — plus their **negative controls**,
 which create an unprotected table and an unaudited `app_admin` function on purpose and require the
 matching gate to go red. Never skipped, never deleted, never narrowed to pass. A gate that has
 only ever been seen passing is not known to be a gate.

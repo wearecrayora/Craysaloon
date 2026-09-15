@@ -251,7 +251,13 @@ No owner self-signup.
 7.1.1 Every message — OTP included — sends from **the salon's own** Message Central and WhatsApp
 Business accounts, from day one.
 
-7.1.2 **No DLT registration anywhere.** Message Central is top-up-and-send.
+7.1.2 **No DLT registration anywhere.** Message Central is top-up-and-send, and its OTPs go out
+under Message Central's own DLT-registered name.
+
+7.1.2a **Message Central owns the OTP end to end** — it generates, sends and verifies the code.
+Supabase issues a session only after Message Central returns `VERIFICATION_COMPLETED`. Never
+call `signInWithOtp`, never enable Supabase's phone provider, never build a Send SMS Hook:
+VerifyNow cannot deliver a code it did not generate (ADR-36).
 
 7.1.3 Crayora's account is a **fault-only fallback** (credentials missing, untested, send failed).
 Never a normal state, so every occurrence is logged, counted **and alerted**.
@@ -455,6 +461,9 @@ A change is not done until all of these hold.
       raise for every role; the ledger-caller set equals the five in §5.2; no paid lot can expire
 - [ ] **Index scope test** — every composite index on a tenant table leads with `salon_id`, or is
       named and justified as an exemption (§3.1)
+- [ ] **OTP test** — no salon context means no send; a code is checked only against the challenge
+      the server issued; five attempts; one verification yields at most one session; the session
+      identity carries no plaintext phone; only accounts the server created are ever adopted
 - [ ] **Pepper test** — `app.phone_hash` works with **no session GUC set**, proving the pepper is
       configured in Vault rather than supplied by the test. Every other test sets the GUC, so all
       of them passed against a database that could not have provisioned a single salon

@@ -49,7 +49,7 @@ Every open question from v4.0 has been answered. These are now requirements, not
 | Decision | Ruling | Consequence |
 |---|---|---|
 | **Join flow order (v4.2)** | **Salon code first, then login.** The customer identifies the salon *before* entering their phone number | §6.4 — makes salon-sent OTP possible, brands the login screen, and closes the generic OTP-flood surface |
-| **OTP delivery** | Message Central works via Supabase's **Send SMS Hook** — confirmed. An Edge Function receives `{ sms, user }` and forwards `sms.metadata.token` to Message Central | §12.1 |
+| **OTP** | **Message Central VerifyNow generates, sends and verifies the code; Supabase issues the session only after it confirms** (ARCHITECTURE ADR-36). This row previously read "Send SMS Hook — confirmed": the hook exists, but VerifyNow cannot deliver a code it did not generate, so that design could not work. No DLT — OTPs go out under Message Central's own registered name | §12.1 |
 | **OTP sender (v4.2)** | **The salon's own Message Central account, including the very first OTP.** Crayora's platform account is a logged, alerted fallback only | §12.1 — resolution order: pending join → existing binding → owner/staff record → **refuse** |
 | **Salon transfer** | The emergency unbind stays, **and** a customer may request a salon change **through Crayora customer support**. Still no self-service path in the app | §6.5 rewritten: "one *active* binding", support-mediated transfer, wallet does **not** move |
 | **Razorpay** | Each salon uses **its own Razorpay account**. The console stores that salon's key id, key secret and webhook secret | §11, §14 |
@@ -963,9 +963,10 @@ to that salon. Per-salon daily OTP caps and per-phone/IP/device limits are there
 
 ### 12.2 Rules
 
-- **OTP:** Message Central VerifyNow via Supabase's **Send SMS Hook** (§0 and ARCHITECTURE §5.2),
-  routed to **the salon's** account by the resolution order in §12.1; no DLT needed, and the
-  message body is Message Central's and unbrandable (§12.1a).
+- **OTP:** Message Central VerifyNow **generates, sends and verifies** the code (§0, ARCHITECTURE
+  §5.2, ADR-36), from **the salon's** account by the resolution order in §12.1; Supabase issues the
+  session only after VerifyNow confirms. No DLT needed — OTPs go out under Message Central's own
+  registered name — and the message body is Message Central's and unbrandable (§12.1a).
   **Rate-limit OTP requests** per phone, per IP, per device **and per salon per day** — every OTP
   is now a paid SMS on *the salon's* bill, so the cap protects the owner, not us.
 - **Utility** (booking / wallet / receipt): push first, ack-gated (§10.1); the salon's WhatsApp
@@ -1117,10 +1118,12 @@ all lists; client-side image compression.
   stored encrypted at rest with a reference-only row in `salon_integrations`. Decryptable **only**
   inside Edge Functions with the service role. No tenant role can select them; the console shows
   last-4 and a *Test connection* result. Rotation replaces, never reveals. Never logged.
-- **The OTP hook endpoint must authenticate its caller.** Supabase signs Send-SMS-Hook requests;
-  the Edge Function **must verify that signature and reject anything else**. An unauthenticated
-  hook URL is a free-SMS machine pointed at Crayora's Message Central bill. The OTP token is
-  never written to a log.
+- **The OTP endpoints are public, so they must refuse by default.** `otp-send` is reachable before
+  login, which makes it a free-SMS machine pointed at a salon's Message Central bill unless it
+  refuses a number with no salon context and is rate-limited per phone, per caller and per salon
+  per day. `otp-verify` checks a code only against the challenge the server issued — bound to
+  phone and salon, at most five attempts — and issues a session only on
+  `VERIFICATION_COMPLETED`. The OTP, the Message Central token and the session are never logged.
 - **Financial integrity:** immutable ledgers enforced by revoked grants *and* a blocking trigger;
   reversals are new rows, not deletes. **There is no manual balance-adjustment path for owners or
   managers at all**, so the largest internal-fraud surface in the product simply does not exist.
@@ -1297,7 +1300,7 @@ separated this way.
 | **0** | Repo + `CLAUDE.md` + `ARCHITECTURE.md` + Flutter + Supabase + FCM wired; i18n scaffold |
 | **1** | Full schema (§8) + RLS (§7) + **catalogue-driven cross-tenant leak test** |
 | **2** | ⭐ **Super-admin console v1 on Vercel** — provision a salon, branding, credentials (encrypted), salon code + QR pack, owner invite (§6.2, §11). **Moved ahead of auth in v4.2:** login now needs salon codes and per-salon Message Central credentials to exist first |
-| **3** | ⭐ **Salon-code-first auth** — resolve code → theme the app → OTP **from that salon's** Message Central via the Send SMS Hook → claims hook; per-phone/IP/device/salon rate limits; platform fallback (§6.4, §12.1) |
+| **3** | ⭐ **Salon-code-first auth** — resolve code → theme the app → OTP **from that salon's** Message Central (VerifyNow generates and verifies; Supabase issues the session after) → claims hook; per-phone/IP/device/salon rate limits; platform fallback (§6.4, §12.1) |
 | **4** | ⭐ **Binding + white-label** — bind atomically at first login (§6.5), full theming, pinned shortcut (§6.6) |
 | **5** | Services, add-ons, staff, customer profiles, visit history, offline cache |
 | **6** | Booking + slots + add-ons; slot-conflict constraint; offline queue + "Needs attention" |
@@ -1486,10 +1489,11 @@ building anything that sounds reasonable but is absent.
   stays iOS-compatible and app/ios must never rot (RULES 8.11)
 - Admin console: Next.js on Vercel
 - Auth: Supabase Auth (phone OTP)
-- OTP delivery: Message Central via Supabase's Send SMS Hook, routed to THE SALON'S
-  OWN account (salon code is entered BEFORE login, so the salon is always known).
-  Crayora's platform account is a logged, alerted fallback only. Verify the hook
-  signature; never log the token; refuse OTP for a number with no salon context.
+- OTP: Message Central VerifyNow generates, sends AND verifies the code, from THE SALON'S
+  OWN account (salon code is entered BEFORE login, so the salon is always known). Supabase
+  issues the session only after VerifyNow confirms. No Send SMS Hook, no Supabase phone OTP
+  (ADR-36). Crayora's platform account is a logged, alerted fallback only. Never log the
+  code or the token; refuse OTP for a number with no salon context.
 - DB + isolation: Supabase Postgres + Row-Level Security (RLS)
 - Files: Cloudflare R2 (logos, photos, invoices) — signed URLs for private files
 - Serverless + all messaging/payment calls: Supabase Edge Functions

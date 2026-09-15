@@ -145,9 +145,9 @@ claim — *it looks like the salon's own app* — is either true or not.
 | | |
 |---|---|
 | **Read** | `RULES.md` §4, §7.1, §7.4 · PRD §6.4, §12.1, §12.1a · ARCHITECTURE §5.1, §5.2, §5.6 |
-| **Build** | `resolve_join_code()` returning display name + branding, `anon`-callable, rate-limited · `start_join(code, phone)` writing `join_intents` · the `sms-hook` Edge Function with **signature verification** · `resolve_otp_sender()`: intent → binding → staff → **refuse** · platform fallback with alerting · the custom access token hook minting claims · rate limits per phone / IP / device / salon-per-day |
+| **Build** | `resolve_join_code()` returning display name + branding, `anon`-callable, rate-limited · `start_join(code, phone)` writing `join_intents` · the `otp-send` and `otp-verify` Edge Functions — Message Central VerifyNow generates, sends and verifies; Supabase issues the session only after it confirms (ADR-36) · `otp_challenges` bound server-side to phone and salon, ≤5 attempts · `resolve_otp_sender()`: intent → binding → staff → **refuse** · platform fallback with alerting · the custom access token hook minting claims · rate limits per phone / IP / device / salon-per-day |
 | **Not yet** | Binding itself (M4). Auth ends at a valid session |
-| **Done when** | An OTP request with no salon context is **refused** · the hook rejects unsigned requests · the token never appears in any log or breadcrumb · a salon with broken credentials falls back **and alerts** · the login screen already wears the salon's branding |
+| **Done when** | An OTP request with no salon context is **refused** · a code is only ever checked against the challenge the server issued, never one the client names · a session is issued only on `VERIFICATION_COMPLETED` · the token never appears in any log or breadcrumb · a salon with broken credentials falls back **and alerts** · the login screen already wears the salon's branding |
 
 > **Note:** the Message Central platform account must exist before this milestone starts (§8).
 

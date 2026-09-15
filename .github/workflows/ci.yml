@@ -153,6 +153,22 @@ jobs:
       - name: Secret scan the built bundle
         run: ./scripts/secret-scan.sh
 
+  functions:
+    name: Edge Functions (deno check)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      # The OTP functions are the only code between a stranger and a login.
+      # They were type-checked before the first commit and must stay that way:
+      # a type error here is a login that fails in production, or worse, one
+      # that succeeds when it should not.
+      - name: Type-check
+        working-directory: supabase/functions
+        run: deno check otp-send/index.ts otp-verify/index.ts
+
   database:
     name: Database gates (leak, binding, money)
     runs-on: ubuntu-latest
