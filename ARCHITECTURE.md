@@ -269,6 +269,17 @@ Properties, each verified or asserted by a gate:
 - **At most five attempts per challenge**, a short expiry, and the rate limits in `start_join` and
   `otp-send`. Message Central's own validation throttling sits behind them, not instead of them.
 - **Never logged:** the OTP, the Message Central token, the `verificationId`, the session.
+- **The code lives about 60 seconds.** VerifyNow's send response carries `"timeout": "60"`, and a
+  code checked after that returns `responseCode 705, VERIFICATION_EXPIRED` - found on the first
+  live test, where relaying the code by hand took longer. `otp-send` returns that window as
+  `expires_in` so the app's countdown is honest, and `otp-verify` reports an expired code as
+  `expired`, not `wrong_code`: a customer who typed the right code slowly must be offered a resend,
+  not told to retype it and burn their attempts. Android's SMS Retriever auto-fill is what makes 60
+  seconds comfortable in practice.
+- **Verified end to end on the live project, 2026-09-15**, with public sign-up disabled: a number
+  that had never existed resolved a salon code, received a real OTP, and was issued a session 29
+  seconds later. Replaying the challenge was refused; the new, unbound account could read zero
+  rows from every tenant table; `auth.users` held no phone number.
 
 **Sender routing (v2.2) — how the hook knows which salon's account to send from.** The hook is
 invoked by GoTrue and receives only `sms.to` and the token; it gets no client-supplied context,

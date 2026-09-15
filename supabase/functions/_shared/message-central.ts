@@ -48,7 +48,10 @@ async function call(url: string, init: RequestInit): Promise<{ status: number; b
 }
 
 export type SendResult =
-  | { ok: true; verificationId: string }
+  // timeoutSeconds is how long Message Central will accept the code. Measured
+  // 2026-09-15: 60 seconds. It is returned so the app's countdown tells the
+  // truth - our own challenge lives longer, but the code does not.
+  | { ok: true; verificationId: string; timeoutSeconds: number }
   | { ok: false; reason: string };
 
 export async function mcSend(creds: McCreds, mobile: string, countryCode = '91'): Promise<SendResult> {
@@ -67,7 +70,8 @@ export async function mcSend(creds: McCreds, mobile: string, countryCode = '91')
     });
     const id = body?.data?.verificationId;
     if (status === 200 && body?.responseCode === 200 && id) {
-      return { ok: true, verificationId: String(id) };
+      const t = Number(body?.data?.timeout);
+      return { ok: true, verificationId: String(id), timeoutSeconds: Number.isFinite(t) && t > 0 ? t : 60 };
     }
     // The provider's own response code is safe to report; the body is not
     // echoed, because it can carry the mobile number.
@@ -77,7 +81,13 @@ export async function mcSend(creds: McCreds, mobile: string, countryCode = '91')
   }
 }
 
-export type ValidateResult = { ok: true } | { ok: false; reason: string };
+// `expired` is separated from every other failure on purpose. A customer who
+// typed the RIGHT code a little too slowly must be told to resend, not that
+// the code was wrong - otherwise they retype the same correct code and burn
+// their attempts on a verification that can no longer succeed.
+export type ValidateResult =
+  | { ok: true }
+  | { ok: false; expired: boolean; reason: string };
 
 export async function mcValidate(
   creds: McCreds,
@@ -97,8 +107,22 @@ export async function mcValidate(
     if (status === 200 && body?.data?.verificationStatus === 'VERIFICATION_COMPLETED') {
       return { ok: true };
     }
-    return { ok: false, reason: String(body?.data?.verificationStatus ?? `http_${status}`) };
+    // Message Central reports a failed check in the TOP-LEVEL fields, not in
+    // data.verificationStatus - found by asking it directly, 2026-09-15:
+    //   { "responseCode": 705, "message": "VERIFICATION_EXPIRED" }
+    // The code and message are status words, safe to log; the body is not.
+    const message = String(body?.message ?? body?.data?.verificationStatus ?? '');
+    const code = body?.responseCode ?? status;
+    return {
+      ok: false,
+      expired: code === 705 || /EXPIRED/i.test(message),
+      reason: `mc_${code}_${message || 'unknown'}`,
+    };
   } catch (e) {
-    return { ok: false, reason: e instanceof DOMException && e.name === 'TimeoutError' ? 'timeout' : 'network' };
+    return {
+      ok: false,
+      expired: false,
+      reason: e instanceof DOMException && e.name === 'TimeoutError' ? 'timeout' : 'network',
+    };
   }
 }

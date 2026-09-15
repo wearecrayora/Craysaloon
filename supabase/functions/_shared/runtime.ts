@@ -5,12 +5,14 @@ import { createClient, type SupabaseClient } from 'jsr:@supabase/supabase-js@2';
 
 /**
  * The service-role client. Supabase injects SUPABASE_URL and a legacy
- * SUPABASE_SERVICE_ROLE_KEY into every function; this project uses the new
- * key format, so SUPABASE_SECRET_KEY is set as a function secret and wins.
+ * SUPABASE_SERVICE_ROLE_KEY into every function. This project uses the new
+ * sb_secret_ key format, set as a function secret named CRAY_SECRET_KEY -
+ * not SUPABASE_SECRET_KEY, because Supabase reserves the SUPABASE_ prefix for
+ * the secrets it injects and refuses custom ones that use it.
  */
 export function admin(): SupabaseClient {
   const url = Deno.env.get('SUPABASE_URL');
-  const key = Deno.env.get('SUPABASE_SECRET_KEY') ?? Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  const key = Deno.env.get('CRAY_SECRET_KEY') ?? Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if (!url || !key) throw new Error('Supabase URL or secret key is not configured');
   return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
 }

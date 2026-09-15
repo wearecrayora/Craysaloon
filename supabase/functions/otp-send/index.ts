@@ -26,7 +26,7 @@ import { admin, alert, clientAddress, json } from '../_shared/runtime.ts';
  */
 async function decoy(): Promise<Response> {
   await new Promise((r) => setTimeout(r, 450 + Math.floor(Math.random() * 500)));
-  return json(200, { challenge_id: crypto.randomUUID() });
+  return json(200, { challenge_id: crypto.randomUUID(), expires_in: 60 });
 }
 
 Deno.serve(async (req) => {
@@ -109,5 +109,7 @@ Deno.serve(async (req) => {
     return json(500, { error: 'internal' });
   }
 
-  return json(200, { challenge_id: challengeId });
+  // expires_in is Message Central's window for the CODE, which is what the
+  // customer is racing - not our challenge's, which is longer.
+  return json(200, { challenge_id: challengeId, expires_in: sent.timeoutSeconds });
 });

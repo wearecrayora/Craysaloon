@@ -60,6 +60,13 @@ Deno.serve(async (req) => {
 
   const checked = await mcValidate(creds, att.verification_id, code);
   if (!checked.ok) {
+    // Status word only - never the code, the token or the verification id.
+    console.log(JSON.stringify({ otp_verify_failed: checked.reason }));
+    if (checked.expired) {
+      // Message Central's code has died (about 60 seconds). The app should
+      // offer a resend, not ask the customer to retype a code that was right.
+      return json(400, { error: 'expired' });
+    }
     return json(400, { error: 'wrong_code', attempts_left: att.attempts_left });
   }
 
@@ -76,7 +83,9 @@ Deno.serve(async (req) => {
     const { data: created, error } = await db.auth.admin.createUser({
       email: identity,
       email_confirm: true,
-      app_metadata: { provider: 'message_central' },
+      // Not `provider`: Supabase reserves that key and silently overwrites it
+      // with 'email' - observed on the first live account, 2026-09-15.
+      app_metadata: { signup_via: 'message_central_otp' },
     });
 
     if (error) {
