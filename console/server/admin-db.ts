@@ -234,6 +234,10 @@ export type SalonRow = {
   setup_fee_status: string | null;
   integrations_ok: number;
   integrations_total: number;
+  /** The salon's own Message Central account is stored and not known-bad. */
+  otp_own_account: boolean;
+  /** OTPs Crayora paid for, last 7 days (RULES 7.1.3: never a normal state). */
+  otp_fallbacks_7d: number;
 };
 
 export async function listSalons(): Promise<SalonRow[]> {
@@ -243,7 +247,13 @@ export async function listSalons(): Promise<SalonRow[]> {
            s.created_at, s.activated_at,
            sub.plan, sub.setup_fee_paise::text, sub.setup_fee_status::text,
            count(*) filter (where si.status = 'ok')::int      as integrations_ok,
-           count(si.*)::int                                    as integrations_total
+           count(si.*)::int                                    as integrations_total,
+           coalesce(bool_or(si.provider = 'message_central'
+                   and si.vault_secret_id is not null
+                   and si.status <> 'failing'), false)         as otp_own_account,
+           (select count(*)::int from public.otp_challenges oc
+             where oc.salon_id = s.id and oc.sender = 'platform'
+               and oc.created_at > now() - interval '7 days')  as otp_fallbacks_7d
       from public.salons s
       left join public.subscriptions sub on sub.salon_id = s.id
       left join public.salon_integrations si on si.salon_id = s.id

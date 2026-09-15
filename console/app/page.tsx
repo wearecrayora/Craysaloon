@@ -45,7 +45,7 @@ export default async function Page() {
                   <th>Code</th>
                   <th>Status</th>
                   <th>Setup fee</th>
-                  <th>Integrations</th>
+                  <th>OTP &amp; integrations</th>
                   <th />
                 </tr>
               </thead>

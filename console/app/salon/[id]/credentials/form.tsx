@@ -61,13 +61,43 @@ export function CredentialForm({
       <p className="hint" style={{ margin: '6px 0 0' }}>{blurb}</p>
       <p className="hint" style={{ margin: '2px 0 12px' }}>{STATUS_NOTE[row.status]}</p>
 
+      {row.provider === 'message_central' && (
+        <div className="notice" style={{ marginTop: 0 }}>
+          <strong>This is the account the salon’s customers get their OTP from, and it pays
+          for every one.</strong> Both values are in the salon’s own Message Central dashboard.
+          They are checked with Message Central before saving - no SMS is sent - and a pair that
+          does not belong together is refused.
+          {!row.has_secret && (
+            <>
+              {' '}
+              <strong>Until this is filled in, this salon’s customers get their OTP from
+              Crayora’s account, at Crayora’s cost</strong>, and every one raises an alert.
+            </>
+          )}
+          <br />
+          The customer sees no difference either way: the text arrives under Message
+          Central’s registered sender with Message Central’s wording, which cannot be
+          changed.
+        </div>
+      )}
+
       {state.error && <div className="error">{state.error}</div>}
       {state.ok && <div className="notice">{state.ok}</div>}
 
       <div className="row">
         <div>
           <label htmlFor={`secret-${row.provider}`}>
-            {row.has_secret ? 'Replace the secret' : 'Secret'}
+            {row.provider === 'message_central'
+              ? row.has_secret
+                ? 'Replace the auth token'
+                : 'Auth token'
+              : row.provider === 'razorpay'
+                ? row.has_secret
+                  ? 'Replace the key secret'
+                  : 'Key secret'
+                : row.has_secret
+                  ? 'Replace the secret'
+                  : 'Secret'}
           </label>
           <input
             id={`secret-${row.provider}`}
@@ -76,26 +106,39 @@ export function CredentialForm({
             type="password"
             autoComplete="off"
             spellCheck={false}
-            placeholder={row.has_secret ? 'Paste a new value to rotate' : 'Paste the credential'}
+            placeholder={
+              row.provider === 'message_central'
+                ? 'The long value starting eyJ…'
+                : row.has_secret
+                  ? 'Paste a new value to rotate'
+                  : 'Paste the credential'
+            }
           />
         </div>
         <div>
           <label htmlFor={`pk-${row.provider}`}>
-            {row.provider === 'razorpay' ? 'Key id' : 'Public identifier'}
+            {row.provider === 'razorpay'
+              ? 'Key id'
+              : row.provider === 'message_central'
+                ? 'Customer ID'
+                : 'Public identifier'}
           </label>
           <input
             id={`pk-${row.provider}`}
             name="publicKeyId"
             defaultValue={row.public_key_id ?? ''}
             autoComplete="off"
-            placeholder="Not a secret - displayed and editable"
+            placeholder={
+              row.provider === 'message_central'
+                ? 'C-…  (not secret)'
+                : 'Not a secret - displayed and editable'
+            }
+            required={row.provider === 'message_central'}
           />
         </div>
       </div>
 
-      {(row.provider === 'message_central' ||
-        row.provider === 'whatsapp' ||
-        row.provider === 'rcs') && (
+      {(row.provider === 'whatsapp' || row.provider === 'rcs') && (
         <>
           <label htmlFor={`sender-${row.provider}`}>Sender</label>
           <input
@@ -103,11 +146,7 @@ export function CredentialForm({
             name="senderId"
             defaultValue={row.sender_id ?? ''}
             autoComplete="off"
-            placeholder={
-              row.provider === 'message_central'
-                ? 'Message Central owns the OTP sender and template - this is for other messages'
-                : 'Sender / agent id'
-            }
+            placeholder="Sender / agent id"
           />
         </>
       )}

@@ -6,12 +6,14 @@ import { validateBranding, type BrandInput } from '@cray/design-tokens';
 import { requireAdmin } from '@/server/auth';
 import { renderQrPack } from '@/server/qr-pack';
 import { putObject, signedUrl } from '@/server/r2';
+import { checkMessageCentralCredentials } from '@/server/message-central-check';
 import {
   activateSalon,
   provisionSalon,
   getJoinCode,
   publishBranding,
   recordAsset,
+  recordIntegrationTest,
   recordSetupFee,
   setIntegrationSecret,
   setSalonRules,
@@ -263,14 +265,56 @@ export async function setSecretAction(_prev: ActionState, form: FormData): Promi
     return { error: 'Paste the credential before saving.' };
   }
 
+  // Message Central is checked BEFORE it is stored, because it is the one
+  // credential a customer cannot log in without. A wrong one would otherwise
+  // look fine here and fail on the salon's first customer - who would then be
+  // sent an OTP from Crayora's fallback account, at Crayora's cost. The check
+  // sends no SMS and reads nothing back from Vault: it tests the value the
+  // operator has just typed.
+  if (provider === 'message_central') {
+    if (!publicKeyId) {
+      return { error: 'Enter the salon\u2019s Message Central Customer ID as well as its auth token.' };
+    }
+    const check = await checkMessageCentralCredentials(publicKeyId, secret);
+    if (!check.ok) {
+      // Nothing is stored. The previous credential, if any, is still in use.
+      return { error: `Not saved. ${check.reason}` };
+    }
+  }
+
   try {
-    await setIntegrationSecret(admin.id, salonId, provider, secret, publicKeyId, senderId);
+    await setIntegrationSecret(
+      admin.id,
+      salonId,
+      provider,
+      secret.trim(),
+      publicKeyId,
+      // VerifyNow sends under Message Central's own registered sender, so a
+      // sender id for Message Central would be stored and never used.
+      provider === 'message_central' ? null : senderId,
+    );
+
+    if (provider === 'message_central') {
+      // It passed the check above, so record that - status `ok`, not the
+      // `untested` a save would otherwise leave. Audited like everything else.
+      await recordIntegrationTest(
+        admin.id,
+        salonId,
+        'message_central',
+        true,
+        'Checked on save: token matches the Customer ID and Message Central accepted it. No SMS sent.',
+      );
+    }
+
     revalidatePath(`/salon/${salonId}/credentials`);
     revalidatePath('/');
     return {
       ok:
-        `Saved for ${provider.replace('_', ' ')}. It cannot be read back - the console ` +
-        `only ever shows the last four characters.`,
+        provider === 'message_central'
+          ? 'Saved and checked with Message Central. From now on this salon\u2019s customers ' +
+            'get their OTP from its own account, and it pays for them.'
+          : `Saved for ${provider.replace('_', ' ')}. It cannot be read back - the console ` +
+            `only ever shows the last four characters.`,
     };
   } catch (e) {
     return { error: message(e) };

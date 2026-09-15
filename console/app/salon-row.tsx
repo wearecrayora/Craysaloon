@@ -32,7 +32,24 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
           <span style={{ color: 'var(--ink-soft)', fontSize: 12 }}>{salon.setup_fee_status}</span>
         </td>
         <td>
-          {salon.integrations_ok}/{salon.integrations_total} tested
+          {salon.otp_own_account ? (
+            <span style={{ color: 'var(--ok)', fontWeight: 600 }}>OTP: own account</span>
+          ) : (
+            // Every customer OTP for this salon is being paid for by Crayora.
+            <span style={{ color: 'var(--danger)', fontWeight: 600 }}>OTP: Crayora pays</span>
+          )}
+          {salon.otp_fallbacks_7d > 0 && (
+            <>
+              <br />
+              <span style={{ color: 'var(--danger)', fontSize: 12 }}>
+                {salon.otp_fallbacks_7d} fallback{salon.otp_fallbacks_7d === 1 ? '' : 's'} this week
+              </span>
+            </>
+          )}
+          <br />
+          <span style={{ color: 'var(--ink-soft)', fontSize: 12 }}>
+            {salon.integrations_ok}/{salon.integrations_total} tested
+          </span>
         </td>
         <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
           <Link href={`/salon/${salon.id}/branding`} style={{ fontSize: 13, marginRight: 10 }}>
@@ -66,6 +83,17 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
                 <input type="hidden" name="salonId" value={salon.id} />
                 <p className="hint" style={{ margin: '4px 0 8px' }}>
                   Activation is a deliberate act. Nothing else can do it — no payment, no timer.
+                  {!salon.otp_own_account && (
+                    <>
+                      {' '}
+                      <strong>
+                        No Message Central account yet: every customer OTP will be sent and paid
+                        for by Crayora, and each one raises an alert.
+                      </strong>{' '}
+                      Customers can still log in - that is what the fallback is for - but add
+                      the salon’s own account under Credentials.
+                    </>
+                  )}
                   {salon.setup_fee_status !== 'paid' && (
                     <>
                       {' '}
