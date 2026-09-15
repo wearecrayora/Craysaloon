@@ -65,6 +65,9 @@ Full list in `RULES.md`. The ones most often broken:
 3. One phone number has exactly **one active binding**. No switch path, no such API.
    Unbind and transfer are audited Crayora super-admin actions only.
 4. Secrets are server-side only, encrypted at rest, **never readable back** through any UI or API.
+   A salon's provider credentials (Message Central, Razorpay, WhatsApp, RCS) are set and changed
+   **only by Crayora, in the console** - no owner/manager/staff screen, endpoint or permission
+   (RULES 8.12, asserted by the admin-plane gate).
 5. `wallet_transactions` and `loyalty_ledger` are **append-only**. Reversals are new rows.
    **Money never moves offline.**
 6. **Only five callers may post to a ledger** (`RULES.md` §5.2). Neither owner nor manager is one.

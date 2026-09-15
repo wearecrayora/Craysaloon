@@ -16,7 +16,9 @@
 // Everything runs inside transactions that are always rolled back, so the
 // canary never outlives the run even against the shared hosted database.
 //
-// The same treatment is applied to the admin plane's audit gate: an
+// The same treatment is applied to the admin plane's audit gate, and to
+// RULES 8.12 - a function the owner app could call to change a payment key
+// must turn the admin-plane gate red. And to the audit gate: an
 // app_admin function that mutates without auditing must make it go red,
 // because RULES 6.5 is otherwise just a convention that a hurried session can
 // forget.
@@ -61,6 +63,25 @@ const AUDIT_CANARY = `
 `;
 
 const ADMIN_MUST_FAIL = [/writes audit_log in the same transaction/];
+
+// RULES 8.12: provider credentials are Crayora's to set, never the salon's. The
+// realistic way that breaks is not an attacker - it is a well-meant owner
+// feature: a function the owner app can call to "update my Razorpay key".
+// This is that function. The admin-plane gate must refuse it.
+const CREDENTIAL_CANARY = `
+  create function public.canary_update_my_payment_key(p_key text)
+  returns void
+  language sql
+  security definer
+  set search_path = ''
+  as $canary$
+    update public.salon_integrations set last4 = right(p_key, 4)
+     where salon_id = app.current_salon_id() and provider = 'razorpay';
+  $canary$;
+  grant execute on function public.canary_update_my_payment_key(text) to authenticated;
+`;
+
+const CREDENTIAL_MUST_FAIL = [/no function a salon can call touches provider credentials/];
 
 
 class Rollback extends Error {
@@ -132,10 +153,16 @@ try {
       AUDIT_CANARY,
       ADMIN_MUST_FAIL,
     ),
+    await check(
+      'credentials / an owner-callable function that changes a payment key',
+      ADMIN_TEST,
+      CREDENTIAL_CANARY,
+      CREDENTIAL_MUST_FAIL,
+    ),
   ];
 
   if (results.every(Boolean)) {
-    console.log('\nNEGATIVE CONTROLS PASSED - both gates go red when they should.');
+    console.log('\nNEGATIVE CONTROLS PASSED - every gate goes red when it should.');
   } else {
     console.error(
       '\nNEGATIVE CONTROL FAILED. A gate stayed green while the thing it exists' +

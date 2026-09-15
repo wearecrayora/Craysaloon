@@ -56,6 +56,7 @@ missing; they are absent on purpose. If a ticket asks for one, escalate rather t
 | An in-app owner self-signup or self-provisioning wizard | Crayora provisions salons; owners do not |
 | A hard delete of any row in `invoices`, `payments`, `wallet_transactions`, `loyalty_ledger` | Statutory retention. Archive and anonymise instead |
 | A global phone-number lookup across salons | Cross-tenant enumeration |
+| **Any owner, manager or staff screen, endpoint or permission to view or change the salon's provider credentials** — Message Central Customer ID or token, Razorpay keys, WhatsApp, RCS | They are set and changed **only by Crayora**, in the super-admin console, behind MFA, audited (8.12). A salon-side path would put the account that receives customers' money one stolen owner phone away from an attacker: change the Razorpay key and every top-up lands in someone else's account |
 
 ---
 
@@ -267,7 +268,8 @@ exception: an operator-granted messaging trial.**
 with a required reason, audited. Until it ends, that salon's customer OTPs are sent from Crayora's
 account **on purpose**, recorded as sender `trial`, and **not alerted** — so a salon can go live
 before setting up its own Message Central account. Three rules hold during a trial:
-- a salon that has entered **its own** account uses it, trial or not;
+- once Crayora has entered the salon's **own** account in the console, that account is used,
+  trial or not;
 - trial sends are counted separately and never inflate the fault-fallback count;
 - the trial is an **OTP-cost** concession only — it is not a billing trial, and it changes nothing
   about the setup fee or the subscription.
@@ -284,7 +286,8 @@ salon is **blocked**: no new customer can join, no OTP is sent, and no write suc
   `salon_writable`;
 - **never** changes the salon's status to `suspended`, which would start the road to purging its
   data;
-- lifts **the moment the salon's own account is entered**. It is a condition computed from dates,
+- lifts **the moment Crayora enters the salon's own account in the console**. It is a condition
+  computed from dates,
   not an event fired by a job.
 
 A salon that was never given a trial or grace is not blocked by this: it falls back to Crayora's
@@ -392,6 +395,14 @@ Large icon, title and channel name are the salon's.
 
 8.10 Publishing branding runs a **contrast check** and blocks an unreadable palette.
 
+8.12 **Provider credentials are Crayora's to set, never the salon's.** A salon's Message Central
+Customer ID and token, Razorpay keys, WhatsApp and RCS details are entered, rotated and removed
+**only** in the Crayora super-admin console, through `app_admin.set_integration_secret`. No owner,
+manager or staff role can read or write `salon_integrations`, and no function a tenant can call
+touches it or Vault — the admin-plane gate asserts both from the catalogue, so a future
+`update_my_razorpay_key` fails CI the day it is written. The owner app has no Integrations or
+Credentials screen and never will.
+
 ---
 
 ## 9. Offline
@@ -491,7 +502,7 @@ A change is not done until all of these hold.
       named and justified as an exemption (§3.1)
 - [ ] **Messaging access test** — trial, then grace, then block, walked in order on one salon; a
       block stops joins, OTPs and writes, never reads or consent withdrawal, never changes status,
-      and lifts the moment the salon's own account is entered
+      and lifts the moment Crayora enters the salon's own account in the console
 - [ ] **OTP test** — no salon context means no send; a code is checked only against the challenge
       the server issued; five attempts; one verification yields at most one session; the session
       identity carries no plaintext phone; only accounts the server created are ever adopted

@@ -79,6 +79,10 @@
 
 ### 1.5 Console (Next.js on Vercel)
 
+> **Provider credentials live only here, in the console** (RULES 8.12). The owner app has **no**
+> Integrations or Credentials screen: a salon can neither see nor change its Message Central,
+> Razorpay, WhatsApp or RCS details. Crayora enters and rotates them on the salon's behalf.
+
 | # | Route | Screen | M |
 |---|---|---|---|
 | K1 | `/login` | Admin login — **MFA required** | 2 |

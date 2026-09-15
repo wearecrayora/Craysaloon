@@ -567,7 +567,7 @@ export async function setGraceAction(_prev: ActionState, form: FormData): Promis
       ok:
         days === 0
           ? 'Grace ended. If this salon has no Message Central account of its own, it is now blocked.'
-          : `Grace runs until ${when}. After that, unless the salon has added its own Message Central account, it is blocked.`,
+          : `Grace runs until ${when}. After that, unless you have entered the salon’s own Message Central account under Credentials, it is blocked.`,
     };
   } catch (e) {
     return { error: message(e) };

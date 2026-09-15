@@ -185,10 +185,10 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
                 <strong style={{ fontSize: 14 }}>Grace period</strong>
                 <p className="hint" style={{ margin: '4px 0 8px' }}>
                   {ms === 'grace' && graceEnds
-                    ? `Running until ${fmt(graceEnds)}. Crayora still sends this salon’s OTPs until then; after that it is blocked unless it has added its own account. Enter a new length to change it, or 0 to end it now.`
+                    ? `Running until ${fmt(graceEnds)}. Crayora still sends this salon’s OTPs until then; after that it is blocked unless you have entered its own Message Central account under Credentials. Enter a new length to change it, or 0 to end it now.`
                     : ms === 'trial'
-                      ? 'Extra days after the trial ends - granted now, it starts when the trial finishes. When grace ends, the salon is blocked unless it has added its own Message Central account.'
-                      : 'Extra days, from today, during which Crayora still sends this salon’s OTPs. When they end, the salon is blocked unless it has added its own Message Central account.'}
+                      ? 'Extra days after the trial ends - granted now, it starts when the trial finishes. When grace ends, the salon is blocked unless you have entered its own Message Central account under Credentials.'
+                      : 'Extra days, from today, during which Crayora still sends this salon’s OTPs. When they end, the salon is blocked unless you have entered its own Message Central account under Credentials.'}
                 </p>
                 {graceState.ok && <div className="notice">{graceState.ok}</div>}
                 <div className="row">

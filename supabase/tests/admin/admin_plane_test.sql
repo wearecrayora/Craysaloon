@@ -8,7 +8,7 @@
 -- no credential can be read back. Each is asserted here against the catalogue,
 -- so a function added tomorrow is covered tomorrow.
 
-select plan(29);
+select plan(32);
 
 select set_config('app.phone_hash_pepper', 'admin-test-pepper', true);
 
@@ -374,6 +374,55 @@ select throws_ok(
       'salons/x/y.pdf')$$,
   'P0001', null,
   'an unknown asset kind is refused'
+);
+
+-- ---------------------------------------------------------------------------
+-- RULES 8.12: provider credentials are Crayora's to set, never the salon's
+-- ---------------------------------------------------------------------------
+--
+-- A salon's app acts only as anon or authenticated. Neither may reach a
+-- salon's Message Central, Razorpay, WhatsApp or RCS credentials - not by
+-- table, not through Vault, and not through any function. The third check is
+-- the one that matters most over time: it is catalogue-driven, so a future
+-- "update my Razorpay key" function for owners fails CI the day it is written.
+
+select is(
+  (select count(*)::int
+     from (values ('anon'), ('authenticated')) r(role),
+          (values ('SELECT'), ('INSERT'), ('UPDATE'), ('DELETE')) p(priv)
+    where has_table_privilege(r.role, 'public.salon_integrations', p.priv)),
+  0,
+  'no tenant role can read, add, change or delete a salon''s provider credentials'
+);
+
+select is(
+  (select count(*)::int
+     from (values ('anon'), ('authenticated')) r(role)
+    where has_schema_privilege(r.role, 'vault', 'USAGE')
+       or has_table_privilege(r.role, 'vault.decrypted_secrets', 'SELECT')),
+  0,
+  'no tenant role can reach Vault, where the credentials themselves are kept'
+);
+
+-- `as materialized`: pg_get_functiondef() raises on aggregates, and without the
+-- fence the planner would call it across the whole catalogue (see RULES 6.5
+-- assertion above).
+select is(
+  (with reachable as materialized (
+     select p.oid
+       from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+      where p.prokind = 'f'
+        and n.nspname not in ('pg_catalog', 'information_schema')
+        and n.nspname not like 'pg\_%'
+        and (   (has_function_privilege('anon', p.oid, 'EXECUTE')
+                 and has_schema_privilege('anon', n.oid, 'USAGE'))
+             or (has_function_privilege('authenticated', p.oid, 'EXECUTE')
+                 and has_schema_privilege('authenticated', n.oid, 'USAGE')))
+   )
+   select count(*)::int from reachable
+    where pg_get_functiondef(oid) ~* 'salon_integrations|vault[.]|set_integration_secret'),
+  0,
+  'no function a salon can call touches provider credentials - only the Crayora console can'
 );
 
 select * from finish();

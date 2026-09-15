@@ -50,7 +50,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <p className="hint">
           Every message and every rupee moves through the salon’s own provider accounts. These are
           stored encrypted and are <strong>write-only</strong>: there is no screen, endpoint or
-          database function that reads one back. Rotation replaces; it never reveals.
+          database function that reads one back. Rotation replaces; it never reveals.{' '}
+          <strong>Only Crayora can set or change these.</strong> The salon owner cannot see or
+          change them anywhere in the app - the database refuses every path, and CI fails if one
+          is ever added.
         </p>
 
         <div className="notice">

@@ -186,7 +186,8 @@ select is(
 );
 
 -- ---------------------------------------------------------------------------
--- 4. The way out: the salon adds its own account, and the block lifts at once
+-- 4. The way out: Crayora enters the salon's own account in the console, and
+--    the block lifts at once. (Only Crayora can - RULES 2, 8.12.)
 -- ---------------------------------------------------------------------------
 
 select app_admin.set_integration_secret(
