@@ -210,6 +210,14 @@ jobs:
           node scripts/db/run.mjs sql "select name, default_version, installed_version from pg_available_extensions where name = 'pgtap'"
           node scripts/db/run.mjs sql "select to_regclass('auth.users') is not null as auth_users_present, has_schema_privilege(current_user, 'auth', 'CREATE') as can_create_in_auth"
 
+      # GoTrue creates auth.sessions at startup; the bare image has no GoTrue,
+      # and `postgres` cannot create in its auth schema. The image's superuser
+      # shares POSTGRES_PASSWORD. Only this step connects as it.
+      - name: Stub the GoTrue-owned auth tables (as supabase_admin)
+        env:
+          DATABASE_URL: postgresql://supabase_admin:postgres@127.0.0.1:5432/postgres
+        run: node scripts/db/run.mjs file supabase/ci/auth-stubs.sql
+
       - name: Bootstrap the Supabase roles and auth schema
         run: node scripts/db/run.mjs file supabase/ci/bootstrap.sql
 
