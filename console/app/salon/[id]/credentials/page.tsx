@@ -57,10 +57,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         </p>
 
         <div className="notice">
-          <strong>Test connection is not built yet.</strong> Verifying a credential means using it,
-          and decryption is supposed to happen inside an Edge Function at the moment of use — those
-          arrive with M3. Until then <code>status</code> stays <code>untested</code> after a save.
-          Nothing here pretends otherwise.
+          <strong>Message Central is checked on save:</strong> the pair is verified with Message
+          Central before it is stored - no SMS is sent - and shows <code>ok</code> if it passes.{' '}
+          <strong>Razorpay, WhatsApp and RCS are not tested yet</strong>: they stay{' '}
+          <code>untested</code> after a save until their Test connection is built. Nothing here
+          pretends otherwise.
         </div>
 
         {rows.map((row) => (

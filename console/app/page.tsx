@@ -22,6 +22,7 @@ export default async function Page() {
         <div className="wrap">
           <strong>Crayora Console</strong>
           <Link href="/provision">Provision a salon</Link>
+          <Link href="/customers/binding">Customer binding</Link>
           <span className="who">
             {admin.name} · {admin.email}
           </span>

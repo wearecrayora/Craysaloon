@@ -130,8 +130,14 @@ leak dressed as an error message.
 `audit_log` **and** `binding_events` in the same transaction.
 
 4.6 A transfer moves the binding and **nothing else** — wallet, history, loyalty and packages stay
-with the old salon. `acknowledged_balance_paise` is a required parameter, so support cannot
-complete a transfer without having looked up and disclosed the balance.
+with the old salon. `acknowledged_balance_paise` is a required parameter **and must equal the
+balance the customer holds at that moment** (0036), so support cannot complete a transfer without
+having looked up and disclosed the real figure — typing `0` is refused.
+
+4.6a Support looks the number up with `app_admin.lookup_binding`: **super-admin only, one complete
+number, a typed reason, an `audit_log` row on every call — found or not — keeping the last four
+digits only.** No partial match, no list, no tenant path. That is what keeps it on the right side of
+§2's ban on a global phone lookup: it cannot enumerate, and every use leaves a named trail.
 
 4.7 Phone numbers are stored as a **peppered HMAC**, pepper in Vault. A plain hash over a ~10⁹
 keyspace is equivalent to plaintext.
@@ -511,8 +517,9 @@ A change is not done until all of these hold.
       step, with the verified number and DPDP-correct consent defaults; a number bound elsewhere is
       refused naming no salon; staff are attached, never made customers; the claims hook stamps
       role and salon and never gives a platform admin a salon; unbind is refused once history
-      exists; a transfer needs the acknowledged balance, leaves the wallet behind, and ends the
-      customer's sessions
+      exists; a transfer needs the acknowledged balance - the REAL one - leaves the wallet
+      behind, and ends the customer's sessions; an ordinary operator can neither look a number
+      up nor unbind nor transfer; every lookup is audited, found or not, without the full number
 - [ ] **OTP test** — no salon context means no send; a code is checked only against the challenge
       the server issued; five attempts; one verification yields at most one session; the session
       identity carries no plaintext phone; only accounts the server created are ever adopted

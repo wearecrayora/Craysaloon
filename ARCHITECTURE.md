@@ -503,7 +503,15 @@ exclusively by the console's server half, both requiring a typed reason and both
 | `app_admin.transfer_customer(actor, phone, to_salon_id, reason, acknowledged_balance_paise)` | The customer genuinely wants to move salons | Repoints the identity row; **nothing else moves** |
 
 Both take the phone number the operator was given, not a hash: the function hashes it, so the hash
-never leaves the database. Both end every session the customer holds (0035).
+never leaves the database. Both end every session the customer holds (0035). **Both are
+super-admin only** (`app_admin.assert_super_admin`, 0036 - 0034 had checked only for an active
+admin, contrary to §14.3 invariant 7).
+
+Support first calls `app_admin.lookup_binding(actor, phone, reason)` (0036): the salon, the
+balance (paid and bonus), the history counts, and whether unbind is possible. Super-admin only,
+one complete number, audited on every call with the last four digits only - a lookup, not a
+search (RULES 2, 4.6a). The transfer then refuses any `acknowledged_balance_paise` that is not
+the balance at that moment, read under the same lock as the move.
 
 **What a transfer deliberately does not move — and why the architecture cannot move it even if
 we wanted to:**

@@ -96,7 +96,7 @@
 | K9 | `/salons/:id/qr` | QR pack — regenerate, download PDF | 2 |
 | K10 | `/salons/:id/billing` | Record offline setup fee · **activate** · subscription · dunning | 11 |
 | K11 | `/salons/:id/support` | **Support mode** — time-boxed, reason, masked PII | 12 |
-| K12 | `/customers/binding` | **Unbind / transfer** — reason + acknowledged balance | 4 |
+| K12 | `/customers/binding` | **Unbind / transfer** — super-admin only · exact-number lookup with a reason (audited) · unbind offered only with no history · transfer needs the destination, a typed reason, the balance **as disclosed** (must match) and a tick that the customer was told · *built 2026-09-15* | 4 |
 | K13 | `/customers/wallet-correct` | **The only human path to a balance** | 7 |
 | K14 | `/metrics` | MRR, churn, activation, push:WhatsApp, time-to-first-bind | 11 |
 | K15 | `/flags` | Per-salon feature flags | 11 |
@@ -247,8 +247,10 @@ being logged.
 | `publish_branding(salon_id, tokens)` | Runs the contrast gate; bumps `version` |
 | `set_integration_secret(salon_id, provider, secret)` | **Write-only. No read counterpart exists** |
 | `test_integration(salon_id, provider)` | Returns pass/fail + reason. Never the credential |
-| `unbind_customer(actor, phone, reason)` | Correction path · **refused once any wallet, booking or visit exists** · ends the customer's sessions |
-| `transfer_customer(actor, phone, to_salon_id, reason, acknowledged_balance_paise)` | **Refuses without the acknowledged balance** · wallet and history stay · fresh customer, number and consent at the destination · ends the customer's sessions |
+| `assert_super_admin(actor)` | Binding changes and wallet correction are super-admin only (ARCHITECTURE 14.3 #7) |
+| `lookup_binding(actor, phone, reason)` | **Super-admin** · one complete number · audited found or not, last four digits only · returns salon, balance (paid/bonus), history counts, `can_unbind` |
+| `unbind_customer(actor, phone, reason)` | **Super-admin** · correction path · **refused once any wallet, booking or visit exists** · ends the customer's sessions |
+| `transfer_customer(actor, phone, to_salon_id, reason, acknowledged_balance_paise)` | **Super-admin** · **refuses unless the acknowledged balance equals the real one** · wallet and history stay · fresh customer, number and consent at the destination · ends the customer's sessions |
 | `wallet_correct(customer_id, amount_paise, reason)` | The only human path to a balance |
 | `record_setup_fee(salon_id, amount_paise, paid_on, reference)` | Offline payment record |
 | `start_support_session(salon_id, reason)` | Time-boxed; every read inside is logged |

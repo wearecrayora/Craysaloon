@@ -154,6 +154,73 @@ export async function setMessagingGrace(
   return row.ends;
 }
 
+// ---------------------------------------------------------------------------
+// Customer binding (K12). Super-admin only - enforced by the database
+// (app_admin.assert_super_admin, 0036), not by this file.
+// ---------------------------------------------------------------------------
+
+export type BindingLookup =
+  | { bound: false }
+  | {
+      bound: true;
+      salon_id: string;
+      salon_name: string;
+      join_code: string;
+      salon_status: string;
+      customer_status: string;
+      bound_at: string;
+      wallet_transactions: number;
+      bookings: number;
+      visits: number;
+      can_unbind: boolean;
+      balance_paise: number;
+      paid_paise: number;
+      bonus_paise: number;
+    };
+
+/** RULES 4.6 + RULES 2: one complete number, a reason, audited - not a search. */
+export async function lookupBinding(
+  actorAdminId: string,
+  phone: string,
+  reason: string,
+): Promise<BindingLookup> {
+  const sql = client();
+  const [row] = await sql<{ r: BindingLookup }[]>`
+    select app_admin.lookup_binding(${actorAdminId}::uuid, ${phone}, ${reason}) as r`;
+  if (!row) throw new Error('lookup_binding returned no row');
+  return row.r;
+}
+
+export async function unbindCustomer(actorAdminId: string, phone: string, reason: string) {
+  const sql = client();
+  await sql`select app_admin.unbind_customer(${actorAdminId}::uuid, ${phone}, ${reason})`;
+}
+
+/** RULES 4.6 - the acknowledged balance must equal the real one, or the database refuses. */
+export async function transferCustomer(
+  actorAdminId: string,
+  phone: string,
+  toSalonId: string,
+  reason: string,
+  acknowledgedBalancePaise: number,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.transfer_customer(
+      ${actorAdminId}::uuid, ${phone}, ${toSalonId}::uuid, ${reason},
+      ${acknowledgedBalancePaise}::bigint)`;
+}
+
+/** Where a customer can be transferred to: salons that can take a new customer today. */
+export async function listTransferDestinations() {
+  const sql = client();
+  return sql<{ id: string; display_name: string; join_code: string }[]>`
+    select id, display_name, join_code
+      from public.salons
+     where status = 'active' and app.salon_writable(id)
+     order by display_name`;
+}
+
 /** RULES 6.3 - the only door from setup to active, and it names a human. */
 export async function activateSalon(actorAdminId: string, salonId: string, reason: string | null) {
   const sql = client();

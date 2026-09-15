@@ -11,7 +11,11 @@ import {
   activateSalon,
   provisionSalon,
   getJoinCode,
+  lookupBinding,
   publishBranding,
+  transferCustomer,
+  unbindCustomer,
+  type BindingLookup,
   recordAsset,
   recordIntegrationTest,
   recordSetupFee,
@@ -568,6 +572,102 @@ export async function setGraceAction(_prev: ActionState, form: FormData): Promis
         days === 0
           ? 'Grace ended. If this salon has no Message Central account of its own, it is now blocked.'
           : `Grace runs until ${when}. After that, unless you have entered the salon’s own Message Central account under Credentials, it is blocked.`,
+    };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Customer binding (K12) - super-admin only. The database enforces that
+// (0036); the checks here only turn a refusal into a sentence.
+// ---------------------------------------------------------------------------
+
+export type BindingState = {
+  error?: string;
+  ok?: string;
+  /** The number exactly as looked up, carried to the unbind/transfer forms. */
+  phone?: string;
+  result?: BindingLookup;
+};
+
+const SUPER_ONLY =
+  'Customer binding is for a Crayora super-admin only. Ask one to handle this - every action here moves a customer between businesses.';
+
+/** "1,234.50" / "₹550" / "0" -> paise, or null. Integer arithmetic only: money is never a float. */
+function strictRupeesToPaise(raw: string): number | null {
+  const m = /^(\d+)(?:\.(\d{1,2}))?$/.exec(raw.replace(/[₹,\s]/g, ''));
+  if (!m) return null;
+  return Number(m[1]) * 100 + Number((m[2] ?? '').padEnd(2, '0'));
+}
+
+export async function lookupBindingAction(
+  _prev: BindingState,
+  form: FormData,
+): Promise<BindingState> {
+  const admin = await requireAdmin();
+  if (!admin.isSuper) return { error: SUPER_ONLY };
+
+  const p = phone.safeParse(String(form.get('phone') ?? ''));
+  if (!p.success) return { error: 'Enter the customer’s complete 10-digit mobile number.' };
+  const reason = String(form.get('reason') ?? '').trim();
+  if (!reason) return { error: 'A reason is required - every lookup is recorded against your name.' };
+
+  try {
+    const result = await lookupBinding(admin.id, p.data, reason);
+    return { phone: p.data, result };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function unbindAction(_prev: BindingState, form: FormData): Promise<BindingState> {
+  const admin = await requireAdmin();
+  if (!admin.isSuper) return { error: SUPER_ONLY };
+
+  const number = String(form.get('phone') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+  if (reason.length < 10) {
+    return { error: 'Write down why, in a sentence - it is the audit entry for this unbind.' };
+  }
+
+  try {
+    await unbindCustomer(admin.id, number, reason);
+    return {
+      ok: 'Unbound. The customer was signed out everywhere and can now join a salon by entering its code.',
+    };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function transferAction(_prev: BindingState, form: FormData): Promise<BindingState> {
+  const admin = await requireAdmin();
+  if (!admin.isSuper) return { error: SUPER_ONLY };
+
+  const number = String(form.get('phone') ?? '');
+  const toSalonId = String(form.get('toSalonId') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+  const acknowledged = strictRupeesToPaise(String(form.get('acknowledged') ?? ''));
+
+  if (!toSalonId) return { error: 'Choose the salon the customer is moving to.' };
+  if (reason.length < 10) {
+    return { error: 'Write down why, in a sentence - it is the audit entry for this transfer.' };
+  }
+  if (acknowledged === null) {
+    return { error: 'Enter the balance you told the customer, in rupees - for example 550 or 550.50.' };
+  }
+  if (form.get('told') !== 'on') {
+    return {
+      error:
+        'Tick the box only once you have told the customer: their balance stays with the old salon and cannot be moved or refunded.',
+    };
+  }
+
+  try {
+    await transferCustomer(admin.id, number, toSalonId, reason, acknowledged);
+    return {
+      ok: 'Transferred. The customer was signed out everywhere; their next login opens the new salon, starting fresh. Their old wallet and history stay with the old salon.',
     };
   } catch (e) {
     return { error: message(e) };

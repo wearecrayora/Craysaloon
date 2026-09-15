@@ -82,7 +82,10 @@ select is(
         -- The audit writer itself.
         'audit',
         -- Read-only: they inspect or generate, they mutate nothing.
-        'assert_admin', 'generate_join_code',
+        'assert_admin', 'assert_super_admin', 'generate_join_code',
+        -- Read-only and STABLE: the balance a transfer would leave behind
+        -- (0036). Called by lookup_binding and transfer_customer, which audit.
+        'binding_balance',
         -- Infrastructure: it changes grants, not tenant data, and is called
         -- from migrations rather than from the console (0020).
         'close_privileges'
@@ -95,8 +98,8 @@ select is(
 -- A stale exemption is a hole waiting for a name collision.
 select is(
   (select count(*)::int
-     from unnest(array['audit', 'assert_admin', 'generate_join_code',
-                 'close_privileges']) as e(name)
+     from unnest(array['audit', 'assert_admin', 'assert_super_admin', 'generate_join_code',
+                 'binding_balance', 'close_privileges']) as e(name)
     where not exists (
       select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
        where n.nspname = 'app_admin' and p.proname = e.name)),

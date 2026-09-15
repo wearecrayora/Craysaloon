@@ -12,16 +12,18 @@
 -- and what every binding change must also do (0035): announce a new customer,
 -- and end the sessions of one whose binding moved or went.
 
-select plan(32);
+select plan(40);
 
 insert into auth.users (id) values
-  ('88888888-aaaa-4000-8000-00000000000a'),   -- operator
+  ('88888888-aaaa-4000-8000-00000000000a'),   -- operator (not super)
+  ('88888888-aaaa-4000-8000-00000000000b'),   -- super-admin
   ('88888888-aaaa-4000-8000-0000000000c1'),   -- customer
   ('88888888-aaaa-4000-8000-0000000000c2'),   -- second customer
   ('88888888-aaaa-4000-8000-0000000000f1');   -- salon B's owner
 
 insert into public.platform_admins (id, email, name, is_super, active)
-values ('88888888-aaaa-4000-8000-00000000000a', 'bind@crayora.test', 'Bind Op', false, true);
+values ('88888888-aaaa-4000-8000-00000000000a', 'bind@crayora.test', 'Bind Op', false, true),
+       ('88888888-aaaa-4000-8000-00000000000b', 'super@crayora.test', 'Bind Super', true, true);
 
 insert into public.salons (id, legal_name, display_name, join_code, status,
                            activated_by, activated_at)
@@ -218,10 +220,24 @@ select public.otp_finish_login((select id from t5), '88888888-aaaa-4000-8000-000
 insert into auth.sessions (id, user_id)
 values (extensions.gen_random_uuid(), '88888888-aaaa-4000-8000-0000000000c2');
 
-select lives_ok(
+select throws_ok(
   $$select app_admin.unbind_customer('88888888-aaaa-4000-8000-00000000000a',
       '9844400002', 'Scanned the wrong salon''s QR')$$,
-  'a customer with no history can be unbound by Crayora'
+  '42501', null,
+  'an ordinary operator cannot unbind - binding changes are super-admin only (ARCH 14.3 #7)'
+);
+
+select is(
+  app_admin.lookup_binding('88888888-aaaa-4000-8000-00000000000b', '9844400002',
+                           'Customer called: scanned the wrong QR') ->> 'can_unbind',
+  'true',
+  'the lookup tells support a customer with no history can be unbound'
+);
+
+select lives_ok(
+  $$select app_admin.unbind_customer('88888888-aaaa-4000-8000-00000000000b',
+      '9844400002', 'Scanned the wrong salon''s QR')$$,
+  'a customer with no history can be unbound by a Crayora super-admin'
 );
 
 select is(
@@ -240,12 +256,50 @@ select is(
 insert into public.wallet_transactions (salon_id, customer_id, kind, amount_paise, balance_after)
 select '88888888-0000-4000-8000-00000000000a', id, 'credit_topup', 55000, 55000
   from public.customers where phone_hash = app.phone_hash('9844400001');
+insert into public.wallet_accounts (customer_id, salon_id, balance_paise)
+select id, '88888888-0000-4000-8000-00000000000a', 55000
+  from public.customers where phone_hash = app.phone_hash('9844400001');
 
 select throws_ok(
-  $$select app_admin.unbind_customer('88888888-aaaa-4000-8000-00000000000a',
+  $$select app_admin.unbind_customer('88888888-aaaa-4000-8000-00000000000b',
       '9844400001', 'wants to leave')$$,
   'P0001', null,
   'a customer with history cannot be unbound - only transferred, with the balance acknowledged'
+);
+
+-- ---------------------------------------------------------------------------
+-- The lookup support must do first (RULES 4.6), without being a search (RULES 2)
+-- ---------------------------------------------------------------------------
+
+create temp table lk as
+  select app_admin.lookup_binding('88888888-aaaa-4000-8000-00000000000b', '9844400001',
+                                  'Customer asked to move salons') as r;
+
+select results_eq(
+  $$select r ->> 'salon_name', (r ->> 'balance_paise')::bigint, r ->> 'can_unbind' from lk$$,
+  $$values ('Salon Alpha', 55000::bigint, 'false')$$,
+  'a super-admin sees the salon, the balance to disclose, and that only a transfer is possible'
+);
+
+select throws_ok(
+  $$select app_admin.lookup_binding('88888888-aaaa-4000-8000-00000000000a', '9844400001', 'curious')$$,
+  '42501', null,
+  'an ordinary operator cannot look a number up'
+);
+
+select is(
+  app_admin.lookup_binding('88888888-aaaa-4000-8000-00000000000b', '9844400077', 'probe') ->> 'bound',
+  'false',
+  'an unbound number says only that'
+);
+
+select is(
+  (select count(*)::int from public.audit_log
+    where action = 'customer.binding_looked_up'
+      and actor_user_id = '88888888-aaaa-4000-8000-00000000000b'
+      and entity_id !~ '9844400'),
+  3,
+  'every lookup is audited - found or not - and the log keeps the last four digits only'
 );
 
 -- ---------------------------------------------------------------------------
@@ -256,17 +310,31 @@ insert into auth.sessions (id, user_id)
 values (extensions.gen_random_uuid(), '88888888-aaaa-4000-8000-0000000000c1');
 
 select throws_ok(
-  $$select app_admin.transfer_customer('88888888-aaaa-4000-8000-00000000000a',
+  $$select app_admin.transfer_customer('88888888-aaaa-4000-8000-00000000000b',
       '9844400001', '88888888-0000-4000-8000-00000000000b', 'moving', null)$$,
   'P0001', null,
   'a transfer without the acknowledged balance is refused'
 );
 
-select lives_ok(
+select throws_ok(
+  $$select app_admin.transfer_customer('88888888-aaaa-4000-8000-00000000000b',
+      '9844400001', '88888888-0000-4000-8000-00000000000b', 'moving', 0)$$,
+  'P0001', null,
+  'acknowledging a balance that is not the real one is refused - "0" is not looking'
+);
+
+select throws_ok(
   $$select app_admin.transfer_customer('88888888-aaaa-4000-8000-00000000000a',
+      '9844400001', '88888888-0000-4000-8000-00000000000b', 'moving', 55000)$$,
+  '42501', null,
+  'an ordinary operator cannot transfer'
+);
+
+select lives_ok(
+  $$select app_admin.transfer_customer('88888888-aaaa-4000-8000-00000000000b',
       '9844400001', '88888888-0000-4000-8000-00000000000b',
       'Customer moved house', 55000)$$,
-  'with the balance acknowledged, Crayora can transfer the customer'
+  'with the real balance acknowledged, a super-admin can transfer the customer'
 );
 
 select results_eq(
