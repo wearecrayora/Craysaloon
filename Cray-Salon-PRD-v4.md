@@ -269,6 +269,12 @@ system. The operator records the amount, date and reference in the console and m
 consequence of anything. The console warns if the fee is unrecorded but does not block the
 operator, who may have a reason.
 
+**Messaging trial.** The operator can grant a salon a trial of any length up to 365 days, with a
+reason. Until it ends, the salon's customer OTPs come from Crayora's Message Central account, so the
+salon can open before setting up its own. If the salon enters its own account during the trial, that
+is used instead. If the trial ends without one, customers can still log in — Crayora's account keeps
+sending — but each send is then treated as a fault and alerts, and the console flags the salon.
+
 **Messaging readiness.** A salon is not live on WhatsApp until its own templates have been
 authored in the Message Central dashboard and approved by Meta (§16A.5). The console tracks that
 as a per-salon status, and until it is green the channel ladder simply skips the WhatsApp rung.
@@ -1059,7 +1065,10 @@ own bank account** — Crayora never holds customer funds. Consequences:
 > those messages. Plans should differentiate on **features** instead. Push-first is still worth
 > selling hard — it now saves *the owner* money, which is an easier pitch than saving ours.
 
-There is **no free trial** — the setup fee is the commitment. Plans start on the billing start
+There is **no free trial** — the setup fee is the commitment. *(This is about the product. A
+**messaging trial** is a different thing: the operator may cover a salon's customer OTP costs for up
+to 365 days so it can go live before setting up its own Message Central account. It leaves the setup
+fee and the subscription untouched — see §6.2 and RULES 7.1.3a.)* Plans start on the billing start
 date set in the console.
 
 **Non-payment:** past due → **7-day grace, read-only** → suspended → **90 days retained, with

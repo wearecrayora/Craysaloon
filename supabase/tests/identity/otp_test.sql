@@ -12,7 +12,7 @@
 --   * one verification yields at most one session;
 --   * the identity a session is minted for carries no plaintext phone.
 
-select plan(24);
+select plan(31);
 
 insert into auth.users (id) values ('55555555-eeee-4000-8000-000000000001');
 
@@ -290,6 +290,73 @@ select is(
     where c.relname = 'auth_identities'),
   0,
   'auth_identities has no policies - no tenant can read who owns which account'
+);
+
+-- ---------------------------------------------------------------------------
+-- Messaging trial (0032): Crayora pays, on purpose, for a bounded period
+-- ---------------------------------------------------------------------------
+
+insert into public.subscriptions (salon_id, plan, status, setup_fee_paise, setup_fee_status)
+values ('55555555-0000-4000-8000-00000000000b', 'starter', 'active', 0, 'unpaid')
+on conflict (salon_id) do nothing;
+
+select is(
+  (public.otp_begin('9822200001', 'trial-caller-1') ->> 'messaging_trial_active')::boolean,
+  false,
+  'with no trial granted, otp_begin reports none'
+);
+
+select isnt(
+  app_admin.set_messaging_trial(
+    '55555555-eeee-4000-8000-000000000001',
+    '55555555-0000-4000-8000-00000000000b', 14, 'Pilot salon - launch month'),
+  null,
+  'an operator can grant a 14-day messaging trial'
+);
+
+-- A fresh number: the per-phone send limit is already spent on 9822200001.
+select public.start_join('CRAY-KKKMMM', '9822200002');
+
+select is(
+  (public.otp_begin('9822200002', 'trial-caller-2') ->> 'messaging_trial_active')::boolean,
+  true,
+  'during the trial, otp_begin says so - the send is intended, not a fault'
+);
+
+-- Every day of trial is Crayora's money, so it needs a reason and a ceiling.
+select throws_ok(
+  $$select app_admin.set_messaging_trial(
+      '55555555-eeee-4000-8000-000000000001',
+      '55555555-0000-4000-8000-00000000000b', 30, '   ')$$,
+  'P0001', null,
+  'a trial without a reason is refused'
+);
+
+select throws_ok(
+  $$select app_admin.set_messaging_trial(
+      '55555555-eeee-4000-8000-000000000001',
+      '55555555-0000-4000-8000-00000000000b', 3650, 'typo')$$,
+  'P0001', null,
+  'a trial longer than 365 days is refused - a typo cannot grant ten years'
+);
+
+-- Zero ends it now.
+select app_admin.set_messaging_trial(
+  '55555555-eeee-4000-8000-000000000001',
+  '55555555-0000-4000-8000-00000000000b', 0, 'Salon set up its own account');
+select public.start_join('CRAY-KKKMMM', '9822200003');
+select is(
+  (public.otp_begin('9822200003', 'trial-caller-3') ->> 'messaging_trial_active')::boolean,
+  false,
+  'ending the trial takes effect immediately'
+);
+
+-- Trial sends and fault fallbacks are recorded differently, so "fallbacks this
+-- week" in the console still means something broke.
+select lives_ok(
+  $$select public.otp_record_challenge(
+      '9822200003', '55555555-0000-4000-8000-00000000000b', 'mc-trial-1', 'trial')$$,
+  'a trial send is recorded as `trial`, distinct from a `platform` fault'
 );
 
 select * from finish();

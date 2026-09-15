@@ -269,6 +269,10 @@ Properties, each verified or asserted by a gate:
 - **At most five attempts per challenge**, a short expiry, and the rate limits in `start_join` and
   `otp-send`. Message Central's own validation throttling sits behind them, not instead of them.
 - **Never logged:** the OTP, the Message Central token, the `verificationId`, the session.
+- **Which account sends** (ADR-37): the salon's own if stored and not known-bad; otherwise, during
+  an operator-granted **messaging trial**, Crayora's — recorded as `trial`, not alerted; otherwise
+  Crayora's as a **fault**, recorded as `platform`, always alerted. A code is always validated
+  against the account that sent it.
 - **The code lives about 60 seconds.** VerifyNow's send response carries `"timeout": "60"`, and a
   code checked after that returns `responseCode 705, VERIFICATION_EXPIRED` - found on the first
   live test, where relaying the code by hand took longer. `otp-send` returns that window as
@@ -1404,7 +1408,8 @@ sold  ──(fee paid offline: cash / bank transfer)──> recorded in console
   the console records amount, date, reference and who marked it paid. There is no Razorpay
   integration for it, no invoice generation, and no automatic activation — that is a deliberate
   operator action (§5.7).
-- **No trial** — the setup fee is the commitment (PRD §14).
+- **No trial** — the setup fee is the commitment (PRD §14). A *messaging* trial (ADR-37) is not a
+  billing trial: it covers OTP costs only and leaves the fee and the subscription untouched.
 - Read-only grace is enforced by `app.salon_writable()` (§5.3), not by hiding buttons.
 - **Retention splits in two (v2.3).** After 90 days and owner notices at day 60 and 80:
   - *Operational and personal data* — customers, bookings, photos, tokens, message history — is
@@ -1767,6 +1772,7 @@ invariants.
 | **ADR-34** | **No local Supabase stack: hosted for development, a bare `supabase/postgres` container in CI, migrations and pgTAP driven by `scripts/db/run.mjs`** | `supabase start` locally and in CI; `supabase db reset` to prove migrations | The full stack is a large opaque dependency whose only failure signal was "Start a clean local stack: failed" with unreadable logs. The gates need Postgres, pgTAP and the Supabase roles — not Studio, Kong, GoTrue, Realtime or Storage. CI asserts the roles' `rolbypassrls` flags match production rather than setting them, because setting them would make CI's isolation guarantees true by construction |
 | **ADR-35** | **The admin plane is a separate schema (`app_admin`) whose functions are closed by an explicit `close_privileges()` call, and every mutating one writes `audit_log` in the same transaction** | Admin RPCs in `public` behind a role check; a route handler that writes the audit as a second statement; relying on default privileges to close the schema | `public` is what PostgREST exposes, so an admin function there is one missing grant from being tenant-callable. A separate audit statement can be forgotten; a combined one cannot. And default privileges were *tested* and do not stick here, so closure is an action the release gate verifies rather than a property assumed |
 | **ADR-36** | **Message Central generates, sends and verifies the OTP; Supabase Auth issues the session only after Message Central confirms it** | The Send SMS Hook (ADR-13) delivering Supabase's code; Supabase phone login via Twilio or similar; dropping Supabase Auth entirely | VerifyNow cannot deliver a code it did not generate, so the hook could not work. Every Supabase SMS provider needs DLT for Indian numbers, which VerifyNow avoids by sending under its own registered name. Dropping Supabase Auth would mean hand-building token signing, refresh and expiry and re-proving every RLS guarantee, all of which read the session token. Minting via generateLink + verifyOtp keeps a stock Supabase session, sends nothing, and was verified single-use |
+| **ADR-37** | **An operator-granted messaging trial lets Crayora pay for a salon's OTPs on purpose, for up to 365 days; outside a trial, Crayora paying is still a fault** | Refusing to activate a salon until it has its own Message Central account; an open-ended silent fallback; letting a trial override a salon's own account | Salons should be able to open before their Message Central setup is done, and that is a commercial decision a person should make and own - hence a reason, a ceiling, and an audit row. Recording trial sends as `trial` rather than `platform` keeps the fault count meaningful. After a trial ends, customers are not locked out; the cost becomes a visible, alerted fault instead |
 
 ---
 

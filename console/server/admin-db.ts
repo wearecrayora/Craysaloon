@@ -117,6 +117,24 @@ export async function provisionSalon(
   return row.provision_salon;
 }
 
+/**
+ * Grant, extend or end a messaging trial (0032). `days` counts from NOW; zero
+ * ends it immediately. Capped at 365 in the database.
+ */
+export async function setMessagingTrial(
+  actorAdminId: string,
+  salonId: string,
+  days: number,
+  reason: string,
+): Promise<string> {
+  const sql = client();
+  const [row] = await sql<{ ends: string }[]>`
+    select app_admin.set_messaging_trial(
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${days}, ${reason}) as ends`;
+  if (!row) throw new Error('set_messaging_trial returned no row');
+  return row.ends;
+}
+
 /** RULES 6.3 - the only door from setup to active, and it names a human. */
 export async function activateSalon(actorAdminId: string, salonId: string, reason: string | null) {
   const sql = client();
@@ -236,8 +254,12 @@ export type SalonRow = {
   integrations_total: number;
   /** The salon's own Message Central account is stored and not known-bad. */
   otp_own_account: boolean;
-  /** OTPs Crayora paid for, last 7 days (RULES 7.1.3: never a normal state). */
+  /** OTPs sent from Crayora's account because something FAILED, last 7 days. */
   otp_fallbacks_7d: number;
+  /** When the messaging trial ends (0032). Null: none was ever granted. */
+  messaging_trial_ends_at: string | null;
+  /** OTPs Crayora paid for ON PURPOSE under the trial, last 7 days. */
+  otp_trial_sends_7d: number;
 };
 
 export async function listSalons(): Promise<SalonRow[]> {
@@ -253,11 +275,16 @@ export async function listSalons(): Promise<SalonRow[]> {
                    and si.status <> 'failing'), false)         as otp_own_account,
            (select count(*)::int from public.otp_challenges oc
              where oc.salon_id = s.id and oc.sender = 'platform'
-               and oc.created_at > now() - interval '7 days')  as otp_fallbacks_7d
+               and oc.created_at > now() - interval '7 days')  as otp_fallbacks_7d,
+           sub.messaging_trial_ends_at,
+           (select count(*)::int from public.otp_challenges oc
+             where oc.salon_id = s.id and oc.sender = 'trial'
+               and oc.created_at > now() - interval '7 days')  as otp_trial_sends_7d
       from public.salons s
       left join public.subscriptions sub on sub.salon_id = s.id
       left join public.salon_integrations si on si.salon_id = s.id
-     group by s.id, sub.plan, sub.setup_fee_paise, sub.setup_fee_status
+     group by s.id, sub.plan, sub.setup_fee_paise, sub.setup_fee_status,
+              sub.messaging_trial_ends_at
      order by s.created_at desc`;
 }
 

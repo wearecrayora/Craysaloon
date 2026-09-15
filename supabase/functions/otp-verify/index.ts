@@ -45,7 +45,8 @@ Deno.serve(async (req) => {
   }
 
   // 2. Validate with the SAME account that sent it. A code sent from
-  //    Crayora's fallback account can only be checked against that account.
+  //    Crayora's account - as a fallback, or under a messaging trial - can
+  //    only be checked against Crayora's account.
   let creds: McCreds | null = null;
   if (att.sender === 'salon') {
     const { data: s } = await db.rpc('otp_salon_sender', { p_salon_id: att.salon_id });

@@ -16,6 +16,7 @@ import {
   recordIntegrationTest,
   recordSetupFee,
   setIntegrationSecret,
+  setMessagingTrial,
   setSalonRules,
   setSalonStatus,
   upsertAddOn,
@@ -499,6 +500,39 @@ export async function generateQrPackAction(
     const url = await signedUrl(key, 600);
     revalidatePath(`/salon/${salonId}/qr`);
     return { ok: 'QR pack generated. The link below works for 10 minutes.', url };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+/**
+ * Messaging trial (0032). Until it ends, the salon's customer OTPs are sent
+ * from Crayora's Message Central account, intentionally - so a salon can go
+ * live before it has set up its own. Every day is Crayora's money, so the
+ * reason is required and the length is capped (365 days) in the database.
+ */
+export async function setTrialAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const days = Number(String(form.get('days') ?? '').trim());
+  const reason = String(form.get('reason') ?? '').trim();
+
+  if (!Number.isInteger(days) || days < 0) {
+    return { error: 'Enter the trial length as a whole number of days (0 ends it now).' };
+  }
+  if (!reason) {
+    return { error: 'A reason is required - Crayora pays for every OTP sent under a trial.' };
+  }
+
+  try {
+    const ends = await setMessagingTrial(admin.id, salonId, days, reason);
+    revalidatePath('/');
+    return {
+      ok:
+        days === 0
+          ? 'Trial ended. From now on, OTPs use the salon’s own account - or, if it has none, Crayora’s as an alerted fallback.'
+          : `Trial granted until ${new Date(ends).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}. Until then Crayora pays for this salon’s OTPs.`,
+    };
   } catch (e) {
     return { error: message(e) };
   }

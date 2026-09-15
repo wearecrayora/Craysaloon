@@ -67,12 +67,21 @@ Deno.serve(async (req) => {
   let creds: McCreds | null = salonSender
     ? { customerId: salonSender.customer_id, authToken: salonSender.auth_token }
     : null;
-  let sender: 'salon' | 'platform' = 'salon';
+  let sender: 'salon' | 'trial' | 'platform' = 'salon';
 
   if (!creds) {
     creds = platformCreds();
-    sender = 'platform';
-    await alert('otp_fallback_no_salon_credentials', { salon_id: salonId });
+    if (begin.messaging_trial_active) {
+      // An operator-granted messaging trial (0032): Crayora pays for this
+      // salon's OTPs ON PURPOSE until the trial ends. Intended, so not
+      // alerted - and recorded as `trial`, so it never inflates the count of
+      // genuine fallbacks. A salon that HAS its own account never gets here:
+      // its own account is used even during a trial.
+      sender = 'trial';
+    } else {
+      sender = 'platform';
+      await alert('otp_fallback_no_salon_credentials', { salon_id: salonId });
+    }
   }
   if (!creds) {
     await alert('otp_no_sender_available', { salon_id: salonId });

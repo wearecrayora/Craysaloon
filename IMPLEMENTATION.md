@@ -253,7 +253,7 @@ being logged.
 
 | Function | Trigger | Identity | Must |
 |---|---|---|---|
-| `otp-send` | App, pre-auth | publishable key | Resolve sender via `resolve_otp_sender` (intent → binding → staff → **refuse**) · salon's Message Central creds from Vault at the moment of use · VerifyNow `/verification/v3/send` · on failure, platform account **and alert** · store an `otp_challenges` row · return an opaque challenge id |
+| `otp-send` | App, pre-auth | publishable key | Resolve sender via `resolve_otp_sender` (intent → binding → staff → **refuse**) · salon's Message Central creds from Vault at the moment of use · VerifyNow `/verification/v3/send` · no salon account: under a **messaging trial**, Crayora's account as `trial`, not alerted; otherwise Crayora's as `platform` **and alert** (ADR-37) · salon account fails: Crayora's as `platform` **and alert** · store an `otp_challenges` row · return an opaque challenge id |
 | `otp-verify` | App, pre-auth | publishable key | ≤5 attempts, not expired · VerifyNow `/verification/v3/validateOtp` · **only** on `VERIFICATION_COMPLETED`: find/create the Auth user for the phone hash, `admin.generateLink` → `verifyOtp(token_hash)` → session · consume the challenge (ADR-36) |
 | `rzp-webhook/{token}` | Razorpay, **per salon** | service role | Resolve salon **from the path token**, never the body · verify with that salon's secret · dedupe on `event_id` · re-verify amount |
 | `create-payment-order` | Client | user JWT | Compute the amount **server-side** |

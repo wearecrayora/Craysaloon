@@ -260,7 +260,18 @@ call `signInWithOtp`, never enable Supabase's phone provider, never build a Send
 VerifyNow cannot deliver a code it did not generate (ADR-36).
 
 7.1.3 Crayora's account is a **fault-only fallback** (credentials missing, untested, send failed).
-Never a normal state, so every occurrence is logged, counted **and alerted**.
+Never a normal state, so every occurrence is logged, counted **and alerted** — **with one
+exception: an operator-granted messaging trial.**
+
+7.1.3a **Messaging trial** (0032, ADR-37). An operator may grant a salon a trial of up to 365 days,
+with a required reason, audited. Until it ends, that salon's customer OTPs are sent from Crayora's
+account **on purpose**, recorded as sender `trial`, and **not alerted** — so a salon can go live
+before setting up its own Message Central account. Three rules hold during a trial:
+- a salon that has entered **its own** account uses it, trial or not;
+- trial sends are counted separately and never inflate the fault-fallback count;
+- when the trial ends without the salon's own account, customers can still log in, but every send
+  is a fault again and alerts. The trial is an **OTP-cost** concession only — it is not a billing
+  trial, and it changes nothing about the setup fee or the subscription.
 
 7.1.4 OTP sender resolution, server-side, from our own tables — never from client-supplied data:
 pending join intent → existing binding → owner/staff record → **refuse**.
