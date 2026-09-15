@@ -114,7 +114,7 @@ The rest follow the patterns in `DESIGN.md` §6. These do not.
 |---|---|
 | **Entry** | Cold open · QR deep link `https://join.craysalon.in/s/<code>` (code pre-filled) · Play Install Referrer |
 | **Reads** | `app.resolve_join_code(code)` → `{display_name, branding}` — **anon**, rate-limited |
-| **Writes** | `app.start_join(code, phone)` → `join_intents` · `supabase.auth.signInWithOtp` · `app.bind_customer(...)` |
+| **Writes** | `app.start_join(code, phone)` → `join_intents` · `otp-send` → challenge · `otp-verify {challenge_id, code, consents}` → **binds, then** returns the session (ADR-36, ADR-39). There is no client-side bind call |
 | **States** | Idle · scanning (camera permission denied → manual entry) · resolving · **invalid code** · **salon not active** · rate-limited · OTP sent · OTP wrong (attempts left) · OTP expired · **already bound** · binding · bound |
 | **Theming** | From U3 onward the app wears the salon's branding — logo, palette, fonts. This is the moment the white-label promise is kept |
 
@@ -215,7 +215,6 @@ re-themes installed apps on their next open.
 |---|---|---|---|
 | `app.resolve_join_code(code)` | **anon** | `{display_name, branding}` | Active salons only · nothing else, ever · rate-limited |
 | `app.start_join(code, phone)` | **anon** | `{ok}` | Writes `join_intents` (15 min TTL) · tightest rate limit in the system |
-| `app.bind_customer(code)` | `customer_unbound` | `{customer_id}` | Atomic · consumes intent · seeds consent · bumps `cver` · `already_bound` names no salon |
 | `app.get_branding()` | any tenant | token document | Tenant-scoped |
 | `app.available_slots(salon_id, service_id, staff_id, date)` | customer, owner | slot list | Same function client and server use |
 | `app.create_booking(...)` | customer, owner | `{booking_id}` | Idempotent on `client_action_id` · exclusion constraint decides conflicts |
@@ -229,7 +228,8 @@ re-themes installed apps on their next open.
 
 `app.wallet_credit_from_payment` · `app.wallet_debit_at_checkout` · `app.wallet_expire_lot`
 *(bonus lots only — raises on a paid lot)* · `app.referral_release_reward` · `app.rl_consume`
-· `app.resolve_otp_sender`.
+· `app.resolve_otp_sender` · `public.otp_finish_login` *(service_role; binding at login - ADR-39)*
+· `public.custom_access_token_hook` *(supabase_auth_admin only)*.
 
 **These five are the complete set of ledger callers** together with `app_admin.wallet_correct`
 (`RULES.md` §5.2). The money leak test asserts the set has not grown.
@@ -247,8 +247,8 @@ being logged.
 | `publish_branding(salon_id, tokens)` | Runs the contrast gate; bumps `version` |
 | `set_integration_secret(salon_id, provider, secret)` | **Write-only. No read counterpart exists** |
 | `test_integration(salon_id, provider)` | Returns pass/fail + reason. Never the credential |
-| `unbind_customer(phone_hash, reason)` | Correction path |
-| `transfer_customer(phone_hash, to_salon_id, reason, acknowledged_balance_paise)` | **Refuses without the acknowledged balance** |
+| `unbind_customer(actor, phone, reason)` | Correction path · **refused once any wallet, booking or visit exists** · ends the customer's sessions |
+| `transfer_customer(actor, phone, to_salon_id, reason, acknowledged_balance_paise)` | **Refuses without the acknowledged balance** · wallet and history stay · fresh customer, number and consent at the destination · ends the customer's sessions |
 | `wallet_correct(customer_id, amount_paise, reason)` | The only human path to a balance |
 | `record_setup_fee(salon_id, amount_paise, paid_on, reference)` | Offline payment record |
 | `start_support_session(salon_id, reason)` | Time-boxed; every read inside is logged |
@@ -258,7 +258,7 @@ being logged.
 | Function | Trigger | Identity | Must |
 |---|---|---|---|
 | `otp-send` | App, pre-auth | publishable key | Resolve sender via `resolve_otp_sender` (intent → binding → staff → **refuse**) · salon's Message Central creds from Vault at the moment of use · VerifyNow `/verification/v3/send` · no salon account: under a **messaging trial**, Crayora's account as `trial`, not alerted; otherwise Crayora's as `platform` **and alert** (ADR-37) · salon account fails: Crayora's as `platform` **and alert** · store an `otp_challenges` row · return an opaque challenge id |
-| `otp-verify` | App, pre-auth | publishable key | ≤5 attempts, not expired · VerifyNow `/verification/v3/validateOtp` · **only** on `VERIFICATION_COMPLETED`: find/create the Auth user for the phone hash, `admin.generateLink` → `verifyOtp(token_hash)` → session · consume the challenge (ADR-36) |
+| `otp-verify` | App, pre-auth | publishable key | ≤5 attempts, not expired · VerifyNow `/verification/v3/validateOtp` · **only** on `VERIFICATION_COMPLETED`: consume the challenge · find/create the Auth user for the phone hash · **`otp_finish_login` binds before any session exists** - `already_bound` (409, names no salon), `salon_unavailable` (403) and `account_conflict` (409) return **no** session · `admin.generateLink` → `verifyOtp(token_hash)` → session, with `outcome` bound / returning / staff (ADR-36, ADR-39) |
 | `rzp-webhook/{token}` | Razorpay, **per salon** | service role | Resolve salon **from the path token**, never the body · verify with that salon's secret · dedupe on `event_id` · re-verify amount |
 | `create-payment-order` | Client | user JWT | Compute the amount **server-side** |
 | `dispatcher` | `pg_cron`, 1 min | service role | Drain `domain_events` → `pgmq` |
@@ -292,13 +292,14 @@ scan/type code ──► app.resolve_join_code        (anon, rate-limited)
                         │                              ▼
                         │                     salon's Message Central
                         │                     (platform fallback + alert)
-                   verify OTP
+                   otp-verify ──► VerifyNow validate (same account that sent)
+                        │
+                   otp_finish_login  ──► customer_identities (atomic, BEFORE the session)
+                                     ──► customers (verified number) + consent defaults
+                                     ──► binding_events
+                                     ──► trigger: domain_event customer.bound → Automation J
                         ▼
-                   app.bind_customer  ──► customer_identities (atomic)
-                                      ──► customers + consent defaults
-                                      ──► binding_events
-                                      ──► cver++ → token refresh → salon_id claim
-                                      ──► domain_event customer.bound → Automation J
+                   session minted ──► claims hook stamps app_role + salon_id
 ```
 
 ### 4.2 Offline mark-complete *(M6)*
@@ -411,7 +412,7 @@ Feature → surfaces → server calls → milestone. Use this to check nothing i
 |---|---|---|---|
 | Provisioning §6.2 | K3, K5–K7, K9 | `provision_salon`, `publish_branding`, `set_integration_secret`, `qr-pack-render` | 2 |
 | Activation §6.2 | K10 | `record_setup_fee`, `activate_salon` | 2/11 |
-| Join & binding §6.4–6.5 | U2–U6 | `resolve_join_code`, `start_join`, `otp-send`, `otp-verify`, `bind_customer` | 3–4 |
+| Join & binding §6.4–6.5 | U2–U6 | `resolve_join_code`, `start_join`, `otp-send`, `otp-verify`, `otp_finish_login` | 3–4 |
 | White-label §6.6 | all app screens, K5 | `get_branding` | 4 |
 | Transfer / unbind §6.5 | K12 | `unbind_customer`, `transfer_customer` | 4 |
 | Catalogue §8.2 | O7–O9, K6 | table CRUD (RLS) | 5 |

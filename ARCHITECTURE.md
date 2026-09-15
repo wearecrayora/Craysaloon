@@ -209,15 +209,29 @@ A **Custom Access Token Hook** (Postgres function invoked by GoTrue at token min
 {
   "app_role": "owner|manager|staff|customer|customer_unbound|platform_admin",
   "salon_id": "uuid",                                 // absent for customer_unbound and platform_admin
-  "perms":    { "billing": true, "settings": true },  // managers/staff granular permissions
-  "cver":     3                                       // claims version; bump to force a refresh
+  "perms":    { "billing": true, "settings": true },  // managers/staff granular permissions - not issued yet
+  "cver":     3                                       // reserved - not issued (see below)
 }
 ```
 
+**Live since 2026-09-15 (migration 0034):** `public.custom_access_token_hook` stamps `app_role` and
+`salon_id`, reading the database on every mint. Precedence: an active staff row, then a customer
+binding, then platform admin (never a `salon_id`, RULES 6.7), else `customer_unbound`. A stale
+`salon_id` is removed on refresh. Because a hook that errors stops **every** login on the project,
+`scripts/db/probe-claims-hook.mjs` must pass before it is enabled and after any migration that
+touches it.
+
 Tokens are short-lived (1h). **Claims are a cache, not the source of truth.** Anything revocable
 mid-session — salon suspension, role change, permission change, a fresh binding, **a transfer** —
-is re-checked in the database, never trusted from the token alone. Binding and transfer both bump
-`cver`, which forces the client to refresh and pick up its new `salon_id`.
+is re-checked in the database, never trusted from the token alone.
+
+*v2.8 (ADR-39):* the `cver` bump is replaced. **Binding** happens inside `otp-verify` **before** the
+first session exists, so the very first token already carries the salon - there is nothing to
+refresh. **Unbind and transfer end every Auth session** of that customer (a trigger on
+`customer_identities`, 0035), so no refresh token can keep an old `salon_id` alive; the next login
+mints a token for the new salon. A `cver` bump needed the client's cooperation; this
+needs none. The access token already issued lives out its remaining hour at most, which is why money
+paths re-check the binding in the database.
 
 **OTP — Message Central owns the code; Supabase issues the session afterwards (v2.7, ADR-36).**
 
@@ -451,20 +465,29 @@ reachable only through `SECURITY DEFINER` functions.
 - DPDP erasure (§15.4) clears the plaintext phone from `customers` while the binding record must
   survive to keep exclusivity enforceable. A hash satisfies both.
 
-**Binding is one atomic RPC:**
+**Binding is one atomic step inside login (0034, 0035):**
 
 ```sql
--- app.bind_customer(p_code text) -> jsonb
---  1. resolve salon by join_code; reject if not 'active'
---  2. insert into customer_identities ... on conflict do nothing
---  3. if zero rows inserted -> raise 'already_bound' (WITHOUT naming the other salon)
---  4. insert the public.customers row for this salon
---  5. write consent defaults, emit domain_event 'customer.bound'
---  6. bump cver so the next token carries salon_id
+-- public.otp_finish_login(challenge_id, auth_user_id, consents) -> jsonb
+--   service_role only; called by otp-verify AFTER Message Central confirms and
+--   BEFORE any session is minted. The salon is the one on the server's challenge,
+--   never one the client names.
+--  1. wipe the plaintext number off the challenge, whichever way this ends
+--  2. refuse if the salon is not writable (suspended, or blocked - 0033)
+--  3. a staff row with this phone -> attach the account to it; never a customer
+--  4. already bound here -> 'returning'; bound elsewhere -> 'already_bound',
+--     naming NO salon
+--  5. otherwise: customers row (with the VERIFIED number), customer_identities,
+--     binding_events 'bind', consent defaults, consume the join intent
+--  6. trigger on customer_identities emits domain_event 'customer.bound'
 ```
 
 Everything happens in one transaction: the customer is either fully bound or entirely unbound.
-There is no partial state to clean up.
+There is no partial state to clean up. A refusal returns no session at all.
+
+Consent defaults at binding: `service_communication` granted (it is the service); `promotional`
+and `whatsapp` only if the customer ticked them, and only a literal `true` counts; `photos`
+never at binding.
 
 **Non-disclosure.** `already_bound` must never reveal *which* salon holds the number — that
 would be a cross-tenant information leak dressed as an error message. The client shows only
@@ -476,8 +499,11 @@ exclusively by the console's server half, both requiring a typed reason and both
 
 | Function | Use | Effect |
 |---|---|---|
-| `app_admin.unbind_customer(phone_hash, reason)` | Wrong QR scanned, nothing done since | Deletes the identity row; the customer may bind again normally |
-| `app_admin.transfer_customer(phone_hash, to_salon_id, reason, acknowledged_balance_paise)` | The customer genuinely wants to move salons | Repoints the identity row; **nothing else moves** |
+| `app_admin.unbind_customer(actor, phone, reason)` | Wrong QR scanned, nothing done since | **Refused if any wallet, booking or visit history exists.** Deletes the identity row, soft-deletes the customer; the customer may bind again normally |
+| `app_admin.transfer_customer(actor, phone, to_salon_id, reason, acknowledged_balance_paise)` | The customer genuinely wants to move salons | Repoints the identity row; **nothing else moves** |
+
+Both take the phone number the operator was given, not a hash: the function hashes it, so the hash
+never leaves the database. Both end every session the customer holds (0035).
 
 **What a transfer deliberately does not move — and why the architecture cannot move it even if
 we wanted to:**
@@ -490,7 +516,9 @@ we wanted to:**
   and live under Salon A's `salon_id`.
 - The old `customers` row is marked `transferred_out` and retained — still visible to Salon A,
   never visible to Salon B.
-- The customer is created fresh at Salon B: zero balance, zero points, empty history.
+- The customer is created fresh at Salon B: zero balance, zero points, empty history - with the
+  number, so Salon B can reach them (0035 fixed a 0034 transfer that stored none), and consent
+  asked afresh: consent does not travel between Data Fiduciaries.
 
 `acknowledged_balance_paise` is **required** on a transfer and is recorded on the event. It is
 the system's proof that support told the customer what they were giving up. Making it a required
@@ -499,19 +527,18 @@ without having looked the number up.
 
 ### 5.5 The unbound state
 
-**Demoted in v2.2 to a transient edge case.** Under the reordered flow, the salon is known before
-authentication and binding completes in the same step as first login, so the normal path never
-produces a logged-in customer without a salon. The state still exists — the app can be killed
-between OTP verification and the bind call — and it must stay safe, but no feature should be
-designed around it.
+**Demoted in v2.2 to a transient edge case, and in v2.8 to almost none.** Binding runs inside
+`otp-verify` before a session exists, so the app can no longer be killed "between OTP and bind":
+there is no bind call. The state survives only for an account created before binding existed, and
+it must stay safe, but no feature should be designed around it.
 
 - The JWT carries `app_role: customer_unbound` and **no** `salon_id`.
 - `app.current_salon_id()` returns `NULL`, so **every** tenant policy evaluates false. The
   principal can read nothing and write nothing.
-- Exactly two entry points are reachable: `app.resolve_join_code(code)` (also open to `anon`, so
-  the login screen can be themed before authentication) and `app.bind_customer(...)`.
-- On resume, the app looks for the caller's live `join_intent` and completes the bind silently.
-  If the intent has expired, it returns the customer to the code screen and says so plainly.
+- Exactly one entry point is reachable: `app.resolve_join_code(code)` (also open to `anon`, so
+  the login screen can be themed before authentication). There is no tenant-callable bind.
+- The app returns the customer to the code screen; entering a code and logging in again binds them
+  in `otp-verify` like anyone else.
 - The app routes this state to the join screen and nowhere else.
 
 ### 5.6 Salon codes
@@ -1567,7 +1594,7 @@ shares a transaction with the thing it guards.
 | **Burning a salon's SMS credit with a leaked code** | `start_join` is the tightest-limited public call; per-salon daily OTP cap; owner sees the volume; anomaly alerts the console (§15.3) |
 | **OTP flood against unknown numbers** | Structurally impossible since v2.2 — `resolve_otp_sender()` refuses a number with no join intent, binding or staff record (§5.2) |
 | **A salon transfer used to strip a customer's credit** | Super-admin only, reason-required, `acknowledged_balance_paise` mandatory, append-only `binding_events` (§5.4) |
-| Compromised device | Short-lived tokens, refresh rotation, no secrets on device, remote sign-out via `cver` bump |
+| Compromised device | Short-lived tokens, refresh rotation, no secrets on device, remote sign-out by ending the user's Auth sessions server-side (ADR-39) |
 
 ---
 
@@ -1778,6 +1805,7 @@ invariants.
 | **ADR-36** | **Message Central generates, sends and verifies the OTP; Supabase Auth issues the session only after Message Central confirms it** | The Send SMS Hook (ADR-13) delivering Supabase's code; Supabase phone login via Twilio or similar; dropping Supabase Auth entirely | VerifyNow cannot deliver a code it did not generate, so the hook could not work. Every Supabase SMS provider needs DLT for Indian numbers, which VerifyNow avoids by sending under its own registered name. Dropping Supabase Auth would mean hand-building token signing, refresh and expiry and re-proving every RLS guarantee, all of which read the session token. Minting via generateLink + verifyOtp keeps a stock Supabase session, sends nothing, and was verified single-use |
 | **ADR-37** *(decision on trial end superseded by ADR-38)* | **An operator-granted messaging trial lets Crayora pay for a salon's OTPs on purpose, for up to 365 days; outside a trial, Crayora paying is still a fault** | Refusing to activate a salon until it has its own Message Central account; an open-ended silent fallback; letting a trial override a salon's own account | Salons should be able to open before their Message Central setup is done, and that is a commercial decision a person should make and own - hence a reason, a ceiling, and an audit row. Recording trial sends as `trial` rather than `platform` keeps the fault count meaningful. After a trial ends, customers are not locked out; the cost becomes a visible, alerted fault instead |
 | **ADR-38** | **After the trial, an optional grace period; then a salon with no Message Central account of its own is blocked — computed from dates, lifting as soon as its account is entered** | Letting customers log in on Crayora's account indefinitely after a trial (ADR-37's original choice); suspending the salon; a scheduled job that flips a flag | The owner's instruction: trial, grace, then block. Suspension would start the road to purging data over a setup step. A job can fail to run; a condition read at the moment of use cannot. Reads and consent withdrawal stay open because blocked customers still have money the salon owes them, and DPDP consent rights do not pause for a commercial dispute |
+| **ADR-39** | **Binding runs inside `otp-verify` before the session is minted, and a binding that moves or goes ends the customer's Auth sessions (a trigger on `customer_identities`) instead of bumping `cver`** | A tenant-callable `bind_customer` RPC after login, with a `cver` bump to force a refresh | Since ADR-36 the server, not the client, completes login, so it can bind first: the first token already carries the salon and no unbound window exists to design for. A `cver` bump works only if the client honours it; a deleted session cannot be refreshed by any client. A trigger covers every path that changes a binding, including ones not yet written |
 
 ---
 

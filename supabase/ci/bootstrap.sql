@@ -119,6 +119,26 @@ begin
 end;
 $$;
 
+-- auth.sessions is created by GoTrue's own migrations, not by the image. 0035
+-- revokes a customer's sessions when their binding changes; the stub has the
+-- two NOT NULL columns the live table has, so the bind-flow gate exercises the
+-- revocation in CI instead of skipping it.
+do $$
+begin
+  if not exists (
+    select 1 from pg_class c
+      join pg_namespace n on n.oid = c.relnamespace
+     where n.nspname = 'auth' and c.relname = 'sessions'
+  ) then
+    create table auth.sessions (
+      id         uuid primary key,
+      user_id    uuid not null references auth.users(id) on delete cascade,
+      created_at timestamptz default now()
+    );
+  end if;
+end;
+$$;
+
 -- CREATE OR REPLACE would fail if the image already ships auth.uid() owned by
 -- another role, so only define it when it is absent - and never overwrite the
 -- real one.

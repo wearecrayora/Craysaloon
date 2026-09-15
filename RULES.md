@@ -503,6 +503,16 @@ A change is not done until all of these hold.
 - [ ] **Messaging access test** — trial, then grace, then block, walked in order on one salon; a
       block stops joins, OTPs and writes, never reads or consent withdrawal, never changes status,
       and lifts the moment Crayora enters the salon's own account in the console
+- [ ] **Join flow test** — only an active salon's code resolves, to its name and branding and
+      nothing else; a salon in setup and an unknown code look identical (no oracle); typing
+      variants normalise, but a character outside the alphabet is never guessed at; a live join
+      intent decides which salon's account sends the OTP
+- [ ] **Bind flow test** — first login binds to the salon on the server's challenge, in the same
+      step, with the verified number and DPDP-correct consent defaults; a number bound elsewhere is
+      refused naming no salon; staff are attached, never made customers; the claims hook stamps
+      role and salon and never gives a platform admin a salon; unbind is refused once history
+      exists; a transfer needs the acknowledged balance, leaves the wallet behind, and ends the
+      customer's sessions
 - [ ] **OTP test** — no salon context means no send; a code is checked only against the challenge
       the server issued; five attempts; one verification yields at most one session; the session
       identity carries no plaintext phone; only accounts the server created are ever adopted
@@ -512,10 +522,9 @@ A change is not done until all of these hold.
 - [ ] **Admin plane test** — no `app_admin` function is reachable by a tenant role; every mutating
       one writes `audit_log` in the same transaction (§6.5); provisioning is atomic (§6.2);
       `activate_salon` is the only door to `active` (§6.3); nothing reads a credential back
-- [ ] **Negative controls** — an unprotected tenant table makes the leak test go red, and an
-      `app_admin` function that mutates without auditing makes the admin-plane gate go red
-      (`node scripts/db/negative-control.mjs`)
-- [ ] **The leak test's negative control** — an unprotected table makes the leak test go red
+- [ ] **Negative controls** — an unprotected tenant table makes the leak test go red; an
+      `app_admin` function that mutates without auditing, and an owner-callable function that
+      changes a payment key (8.12), each make the admin-plane gate go red
       (`node scripts/db/negative-control.mjs`). A gate only ever seen passing is not a gate
 - [ ] Migrations apply from zero onto an empty database in CI (`node scripts/db/run.mjs migrate`
       against a fresh container — never `db reset`, which would wipe the shared dev project)

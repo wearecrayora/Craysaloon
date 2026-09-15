@@ -1,9 +1,12 @@
 // otp-verify (ADR-36)
 //
 // Checks the code with Message Central and, ONLY if Message Central says
-// VERIFICATION_COMPLETED, issues a Supabase session.
+// VERIFICATION_COMPLETED, binds the number to the salon (first login) and then
+// issues a Supabase session.
 //
-//   POST { challenge_id, code }  ->  200 { access_token, refresh_token, ... }
+//   POST { challenge_id, code, consents?: { promotional?, whatsapp? } }
+//     ->  200 { outcome, access_token, refresh_token, ... }
+//     ->  409 already_bound | account_conflict,  403 salon_unavailable
 //
 // The client names neither the phone nor the salon. Both come from the
 // challenge the server issued, so a code cannot be checked against a
@@ -21,11 +24,17 @@ Deno.serve(async (req) => {
 
   let challengeId: unknown;
   let code: unknown;
+  let rawConsents: unknown;
   try {
-    ({ challenge_id: challengeId, code } = await req.json());
+    ({ challenge_id: challengeId, code, consents: rawConsents } = await req.json());
   } catch {
     return json(400, { error: 'invalid_request' });
   }
+  // Marketing consent is opt-in: only a literal `true` counts, anything else
+  // (missing, "yes", 1) is a no. Service messages are the service itself and
+  // photos are never asked for here, so neither is the client's to set.
+  const c = (rawConsents ?? {}) as Record<string, unknown>;
+  const consents = { promotional: c.promotional === true, whatsapp: c.whatsapp === true };
   // Shape checks first: a malformed request never costs an attempt.
   if (typeof challengeId !== 'string' || !UUID.test(challengeId)) {
     return json(400, { error: 'expired' });
@@ -109,7 +118,34 @@ Deno.serve(async (req) => {
     }
   }
 
-  // 5. Mint the session. generateLink returns a single-use token and SENDS
+  // 5. Bind, in the same step as first login (RULES 4.3), BEFORE any session
+  //    exists. A refused binding must never leave the customer holding a
+  //    token, so this runs first and a refusal ends the request here.
+  const { data: fin, error: finErr } = await db.rpc('otp_finish_login', {
+    p_challenge_id: challengeId,
+    p_auth_user_id: userId,
+    p_consents: consents,
+  });
+  if (finErr || !fin) {
+    await alert('otp_finish_login_failed', { salon_id: done.salon_id });
+    return json(500, { error: 'internal' });
+  }
+  if (!fin.ok) {
+    switch (fin.reason) {
+      case 'already_bound':
+        // RULES 4.4: the response names no salon. The app says only that
+        // this number belongs to another salon, and to ask that salon or
+        // Crayora support.
+        return json(409, { error: 'already_bound' });
+      case 'salon_unavailable':
+        return json(403, { error: 'salon_unavailable' });
+      default:
+        await alert('otp_refused_account_conflict', { salon_id: done.salon_id });
+        return json(409, { error: 'account_conflict' });
+    }
+  }
+
+  // 6. Mint the session. generateLink returns a single-use token and SENDS
   //    NOTHING; verifyOtp exchanges it. Verified single-use, 2026-09-15.
   const { data: link, error: linkError } = await db.auth.admin.generateLink({
     type: 'magiclink',
@@ -138,6 +174,8 @@ Deno.serve(async (req) => {
 
   const s = verified.session;
   return json(200, {
+    // bound | returning | staff - so the app knows whether to say welcome.
+    outcome: fin.outcome,
     access_token: s.access_token,
     refresh_token: s.refresh_token,
     expires_in: s.expires_in,

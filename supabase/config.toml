@@ -69,8 +69,12 @@ enable_confirmations = false
 [auth.email]
 enable_signup = false
 
+# Enabled on the LIVE project 2026-09-15 via the Management API, after
+# scripts/db/probe-claims-hook.mjs passed. Stamps app_role and salon_id (0034);
+# perms and cver are not issued yet. A hook that errors stops every login on
+# the project - run the probe after any migration that touches it.
 [auth.hook.custom_access_token]
-enabled = false  # flipped on at M3 - injects app_role / salon_id / perms / cver
+enabled = true
 uri = "pg-functions://postgres/public/custom_access_token_hook"
 
 # In config.toml `[functions]` is a MAP OF FUNCTION NAMES, not a section with
