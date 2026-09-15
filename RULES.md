@@ -269,9 +269,26 @@ account **on purpose**, recorded as sender `trial`, and **not alerted** — so a
 before setting up its own Message Central account. Three rules hold during a trial:
 - a salon that has entered **its own** account uses it, trial or not;
 - trial sends are counted separately and never inflate the fault-fallback count;
-- when the trial ends without the salon's own account, customers can still log in, but every send
-  is a fault again and alerts. The trial is an **OTP-cost** concession only — it is not a billing
-  trial, and it changes nothing about the setup fee or the subscription.
+- the trial is an **OTP-cost** concession only — it is not a billing trial, and it changes nothing
+  about the setup fee or the subscription.
+
+7.1.3b **Grace, then block** (0033, ADR-38). After the trial the operator may grant a **grace period**
+of up to 365 days, with a reason, audited; granted during a trial it starts when the trial ends.
+Crayora still sends the salon's OTPs during grace, recorded as sender `grace`, not alerted. When the
+trial and any grace have ended and the salon **still has no Message Central account of its own**, the
+salon is **blocked**: no new customer can join, no OTP is sent, and no write succeeds
+(`app.salon_writable()` is false). A block:
+- **never** gates reads — a customer already logged in can still see their wallet, which the salon
+  owes them (PRD §16A);
+- **never** stops a customer withdrawing consent (DPDP) — `consents_customer_insert` stays outside
+  `salon_writable`;
+- **never** changes the salon's status to `suspended`, which would start the road to purging its
+  data;
+- lifts **the moment the salon's own account is entered**. It is a condition computed from dates,
+  not an event fired by a job.
+
+A salon that was never given a trial or grace is not blocked by this: it falls back to Crayora's
+account as an alerted fault (7.1.3), as before.
 
 7.1.4 OTP sender resolution, server-side, from our own tables — never from client-supplied data:
 pending join intent → existing binding → owner/staff record → **refuse**.
@@ -472,6 +489,9 @@ A change is not done until all of these hold.
       raise for every role; the ledger-caller set equals the five in §5.2; no paid lot can expire
 - [ ] **Index scope test** — every composite index on a tenant table leads with `salon_id`, or is
       named and justified as an exemption (§3.1)
+- [ ] **Messaging access test** — trial, then grace, then block, walked in order on one salon; a
+      block stops joins, OTPs and writes, never reads or consent withdrawal, never changes status,
+      and lifts the moment the salon's own account is entered
 - [ ] **OTP test** — no salon context means no send; a code is checked only against the challenge
       the server issued; five attempts; one verification yields at most one session; the session
       identity carries no plaintext phone; only accounts the server created are ever adopted

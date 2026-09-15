@@ -272,8 +272,14 @@ operator, who may have a reason.
 **Messaging trial.** The operator can grant a salon a trial of any length up to 365 days, with a
 reason. Until it ends, the salon's customer OTPs come from Crayora's Message Central account, so the
 salon can open before setting up its own. If the salon enters its own account during the trial, that
-is used instead. If the trial ends without one, customers can still log in — Crayora's account keeps
-sending — but each send is then treated as a fault and alerts, and the console flags the salon.
+is used instead.
+
+**Grace, then block.** When the trial ends, the operator may grant a grace period of any length up to
+365 days, again with a reason; Crayora still sends the OTPs meanwhile. When the trial and any grace
+have ended and the salon still has no Message Central account of its own, **the salon is blocked**:
+new customers cannot join, no OTP is sent, and the owner and staff cannot change anything. Anyone
+already logged in can still see their data — including wallet balances the salon owes them — and can
+still withdraw consent. The block lifts the moment the salon's own account is entered.
 
 **Messaging readiness.** A salon is not live on WhatsApp until its own templates have been
 authored in the Message Central dashboard and approved by Meta (§16A.5). The console tracks that

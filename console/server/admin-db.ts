@@ -135,6 +135,25 @@ export async function setMessagingTrial(
   return row.ends;
 }
 
+/**
+ * Grant or end a messaging grace period (0033). Granted while a trial runs, it
+ * starts when the trial ends. When it ends, a salon with no Message Central
+ * account of its own is BLOCKED. Zero ends it now; capped at 365 days.
+ */
+export async function setMessagingGrace(
+  actorAdminId: string,
+  salonId: string,
+  days: number,
+  reason: string,
+): Promise<string> {
+  const sql = client();
+  const [row] = await sql<{ ends: string }[]>`
+    select app_admin.set_messaging_grace(
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${days}, ${reason}) as ends`;
+  if (!row) throw new Error('set_messaging_grace returned no row');
+  return row.ends;
+}
+
 /** RULES 6.3 - the only door from setup to active, and it names a human. */
 export async function activateSalon(actorAdminId: string, salonId: string, reason: string | null) {
   const sql = client();
@@ -260,6 +279,10 @@ export type SalonRow = {
   messaging_trial_ends_at: string | null;
   /** OTPs Crayora paid for ON PURPOSE under the trial, last 7 days. */
   otp_trial_sends_7d: number;
+  /** When the post-trial grace period ends (0033). Null: none granted. */
+  messaging_grace_ends_at: string | null;
+  /** own | trial | grace | blocked | fallback - computed by the database, one definition. */
+  messaging_state: 'own' | 'trial' | 'grace' | 'blocked' | 'fallback';
 };
 
 export async function listSalons(): Promise<SalonRow[]> {
@@ -277,6 +300,8 @@ export async function listSalons(): Promise<SalonRow[]> {
              where oc.salon_id = s.id and oc.sender = 'platform'
                and oc.created_at > now() - interval '7 days')  as otp_fallbacks_7d,
            sub.messaging_trial_ends_at,
+           sub.messaging_grace_ends_at,
+           app.salon_messaging_state(s.id)                     as messaging_state,
            (select count(*)::int from public.otp_challenges oc
              where oc.salon_id = s.id and oc.sender = 'trial'
                and oc.created_at > now() - interval '7 days')  as otp_trial_sends_7d
@@ -284,7 +309,7 @@ export async function listSalons(): Promise<SalonRow[]> {
       left join public.subscriptions sub on sub.salon_id = s.id
       left join public.salon_integrations si on si.salon_id = s.id
      group by s.id, sub.plan, sub.setup_fee_paise, sub.setup_fee_status,
-              sub.messaging_trial_ends_at
+              sub.messaging_trial_ends_at, sub.messaging_grace_ends_at
      order by s.created_at desc`;
 }
 

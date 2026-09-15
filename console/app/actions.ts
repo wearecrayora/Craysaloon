@@ -16,6 +16,7 @@ import {
   recordIntegrationTest,
   recordSetupFee,
   setIntegrationSecret,
+  setMessagingGrace,
   setMessagingTrial,
   setSalonRules,
   setSalonStatus,
@@ -532,6 +533,41 @@ export async function setTrialAction(_prev: ActionState, form: FormData): Promis
         days === 0
           ? 'Trial ended. From now on, OTPs use the salon’s own account - or, if it has none, Crayora’s as an alerted fallback.'
           : `Trial granted until ${new Date(ends).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}. Until then Crayora pays for this salon’s OTPs.`,
+    };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+/**
+ * Messaging grace (0033). After the trial, a further period during which
+ * Crayora still sends the salon's OTPs. When it ends, a salon with no Message
+ * Central account of its own is BLOCKED - so the reason is required.
+ */
+export async function setGraceAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const days = Number(String(form.get('days') ?? '').trim());
+  const reason = String(form.get('reason') ?? '').trim();
+
+  if (!Number.isInteger(days) || days < 0) {
+    return { error: 'Enter the grace period as a whole number of days (0 ends it now).' };
+  }
+  if (!reason) {
+    return { error: 'A reason is required - when grace ends, the salon is blocked.' };
+  }
+
+  try {
+    const ends = await setMessagingGrace(admin.id, salonId, days, reason);
+    revalidatePath('/');
+    const when = new Date(ends).toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'short', year: 'numeric',
+    });
+    return {
+      ok:
+        days === 0
+          ? 'Grace ended. If this salon has no Message Central account of its own, it is now blocked.'
+          : `Grace runs until ${when}. After that, unless the salon has added its own Message Central account, it is blocked.`,
     };
   } catch (e) {
     return { error: message(e) };

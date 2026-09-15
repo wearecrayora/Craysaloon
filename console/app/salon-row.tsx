@@ -3,7 +3,13 @@
 import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import type { SalonRow as Row } from '@/server/admin-db';
-import { activateAction, setTrialAction, suspendAction, type ActionState } from './actions';
+import {
+  activateAction,
+  setGraceAction,
+  setTrialAction,
+  suspendAction,
+  type ActionState,
+} from './actions';
 
 const empty: ActionState = {};
 
@@ -20,9 +26,28 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
     trialEnds && trialEnds.getTime() > Date.now()
       ? Math.ceil((trialEnds.getTime() - Date.now()) / 86_400_000)
       : 0;
-  const trialEnded = !!trialEnds && trialDaysLeft === 0;
 
-  const state = activateState.error ? activateState : trialState.error ? trialState : suspendState;
+  const [graceState, setGrace, settingGrace] = useActionState(setGraceAction, empty);
+  const graceEnds = salon.messaging_grace_ends_at ? new Date(salon.messaging_grace_ends_at) : null;
+  const graceDaysLeft =
+    graceEnds && graceEnds.getTime() > Date.now()
+      ? Math.ceil((graceEnds.getTime() - Date.now()) / 86_400_000)
+      : 0;
+  const fmt = (d: Date) =>
+    d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  // The DATABASE decides the state (app.salon_messaging_state). The console
+  // only displays it, so what the operator sees can never disagree with what
+  // RLS and the OTP functions actually enforce.
+  const ms = salon.messaging_state;
+
+  const state = activateState.error
+    ? activateState
+    : trialState.error
+      ? trialState
+      : graceState.error
+        ? graceState
+        : suspendState;
 
   return (
     <>
@@ -42,18 +67,21 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
           <span style={{ color: 'var(--ink-soft)', fontSize: 12 }}>{salon.setup_fee_status}</span>
         </td>
         <td>
-          {salon.otp_own_account ? (
+          {ms === 'own' ? (
             <span style={{ color: 'var(--ok)', fontWeight: 600 }}>OTP: own account</span>
-          ) : trialDaysLeft > 0 ? (
-            // Crayora pays on purpose, for a bounded time. Amber, not red.
+          ) : ms === 'trial' ? (
             <span style={{ color: 'var(--warn)', fontWeight: 600 }}>
               OTP: trial, {trialDaysLeft} day{trialDaysLeft === 1 ? '' : 's'} left
             </span>
-          ) : (
-            // No own account and no trial: every OTP is a fault fallback.
+          ) : ms === 'grace' ? (
             <span style={{ color: 'var(--danger)', fontWeight: 600 }}>
-              {trialEnded ? 'OTP: trial ended - Crayora pays' : 'OTP: Crayora pays'}
+              GRACE: {graceDaysLeft} day{graceDaysLeft === 1 ? '' : 's'}, then blocked
             </span>
+          ) : ms === 'blocked' ? (
+            <span className="pill suspended">BLOCKED</span>
+          ) : (
+            // Never sponsored and no own account: every OTP is a fault fallback.
+            <span style={{ color: 'var(--danger)', fontWeight: 600 }}>OTP: Crayora pays</span>
           )}
           {salon.otp_trial_sends_7d > 0 && (
             <>
@@ -138,12 +166,66 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
               </div>
             </form>
 
+            {ms === 'blocked' && (
+              <div className="error" style={{ marginTop: 0 }}>
+                <strong>This salon is blocked.</strong> Its trial and grace period have ended and it
+                still has no Message Central account of its own. New customers cannot join, no OTP
+                is sent - so nobody new can log in - and the owner and staff cannot change
+                anything. People already logged in can still <em>see</em> their data, including
+                wallet balances the salon owes them, and can still withdraw consent.
+                <br />
+                <strong>To unblock:</strong> enter the salon’s own Message Central account under
+                Credentials - it lifts immediately - or grant more grace below.
+              </div>
+            )}
+
+            {ms !== 'own' && (
+              <form action={setGrace} style={{ marginBottom: 18 }}>
+                <input type="hidden" name="salonId" value={salon.id} />
+                <strong style={{ fontSize: 14 }}>Grace period</strong>
+                <p className="hint" style={{ margin: '4px 0 8px' }}>
+                  {ms === 'grace' && graceEnds
+                    ? `Running until ${fmt(graceEnds)}. Crayora still sends this salon’s OTPs until then; after that it is blocked unless it has added its own account. Enter a new length to change it, or 0 to end it now.`
+                    : ms === 'trial'
+                      ? 'Extra days after the trial ends - granted now, it starts when the trial finishes. When grace ends, the salon is blocked unless it has added its own Message Central account.'
+                      : 'Extra days, from today, during which Crayora still sends this salon’s OTPs. When they end, the salon is blocked unless it has added its own Message Central account.'}
+                </p>
+                {graceState.ok && <div className="notice">{graceState.ok}</div>}
+                <div className="row">
+                  <div>
+                    <label htmlFor={`gd-${salon.id}`}>Grace length (days)</label>
+                    <input
+                      id={`gd-${salon.id}`}
+                      name="days"
+                      type="number"
+                      min={0}
+                      max={365}
+                      defaultValue={graceDaysLeft > 0 ? graceDaysLeft : 7}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor={`gr-${salon.id}`}>Reason (required, audited)</label>
+                    <input
+                      id={`gr-${salon.id}`}
+                      name="reason"
+                      placeholder="Salon is setting up Message Central"
+                    />
+                  </div>
+                </div>
+                <div className="actions">
+                  <button className="secondary" disabled={settingGrace}>
+                    {settingGrace ? 'Saving…' : ms === 'grace' ? 'Update grace' : 'Grant grace'}
+                  </button>
+                </div>
+              </form>
+            )}
+
             {salon.status === 'setup' ? (
               <form action={activate}>
                 <input type="hidden" name="salonId" value={salon.id} />
                 <p className="hint" style={{ margin: '4px 0 8px' }}>
                   Activation is a deliberate act. Nothing else can do it — no payment, no timer.
-                  {!salon.otp_own_account && trialDaysLeft === 0 && (
+                  {ms === 'fallback' && (
                     <>
                       {' '}
                       <strong>

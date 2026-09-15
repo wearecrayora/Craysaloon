@@ -55,6 +55,13 @@ Deno.serve(async (req) => {
   }
   if (!begin?.ok) {
     if (begin?.reason === 'rate_limited') return json(429, { error: 'rate_limited' });
+    if (begin?.reason === 'salon_blocked') {
+      // A real customer of a real salon whose messaging trial and grace have
+      // both ended without it setting up its own account (0033). Not a decoy:
+      // they are owed a true answer, and a code that never arrives would look
+      // like the app is broken. The app tells them to contact the salon.
+      return json(403, { error: 'salon_unavailable' });
+    }
     return decoy();
   }
 
@@ -67,17 +74,18 @@ Deno.serve(async (req) => {
   let creds: McCreds | null = salonSender
     ? { customerId: salonSender.customer_id, authToken: salonSender.auth_token }
     : null;
-  let sender: 'salon' | 'trial' | 'platform' = 'salon';
+  let sender: 'salon' | 'trial' | 'grace' | 'platform' = 'salon';
 
   if (!creds) {
     creds = platformCreds();
-    if (begin.messaging_trial_active) {
-      // An operator-granted messaging trial (0032): Crayora pays for this
-      // salon's OTPs ON PURPOSE until the trial ends. Intended, so not
-      // alerted - and recorded as `trial`, so it never inflates the count of
-      // genuine fallbacks. A salon that HAS its own account never gets here:
-      // its own account is used even during a trial.
-      sender = 'trial';
+    const state: string = begin.messaging_state ?? (begin.messaging_trial_active ? 'trial' : 'fallback');
+    if (state === 'trial' || state === 'grace') {
+      // An operator-granted trial (0032) or grace period (0033): Crayora pays
+      // for this salon's OTPs ON PURPOSE until it ends. Intended, so not
+      // alerted, and recorded under its own sender so it never inflates the
+      // count of genuine fallbacks. A salon that HAS its own account never
+      // gets here: its own account is used even during a trial.
+      sender = state;
     } else {
       sender = 'platform';
       await alert('otp_fallback_no_salon_credentials', { salon_id: salonId });
