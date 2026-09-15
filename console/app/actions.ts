@@ -4,10 +4,14 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { validateBranding, type BrandInput } from '@cray/design-tokens';
 import { requireAdmin } from '@/server/auth';
+import { renderQrPack } from '@/server/qr-pack';
+import { putObject, signedUrl } from '@/server/r2';
 import {
   activateSalon,
   provisionSalon,
+  getJoinCode,
   publishBranding,
+  recordAsset,
   recordSetupFee,
   setIntegrationSecret,
   setSalonRules,
@@ -24,7 +28,7 @@ import {
  * mutates anything without an attributable actor.
  */
 
-export type ActionState = { error?: string; ok?: string; joinCode?: string };
+export type ActionState = { error?: string; ok?: string; joinCode?: string; url?: string };
 
 export type PublishState = {
   error?: string;
@@ -405,6 +409,52 @@ export async function setRulesAction(_prev: ActionState, form: FormData): Promis
     });
     revalidatePath(`/salon/${salonId}/catalogue`);
     return { ok: 'Rules saved.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+/**
+ * Render the printable QR pack, store it privately in R2, and hand back a
+ * short-lived signed link.
+ *
+ * Order matters: render, upload, THEN audit. If the upload fails there is no
+ * audit row claiming a pack exists; if the audit fails the object is orphaned
+ * but harmless - it is private, and a signed URL is never issued for it.
+ */
+export async function generateQrPackAction(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+
+  const salon = await getJoinCode(salonId);
+  if (!salon) return { error: 'No such salon.' };
+
+  let pdf: Uint8Array;
+  try {
+    pdf = await renderQrPack(salon.display_name, salon.join_code);
+  } catch (e) {
+    // renderQrPack refuses a name its fonts cannot print, with a sentence
+    // written for the operator. Anything else is internal.
+    const msg = e instanceof Error ? e.message : '';
+    return {
+      error: /cannot render/.test(msg) ? msg : 'The QR pack could not be rendered.',
+    };
+  }
+
+  // Sortable timestamp in the key, so "latest" is a string sort and every
+  // regeneration is kept rather than overwritten.
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const key = `salons/${salonId}/qr-pack/${stamp}-${salon.join_code}.pdf`;
+
+  try {
+    await putObject(key, pdf, 'application/pdf');
+    await recordAsset(admin.id, salonId, 'qr_pack', key);
+    const url = await signedUrl(key, 600);
+    revalidatePath(`/salon/${salonId}/qr`);
+    return { ok: 'QR pack generated. The link below works for 10 minutes.', url };
   } catch (e) {
     return { error: message(e) };
   }

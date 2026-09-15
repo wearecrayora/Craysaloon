@@ -389,6 +389,26 @@ export async function setSalonRules(
       ${actorAdminId}::uuid, ${salonId}::uuid, ${sql.json(rules)})`;
 }
 
+/** RULES 6.5 in spirit: generating a salon's public-facing artifact is attributable. */
+export async function recordAsset(
+  actorAdminId: string,
+  salonId: string,
+  kind: 'qr_pack',
+  objectKey: string,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.record_asset(
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${kind}, ${objectKey})`;
+}
+
+export async function getJoinCode(salonId: string) {
+  const sql = client();
+  const [row] = await sql<{ join_code: string; display_name: string }[]>`
+    select join_code, display_name from public.salons where id = ${salonId}::uuid`;
+  return row ?? null;
+}
+
 export type IntegrationRow = {
   provider: 'razorpay' | 'message_central' | 'whatsapp' | 'rcs';
   status: 'missing' | 'untested' | 'ok' | 'failing';

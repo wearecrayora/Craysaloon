@@ -75,8 +75,12 @@ else
   # is skipped, which is why the shape patterns above still matter.
   if [ -f .env ]; then
     set -a; . ./.env; set +a
+    # R2 and the Cloudflare token were added 2026-09-15. The token is
+    # ACCOUNT-WIDE (create/delete on every bucket), so it is the single most
+    # damaging value that could reach a browser bundle.
     for name in SUPABASE_SECRET_KEY DATABASE_URL ADMIN_DATABASE_URL \
-                PHONE_HASH_PEPPER R2_SECRET_ACCESS_KEY RAZORPAY_KEY_SECRET \
+                PHONE_HASH_PEPPER R2_SECRET_ACCESS_KEY R2_ACCESS_KEY_ID \
+                CLOUDFLARE_API_TOKEN RAZORPAY_KEY_SECRET \
                 MESSAGE_CENTRAL_AUTH_KEY; do
       val="${!name-}"
       # Ignore short or empty values: a two-character "secret" would match

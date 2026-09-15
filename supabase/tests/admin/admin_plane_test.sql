@@ -8,7 +8,7 @@
 -- no credential can be read back. Each is asserted here against the catalogue,
 -- so a function added tomorrow is covered tomorrow.
 
-select plan(26);
+select plan(29);
 
 select set_config('app.phone_hash_pepper', 'admin-test-pepper', true);
 
@@ -338,6 +338,42 @@ select throws_ok(
       '{"wallet_rule": {"topup_paise": 50000, "bonus_paise": 5000, "expires_days": 90}}'::jsonb)$$,
   'P0001', null,
   'nor hidden inside wallet_rule'
+);
+
+-- ---------------------------------------------------------------------------
+-- Asset generation is attributable, and cannot be misattributed
+-- ---------------------------------------------------------------------------
+
+select lives_ok(
+  $$select app_admin.record_asset(
+      '11111111-aaaa-4000-8000-000000000001',
+      (select id from public.salons where display_name = 'Provision Test'),
+      'qr_pack',
+      'salons/' || (select id from public.salons where display_name = 'Provision Test')::text
+        || '/qr-pack/2026-09-15-CRAY-TESTTT.pdf')$$,
+  'generating a QR pack writes an attributable audit row'
+);
+
+-- A key under ANOTHER salon's prefix would produce an audit row claiming one
+-- salon's public artifact belongs to a different one.
+select throws_ok(
+  $$select app_admin.record_asset(
+      '11111111-aaaa-4000-8000-000000000001',
+      (select id from public.salons where display_name = 'Provision Test'),
+      'qr_pack',
+      'salons/eeeeeeee-0000-4000-8000-00000000dead/qr-pack/stolen.pdf')$$,
+  'P0001', null,
+  'an object key outside the salon''s own prefix is refused'
+);
+
+select throws_ok(
+  $$select app_admin.record_asset(
+      '11111111-aaaa-4000-8000-000000000001',
+      (select id from public.salons where display_name = 'Provision Test'),
+      'invoice_dump',
+      'salons/x/y.pdf')$$,
+  'P0001', null,
+  'an unknown asset kind is refused'
 );
 
 select * from finish();

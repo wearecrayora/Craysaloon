@@ -156,9 +156,9 @@ claim — *it looks like the salon's own app* — is either true or not.
 | | |
 |---|---|
 | **Read** | `RULES.md` §4, §8, §12A · PRD §6.5, §6.6 · ARCHITECTURE §5.4, §5.5, §7 · `DESIGN.md` §3, §5.3, §6 |
-| **Build** | `bind_customer()` — atomic, consuming the join intent, bumping `cver` · the confirmation screen naming the salon · **`already_bound` that never names the other salon** · `app_admin.unbind_customer` / `transfer_customer` with required `acknowledged_balance_paise` · **consent defaults written at binding** (dependency ③) · full theming from tokens, cached offline · pinned home-screen shortcut · per-salon notification channel |
+| **Build** | `bind_customer()` — atomic, consuming the join intent, bumping `cver` · the confirmation screen naming the salon · **`already_bound` that never names the other salon** · `app_admin.unbind_customer` / `transfer_customer` with required `acknowledged_balance_paise` · **consent defaults written at binding** (dependency ③) · full theming from tokens, cached offline · pinned home-screen shortcut · per-salon notification channel · **the join domain**: `join.craysalon.in` serving `/.well-known/assetlinks.json` (the app's signing fingerprint) and a `/s/<code>` fallback that sends a phone without the app to the Play listing, carrying the code through Install Referrer. *Added after the QR pack shipped in M2: every printed QR encodes this URL, and no milestone had been scheduled to make it exist* |
 | **Not yet** | The launcher icon. It cannot be changed at runtime (RULES §2) |
-| **Done when** | The binding-exclusivity test passes · no tenant-reachable switch/unbind/transfer path exists · a transfer leaves wallet and history with the old salon · the app re-themes without a restart · it renders correctly under a dark brand, a pale brand and the neutral default · consent rows exist for every bound customer |
+| **Done when** | The binding-exclusivity test passes · no tenant-reachable switch/unbind/transfer path exists · a transfer leaves wallet and history with the old salon · the app re-themes without a restart · it renders correctly under a dark brand, a pale brand and the neutral default · consent rows exist for every bound customer · **a printed QR opens the app with the code pre-filled, or - without the app - the Play listing, and the code survives the install** |
 
 ---
 

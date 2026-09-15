@@ -13,7 +13,7 @@
 --     sender would let any number in India be made to cost Crayora money, and
 --     would deliver an OTP from a brand the recipient has never heard of.
 
-select plan(15);
+select plan(20);
 
 insert into auth.users (id) values
   ('33333333-cccc-4000-8000-000000000001');
@@ -60,6 +60,24 @@ select is(
 );
 
 -- THE isolation property. A QR printed before activation is worthless.
+-- The printed card tells a customer to TYPE the code if they cannot scan.
+-- These are the forms people actually produce. The en-dash is the one that
+-- matters: phone keyboards substitute it for a hyphen as smart punctuation.
+select is(public.resolve_join_code('CRAYAAABBB') ->> 'display_name', 'Live Salon',
+  'a code typed without its hyphen still resolves');
+select is(public.resolve_join_code('CRAY AAABBB') ->> 'display_name', 'Live Salon',
+  'a space in place of the hyphen still resolves');
+select is(public.resolve_join_code('AAABBB') ->> 'display_name', 'Live Salon',
+  'the six-character body alone still resolves');
+select is(public.resolve_join_code('CRAY–AAABBB') ->> 'display_name', 'Live Salon',
+  'an EN-DASH, as a phone keyboard substitutes it, still resolves');
+
+-- And the tolerance stops exactly where guessing would start. The alphabet has
+-- no 0/O or 1/I/L, so a code containing one is wrong - and mapping it to some
+-- other symbol would turn a typo into a lookup of a different salon.
+select is(public.resolve_join_code('CRAY-AAAB8O'), null,
+  'a character outside the alphabet is not guessed at - it is simply not found');
+
 select is(
   public.resolve_join_code('CRAY-CCCDDD'),
   null,
