@@ -225,6 +225,19 @@ Razorpay with path-token webhooks, Automations B and L.
 owner/manager path exists, `UPDATE`/`DELETE` raise for every role, no paid lot can expire ·
 concurrent debits cannot overdraw · the disclosure block renders above the pay button.
 *Simulated payments are acceptable here; real Razorpay before Phase 5.*
+*Progress (2026-09-27):* the ledger is built and gated. `app.wallet_post` is the **one** function
+that writes a ledger row - it takes the row lock, recomputes, inserts and updates the cached
+balance, so "cannot overdraw" exists once rather than in five places. Four of the five permitted
+callers exist: credit from a captured payment (idempotent per payment, bonus terms captured onto the
+lot at issue), debit at checkout (**bonus lots first, oldest expiry first**, with allocations
+recorded per lot so a refund could unwind precisely), bonus-lot expiry (which **refuses a paid
+lot**), and `app_admin.wallet_correct` - super-admin only, reason required, audited, and the only
+human path to a balance anywhere. `app.referral_release_reward` is deliberately absent until
+referrals exist (M9): a function that moves money before the rule justifying it is worse than a
+missing one. Gate: 18 new assertions in `money/ledger_test.sql`, plus a negative control that adds a
+second ledger writer and requires the gate to go red. **Still to build:** the payment waterfall with
+Razorpay (per-salon keys, path-token webhook), the Add Money screen with its disclosure block, and
+Automations B and L.
 
 **M8 — Reminders and push.** Automations A, C, K; the ack protocol; learned intervals.
 *Read:* PRD §9.2, §10.1, §12 · ARCHITECTURE §6.6, §6.7, §11, §12.

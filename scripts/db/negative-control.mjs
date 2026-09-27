@@ -49,6 +49,7 @@ const MUST_FAIL = [
 const LEAK_TEST = 'supabase/tests/rls/leak_test.sql';
 const SCOPE_TEST = 'supabase/tests/rls/customer_scope_test.sql';
 const BOOKING_TEST = 'supabase/tests/booking/booking_test.sql';
+const MONEY_TEST = 'supabase/tests/money/ledger_test.sql';
 const ADMIN_TEST = 'supabase/tests/admin/admin_plane_test.sql';
 
 // A new table naming a customer, protected the way EVERY tenant table was
@@ -84,6 +85,26 @@ const BOOKING_CANARY = `
 `;
 
 const BOOKING_MUST_FAIL = [/cannot be booked twice/];
+
+// RULES 5.2: only five callers may post to a ledger, and exactly one function
+// writes the row. The realistic way that breaks is a well-meant helper - "just a
+// small function to credit a goodwill amount" - that inserts a ledger row
+// directly, skipping the lock, the overdraw check and the balance recompute.
+// This is that function. The money gate must go red the day it appears.
+const LEDGER_CANARY = `
+  create function app.canary_credit_goodwill(p_salon uuid, p_customer uuid, p_paise bigint)
+  returns void
+  language sql
+  security definer
+  set search_path = ''
+  as $canary$
+    insert into public.wallet_transactions
+      (salon_id, customer_id, kind, amount_paise, balance_after)
+    values (p_salon, p_customer, 'admin_correction', p_paise, p_paise);
+  $canary$;
+`;
+
+const LEDGER_MUST_FAIL = [/exactly ONE function inserts a wallet ledger row/];
 
 // A function in app_admin that mutates a table and never writes audit_log -
 // exactly the mistake RULES 6.5 exists to prevent.
@@ -206,6 +227,12 @@ try {
       BOOKING_TEST,
       BOOKING_CANARY,
       BOOKING_MUST_FAIL,
+    ),
+    await check(
+      'money / a second function that writes a ledger row directly',
+      MONEY_TEST,
+      LEDGER_CANARY,
+      LEDGER_MUST_FAIL,
     ),
   ];
 

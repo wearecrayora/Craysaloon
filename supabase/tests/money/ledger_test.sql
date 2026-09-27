@@ -7,7 +7,7 @@
 -- FOR EACH ROW trigger never fired and the probe proved nothing. A statement
 -- that succeeds against zero rows is not evidence.
 
-select plan(13);
+select plan(31);
 
 select set_config('app.phone_hash_pepper', 'money-test-pepper', true);
 
@@ -196,5 +196,258 @@ select is(
   0,
   'no floating-point column exists anywhere in the schema'
 );
+
+-- ---------------------------------------------------------------------------
+-- THE LEDGER IN MOTION (0048). Everything above is structure; this is behaviour.
+-- ---------------------------------------------------------------------------
+
+-- Only ONE function may write a ledger row, and only the documented callers may
+-- call it. Asserted from the catalogue, so a sixth caller fails on the day it is
+-- written rather than the day it double-charges someone.
+select set_eq(
+  $q$select p.proname::text
+      from pg_proc p
+     where p.pronamespace in ('app'::regnamespace, 'app_admin'::regnamespace)
+       and pg_get_functiondef(p.oid) ~* 'insert into public[.]wallet_transactions'$q$,
+  $q$values ('wallet_post')$q$,
+  'exactly ONE function inserts a wallet ledger row - the single write path (RULES 5.1.3)'
+);
+
+select set_eq(
+  $q$with fns as materialized (
+      select p.proname::text as name, pg_get_functiondef(p.oid) as def
+        from pg_proc p
+       where p.pronamespace in ('app'::regnamespace, 'app_admin'::regnamespace)
+         and p.proname <> 'wallet_post'
+    )
+    select name from fns where def ~* 'wallet_post'$q$,
+  $q$values ('wallet_credit_from_payment'), ('wallet_debit_at_checkout'),
+           ('wallet_expire_lot'), ('wallet_correct')$q$,
+  'and only the permitted callers call it - four today, referral reward at M9 (RULES 5.2)'
+);
+
+select is(
+  (select count(*)::int from pg_proc p
+    where p.pronamespace in ('app'::regnamespace, 'app_admin'::regnamespace)
+      and p.proname in ('wallet_post', 'wallet_credit_from_payment',
+                        'wallet_debit_at_checkout', 'wallet_expire_lot')
+      and (has_function_privilege('authenticated', p.oid, 'EXECUTE')
+        or has_function_privilege('anon', p.oid, 'EXECUTE'))),
+  0,
+  'no device can call any ledger function - not an owner, not a customer (RULES 5.2)'
+);
+
+-- Fixtures: a salon with a 10% bonus over a Rs 500 top-up, expiring in 180 days.
+insert into auth.users (id) values ('99999999-aaaa-4000-8000-00000000000f');
+insert into public.platform_admins (id, email, name, is_super, active)
+values ('99999999-aaaa-4000-8000-00000000000f', 'money@crayora.test', 'Money Super', true, true);
+
+insert into public.salons (id, legal_name, display_name, join_code, status,
+                           wallet_rule, activated_by, activated_at)
+values ('99999999-0000-4000-8000-000000000001', 'Money Salon Ltd', 'Money Salon',
+        'CRAY-MNYQQQ', 'active',
+        '{"bonus_percent": 10, "min_topup_paise": 50000, "bonus_expiry_days": 180}'::jsonb,
+        '99999999-aaaa-4000-8000-00000000000f', now());
+
+insert into public.customers (id, salon_id, name, phone, phone_hash)
+values ('99999999-1111-4000-8000-00000000000c', '99999999-0000-4000-8000-000000000001',
+        'Meena', '9899900001', app.phone_hash('9899900001'));
+
+-- Rs 1000 top-up, captured.
+insert into public.payments (id, salon_id, customer_id, method, amount_paise, status, captured_at)
+values ('99999999-7777-4000-8000-000000000001', '99999999-0000-4000-8000-000000000001',
+        '99999999-1111-4000-8000-00000000000c', 'upi', 100000, 'captured', now());
+
+create temp table credited as
+select app.wallet_credit_from_payment('99999999-7777-4000-8000-000000000001') as r;
+
+select results_eq(
+  $q$select (r ->> 'paid_paise')::bigint, (r ->> 'bonus_paise')::bigint from credited$q$,
+  $q$values (100000::bigint, 10000::bigint)$q$,
+  'a Rs 1000 top-up credits Rs 1000 paid and Rs 100 bonus - 10 per cent, in whole paise'
+);
+
+select results_eq(
+  $q$select kind::text, amount_paise, balance_after from public.wallet_transactions
+     where customer_id = '99999999-1111-4000-8000-00000000000c' order by id$q$,
+  $q$values ('credit_topup', 100000::bigint, 100000::bigint),
+           ('credit_bonus', 10000::bigint, 110000::bigint)$q$,
+  'two ledger rows, each carrying the running balance after it'
+);
+
+select is(
+  (select balance_paise from public.wallet_accounts
+    where customer_id = '99999999-1111-4000-8000-00000000000c'),
+  110000::bigint,
+  'and the cached balance agrees with the ledger'
+);
+
+select results_eq(
+  $q$select kind::text, (expires_at is null) as never_expires from public.wallet_lots
+     where customer_id = '99999999-1111-4000-8000-00000000000c' order by kind::text$q$,
+  $q$values ('bonus', false), ('paid', true)$q$,
+  'the PAID lot has no expiry and the bonus lot has one (RULES 5.3.1, 5.3.3)'
+);
+
+-- A webhook redelivery must not credit twice.
+select is(
+  (app.wallet_credit_from_payment('99999999-7777-4000-8000-000000000001') ->> 'already'),
+  'true',
+  'crediting the same payment again is a no-op - webhooks redeliver'
+);
+
+select is(
+  (select count(*)::int from public.wallet_transactions
+    where customer_id = '99999999-1111-4000-8000-00000000000c'),
+  2,
+  'and writes no third row'
+);
+
+-- Spending: bonus first.
+create temp table spent as
+select app.wallet_debit_at_checkout(
+  '99999999-0000-4000-8000-000000000001',
+  '99999999-1111-4000-8000-00000000000c',
+  15000) as r;
+
+select is((select r ->> 'ok' from spent), 'true', 'Rs 150 is spent at checkout');
+
+select results_eq(
+  $q$select l.kind::text, l.remaining_paise from public.wallet_lots l
+     where l.customer_id = '99999999-1111-4000-8000-00000000000c' order by l.kind::text$q$,
+  $q$values ('bonus', 0::bigint), ('paid', 95000::bigint)$q$,
+  'the BONUS lot is emptied first, then the paid one - the credit that cannot expire is kept'
+);
+
+select results_eq(
+  $q$select a.amount_paise from public.payment_allocations a
+     join public.wallet_lots l on l.id = a.wallet_lot_id
+    where l.customer_id = '99999999-1111-4000-8000-00000000000c'
+    order by case when l.kind = 'bonus' then 0 else 1 end$q$,
+  $q$values (10000::bigint), (5000::bigint)$q$,
+  'and each lot consumed is recorded, so a refund could unwind precisely (ARCH 6.3)'
+);
+
+select is(
+  (select balance_paise from public.wallet_accounts
+    where customer_id = '99999999-1111-4000-8000-00000000000c'),
+  95000::bigint,
+  'the balance is what is left'
+);
+
+-- Overdrawing is refused, not clamped.
+select is(
+  (app.wallet_debit_at_checkout(
+     '99999999-0000-4000-8000-000000000001',
+     '99999999-1111-4000-8000-00000000000c',
+     999999) ->> 'reason'),
+  'insufficient_credit',
+  'spending more than the balance is REFUSED - never partially applied'
+);
+
+select is(
+  (select balance_paise from public.wallet_accounts
+    where customer_id = '99999999-1111-4000-8000-00000000000c'),
+  95000::bigint,
+  'and the refusal changed nothing'
+);
+
+-- Two debits in a row cannot together overdraw: the second sees the first.
+select is(
+  (app.wallet_debit_at_checkout(
+     '99999999-0000-4000-8000-000000000001',
+     '99999999-1111-4000-8000-00000000000c',
+     90000) ->> 'ok'),
+  'true',
+  'a second debit of Rs 900 succeeds'
+);
+
+select is(
+  (app.wallet_debit_at_checkout(
+     '99999999-0000-4000-8000-000000000001',
+     '99999999-1111-4000-8000-00000000000c',
+     90000) ->> 'reason'),
+  'insufficient_credit',
+  'a third does not - concurrent spending cannot overdraw (the row lock decides)'
+);
+
+-- Expiry: bonus only, ever.
+insert into public.wallet_lots
+  (id, salon_id, customer_id, kind, amount_paise, remaining_paise, expires_at)
+values
+  ('99999999-8888-4000-8000-000000000001', '99999999-0000-4000-8000-000000000001',
+   '99999999-1111-4000-8000-00000000000c', 'bonus', 20000, 20000, now() - interval '1 day');
+
+select throws_ok(
+  $q$select app.wallet_expire_lot(
+      (select id from public.wallet_lots
+        where customer_id = '99999999-1111-4000-8000-00000000000c' and kind = 'paid' limit 1))$q$,
+  '23514', null,
+  'a PAID lot cannot be expired, even by the function whose job is expiring lots'
+);
+
+-- The bonus lot needs crediting first, or expiring it would overdraw the wallet.
+select lives_ok(
+  $q$select app.wallet_post(
+      '99999999-0000-4000-8000-000000000001',
+      '99999999-1111-4000-8000-00000000000c',
+      'credit_bonus', 20000, '99999999-8888-4000-8000-000000000001')$q$,
+  'a second bonus lot is credited'
+);
+
+select is(
+  (app.wallet_expire_lot('99999999-8888-4000-8000-000000000001') ->> 'expired_paise')::bigint,
+  20000::bigint,
+  'an overdue BONUS lot expires, and the ledger records the removal'
+);
+
+select is(
+  (select count(*)::int from public.wallet_transactions
+    where customer_id = '99999999-1111-4000-8000-00000000000c' and kind = 'debit_expiry'),
+  1,
+  'as a new row - nothing was edited (RULES 5.1.1)'
+);
+
+select is(
+  (app.wallet_expire_lot('99999999-8888-4000-8000-000000000001') ->> 'already'),
+  'true',
+  'expiring it again does nothing - the job may run twice'
+);
+
+-- The one human path.
+-- Called ONCE, into a table. The first draft of this test put the call in a
+-- WHERE clause, and Postgres evaluated the volatile function once per row it
+-- scanned - writing several corrections. Never call a money function from a
+-- predicate; that lesson cost this test a debugging session and would cost a
+-- production wallet real rupees.
+create temp table corrected as
+select app_admin.wallet_correct(
+  '99999999-aaaa-4000-8000-00000000000f',
+  '99999999-1111-4000-8000-00000000000c',
+  5000, 'Machine took the payment twice at the counter') as entry_id;
+
+select is(
+  (select count(*)::int from public.wallet_transactions
+    where id = (select entry_id from corrected)),
+  1,
+  'a super-admin can correct a balance, with a reason'
+);
+
+select is(
+  (select count(*)::int from public.audit_log
+    where action = 'wallet.corrected'
+      and actor_user_id = '99999999-aaaa-4000-8000-00000000000f'),
+  1,
+  'and it is audited - the only human path to money is also the most logged'
+);
+
+select is(
+  (select kind::text from public.wallet_lots
+    where customer_id = '99999999-1111-4000-8000-00000000000c'
+      and amount_paise = 5000),
+  'paid',
+  'a correction in the customer''s favour never expires - it is PAID-kind credit'
+);
+
 
 select * from finish();

@@ -540,6 +540,13 @@ A change is not done until all of these hold.
       nothing else; a salon in setup and an unknown code look identical (no oracle); typing
       variants normalise, but a character outside the alphabet is never guessed at; a live join
       intent decides which salon's account sends the OTP
+- [ ] **Money test, in motion** — exactly ONE function inserts a ledger row and only the permitted
+      callers call it, asserted from the catalogue; no device can call any of them; a top-up credits
+      paid and bonus as separate lots with the paid one carrying no expiry; spending empties BONUS
+      first; overdrawing is refused rather than clamped or partially applied; two debits in a row
+      cannot together overdraw; a PAID lot cannot be expired even by the expiry function; a
+      correction is audited and issues paid-kind credit. Negative control: **a second function that
+      writes a ledger row makes it go red**
 - [ ] **Booking test** — two bookings for the same chair at the same time cannot both succeed, nor
       can an overlapping one, while the minute the first ends is free; a replayed booking returns
       the original and creates no second row; price and duration are snapshotted, so repricing a
