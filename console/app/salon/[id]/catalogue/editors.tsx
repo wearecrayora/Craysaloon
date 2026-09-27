@@ -9,11 +9,9 @@ import {
   upsertStaffAction,
   type ActionState,
 } from '@/app/actions';
+import { formatPaise } from '@/lib/money';
 
 const empty: ActionState = {};
-
-const rupees = (paise: string) =>
-  '₹' + (Number(paise) / 100).toLocaleString('en-IN', { maximumFractionDigits: 2 });
 
 function Feedback({ state }: { state: ActionState }) {
   if (state.error) return <div className="error">{state.error}</div>;
@@ -76,7 +74,7 @@ export function Services({ salonId, rows }: { salonId: string; rows: ServiceRow[
                     <span style={{ color: 'var(--ink-soft)', fontSize: 12 }}> · {r.category}</span>
                   )}
                 </td>
-                <td style={{ fontVariantNumeric: 'tabular-nums' }}>{rupees(r.price_paise)}</td>
+                <td style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPaise(r.price_paise)}</td>
                 <td>{r.duration_minutes} min</td>
                 <td>{r.repeat_cycle_days ? `${r.repeat_cycle_days} days` : '—'}</td>
                 <td style={{ textAlign: 'right' }}>
@@ -195,7 +193,7 @@ export function AddOns({ salonId, rows }: { salonId: string; rows: AddOnRow[] })
                   {r.name}
                   {!r.active && <span style={{ color: 'var(--ink-soft)' }}> · inactive</span>}
                 </td>
-                <td style={{ fontVariantNumeric: 'tabular-nums' }}>{rupees(r.price_paise)}</td>
+                <td style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPaise(r.price_paise)}</td>
                 <td>{r.extra_duration_minutes} min</td>
                 <td style={{ textAlign: 'right' }}>
                   <button type="button" className="secondary" onClick={() => setEditing(r)}>

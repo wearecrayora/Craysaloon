@@ -7,6 +7,7 @@ import { requireAdmin } from '@/server/auth';
 import { renderQrPack } from '@/server/qr-pack';
 import { putObject, signedUrl } from '@/server/r2';
 import { checkMessageCentralCredentials } from '@/server/message-central-check';
+import { parseRupees } from '@/lib/money';
 import {
   activateSalon,
   provisionSalon,
@@ -347,8 +348,7 @@ export async function setSecretAction(_prev: ActionState, form: FormData): Promi
 // Rupees in the form, paise in the database. The operator was quoted a price
 // in rupees on the phone; storing anything but integer paise is how rounding
 // bugs get in (ADR-06).
-const rupeesToPaise = (v: FormDataEntryValue | null) =>
-  Math.round(Number(String(v ?? '0')) * 100);
+const rupeesToPaise = (v: FormDataEntryValue | null) => parseRupees(v);
 
 const id = (v: FormDataEntryValue | null) => {
   const s = String(v ?? '').trim();
@@ -367,7 +367,9 @@ export async function upsertServiceAction(
   const repeat = String(form.get('repeatCycleDays') ?? '').trim();
 
   if (!name) return { error: 'A service needs a name.' };
-  if (!Number.isFinite(pricePaise) || pricePaise < 0) return { error: 'Price is not a number.' };
+  // null, not NaN: the parser refuses anything that is not an amount, so an
+  // empty field and "₹four hundred" get the same clear answer (lib/money.ts).
+  if (pricePaise === null) return { error: 'Enter the price in rupees, for example 400 or 400.50.' };
   if (!Number.isInteger(durationMinutes) || durationMinutes <= 0) {
     return { error: 'A service must take some time.' };
   }
@@ -396,7 +398,7 @@ export async function upsertAddOnAction(_prev: ActionState, form: FormData): Pro
   const pricePaise = rupeesToPaise(form.get('priceRupees'));
 
   if (!name) return { error: 'An add-on needs a name.' };
-  if (!Number.isFinite(pricePaise) || pricePaise < 0) return { error: 'Price is not a number.' };
+  if (pricePaise === null) return { error: 'Enter the price in rupees, for example 400 or 400.50.' };
 
   try {
     await upsertAddOn(admin.id, salonId, {
@@ -453,11 +455,11 @@ export async function setRulesAction(_prev: ActionState, form: FormData): Promis
   const bonus = rupeesToPaise(form.get('walletBonusRupees'));
   const cycle = Number(form.get('reminderCycleDays') ?? 0);
 
-  if (!Number.isFinite(topup) || topup <= 0) {
+  if (topup === null || topup <= 0) {
     return { error: 'The wallet top-up threshold must be a positive amount.' };
   }
-  if (!Number.isFinite(bonus) || bonus < 0) {
-    return { error: 'The bonus cannot be negative.' };
+  if (bonus === null) {
+    return { error: 'Enter the bonus in rupees, for example 50.' };
   }
   if (!Number.isInteger(cycle) || cycle <= 0) {
     return { error: 'The reminder cycle must be a whole number of days.' };
@@ -606,12 +608,6 @@ export type BindingState = {
 const SUPER_ONLY =
   'Customer binding is for a Crayora super-admin only. Ask one to handle this - every action here moves a customer between businesses.';
 
-/** "1,234.50" / "₹550" / "0" -> paise, or null. Integer arithmetic only: money is never a float. */
-function strictRupeesToPaise(raw: string): number | null {
-  const m = /^(\d+)(?:\.(\d{1,2}))?$/.exec(raw.replace(/[₹,\s]/g, ''));
-  if (!m) return null;
-  return Number(m[1]) * 100 + Number((m[2] ?? '').padEnd(2, '0'));
-}
 
 export async function lookupBindingAction(
   _prev: BindingState,
@@ -660,7 +656,7 @@ export async function transferAction(_prev: BindingState, form: FormData): Promi
   const number = String(form.get('phone') ?? '');
   const toSalonId = String(form.get('toSalonId') ?? '');
   const reason = String(form.get('reason') ?? '').trim();
-  const acknowledged = strictRupeesToPaise(String(form.get('acknowledged') ?? ''));
+  const acknowledged = parseRupees(String(form.get('acknowledged') ?? ''));
 
   if (!toSalonId) return { error: 'Choose the salon the customer is moving to.' };
   if (reason.length < 10) {

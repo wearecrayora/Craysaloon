@@ -7,19 +7,10 @@ import {
   unbindAction,
   type BindingState,
 } from '@/app/actions';
+import { formatPaise } from '@/lib/money';
 
 const empty: BindingState = {};
 
-/** Paise -> ₹1,20,500 or ₹550.50. Tabular, Indian grouping, never animated. */
-function inr(paise: number): string {
-  const whole = Math.trunc(paise / 100);
-  const rest = paise % 100;
-  return (
-    '₹' +
-    whole.toLocaleString('en-IN') +
-    (rest ? '.' + String(rest).padStart(2, '0') : '')
-  );
-}
 
 /** The screen never repeats the whole number back. */
 function masked(phone: string): string {
@@ -124,11 +115,11 @@ export function BindingDesk({
                 <tr>
                   <th>Wallet balance</th>
                   <td style={money}>
-                    <strong>{inr(r.balance_paise)}</strong>
+                    <strong>{formatPaise(r.balance_paise)}</strong>
                     {r.balance_paise > 0 && (
                       <span className="hint">
                         {' '}
-                        - paid {inr(r.paid_paise)}, bonus {inr(r.bonus_paise)}
+                        - paid {formatPaise(r.paid_paise)}, bonus {formatPaise(r.bonus_paise)}
                       </span>
                     )}
                   </td>
@@ -182,7 +173,7 @@ export function BindingDesk({
             <h2>{r.can_unbind ? '3' : '2'} · Transfer to another salon</h2>
             <p className="hint" style={{ marginTop: 0 }}>
               Before you do this, tell the customer - in these words or your own - that{' '}
-              <strong style={money}>{inr(r.balance_paise)}</strong> stays with {r.salon_name}.
+              <strong style={money}>{formatPaise(r.balance_paise)}</strong> stays with {r.salon_name}.
               It was paid into that salon’s own account; Crayora never held it and cannot move or
               refund it. Their visits, loyalty and packages stay there too. At the new salon they
               start from zero.

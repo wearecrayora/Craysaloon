@@ -607,6 +607,12 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Not saved. Please try again.'**
   String get saveFailed;
+
+  /// O1, the day view. The tab is the DAY; mark-complete is an action on it, not its name.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get dayTitle;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

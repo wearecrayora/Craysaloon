@@ -63,7 +63,6 @@ void main() {
       ProviderScope(
         overrides: [
           crayApiProvider.overrideWithValue(FakeCrayApi()),
-          hasSessionProvider.overrideWithValue(true),
           // A bound customer: the router picks the shell from app_role, so the
           // role IS the thing that puts this screen on screen (ARCH 9.1).
           sessionProvider.overrideWithValue(

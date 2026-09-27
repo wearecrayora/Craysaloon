@@ -84,5 +84,6 @@
   "formDurationInvalid": "Minute 5 se 600 ke beech daaliye.",
   "saveFailedOffline": "Save nahi hua. Catalogue badalne ke liye connection chahiye.",
   "saveFailedRefused": "Aapka account catalogue nahi badal sakta. Owner se kahiye.",
-  "saveFailed": "Save nahi hua. Dobara try kijiye."
+  "saveFailed": "Save nahi hua. Dobara try kijiye.",
+  "dayTitle": "Aaj"
 }

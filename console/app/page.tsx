@@ -1,16 +1,10 @@
 import Link from 'next/link';
 import { requireAdmin } from '@/server/auth';
 import { listSalons } from '@/server/admin-db';
+import { formatPaise } from '@/lib/money';
 import { SalonRow } from './salon-row';
 
 export const dynamic = 'force-dynamic';
-
-function rupees(paise: string | null): string {
-  if (paise === null) return '—';
-  const n = Number(paise) / 100;
-  // Indian grouping, as everywhere else money appears.
-  return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 0 });
-}
 
 export default async function Page() {
   const admin = await requireAdmin();
@@ -52,7 +46,7 @@ export default async function Page() {
               </thead>
               <tbody>
                 {salons.map((s) => (
-                  <SalonRow key={s.id} salon={s} feeLabel={rupees(s.setup_fee_paise)} />
+                  <SalonRow key={s.id} salon={s} feeLabel={formatPaise(s.setup_fee_paise)} />
                 ))}
               </tbody>
             </table>

@@ -316,4 +316,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get saveFailed => 'Not saved. Please try again.';
+
+  @override
+  String get dayTitle => 'Today';
 }

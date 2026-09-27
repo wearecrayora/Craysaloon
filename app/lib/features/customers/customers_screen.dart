@@ -224,6 +224,13 @@ class CustomerDetailScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(l10n.balanceReadOnly, style: text.bodySmall),
+            if (customer.loyaltyPoints > 0) ...[
+              const SizedBox(height: 16),
+              Text(
+                l10n.customerLoyalty('${customer.loyaltyPoints}'),
+                style: text.bodyMedium?.copyWith(fontFeatures: moneyFeatures),
+              ),
+            ],
             const SizedBox(height: 24),
             Text(l10n.customerVisits(customer.visitCount), style: text.titleMedium),
             const SizedBox(height: 8),

@@ -21,14 +21,30 @@ let failed = false;
 
 try {
   await sql.begin(async (tx) => {
-    const [priv] = await tx`
-      select has_schema_privilege('supabase_auth_admin', 'public', 'USAGE') as usage,
-             has_function_privilege('supabase_auth_admin',
-               'public.custom_access_token_hook(jsonb)', 'EXECUTE') as exec,
-             p.prosecdef as definer
-        from pg_proc p where p.oid = 'public.custom_access_token_hook(jsonb)'::regprocedure`;
-    console.log(`supabase_auth_admin: usage on public=${priv.usage}, execute=${priv.exec}; security definer=${priv.definer}`);
-    if (!priv.usage || !priv.exec || !priv.definer) failed = true;
+    // The grants only exist where Supabase Auth does. In CI - a bare postgres
+    // image with no GoTrue - the role is absent and there is nothing to grant
+    // to, so the privilege half is skipped and the behavioural half below still
+    // runs. Skipping it silently on a REAL project would hide the thing this
+    // script exists to catch, so the two cases are distinguished out loud.
+    const [{ present }] = await tx`
+      select exists (select 1 from pg_roles where rolname = 'supabase_auth_admin') as present`;
+
+    if (present) {
+      const [priv] = await tx`
+        select has_schema_privilege('supabase_auth_admin', 'public', 'USAGE') as usage,
+               has_function_privilege('supabase_auth_admin',
+                 'public.custom_access_token_hook(jsonb)', 'EXECUTE') as exec,
+               p.prosecdef as definer
+          from pg_proc p where p.oid = 'public.custom_access_token_hook(jsonb)'::regprocedure`;
+      console.log(`supabase_auth_admin: usage on public=${priv.usage}, execute=${priv.exec}; security definer=${priv.definer}`);
+      if (!priv.usage || !priv.exec || !priv.definer) failed = true;
+    } else {
+      const [{ definer }] = await tx`
+        select prosecdef as definer from pg_proc
+         where oid = 'public.custom_access_token_hook(jsonb)'::regprocedure`;
+      console.log('supabase_auth_admin is absent (no GoTrue here) - checking the hook itself only');
+      if (!definer) failed = true;
+    }
 
     const users = await tx`select id from auth.users order by created_at desc limit 5`;
 

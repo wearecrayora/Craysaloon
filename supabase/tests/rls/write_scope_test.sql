@@ -15,7 +15,7 @@
 --                   the other.
 --   * behavioural - the escalations themselves, attempted as each role.
 
-select plan(20);
+select plan(24);
 
 -- ---------------------------------------------------------------------------
 -- Catalogue: nothing tenant-writable is left role-blind
@@ -124,6 +124,35 @@ select lives_ok(
   $$insert into public.staff (salon_id, name, active)
     values ('eeeeeeee-0000-4000-8000-000000000001', 'New Stylist', true)$$,
   'and hire'
+);
+
+-- THE PAYLOAD THE APP ACTUALLY SENDS: no salon_id at all. It used to fail with a
+-- not-null violation, which no test noticed because every test named the salon
+-- explicitly - a payload the app never sends (0043).
+select lives_ok(
+  $$insert into public.services (name, price_paise, duration_minutes, active)
+    values ('Head massage', 30000, 25, true)$$,
+  'an insert that names no salon lands in the caller''s own - what the app sends'
+);
+
+select is(
+  (select salon_id from public.services where name = 'Head massage'),
+  'eeeeeeee-0000-4000-8000-000000000001'::uuid,
+  'and it lands in THEIR salon, from their token rather than from the request'
+);
+
+select lives_ok(
+  $$insert into public.staff (name, active) values ('Quiet Hire', true)$$,
+  'the same for the team - no salon_id in the payload'
+);
+
+-- And naming someone else's salon is still refused, so the default is a
+-- convenience rather than the protection.
+select throws_ok(
+  $$insert into public.services (salon_id, name, price_paise, duration_minutes, active)
+    values ('cccccccc-0000-4000-8000-000000000001', 'Someone Else''s', 100, 10, true)$$,
+  '42501', null,
+  'naming ANOTHER salon is refused - the policy, not the default, is the control'
 );
 
 -- RULES 6.3 and 6.9: status is Crayora's. An owner who could write it could
@@ -250,7 +279,7 @@ select is(
 );
 
 -- The menu must stay READABLE: a customer who cannot read it cannot book.
-select is((select count(*)::int from public.services), 2,
+select is((select count(*)::int from public.services), 3,
   'reading the menu is untouched - only writing it was ever the problem');
 
 reset role;

@@ -315,6 +315,9 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get saveFailed => 'सेव नहीं हुआ। दोबारा कोशिश करें।';
+
+  @override
+  String get dayTitle => 'आज';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -631,4 +634,7 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get saveFailed => 'Save nahi hua. Dobara try kijiye.';
+
+  @override
+  String get dayTitle => 'Aaj';
 }

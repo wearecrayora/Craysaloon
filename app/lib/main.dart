@@ -9,6 +9,8 @@ import 'core/push/push_setup.dart';
 import 'core/theme/brand_theme.dart';
 import 'core/theme/brand_tokens.dart';
 import 'data/local/branding_store.dart';
+import 'data/local/cache_db.dart';
+import 'data/local/cache_lifecycle.dart';
 import 'data/local/device_key.dart';
 import 'data/remote/supabase_cray_api.dart';
 import 'features/join/join_controller.dart';
@@ -33,28 +35,33 @@ Future<void> main() async {
       deviceKey = await DeviceKey.get();
     }
 
-    // The cached document is authoritative offline, so the app opens wearing
-    // the salon's brand with no network at all (DESIGN 3.3, PRD 15).
-    final cached = await BrandingStore().read();
+    // The cached document is authoritative offline, so the app opens wearing the
+    // salon's brand with no network at all (DESIGN 3.3, PRD 15) - but only while
+    // it still belongs to whoever is signed in. A transfer or an unbind ends the
+    // session server-side (0035), and THIS is where that becomes visible on the
+    // phone: the old salon's branding and cached rows are wiped rather than worn
+    // by whoever opens the app next.
+    final cache = CacheDb();
+    final cached = await brandingForSession(
+      api?.session,
+      store: BrandingStore(),
+      cache: cache,
+    );
 
     runApp(
       ProviderScope(
         overrides: [
           if (api != null) crayApiProvider.overrideWithValue(api),
-          if (api != null) hasSessionProvider.overrideWithValue(api.hasSession),
           if (api != null) sessionProvider.overrideWithValue(api.session),
           if (deviceKey != null) deviceKeyProvider.overrideWithValue(deviceKey),
           if (cached != null) initialBrandingProvider.overrideWithValue(cached),
+          cacheDbProvider.overrideWithValue(cache),
         ],
         child: const CraySalonApp(),
       ),
     );
   });
 }
-
-/// True when a session is already on the device. Overridden at startup;
-/// defaults to false so widget tests need no Supabase.
-final hasSessionProvider = Provider<bool>((ref) => false);
 
 /// Hinglish is a SCRIPT variant, not a country variant: it must be built with
 /// `Locale.fromSubtags(scriptCode: 'Latn')`. `Locale('hi', 'Latn')` silently

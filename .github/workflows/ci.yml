@@ -145,6 +145,13 @@ jobs:
         working-directory: console
         run: npm run typecheck
 
+      # Money parsing and formatting live here (console/lib/money.ts): the
+      # console types prices, setup fees, and the balance a customer is told
+      # they are leaving behind. It had no tests at all until 2026-09-27.
+      - name: Test
+        working-directory: console
+        run: npm test
+
       # The build is the real gate. `server-only` turns "a client component
       # imported the admin database layer" into a build failure, so this is
       # what stops the service-role connection reaching a browser bundle.
@@ -237,6 +244,12 @@ jobs:
 
       - name: Run the release gates
         run: node scripts/db/run.mjs test
+
+      # The claims hook decides what every token carries, and a hook that errors
+      # stops EVERY login on the project. Probed here rather than only by hand
+      # before enabling it.
+      - name: Probe the claims hook
+        run: node scripts/db/probe-claims-hook.mjs
 
       # PHASES.md M1: "a deliberately unprotected test table makes it FAIL".
       # Running the gates is half the requirement; proving they can still go

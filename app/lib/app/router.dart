@@ -104,7 +104,9 @@ class OwnerShell extends StatelessWidget {
           NavigationDestination(
             icon: const Icon(Icons.today_outlined),
             selectedIcon: const Icon(Icons.today),
-            label: l10n.markComplete,
+            // The tab is the DAY. Mark-complete is the action on it, not its
+            // name - labelling the tab with a verb told the owner to press it.
+            label: l10n.dayTitle,
           ),
           NavigationDestination(
             icon: const Icon(Icons.people_outline),
@@ -141,7 +143,7 @@ class _DayViewPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppL10n.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.markComplete)),
+      appBar: AppBar(title: Text(l10n.dayTitle)),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),

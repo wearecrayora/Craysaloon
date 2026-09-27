@@ -106,7 +106,6 @@ void main() {
       ProviderScope(
         overrides: [
           crayApiProvider.overrideWithValue(FakeCrayApi()),
-          hasSessionProvider.overrideWithValue(true),
           sessionProvider.overrideWithValue(AppSession(appRole: role, salonId: 'salon-a')),
           cacheDbProvider.overrideWithValue(cache),
           recordsRepositoryProvider.overrideWithValue(

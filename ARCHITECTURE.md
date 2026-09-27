@@ -1563,7 +1563,7 @@ surface.**
 | **Provision** | The §5.7 flow, one transaction, ending in tenant + code + QR pack + owner invite |
 | **Branding studio** | Live preview driven by the **shared token schema** (§7.2); publish bumps `salon_branding.version`. Publish runs a **contrast check** against the palette and blocks a failing combination (§9.4) |
 | **Catalogue & rules** | Services, add-ons, staff, initial wallet/reward/loyalty rules, cycles. **Credit expiry is set by the owner in the app, not here** (§6.4) |
-| **Credentials** | The salon's **Razorpay + Message Central + WhatsApp** credentials, write-only per §8.2, with *Test connection* |
+| **Credentials** | The salon's **Razorpay + Message Central + WhatsApp** credentials, write-only per §8.2, with *Test connection*. Built at M2-M3: Message Central is verified at save time (the token's subject must be the Customer ID, and an unusable pair is refused before it is stored); the others remain `untested` until their own check exists |
 | **Messaging readiness** | Per-salon WhatsApp template status; drives the ladder's behaviour (§12.2) but never blocks activation. Authoring those templates in the Message Central dashboard is an operator task (§12.5a) |
 | **QR pack** | Server-rendered PDF (counter card, mirror sticker, poster) → R2 → signed URL; regenerable |
 | **Salon health** | Status, plan, last-active, **bind rate**, activation stage, message spend |

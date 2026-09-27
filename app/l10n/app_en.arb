@@ -300,5 +300,9 @@
     "description": "Shown when the DATABASE refuses the write - only owner/manager may change the catalogue (0041)."
   },
   "saveFailed": "Not saved. Please try again.",
-  "@saveFailed": {}
+  "@saveFailed": {},
+  "dayTitle": "Today",
+  "@dayTitle": {
+    "description": "O1, the day view. The tab is the DAY; mark-complete is an action on it, not its name."
+  }
 }

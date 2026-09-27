@@ -49,7 +49,6 @@ void main() {
       ProviderScope(
         overrides: [
           crayApiProvider.overrideWithValue(FakeCrayApi()),
-          hasSessionProvider.overrideWithValue(true),
           sessionProvider.overrideWithValue(
             const AppSession(appRole: 'owner', salonId: 'salon-a'),
           ),

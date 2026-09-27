@@ -91,7 +91,7 @@
 | K4 | `/salons/:id` | Salon overview | 2 |
 | K5 | `/salons/:id/branding` | **Branding studio** — live preview, contrast gate, publish | 2 |
 | K6 | `/salons/:id/catalogue` | Services, add-ons, staff, rules | 2 |
-| K7 | `/salons/:id/credentials` | **Write-only** secrets + *Test connection* | 2 |
+| K7 | `/salons/:id/credentials` | **Write-only** secrets + *Test connection*. *Built: Message Central is checked with Message Central before storing (no SMS); Razorpay/WhatsApp/RCS store write-only and stay `untested`* | 2 |
 | K8 | `/salons/:id/messaging` | WhatsApp template status, RCS agent status, send/ack rates **and cost per channel**, **OTP fallback count** | 8 |
 | K9 | `/salons/:id/qr` | QR pack — regenerate, download PDF | 2 |
 | K10 | `/salons/:id/billing` | Record offline setup fee · **activate** · subscription · dunning | 11 |
