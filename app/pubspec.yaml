@@ -24,6 +24,10 @@ dependencies:
   # Tenant-scoped access ONLY through SupabaseGateway in data/remote
   # (RULES.md 3.7 - CI fails the build on .from( elsewhere).
   supabase_flutter: ^2.12.1
+  # The branding cache (so the app stays the salon's brand offline, DESIGN 3.3)
+  # and the device key the join rate limits are counted against.
+  shared_preferences: ^2.5.3
+
   sentry_flutter: ^9.29.0
   firebase_core: ^4.14.0
   firebase_messaging: ^16.6.0

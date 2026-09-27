@@ -211,6 +211,162 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Try again'**
   String get retry;
+
+  /// No description provided for @joinContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get joinContinue;
+
+  /// No description provided for @joinNotThisSalon.
+  ///
+  /// In en, this message translates to:
+  /// **'Not this salon? Enter a different code'**
+  String get joinNotThisSalon;
+
+  /// DPDP + licensing: credit is redeemable only at the issuing salon (RULES 2).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll become this salon\'s customer. Credit you buy and visits you make stay with them, and cannot move to another salon.'**
+  String get joinConfirmBody;
+
+  /// Shown for a suspended or messaging-blocked salon (0033). Never blames the customer, never names a reason that is the salon’s business.
+  ///
+  /// In en, this message translates to:
+  /// **'This salon can\'t take sign-ins right now. Please ask at the counter.'**
+  String get joinSalonUnavailable;
+
+  /// No description provided for @joinRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Wait a few minutes and try again.'**
+  String get joinRateLimited;
+
+  /// No description provided for @joinOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection. Check your internet and try again.'**
+  String get joinOffline;
+
+  /// No description provided for @joinGenericError.
+  ///
+  /// In en, this message translates to:
+  /// **'That didn\'t work. Please try again.'**
+  String get joinGenericError;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'10-digit mobile number'**
+  String get phoneHint;
+
+  /// No description provided for @phoneServiceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking, payment and reminder messages are part of the service.'**
+  String get phoneServiceNote;
+
+  /// Marketing consent is opt-in and starts UNTICKED (RULES 11).
+  ///
+  /// In en, this message translates to:
+  /// **'Also send me offers from this salon'**
+  String get phoneConsentPromotional;
+
+  /// No description provided for @phoneConsentWhatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers on WhatsApp too'**
+  String get phoneConsentWhatsapp;
+
+  /// No description provided for @otpResend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a new code'**
+  String get otpResend;
+
+  /// No description provided for @otpExpiresIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires in {seconds}s'**
+  String otpExpiresIn(int seconds);
+
+  /// No description provided for @otpExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'That code has expired. Send a new one.'**
+  String get otpExpired;
+
+  /// No description provided for @otpWrongCode.
+  ///
+  /// In en, this message translates to:
+  /// **'That code didn\'t match. {attempts} left.'**
+  String otpWrongCode(String attempts);
+
+  /// No description provided for @otpAccountConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not sign you in. Please contact the salon.'**
+  String get otpAccountConflict;
+
+  /// No description provided for @joinedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to {salonName}'**
+  String joinedTitle(String salonName);
+
+  /// No description provided for @joinedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re now a customer of this salon.'**
+  String get joinedBody;
+
+  /// No description provided for @joinedStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in to your salon.'**
+  String get joinedStaff;
+
+  /// No description provided for @joinStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Get my code'**
+  String get joinStart;
+
+  /// No description provided for @homeReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings, credit and reminders arrive here.'**
+  String get homeReady;
+
+  /// No description provided for @shortcutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {salonName} to your home screen'**
+  String shortcutTitle(String salonName);
+
+  /// An OFFER, never a promise: Android shows its own confirmation and can refuse (ARCHITECTURE 7.3). Never shown on iOS, which has no such API.
+  ///
+  /// In en, this message translates to:
+  /// **'One tap to your salon. Your phone will ask you to confirm.'**
+  String get shortcutBody;
+
+  /// No description provided for @shortcutAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to home screen'**
+  String get shortcutAdd;
+
+  /// No description provided for @shortcutNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get shortcutNotNow;
+
+  /// No description provided for @shortcutAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added. Look for it on your home screen.'**
+  String get shortcutAdded;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

@@ -9,6 +9,10 @@ import 'package:flutter_test/flutter_test.dart';
 /// Eyeballing three locales on an emulator proves it once. This proves it on
 /// every commit, and catches the specific failure that is easy to reintroduce:
 /// hi_Latn silently falling back to Hindi.
+///
+/// M4 replaced the locale probe screen with the real first screen a customer
+/// meets, so these assert against that: the code entry (U2), which is what an
+/// unbound install opens on.
 void main() {
   Future<void> pumpAt(WidgetTester tester, Locale locale) async {
     await tester.pumpWidget(
@@ -26,13 +30,14 @@ void main() {
     testWidgets('en', (tester) async {
       await pumpAt(tester, kEnglish);
       expect(find.text('Find your salon'), findsOneWidget);
-      expect(find.text('Money you pay never expires.'), findsOneWidget);
+      expect(find.text('Or enter the salon code'), findsOneWidget);
     });
 
     testWidgets('hi renders Devanagari, not a fallback to English',
         (tester) async {
       await pumpAt(tester, kHindi);
       expect(find.text('अपना सैलॉन खोजें'), findsOneWidget);
+      expect(find.text('या सैलॉन कोड डालें'), findsOneWidget);
       // If the delegate silently fell back, the English string would be here.
       expect(find.text('Find your salon'), findsNothing);
     });
@@ -40,6 +45,7 @@ void main() {
     testWidgets('hi_Latn resolves to Hinglish, NOT to Hindi', (tester) async {
       await pumpAt(tester, kHinglish);
       expect(find.text('Apna salon dhundhein'), findsOneWidget);
+      expect(find.text('Ya salon code daaliye'), findsOneWidget);
       // The trap this test exists for: Locale('hi','Latn') sets a COUNTRY
       // code, never matches the script variant, and falls back to Devanagari.
       expect(find.text('अपना सैलॉन खोजें'), findsNothing);

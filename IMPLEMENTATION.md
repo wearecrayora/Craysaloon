@@ -116,7 +116,8 @@ The rest follow the patterns in `DESIGN.md` §6. These do not.
 | **Reads** | `app.resolve_join_code(code)` → `{display_name, branding}` — **anon**, rate-limited |
 | **Writes** | `app.start_join(code, phone)` → `join_intents` · `otp-send` → challenge · `otp-verify {challenge_id, code, consents}` → **binds, then** returns the session (ADR-36, ADR-39). There is no client-side bind call |
 | **States** | Idle · scanning (camera permission denied → manual entry) · resolving · **invalid code** · **salon not active** · rate-limited · OTP sent · OTP wrong (attempts left) · OTP expired · **already bound** · binding · bound |
-| **Theming** | From U3 onward the app wears the salon's branding — logo, palette, fonts. This is the moment the white-label promise is kept |
+| **Theming** | From U3 onward the app wears the salon's branding — logo, palette, fonts. This is the moment the white-label promise is kept. Built from the **resolved** token sets the console publishes (ADR-40); a document the app cannot theme from falls back to the neutral default **whole**, never half-themed |
+| **Not yet** | The QR camera scanner and the `join.craysalon.in` deep link. Manual code entry is the only route in, and the screen says nothing about scanning until scanning works |
 
 **Rules that bite here**
 

@@ -64,3 +64,11 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // ShortcutManagerCompat / IconCompat for the pinned home-screen shortcut
+    // (ARCHITECTURE 7.3). Flutter's embedding pulls androidx.core in
+    // transitively; naming it here means a future embedding change cannot
+    // silently take the shortcut away.
+    implementation("androidx.core:core-ktx:1.13.1")
+}

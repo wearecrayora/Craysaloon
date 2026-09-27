@@ -1,27 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/observability/sentry_setup.dart';
 import 'core/push/push_setup.dart';
+import 'core/theme/brand_theme.dart';
+import 'core/theme/brand_tokens.dart';
+import 'data/local/branding_store.dart';
+import 'data/local/device_key.dart';
+import 'data/remote/supabase_cray_api.dart';
+import 'features/join/join_controller.dart';
+import 'features/join/join_screen.dart';
+import 'features/salon/salon_home.dart';
 import 'l10n/app_localizations.dart';
 
-/// M0 scaffold.
-///
-/// The gate for this milestone is narrow and specific: the app boots and
-/// renders in en / hi / hi_Latn (PHASES.md M0). There is deliberately no
-/// product content here yet - screens arrive from M4 onward, and the theme
-/// becomes salon-driven at M4 (DESIGN.md 3).
+/// Configuration arrives with `--dart-define`, never from a file in the repo.
+/// The publishable key is designed to ship in a client; the secret key never
+/// touches this codebase (`CLAUDE.md` Environment).
+const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+const supabasePublishableKey = String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
+
 Future<void> main() async {
-  // Sentry wraps the app when a DSN is configured, and is a no-op when it is
-  // not. Observability is never a boot dependency (core/observability).
   await runWithObservability(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    // Push is initialised but not yet used: the ladder is M8. Like Sentry, a
-    // missing configuration disables it rather than stopping the app.
     await Push.init();
-    runApp(const ProviderScope(child: CraySalonApp()));
+
+    SupabaseCrayApi? api;
+    String? deviceKey;
+    if (supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty) {
+      await Supabase.initialize(url: supabaseUrl, publishableKey: supabasePublishableKey);
+      api = SupabaseCrayApi(Supabase.instance.client);
+      deviceKey = await DeviceKey.get();
+    }
+
+    // The cached document is authoritative offline, so the app opens wearing
+    // the salon's brand with no network at all (DESIGN 3.3, PRD 15).
+    final cached = await BrandingStore().read();
+
+    runApp(
+      ProviderScope(
+        overrides: [
+          if (api != null) crayApiProvider.overrideWithValue(api),
+          if (api != null) hasSessionProvider.overrideWithValue(api.hasSession),
+          if (deviceKey != null) deviceKeyProvider.overrideWithValue(deviceKey),
+          if (cached != null) initialBrandingProvider.overrideWithValue(cached),
+        ],
+        child: const CraySalonApp(),
+      ),
+    );
   });
 }
+
+/// True when a session is already on the device. Overridden at startup;
+/// defaults to false so widget tests need no Supabase.
+final hasSessionProvider = Provider<bool>((ref) => false);
 
 /// Hinglish is a SCRIPT variant, not a country variant: it must be built with
 /// `Locale.fromSubtags(scriptCode: 'Latn')`. `Locale('hi', 'Latn')` silently
@@ -30,8 +62,9 @@ final kEnglish = const Locale('en');
 final kHindi = const Locale('hi');
 final kHinglish = Locale.fromSubtags(languageCode: 'hi', scriptCode: 'Latn');
 
-/// The locale the scaffold is previewing. Replaced at M4 by
-/// customer.language ?? salon.default_language ?? 'en' (DESIGN.md 12.5).
+/// The locale in use. At M5 this follows customer.language ??
+/// salon.default_language ?? 'en' (DESIGN.md 12.5); until a customer has
+/// settings, it follows the device.
 class LocaleNotifier extends Notifier<Locale> {
   @override
   Locale build() => kEnglish;
@@ -39,94 +72,35 @@ class LocaleNotifier extends Notifier<Locale> {
   void select(Locale locale) => state = locale;
 }
 
-final localeProvider =
-    NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
+final localeProvider = NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
 
 class CraySalonApp extends ConsumerWidget {
   const CraySalonApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final branding = ref.watch(resolvedBrandingProvider);
+    final document = branding?.document ?? const <String, Object?>{};
+    final version = branding?.version ?? 0;
+
+    // Both modes come from the same published document, so a customer who
+    // switches their phone to dark mode stays in their salon's brand.
+    // A document we cannot theme from falls back whole - never half-themed,
+    // and never another salon's colours (DESIGN 3.3).
+    BrandTokens tokensFor(Brightness brightness) =>
+        BrandTokens.fromPublished(document, brightness: brightness, version: version) ??
+        BrandTokens.neutral(brightness: brightness, displayName: branding?.displayName);
+
     return MaterialApp(
-      onGenerateTitle: (context) => AppL10n.of(context).appTitle,
+      // The salon's name is the app's name once there is one (DESIGN 2.1).
+      onGenerateTitle: (context) => branding?.displayName ?? AppL10n.of(context).appTitle,
       debugShowCheckedModeBanner: false,
       locale: ref.watch(localeProvider),
       localizationsDelegates: AppL10n.localizationsDelegates,
       supportedLocales: AppL10n.supportedLocales,
-      home: const LocaleProbe(),
-    );
-  }
-}
-
-/// Proves the M0 gate by eye: every supported locale, showing the strings that
-/// exercise the hard parts - Devanagari metrics and the longest locale.
-class LocaleProbe extends ConsumerWidget {
-  const LocaleProbe({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppL10n.of(context);
-    final current = ref.watch(localeProvider);
-
-    // Not const: Locale overrides ==, so it cannot be a const map key.
-    final labels = <Locale, String>{
-      kEnglish: 'English',
-      kHindi: 'Devanagari',
-      kHinglish: 'Hinglish (longest)',
-    };
-
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.appTitle)),
-      body: SafeArea(
-        child: ListView(
-          // 16dp screen padding - the only permitted value here (DESIGN.md 4.1).
-          padding: const EdgeInsets.all(16),
-          children: [
-            SegmentedButton<Locale>(
-              segments: [
-                for (final entry in labels.entries)
-                  ButtonSegment(
-                    value: entry.key,
-                    label: Text(entry.key.toLanguageTag()),
-                  ),
-              ],
-              selected: {current},
-              onSelectionChanged: (selection) =>
-                  ref.read(localeProvider.notifier).select(selection.first),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              labels[current] ?? current.toLanguageTag(),
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-            const SizedBox(height: 8),
-            _Line(l10n.joinTitle),
-            _Line(l10n.joinScanQr),
-            _Line(l10n.joinEnterCode),
-            _Line(l10n.joinConfirmTitle('Studio Nine Salon')),
-            _Line(l10n.joinAlreadyBound),
-            _Line(l10n.walletBalance),
-            _Line(l10n.walletOnlyAtSalon('Studio Nine Salon')),
-            _Line(l10n.addMoneyPaidNeverExpires),
-            _Line(l10n.markComplete),
-            _Line(l10n.offlineBanner),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Line extends StatelessWidget {
-  const _Line(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
+      theme: brandTheme(tokensFor(Brightness.light)),
+      darkTheme: brandTheme(tokensFor(Brightness.dark)),
+      home: ref.watch(hasSessionProvider) ? const SalonHome() : const JoinScreen(),
     );
   }
 }

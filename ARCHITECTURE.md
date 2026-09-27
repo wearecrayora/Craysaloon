@@ -905,6 +905,17 @@ and the console's live preview. Without that, the operator's preview and the cus
 drift apart and the branding studio becomes a liar. Schema changes are versioned and
 backward-compatible; the app ignores unknown keys.
 
+**Shared schema, single derivation (v2.8, ADR-40).** The console is TypeScript and the app is
+Dart, so "shared" cannot mean shared code for the *maths*: `packages/design-tokens` derives
+`onPrimary`, `brandInk`, `primaryContainer`, the radius ladder and the Devanagari line-height
+bonus, and a Dart port of that would be a second implementation free to drift - the first palette
+where the two disagreed would make the preview a liar again. So **derivation happens once, at
+publish**: `publishBrandingAction` resolves the light and dark sets and stores them alongside the
+operator's input, `app_admin.publish_branding` **refuses a document without them** (0037), and the
+app reads values it never computes. `BrandTokens.fromPublished` returns null when a resolved set is
+missing or incomplete, and the app then wears the neutral default whole rather than half-theming a
+screen.
+
 ### 7.3 The launcher icon — what is actually possible
 
 > **Android's launcher icon is compiled into the APK at build time. It cannot be replaced with a
@@ -927,6 +938,11 @@ add a home-screen icon programmatically. On iOS the salon's branding lives entir
 app — splash, theme, header, notifications — and the home-screen icon stays Crayora's until a
 per-salon build. Do not let anyone promise an owner otherwise.
 
+**Built at M4** (`app/lib/core/platform/home_shortcut.dart` + `HomeShortcutChannel.kt`): an
+interface in Dart, an Android implementation, and nothing on iOS - `isSupported()` returns false
+there and the offer is never rendered. The offer is shown once after binding and remembered, so a
+declined offer does not come back on its own.
+
 **Tier 1 mechanism.** After binding, the app calls
 `ShortcutManagerCompat.requestPinShortcut()` with
 `IconCompat.createWithAdaptiveBitmap(salonLogo)` and the salon's display name. Notes that matter:
@@ -948,6 +964,11 @@ really after. **Do not attempt runtime launcher-icon replacement.**
 | Title / sender | **Salon display name** | Fully dynamic |
 | Channel | One channel per salon, named for the salon | Created after binding |
 | Accent colour | Salon primary | Fully dynamic |
+
+**Built at M4** (`app/lib/core/platform/salon_notifications.dart` +
+`SalonNotificationChannel.kt`): one channel, stable id, **named for the salon**, created after
+binding and renamed if the customer is ever transferred. Importance is `DEFAULT`, not `HIGH` - a
+salon does not get to buzz a phone for an offer.
 
 So the notification shade shows the salon's name and logo. The tiny status-bar glyph stays
 generic — an acceptable and unavoidable trade, resolved fully only by the Tier 3 per-salon build.
@@ -1814,6 +1835,7 @@ invariants.
 | **ADR-37** *(decision on trial end superseded by ADR-38)* | **An operator-granted messaging trial lets Crayora pay for a salon's OTPs on purpose, for up to 365 days; outside a trial, Crayora paying is still a fault** | Refusing to activate a salon until it has its own Message Central account; an open-ended silent fallback; letting a trial override a salon's own account | Salons should be able to open before their Message Central setup is done, and that is a commercial decision a person should make and own - hence a reason, a ceiling, and an audit row. Recording trial sends as `trial` rather than `platform` keeps the fault count meaningful. After a trial ends, customers are not locked out; the cost becomes a visible, alerted fault instead |
 | **ADR-38** | **After the trial, an optional grace period; then a salon with no Message Central account of its own is blocked — computed from dates, lifting as soon as its account is entered** | Letting customers log in on Crayora's account indefinitely after a trial (ADR-37's original choice); suspending the salon; a scheduled job that flips a flag | The owner's instruction: trial, grace, then block. Suspension would start the road to purging data over a setup step. A job can fail to run; a condition read at the moment of use cannot. Reads and consent withdrawal stay open because blocked customers still have money the salon owes them, and DPDP consent rights do not pause for a commercial dispute |
 | **ADR-39** | **Binding runs inside `otp-verify` before the session is minted, and a binding that moves or goes ends the customer's Auth sessions (a trigger on `customer_identities`) instead of bumping `cver`** | A tenant-callable `bind_customer` RPC after login, with a `cver` bump to force a refresh | Since ADR-36 the server, not the client, completes login, so it can bind first: the first token already carries the salon and no unbound window exists to design for. A `cver` bump works only if the client honours it; a deleted session cannot be refreshed by any client. A trigger covers every path that changes a binding, including ones not yet written |
+| **ADR-40** | **Branding is published RESOLVED: the console derives the light and dark token sets at publish, the database refuses a document without them, and the Flutter app only reads them** | Port `packages/design-tokens`' derivation to Dart so the app resolves its own tokens | Two implementations of the same maths in two languages drift, and the first palette where they disagreed would make the operator's preview lie about the customer's phone - the failure ADR-22 exists to prevent. Deriving once at publish also makes the published document self-contained, so an offline app themes from its cache with no maths at all |
 
 ---
 

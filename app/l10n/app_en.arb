@@ -1,77 +1,176 @@
 {
   "@@locale": "en",
-
   "appTitle": "Cray Salon",
   "@appTitle": {
     "description": "Fallback app title. Once a customer is bound, the salon's displayName replaces this everywhere (DESIGN.md 2.1)."
   },
-
   "joinTitle": "Find your salon",
-  "@joinTitle": { "description": "U2 - salon code entry. Shown BEFORE login (RULES.md 4.1)." },
-
+  "@joinTitle": {
+    "description": "U2 - salon code entry. Shown BEFORE login (RULES.md 4.1)."
+  },
   "joinScanQr": "Scan the salon's QR code",
   "@joinScanQr": {},
-
   "joinEnterCode": "Or enter the salon code",
   "@joinEnterCode": {},
-
   "joinCodeHint": "CRAY-XXXXXX",
   "@joinCodeHint": {},
-
   "joinConfirmTitle": "You're joining {salonName}",
   "@joinConfirmTitle": {
     "description": "U3 - the salon is named before binding. Never translate salonName.",
-    "placeholders": { "salonName": { "type": "String", "example": "Studio Nine Salon" } }
+    "placeholders": {
+      "salonName": {
+        "type": "String",
+        "example": "Studio Nine Salon"
+      }
+    }
   },
-
   "joinCodeInvalid": "That code didn't match a salon. Check it and try again.",
-  "@joinCodeInvalid": { "description": "Never blame the user (DESIGN.md 8)." },
-
+  "@joinCodeInvalid": {
+    "description": "Never blame the user (DESIGN.md 8)."
+  },
   "joinAlreadyBound": "This number is already registered with a salon.",
   "@joinAlreadyBound": {
     "description": "MUST NOT name the other salon - that is a cross-tenant leak (RULES.md 4.4)."
   },
-
   "phoneTitle": "Your mobile number",
   "@phoneTitle": {},
-
   "otpTitle": "Enter the 6-digit code",
   "@otpTitle": {},
-
   "otpSentTo": "Sent to {phone}",
-  "@otpSentTo": { "placeholders": { "phone": { "type": "String", "example": "+91 98765 43210" } } },
-
+  "@otpSentTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String",
+        "example": "+91 98765 43210"
+      }
+    }
+  },
   "walletBalance": "Available credit",
   "@walletBalance": {},
-
   "walletOnlyAtSalon": "Usable only at {salonName}. Cannot be withdrawn as cash.",
   "@walletOnlyAtSalon": {
     "description": "Shown with every balance. Never show a balance alone (DESIGN.md 6.1).",
-    "placeholders": { "salonName": { "type": "String" } }
+    "placeholders": {
+      "salonName": {
+        "type": "String"
+      }
+    }
   },
-
   "addMoneyPaidNeverExpires": "Money you pay never expires.",
   "@addMoneyPaidNeverExpires": {
     "description": "Disclosure block, above the pay button (RULES.md 5.3.6)."
   },
-
   "addMoneyBonusExpires": "Your {bonus} bonus expires on {date}.",
   "@addMoneyBonusExpires": {
     "placeholders": {
-      "bonus": { "type": "String", "example": "₹50" },
-      "date": { "type": "String", "example": "4 March 2027" }
+      "bonus": {
+        "type": "String",
+        "example": "₹50"
+      },
+      "date": {
+        "type": "String",
+        "example": "4 March 2027"
+      }
     }
   },
-
   "markComplete": "Mark complete",
-  "@markComplete": { "description": "One tap, no confirm dialog (DESIGN.md 6.4)." },
-
+  "@markComplete": {
+    "description": "One tap, no confirm dialog (DESIGN.md 6.4)."
+  },
   "needsAttention": "Needs attention",
-  "@needsAttention": { "description": "O3 - rejected offline actions. Never dropped silently." },
-
+  "@needsAttention": {
+    "description": "O3 - rejected offline actions. Never dropped silently."
+  },
   "offlineBanner": "You're offline. Your changes are saved and will sync.",
   "@offlineBanner": {},
-
   "retry": "Try again",
-  "@retry": {}
+  "@retry": {},
+  "joinContinue": "Continue",
+  "@joinContinue": {},
+  "joinNotThisSalon": "Not this salon? Enter a different code",
+  "@joinNotThisSalon": {},
+  "joinConfirmBody": "You'll become this salon's customer. Credit you buy and visits you make stay with them, and cannot move to another salon.",
+  "@joinConfirmBody": {
+    "description": "DPDP + licensing: credit is redeemable only at the issuing salon (RULES 2)."
+  },
+  "joinSalonUnavailable": "This salon can't take sign-ins right now. Please ask at the counter.",
+  "@joinSalonUnavailable": {
+    "description": "Shown for a suspended or messaging-blocked salon (0033). Never blames the customer, never names a reason that is the salon’s business."
+  },
+  "joinRateLimited": "Too many attempts. Wait a few minutes and try again.",
+  "@joinRateLimited": {},
+  "joinOffline": "No connection. Check your internet and try again.",
+  "@joinOffline": {},
+  "joinGenericError": "That didn't work. Please try again.",
+  "@joinGenericError": {},
+  "phoneHint": "10-digit mobile number",
+  "@phoneHint": {},
+  "phoneServiceNote": "Booking, payment and reminder messages are part of the service.",
+  "@phoneServiceNote": {},
+  "phoneConsentPromotional": "Also send me offers from this salon",
+  "@phoneConsentPromotional": {
+    "description": "Marketing consent is opt-in and starts UNTICKED (RULES 11)."
+  },
+  "phoneConsentWhatsapp": "Offers on WhatsApp too",
+  "@phoneConsentWhatsapp": {},
+  "otpResend": "Send a new code",
+  "@otpResend": {},
+  "otpExpiresIn": "Expires in {seconds}s",
+  "@otpExpiresIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "45"
+      }
+    }
+  },
+  "otpExpired": "That code has expired. Send a new one.",
+  "@otpExpired": {},
+  "otpWrongCode": "That code didn't match. {attempts} left.",
+  "@otpWrongCode": {
+    "placeholders": {
+      "attempts": {
+        "type": "String",
+        "example": "2 tries"
+      }
+    }
+  },
+  "otpAccountConflict": "We could not sign you in. Please contact the salon.",
+  "@otpAccountConflict": {},
+  "joinedTitle": "Welcome to {salonName}",
+  "@joinedTitle": {
+    "placeholders": {
+      "salonName": {
+        "type": "String",
+        "example": "Studio Nine Salon"
+      }
+    }
+  },
+  "joinedBody": "You're now a customer of this salon.",
+  "@joinedBody": {},
+  "joinedStaff": "Signed in to your salon.",
+  "@joinedStaff": {},
+  "joinStart": "Get my code",
+  "@joinStart": {},
+  "homeReady": "Bookings, credit and reminders arrive here.",
+  "@homeReady": {},
+  "shortcutTitle": "Add {salonName} to your home screen",
+  "@shortcutTitle": {
+    "placeholders": {
+      "salonName": {
+        "type": "String",
+        "example": "Studio Nine Salon"
+      }
+    }
+  },
+  "shortcutBody": "One tap to your salon. Your phone will ask you to confirm.",
+  "@shortcutBody": {
+    "description": "An OFFER, never a promise: Android shows its own confirmation and can refuse (ARCHITECTURE 7.3). Never shown on iOS, which has no such API."
+  },
+  "shortcutAdd": "Add to home screen",
+  "@shortcutAdd": {},
+  "shortcutNotNow": "Not now",
+  "@shortcutNotNow": {},
+  "shortcutAdded": "Added. Look for it on your home screen.",
+  "@shortcutAdded": {}
 }

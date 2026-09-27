@@ -76,6 +76,98 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get retry => 'दोबारा कोशिश करें';
+
+  @override
+  String get joinContinue => 'आगे बढ़ें';
+
+  @override
+  String get joinNotThisSalon => 'यह सैलून नहीं? दूसरा कोड डालें';
+
+  @override
+  String get joinConfirmBody =>
+      'आप इसी सैलून के ग्राहक बनेंगे। आपका खरीदा हुआ क्रेडिट और विज़िट इसी सैलून के साथ रहते हैं, किसी दूसरे सैलून में नहीं जाते।';
+
+  @override
+  String get joinSalonUnavailable =>
+      'यह सैलून अभी साइन-इन नहीं ले पा रहा है। कृपया काउंटर पर पूछें।';
+
+  @override
+  String get joinRateLimited =>
+      'बहुत बार कोशिश हो गई। कुछ मिनट रुककर दोबारा कोशिश करें।';
+
+  @override
+  String get joinOffline => 'कनेक्शन नहीं है। इंटरनेट देखकर दोबारा कोशिश करें।';
+
+  @override
+  String get joinGenericError => 'यह नहीं हो सका। कृपया दोबारा कोशिश करें।';
+
+  @override
+  String get phoneHint => '10 अंकों का मोबाइल नंबर';
+
+  @override
+  String get phoneServiceNote =>
+      'बुकिंग, पेमेंट और रिमाइंडर के मैसेज सेवा का हिस्सा हैं।';
+
+  @override
+  String get phoneConsentPromotional => 'इस सैलून के ऑफ़र भी भेजें';
+
+  @override
+  String get phoneConsentWhatsapp => 'ऑफ़र WhatsApp पर भी';
+
+  @override
+  String get otpResend => 'नया कोड भेजें';
+
+  @override
+  String otpExpiresIn(int seconds) {
+    return '$seconds सेकंड में खत्म';
+  }
+
+  @override
+  String get otpExpired => 'यह कोड खत्म हो गया। नया कोड भेजें।';
+
+  @override
+  String otpWrongCode(String attempts) {
+    return 'यह कोड मैच नहीं हुआ। $attempts बची हैं।';
+  }
+
+  @override
+  String get otpAccountConflict =>
+      'हम आपको साइन इन नहीं कर सके। कृपया सैलून से संपर्क करें।';
+
+  @override
+  String joinedTitle(String salonName) {
+    return '$salonName में आपका स्वागत है';
+  }
+
+  @override
+  String get joinedBody => 'अब आप इस सैलून के ग्राहक हैं।';
+
+  @override
+  String get joinedStaff => 'आप अपने सैलून में साइन इन हैं।';
+
+  @override
+  String get joinStart => 'मेरा कोड भेजें';
+
+  @override
+  String get homeReady => 'बुकिंग, क्रेडिट और रिमाइंडर यहीं आएंगे।';
+
+  @override
+  String shortcutTitle(String salonName) {
+    return '$salonName को होम स्क्रीन पर जोड़ें';
+  }
+
+  @override
+  String get shortcutBody =>
+      'एक टैप में अपना सैलून खोलें। आपका फ़ोन पुष्टि करने के लिए पूछेगा।';
+
+  @override
+  String get shortcutAdd => 'होम स्क्रीन पर जोड़ें';
+
+  @override
+  String get shortcutNotNow => 'अभी नहीं';
+
+  @override
+  String get shortcutAdded => 'जुड़ गया। होम स्क्रीन पर देखिए।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -150,4 +242,97 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get retry => 'Dobara try kijiye';
+
+  @override
+  String get joinContinue => 'Aage badhein';
+
+  @override
+  String get joinNotThisSalon => 'Yeh salon nahi? Dusra code daaliye';
+
+  @override
+  String get joinConfirmBody =>
+      'Aap isi salon ke customer banenge. Aapka khareeda hua credit aur visits isi salon ke saath rehte hain, kisi dusre salon mein nahi jaate.';
+
+  @override
+  String get joinSalonUnavailable =>
+      'Yeh salon abhi sign-in nahi le pa raha hai. Counter par poochh lijiye.';
+
+  @override
+  String get joinRateLimited =>
+      'Bahut baar koshish ho gayi. Kuch minute ruk kar dobara try kijiye.';
+
+  @override
+  String get joinOffline =>
+      'Connection nahi hai. Internet check karke dobara try kijiye.';
+
+  @override
+  String get joinGenericError => 'Yeh nahi ho saka. Dobara try kijiye.';
+
+  @override
+  String get phoneHint => '10 digit ka mobile number';
+
+  @override
+  String get phoneServiceNote =>
+      'Booking, payment aur reminder ke message service ka hissa hain.';
+
+  @override
+  String get phoneConsentPromotional => 'Is salon ke offers bhi bhejiye';
+
+  @override
+  String get phoneConsentWhatsapp => 'Offers WhatsApp par bhi';
+
+  @override
+  String get otpResend => 'Naya code bhejiye';
+
+  @override
+  String otpExpiresIn(int seconds) {
+    return '$seconds second mein khatam';
+  }
+
+  @override
+  String get otpExpired => 'Yeh code khatam ho gaya. Naya code bhejiye.';
+
+  @override
+  String otpWrongCode(String attempts) {
+    return 'Yeh code match nahi hua. $attempts bachi hain.';
+  }
+
+  @override
+  String get otpAccountConflict =>
+      'Hum aapko sign in nahi kar sake. Salon se contact kijiye.';
+
+  @override
+  String joinedTitle(String salonName) {
+    return '$salonName mein aapka swagat hai';
+  }
+
+  @override
+  String get joinedBody => 'Ab aap is salon ke customer hain.';
+
+  @override
+  String get joinedStaff => 'Aap apne salon mein sign in hain.';
+
+  @override
+  String get joinStart => 'Mera code bhejiye';
+
+  @override
+  String get homeReady => 'Booking, credit aur reminder yahin aayenge.';
+
+  @override
+  String shortcutTitle(String salonName) {
+    return '$salonName ko home screen par add kijiye';
+  }
+
+  @override
+  String get shortcutBody =>
+      'Ek tap mein apna salon kholiye. Aapka phone confirm karne ke liye poochhega.';
+
+  @override
+  String get shortcutAdd => 'Home screen par add kijiye';
+
+  @override
+  String get shortcutNotNow => 'Abhi nahi';
+
+  @override
+  String get shortcutAdded => 'Add ho gaya. Home screen par dekhiye.';
 }

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { validateBranding, type BrandInput } from '@cray/design-tokens';
+import { resolveTokens, validateBranding, type BrandInput } from '@cray/design-tokens';
 import { requireAdmin } from '@/server/auth';
 import { renderQrPack } from '@/server/qr-pack';
 import { putObject, signedUrl } from '@/server/r2';
@@ -222,11 +222,23 @@ export async function publishBrandingAction(
     };
   }
 
+  // Derive here, once, and publish the result. The app reads these values and
+  // computes nothing: a Dart port of the derivation would be free to drift from
+  // this preview, which is the one thing ADR-22 exists to prevent (0037 refuses
+  // a document without them). ADR-40.
+  const document = {
+    ...input,
+    resolved: {
+      light: resolveTokens(input, 'light'),
+      dark: resolveTokens(input, 'dark'),
+    },
+  };
+
   try {
     const version = await publishBranding(
       admin.id,
       salonId,
-      input as unknown as Record<string, never>,
+      document as unknown as Record<string, never>,
     );
     revalidatePath(`/salon/${salonId}/branding`);
     revalidatePath('/');

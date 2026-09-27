@@ -16,14 +16,19 @@ APP=app/lib
 
 if [ -d "$APP" ] && [ -n "$(find "$APP" -name '*.dart' -print -quit 2>/dev/null)" ]; then
 
+  # A LEADING comment is excluded: a comment cannot call anything, and this is
+  # a rule the docs should be free to name. A trailing one is not excluded, so
+  # `sql.from(x) // honestly fine` still fails. GATE-7 has always worked so.
   gate GATE-1 "no .from( / .rpc( outside data/remote"
   hits=$(grep -rn --include='*.dart' -E '\.(from|rpc)\(' "$APP" \
-         | grep -v "^$APP/data/remote/" || true)
+         | grep -v "^$APP/data/remote/" \
+         | grep -vE ':[0-9]+: *(//|\*|/\*)' || true)
   if [ -n "$hits" ]; then note "$hits"; fail=1; else note "ok"; fi
 
   gate GATE-2 "no raw Color(0x..) outside core/theme"
   hits=$(grep -rn --include='*.dart' -E 'Color\(0x[0-9a-fA-F]{8}\)' "$APP" \
-         | grep -v "^$APP/core/theme/" || true)
+         | grep -v "^$APP/core/theme/" \
+         | grep -vE ':[0-9]+: *(//|\*|/\*)' || true)
   if [ -n "$hits" ]; then note "$hits"; fail=1; else note "ok"; fi
 
   gate GATE-3 "domain/ imports no supabase"

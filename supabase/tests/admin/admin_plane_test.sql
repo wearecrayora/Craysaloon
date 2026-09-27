@@ -8,7 +8,7 @@
 -- no credential can be read back. Each is asserted here against the catalogue,
 -- so a function added tomorrow is covered tomorrow.
 
-select plan(32);
+select plan(33);
 
 select set_config('app.phone_hash_pepper', 'admin-test-pepper', true);
 
@@ -231,7 +231,7 @@ select is(
   app_admin.publish_branding(
     '11111111-aaaa-4000-8000-000000000001',
     (select id from public.salons where display_name = 'Provision Test'),
-    '{"displayName":"Provision Test","brand":{"light":{"primary":"#1f6f5c"}}}'::jsonb),
+    '{"displayName":"Provision Test","brand":{"light":{"primary":"#1f6f5c"}},"resolved":{"light":{"color":{"primary":"#1f6f5c","onPrimary":"#ffffff","surface":"#fcfcfb","textPrimary":"#1a1a19"},"radius":{"base":12}},"dark":{"color":{"primary":"#3fbf9f","onPrimary":"#1a1a19","surface":"#1a1a19","textPrimary":"#ffffff"},"radius":{"base":12}}}}'::jsonb),
   1,
   'the first publish is version 1'
 );
@@ -242,7 +242,7 @@ select is(
   app_admin.publish_branding(
     '11111111-aaaa-4000-8000-000000000001',
     (select id from public.salons where display_name = 'Provision Test'),
-    '{"displayName":"Provision Test","brand":{"light":{"primary":"#123456"}}}'::jsonb),
+    '{"displayName":"Provision Test","brand":{"light":{"primary":"#123456"}},"resolved":{"light":{"color":{"primary":"#1f6f5c","onPrimary":"#ffffff","surface":"#fcfcfb","textPrimary":"#1a1a19"},"radius":{"base":12}},"dark":{"color":{"primary":"#3fbf9f","onPrimary":"#1a1a19","surface":"#1a1a19","textPrimary":"#ffffff"},"radius":{"base":12}}}}'::jsonb),
   2,
   'republishing bumps the version rather than overwriting it'
 );
@@ -254,6 +254,18 @@ select throws_ok(
       '{"brand":{}}'::jsonb)$$,
   'P0001', null,
   'branding without a displayName is refused - every message renders it'
+);
+
+-- ADR-40: the app reads derived colours, it never derives them. A document
+-- without the resolved sets is one the app could only theme from by
+-- re-implementing the derivation - which is how the preview starts lying.
+select throws_ok(
+  $$select app_admin.publish_branding(
+      '11111111-aaaa-4000-8000-000000000001',
+      (select id from public.salons where display_name = 'Provision Test'),
+      '{"displayName":"Provision Test","brand":{"light":{"primary":"#1f6f5c"}}}'::jsonb)$$,
+  'P0001', null,
+  'branding without the resolved light and dark sets is refused (0037)'
 );
 
 -- ---------------------------------------------------------------------------
