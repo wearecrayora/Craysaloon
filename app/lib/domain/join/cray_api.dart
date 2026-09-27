@@ -69,6 +69,11 @@ enum CrayErrorKind {
   /// An account exists for this number that the server did not create. Support
   /// territory, not something to retry.
   accountConflict,
+
+  /// A policy said no. The caller's ROLE is not allowed to do this - a customer
+  /// or a stylist trying to change the catalogue, say (0041). Never retried:
+  /// the answer will not change.
+  forbidden,
   server,
 }
 

@@ -63,7 +63,9 @@ Full list in `RULES.md`. The ones most often broken:
    Never write a query that can return another salon's data. **Tenant scoping is not enough:**
    `authenticated` includes customers, and permissive policies are OR'd, so row ownership needs a
    **restrictive** policy keyed on `app.current_customer_id()` (RULES 3.8a, ADR-41). A table with a
-   `customer_id` and no restrictive policy fails CI.
+   `customer_id` and no restrictive policy fails CI. **Writes need a role rule too** (RULES 3.8b):
+   Crayora-only for `salons`/`salon_branding`, server-only for `visits`/`booking_items`/`reminders`,
+   owner-or-manager for the catalogue and the team, own-rows for the rest.
 2. **Salon code comes before login.** Never authenticate before the salon is known.
 3. One phone number has exactly **one active binding**. No switch path, no such API.
    Unbind and transfer are audited Crayora super-admin actions only.
@@ -119,7 +121,7 @@ Each feature passes its PRD acceptance criteria, the milestone gates in `PHASES.
 per-screen checklist in `IMPLEMENTATION.md` §7.
 
 **Hard CI gates:** the catalogue-driven cross-tenant leak test, the binding-exclusivity test, the
-money test, the index-scope test, the admin-plane test, the join-flow test, the bind-flow test, the **customer-scope test**, the **customer-list test**, the OTP test and the messaging-access test — plus their **negative controls**,
+money test, the index-scope test, the admin-plane test, the join-flow test, the bind-flow test, the **customer-scope test**, the **write-scope test**, the **customer-list test**, the OTP test and the messaging-access test — plus their **negative controls**,
 which create - on purpose - an unprotected table, an unaudited `app_admin` function, an
 owner-callable payment-key function and a customer table protected only by `salon_id`, and require
 the matching gate to go red. Never skipped, never deleted, never narrowed to pass. A gate that has

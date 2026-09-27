@@ -262,6 +262,59 @@ class AppL10nHi extends AppL10n {
   @override
   String get balanceReadOnly =>
       'बैलेंस टॉप-अप और विज़िट से बनता है। इसे यहां बदला नहीं जा सकता।';
+
+  @override
+  String get catalogueAdd => 'जोड़ें';
+
+  @override
+  String get serviceFormTitle => 'सेवा';
+
+  @override
+  String get addOnFormTitle => 'ऐड-ऑन';
+
+  @override
+  String get staffFormTitle => 'टीम सदस्य';
+
+  @override
+  String get fieldName => 'नाम';
+
+  @override
+  String get fieldPrice => 'दाम (₹)';
+
+  @override
+  String get fieldDuration => 'मिनट';
+
+  @override
+  String get fieldExtraMinutes => 'अतिरिक्त मिनट';
+
+  @override
+  String get fieldVisible => 'ग्राहक इसे देख सकते हैं';
+
+  @override
+  String get actionSave => 'सेव करें';
+
+  @override
+  String get actionCancel => 'रद्द करें';
+
+  @override
+  String get formNameRequired => 'नाम ज़रूरी है - ग्राहक इसे देखते हैं।';
+
+  @override
+  String get formPriceInvalid => 'दाम रुपये में डालें, जैसे 400 या 400.50।';
+
+  @override
+  String get formDurationInvalid => 'मिनट 5 से 600 के बीच डालें।';
+
+  @override
+  String get saveFailedOffline =>
+      'सेव नहीं हुआ। कैटलॉग बदलने के लिए कनेक्शन ज़रूरी है।';
+
+  @override
+  String get saveFailedRefused =>
+      'आपका अकाउंट कैटलॉग नहीं बदल सकता। मालिक से कहें।';
+
+  @override
+  String get saveFailed => 'सेव नहीं हुआ। दोबारा कोशिश करें।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -523,4 +576,59 @@ class AppL10nHiLatn extends AppL10nHi {
   @override
   String get balanceReadOnly =>
       'Balance top-up aur visits se banta hai. Ise yahan badla nahi ja sakta.';
+
+  @override
+  String get catalogueAdd => 'Add kijiye';
+
+  @override
+  String get serviceFormTitle => 'Service';
+
+  @override
+  String get addOnFormTitle => 'Add-on';
+
+  @override
+  String get staffFormTitle => 'Team member';
+
+  @override
+  String get fieldName => 'Naam';
+
+  @override
+  String get fieldPrice => 'Daam (₹)';
+
+  @override
+  String get fieldDuration => 'Minute';
+
+  @override
+  String get fieldExtraMinutes => 'Extra minute';
+
+  @override
+  String get fieldVisible => 'Customers ise dekh sakte hain';
+
+  @override
+  String get actionSave => 'Save kijiye';
+
+  @override
+  String get actionCancel => 'Cancel';
+
+  @override
+  String get formNameRequired =>
+      'Naam zaroori hai - customers ise dekhte hain.';
+
+  @override
+  String get formPriceInvalid =>
+      'Daam rupees mein daaliye, jaise 400 ya 400.50.';
+
+  @override
+  String get formDurationInvalid => 'Minute 5 se 600 ke beech daaliye.';
+
+  @override
+  String get saveFailedOffline =>
+      'Save nahi hua. Catalogue badalne ke liye connection chahiye.';
+
+  @override
+  String get saveFailedRefused =>
+      'Aapka account catalogue nahi badal sakta. Owner se kahiye.';
+
+  @override
+  String get saveFailed => 'Save nahi hua. Dobara try kijiye.';
 }

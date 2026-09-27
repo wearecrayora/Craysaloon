@@ -182,8 +182,13 @@ still applies (gate: `rls/list_customers_test.sql`, 13 assertions). In the app: 
 cache, `RecordsRepository` (server first, cache when offline, and the screen SAYS which), the
 role-based router and shells (ARCH 9.1), O4 customer list, O5 customer record - **balance shown,
 not editable, asserted by a test that requires the controls to be absent** - and the read-only
-catalogue lists O7/O8/O9. 200% text scale is asserted as a test, not eyeballed. **Still to
-build:** catalogue CRUD from the owner app, and O1 the day view, which belongs with bookings (M6).
+catalogue lists O7/O8/O9. 200% text scale is asserted as a test, not eyeballed. Catalogue editing followed the same day: add and edit for services, add-ons and the team, money
+leaving the form as integer paise, hidden-not-deleted, and **controls shown only to an owner or a
+manager** - a courtesy on top of 0041, which refuses the write in the database whatever the app
+sends. Building it exposed the write-side twin of the read bug 0038 fixed: **a customer repriced a
+service to 1 paisa**, a staff member could have promoted themselves, and an owner could have
+activated their own salon (RULES 3.8b; gate: `rls/write_scope_test.sql`). **Still to build:** O1 the
+day view, which belongs with bookings (M6).
 
 **M6 — Booking, slots, add-ons, offline queue.** The exclusion constraint, `app.available_slots()`
 shared by client and server, `booking_items` **with price snapshots** (dependency ④), the outbox,

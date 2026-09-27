@@ -67,5 +67,22 @@
   "minutesShort": "{minutes} min",
   "addsMinutes": "{minutes} min badhata hai",
   "dayViewSoon": "Din ka view booking ke saath aayega.",
-  "balanceReadOnly": "Balance top-up aur visits se banta hai. Ise yahan badla nahi ja sakta."
+  "balanceReadOnly": "Balance top-up aur visits se banta hai. Ise yahan badla nahi ja sakta.",
+  "catalogueAdd": "Add kijiye",
+  "serviceFormTitle": "Service",
+  "addOnFormTitle": "Add-on",
+  "staffFormTitle": "Team member",
+  "fieldName": "Naam",
+  "fieldPrice": "Daam (₹)",
+  "fieldDuration": "Minute",
+  "fieldExtraMinutes": "Extra minute",
+  "fieldVisible": "Customers ise dekh sakte hain",
+  "actionSave": "Save kijiye",
+  "actionCancel": "Cancel",
+  "formNameRequired": "Naam zaroori hai - customers ise dekhte hain.",
+  "formPriceInvalid": "Daam rupees mein daaliye, jaise 400 ya 400.50.",
+  "formDurationInvalid": "Minute 5 se 600 ke beech daaliye.",
+  "saveFailedOffline": "Save nahi hua. Catalogue badalne ke liye connection chahiye.",
+  "saveFailedRefused": "Aapka account catalogue nahi badal sakta. Owner se kahiye.",
+  "saveFailed": "Save nahi hua. Dobara try kijiye."
 }

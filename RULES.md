@@ -117,6 +117,23 @@ broad one grants the union. A new table with a `customer_id` and no restrictive 
 metrics, audit, schedules) are closed to customers entirely. This is not hypothetical: it shipped,
 and it was found by signing in as a real customer (0038, ADR-41).
 
+3.8b **Who may WRITE is a rule, not a screen.** Tenant scoping answers "is this my salon", never
+"am I allowed", and no permissive write policy in this schema ever mentioned a role - so a customer
+**repriced a service to 1 paisa** in a test, a staff member could have updated their own `role` in
+`public.users`, and an owner could have flipped their own salon to `active` or changed the join code
+on cards already printed. The write model, enforced by **RESTRICTIVE** policies (0041, 0042):
+
+| May write | Tables |
+|---|---|
+| **Crayora only** (console) | `salons`, `salon_branding` |
+| **Server only** (a `security definer` function, never a device) | `visits`, `booking_items`, `reminders` |
+| **Owner or manager** | `services`, `add_ons`, `service_addons`, `staff`, `staff_schedules`, `staff_time_off`, `users`, `message_templates` |
+| **Own rows only** | `customers`, `consents`, `notification_tokens`, `bookings` |
+
+`SELECT` is untouched: a customer still reads the menu, or they cannot book. A new tenant-writable
+table **fails CI** until it is covered or named as own-rows (write-scope gate). Hiding a control in
+the UI is a courtesy to the user, never the enforcement.
+
 3.9 Writes are gated on `app.salon_writable()` so a suspended or past-due tenant loses
 `INSERT`/`UPDATE` at the database, not in the UI.
 
@@ -523,6 +540,10 @@ A change is not done until all of these hold.
       nothing else; a salon in setup and an unknown code look identical (no oracle); typing
       variants normalise, but a character outside the alphabet is never guessed at; a live join
       intent decides which salon's account sends the OTP
+- [ ] **Write scope test** — every tenant-writable table names WHO may write it or is a documented
+      own-rows table; an owner cannot change their salon's status, join code or branding; a staff
+      member cannot promote themselves in `public.users`; a customer cannot touch the catalogue or
+      write their own visit history; and a customer can still edit their own profile and read the menu
 - [ ] **Customer list test** — the owner's list function is **SECURITY INVOKER** (a definer version
       would outrank RLS and undo 3.8a), pages by keyset rather than OFFSET with no row repeated or
       skipped, searches by name prefix or WHOLE number but never a partial number, cannot be asked

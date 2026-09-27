@@ -262,4 +262,58 @@ class AppL10nEn extends AppL10n {
   @override
   String get balanceReadOnly =>
       'Balance is set by top-ups and visits. It cannot be edited here.';
+
+  @override
+  String get catalogueAdd => 'Add';
+
+  @override
+  String get serviceFormTitle => 'Service';
+
+  @override
+  String get addOnFormTitle => 'Add-on';
+
+  @override
+  String get staffFormTitle => 'Team member';
+
+  @override
+  String get fieldName => 'Name';
+
+  @override
+  String get fieldPrice => 'Price (₹)';
+
+  @override
+  String get fieldDuration => 'Minutes';
+
+  @override
+  String get fieldExtraMinutes => 'Extra minutes';
+
+  @override
+  String get fieldVisible => 'Customers can see this';
+
+  @override
+  String get actionSave => 'Save';
+
+  @override
+  String get actionCancel => 'Cancel';
+
+  @override
+  String get formNameRequired => 'A name is needed - customers see it.';
+
+  @override
+  String get formPriceInvalid =>
+      'Enter the price in rupees, for example 400 or 400.50.';
+
+  @override
+  String get formDurationInvalid => 'Enter the minutes, between 5 and 600.';
+
+  @override
+  String get saveFailedOffline =>
+      'Not saved. Catalogue changes need a connection.';
+
+  @override
+  String get saveFailedRefused =>
+      'Your account cannot change the catalogue. Ask the owner.';
+
+  @override
+  String get saveFailed => 'Not saved. Please try again.';
 }

@@ -31,7 +31,15 @@ final recordsRepositoryProvider = Provider<RecordsRepository?>((ref) {
     remote: api as SalonReads,
     cache: ref.watch(cacheDbProvider),
     salonId: salonId,
+    writes: api is SalonWrites ? api as SalonWrites : null,
   );
+});
+
+/// Who may change the catalogue. The DATABASE enforces this (0041); the app asks
+/// only so it can avoid offering a control that would be refused.
+final canEditCatalogueProvider = Provider<bool>((ref) {
+  final role = ref.watch(sessionProvider)?.appRole;
+  return role == 'owner' || role == 'manager';
 });
 
 /// The catalogue lists. `Cached` carries whether the rows came from the network,

@@ -505,6 +505,108 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Balance is set by top-ups and visits. It cannot be edited here.'**
   String get balanceReadOnly;
+
+  /// No description provided for @catalogueAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get catalogueAdd;
+
+  /// No description provided for @serviceFormTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get serviceFormTitle;
+
+  /// No description provided for @addOnFormTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add-on'**
+  String get addOnFormTitle;
+
+  /// No description provided for @staffFormTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Team member'**
+  String get staffFormTitle;
+
+  /// No description provided for @fieldName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get fieldName;
+
+  /// No description provided for @fieldPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price (₹)'**
+  String get fieldPrice;
+
+  /// No description provided for @fieldDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes'**
+  String get fieldDuration;
+
+  /// No description provided for @fieldExtraMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra minutes'**
+  String get fieldExtraMinutes;
+
+  /// Hiding a service does not delete it: history keeps its own snapshot (ARCHITECTURE 6.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Customers can see this'**
+  String get fieldVisible;
+
+  /// No description provided for @actionSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get actionSave;
+
+  /// No description provided for @actionCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get actionCancel;
+
+  /// No description provided for @formNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'A name is needed - customers see it.'**
+  String get formNameRequired;
+
+  /// No description provided for @formPriceInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the price in rupees, for example 400 or 400.50.'**
+  String get formPriceInvalid;
+
+  /// No description provided for @formDurationInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the minutes, between 5 and 600.'**
+  String get formDurationInvalid;
+
+  /// No description provided for @saveFailedOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Not saved. Catalogue changes need a connection.'**
+  String get saveFailedOffline;
+
+  /// Shown when the DATABASE refuses the write - only owner/manager may change the catalogue (0041).
+  ///
+  /// In en, this message translates to:
+  /// **'Your account cannot change the catalogue. Ask the owner.'**
+  String get saveFailedRefused;
+
+  /// No description provided for @saveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not saved. Please try again.'**
+  String get saveFailed;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

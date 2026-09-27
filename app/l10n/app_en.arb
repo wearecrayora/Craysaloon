@@ -262,5 +262,43 @@
   "balanceReadOnly": "Balance is set by top-ups and visits. It cannot be edited here.",
   "@balanceReadOnly": {
     "description": "O5 shows a balance and cannot change it: no control, no endpoint, no permission (RULES 2, 5.2)."
-  }
+  },
+  "catalogueAdd": "Add",
+  "@catalogueAdd": {},
+  "serviceFormTitle": "Service",
+  "@serviceFormTitle": {},
+  "addOnFormTitle": "Add-on",
+  "@addOnFormTitle": {},
+  "staffFormTitle": "Team member",
+  "@staffFormTitle": {},
+  "fieldName": "Name",
+  "@fieldName": {},
+  "fieldPrice": "Price (₹)",
+  "@fieldPrice": {},
+  "fieldDuration": "Minutes",
+  "@fieldDuration": {},
+  "fieldExtraMinutes": "Extra minutes",
+  "@fieldExtraMinutes": {},
+  "fieldVisible": "Customers can see this",
+  "@fieldVisible": {
+    "description": "Hiding a service does not delete it: history keeps its own snapshot (ARCHITECTURE 6.2)."
+  },
+  "actionSave": "Save",
+  "@actionSave": {},
+  "actionCancel": "Cancel",
+  "@actionCancel": {},
+  "formNameRequired": "A name is needed - customers see it.",
+  "@formNameRequired": {},
+  "formPriceInvalid": "Enter the price in rupees, for example 400 or 400.50.",
+  "@formPriceInvalid": {},
+  "formDurationInvalid": "Enter the minutes, between 5 and 600.",
+  "@formDurationInvalid": {},
+  "saveFailedOffline": "Not saved. Catalogue changes need a connection.",
+  "@saveFailedOffline": {},
+  "saveFailedRefused": "Your account cannot change the catalogue. Ask the owner.",
+  "@saveFailedRefused": {
+    "description": "Shown when the DATABASE refuses the write - only owner/manager may change the catalogue (0041)."
+  },
+  "saveFailed": "Not saved. Please try again.",
+  "@saveFailed": {}
 }

@@ -67,5 +67,22 @@
   "minutesShort": "{minutes} मिनट",
   "addsMinutes": "{minutes} मिनट बढ़ाता है",
   "dayViewSoon": "दिन का व्यू बुकिंग के साथ आएगा।",
-  "balanceReadOnly": "बैलेंस टॉप-अप और विज़िट से बनता है। इसे यहां बदला नहीं जा सकता।"
+  "balanceReadOnly": "बैलेंस टॉप-अप और विज़िट से बनता है। इसे यहां बदला नहीं जा सकता।",
+  "catalogueAdd": "जोड़ें",
+  "serviceFormTitle": "सेवा",
+  "addOnFormTitle": "ऐड-ऑन",
+  "staffFormTitle": "टीम सदस्य",
+  "fieldName": "नाम",
+  "fieldPrice": "दाम (₹)",
+  "fieldDuration": "मिनट",
+  "fieldExtraMinutes": "अतिरिक्त मिनट",
+  "fieldVisible": "ग्राहक इसे देख सकते हैं",
+  "actionSave": "सेव करें",
+  "actionCancel": "रद्द करें",
+  "formNameRequired": "नाम ज़रूरी है - ग्राहक इसे देखते हैं।",
+  "formPriceInvalid": "दाम रुपये में डालें, जैसे 400 या 400.50।",
+  "formDurationInvalid": "मिनट 5 से 600 के बीच डालें।",
+  "saveFailedOffline": "सेव नहीं हुआ। कैटलॉग बदलने के लिए कनेक्शन ज़रूरी है।",
+  "saveFailedRefused": "आपका अकाउंट कैटलॉग नहीं बदल सकता। मालिक से कहें।",
+  "saveFailed": "सेव नहीं हुआ। दोबारा कोशिश करें।"
 }

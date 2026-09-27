@@ -14,7 +14,7 @@ import '../../domain/records/records.dart';
 ///   request cannot move a login to a different salon (ADR-36).
 /// * **It never logs a phone number, a code, a challenge id or a token.** The
 ///   error paths carry a kind, not a payload.
-class SupabaseCrayApi implements CrayApi, SalonReads {
+class SupabaseCrayApi implements CrayApi, SalonReads, SalonWrites {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -331,6 +331,67 @@ class SupabaseCrayApi implements CrayApi, SalonReads {
       return rows.map((r) => r.cast<String, Object?>()).toList();
     } on PostgrestException catch (e) {
       throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // SalonWrites (M5). The database decides whether these are allowed: the
+  // catalogue tables carry a RESTRICTIVE policy admitting only owner and manager
+  // (0041). A refusal arrives here as a PostgREST 42501 and is shown as "your
+  // account cannot change the catalogue" - never retried, never queued.
+  //
+  // `salon_id` is not sent. The insert policy's WITH CHECK compares it to the
+  // caller's own salon, and the column defaults to it, so naming it here would
+  // add a value the client could get wrong and the database would then reject.
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<String> saveService({
+    String? id,
+    required String name,
+    required int pricePaise,
+    required int durationMinutes,
+    required bool active,
+  }) =>
+      _save('services', id, {
+        'name': name,
+        'price_paise': pricePaise,
+        'duration_minutes': durationMinutes,
+        'active': active,
+      });
+
+  @override
+  Future<String> saveAddOn({
+    String? id,
+    required String name,
+    required int pricePaise,
+    required int extraDurationMinutes,
+    required bool active,
+  }) =>
+      _save('add_ons', id, {
+        'name': name,
+        'price_paise': pricePaise,
+        'extra_duration_minutes': extraDurationMinutes,
+        'active': active,
+      });
+
+  @override
+  Future<String> saveStaff({String? id, required String name, required bool active}) =>
+      _save('staff', id, {'name': name, 'active': active});
+
+  Future<String> _save(String table, String? id, Map<String, Object?> values) async {
+    try {
+      final row = id == null
+          ? await _client.from(table).insert(values).select('id').single()
+          : await _client.from(table).update(values).eq('id', id).select('id').single();
+      return row['id'] as String;
+    } on PostgrestException catch (e) {
+      // 42501 is the policy saying no. It is not a bug to retry; it is an answer.
+      throw CrayApiException(
+        e.code == '42501' ? CrayErrorKind.forbidden : _postgrestKind(e),
+      );
     } catch (_) {
       throw const CrayApiException(CrayErrorKind.network);
     }

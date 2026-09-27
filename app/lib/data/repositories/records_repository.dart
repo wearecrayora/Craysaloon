@@ -32,10 +32,15 @@ class RecordsRepository {
     required this.remote,
     required this.cache,
     required this.salonId,
+    this.writes,
   });
 
   final SalonReads remote;
   final CacheDb cache;
+
+  /// Null when this build of the app has no write path - which is every caller
+  /// that only displays. A screen that can edit is given one.
+  final SalonWrites? writes;
 
   /// The one salon this install belongs to. Every cache read is filtered by it,
   /// so a transfer cannot leave the previous salon's rows on screen.
@@ -239,6 +244,63 @@ class RecordsRepository {
               .toList();
         },
       );
+
+  // -------------------------------------------------------------------------
+  // Catalogue edits. Online only, on purpose: catalogue changes are not in the
+  // offline set (ARCHITECTURE 10.1), and the honest answer to "no connection" is
+  // "not saved" rather than a change held somewhere the owner cannot see it.
+  //
+  // The database decides whether the write is allowed at all - only owner and
+  // manager may touch the catalogue (0041). A refusal arrives as
+  // CrayErrorKind.forbidden and is shown, never retried.
+  // -------------------------------------------------------------------------
+
+  Future<void> saveService({
+    String? id,
+    required String name,
+    required int pricePaise,
+    required int durationMinutes,
+    required bool active,
+  }) async {
+    final write = writes;
+    if (write == null) throw const CrayApiException(CrayErrorKind.forbidden);
+    await write.saveService(
+      id: id,
+      name: name,
+      pricePaise: pricePaise,
+      durationMinutes: durationMinutes,
+      active: active,
+    );
+    // Re-read rather than patch the cache by hand: the server is authoritative,
+    // and a locally-edited cache row is a small lie waiting to be believed.
+    await services();
+  }
+
+  Future<void> saveAddOn({
+    String? id,
+    required String name,
+    required int pricePaise,
+    required int extraDurationMinutes,
+    required bool active,
+  }) async {
+    final write = writes;
+    if (write == null) throw const CrayApiException(CrayErrorKind.forbidden);
+    await write.saveAddOn(
+      id: id,
+      name: name,
+      pricePaise: pricePaise,
+      extraDurationMinutes: extraDurationMinutes,
+      active: active,
+    );
+    await addOns();
+  }
+
+  Future<void> saveStaff({String? id, required String name, required bool active}) async {
+    final write = writes;
+    if (write == null) throw const CrayApiException(CrayErrorKind.forbidden);
+    await write.saveStaff(id: id, name: name, active: active);
+    await staff();
+  }
 
   Future<Cached<List<T>>> _list<T>({
     required String key,

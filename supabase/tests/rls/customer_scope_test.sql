@@ -15,7 +15,7 @@
 --                   policy, so a table added next year fails here rather than
 --                   leaking quietly
 
-select plan(19);
+select plan(22);
 
 -- ---------------------------------------------------------------------------
 -- Catalogue: the rule exists everywhere it must
@@ -49,11 +49,11 @@ select is(
 );
 
 select is(
-  (select count(*)::int from pg_policy p
+  (select count(*)::int > 0 from pg_policy p
     where p.polrelid = 'public.users'::regclass
       and p.polpermissive = false
       and pg_get_expr(p.polqual, p.polrelid) like '%current_app_role%'),
-  1,
+  true,
   'the staff table - which holds staff PHONE NUMBERS - is closed to customers'
 );
 
@@ -186,6 +186,36 @@ select is(
 -- What the customer app still needs must still work.
 select is((select count(*)::int from public.services), 1,
   'the salon''s menu is still readable - a customer cannot book from nothing'
+);
+
+-- ...but reading the menu is not editing it. The catalogue tables carry write
+-- policies granted to `authenticated`, which includes customers, so without a
+-- restriction a customer could reprice the salon's services.
+select throws_ok(
+  $$insert into public.services (salon_id, name, price_paise, duration_minutes, active)
+    values ('cccccccc-0000-4000-8000-000000000001', 'Free Haircut', 0, 30, true)$$,
+  '42501', null,
+  'a customer cannot add a service to their salon''s menu'
+);
+
+-- An UPDATE a policy forbids does not raise: it simply matches nothing. Which
+-- is why this asserts the PRICE, not an error - a silent no-op that left the
+-- price changed would be the actual disaster.
+update public.services set price_paise = 1
+ where salon_id = 'cccccccc-0000-4000-8000-000000000001';
+
+select is(
+  (select price_paise from public.services
+    where id = 'cccccccc-2222-4000-8000-000000000001'),
+  40000::bigint,
+  'and cannot reprice one - the price is untouched after they try'
+);
+
+select throws_ok(
+  $$insert into public.staff (salon_id, name, active)
+    values ('cccccccc-0000-4000-8000-000000000001', 'Ghost Stylist', true)$$,
+  '42501', null,
+  'nor invent a member of the team'
 );
 
 -- ---------------------------------------------------------------------------

@@ -122,3 +122,35 @@ abstract interface class SalonReads {
 
   Future<List<Visit>> visits(String customerId, {int limit = 20});
 }
+
+/// Changing the catalogue.
+///
+/// **Only an owner or a manager can do any of this, and that is enforced in the
+/// database** (migration 0041), not by hiding buttons: a customer, a stylist or
+/// a stolen session is refused by a policy, whatever the app sends. The app hides
+/// the controls as a courtesy, so nobody is invited to fail.
+///
+/// Nothing here is queued offline. Catalogue edits are not in the offline set
+/// (`ARCHITECTURE.md` 10.1) - the day's work is, and the outbox that carries it
+/// arrives with M6. A change that cannot reach the server is reported as not
+/// saved, rather than held somewhere the owner cannot see it.
+abstract interface class SalonWrites {
+  /// [id] null creates, non-null updates. Returns the id either way.
+  Future<String> saveService({
+    String? id,
+    required String name,
+    required int pricePaise,
+    required int durationMinutes,
+    required bool active,
+  });
+
+  Future<String> saveAddOn({
+    String? id,
+    required String name,
+    required int pricePaise,
+    required int extraDurationMinutes,
+    required bool active,
+  });
+
+  Future<String> saveStaff({String? id, required String name, required bool active});
+}
