@@ -144,6 +144,30 @@ begin
 end;
 $$;
 
+-- auth.uid() must behave the way Supabase's does, or every gate that resolves a
+-- customer from it proves nothing. ASSERT it rather than assume it: the CI image
+-- ships its own version, and this check is what caught that (customer-scope gate,
+-- 2026-09-27). Runs against the hosted project too, where it confirms the real
+-- one still reads what we think it reads.
+do $$
+declare
+  v_expected constant uuid := '00000000-0000-4000-8000-0000000000aa';
+  v_got      uuid;
+begin
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', v_expected, 'app_role', 'customer')::text, true);
+  select auth.uid() into v_got;
+  perform set_config('request.jwt.claims', '', true);
+
+  if v_got is distinct from v_expected then
+    raise exception
+      'bootstrap: auth.uid() returned % for a session whose claims name % - the '
+      'gates that resolve a customer from it would prove nothing on this database',
+      coalesce(v_got::text, 'null'), v_expected;
+  end if;
+end;
+$$;
+
 -- Best effort: on a real Supabase database these grants already exist and the
 -- `auth` schema is not ours to modify. Nothing in the gates depends on them -
 -- app.current_*() are SECURITY DEFINER and run as their owner - so a refusal
