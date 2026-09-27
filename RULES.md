@@ -107,6 +107,16 @@ or `.rpc(` outside `lib/data/remote/`.
 3.8 `customer_identities` and `binding_events` are cross-tenant and have **zero policies**. No
 tenant role may read them. Access only via `security definer` functions.
 
+3.8a **A customer sees their OWN rows, not their salon's.** Tenant scoping is necessary and not
+sufficient: `authenticated` includes customers, so `salon_id = app.current_salon_id()` alone lets
+one customer read every other customer of the salon. Ownership is enforced by a **RESTRICTIVE**
+policy - `app.current_app_role() <> 'customer' or customer_id = app.current_customer_id()` - on
+every table naming a customer, because permissive policies are **OR'd** and a narrow one beside a
+broad one grants the union. A new table with a `customer_id` and no restrictive policy **fails CI**
+(customer-scope gate). Staff PII (`public.users`) and the salon's own business records (billing,
+metrics, audit, schedules) are closed to customers entirely. This is not hypothetical: it shipped,
+and it was found by signing in as a real customer (0038, ADR-41).
+
 3.9 Writes are gated on `app.salon_writable()` so a suspended or past-due tenant loses
 `INSERT`/`UPDATE` at the database, not in the UI.
 
@@ -513,6 +523,11 @@ A change is not done until all of these hold.
       nothing else; a salon in setup and an unknown code look identical (no oracle); typing
       variants normalise, but a character outside the alphabet is never guessed at; a live join
       intent decides which salon's account sends the OTP
+- [ ] **Customer scope test** — inside ONE salon, a signed-in customer reads only their own
+      customer row, wallet, ledger, consents and bookings; the other customer's rows are
+      unreachable by any query they can express; the staff table - which holds staff phone
+      numbers - returns nothing; the salon's menu still does; and an owner still sees everything.
+      Plus the catalogue half: every table naming a customer HAS the restrictive policy
 - [ ] **Bind flow test** — first login binds to the salon on the server's challenge, in the same
       step, with the verified number and DPDP-correct consent defaults; a number bound elsewhere is
       refused naming no salon; staff are attached, never made customers; the claims hook stamps

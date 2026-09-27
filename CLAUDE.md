@@ -60,7 +60,10 @@ session — drift between the documents is how a rule quietly dies.
 Full list in `RULES.md`. The ones most often broken:
 
 1. Every table has `salon_id`. Every query tenant-scoped. RLS **enabled AND forced**.
-   Never write a query that can return another salon's data.
+   Never write a query that can return another salon's data. **Tenant scoping is not enough:**
+   `authenticated` includes customers, and permissive policies are OR'd, so row ownership needs a
+   **restrictive** policy keyed on `app.current_customer_id()` (RULES 3.8a, ADR-41). A table with a
+   `customer_id` and no restrictive policy fails CI.
 2. **Salon code comes before login.** Never authenticate before the salon is known.
 3. One phone number has exactly **one active binding**. No switch path, no such API.
    Unbind and transfer are audited Crayora super-admin actions only.
@@ -116,9 +119,10 @@ Each feature passes its PRD acceptance criteria, the milestone gates in `PHASES.
 per-screen checklist in `IMPLEMENTATION.md` §7.
 
 **Hard CI gates:** the catalogue-driven cross-tenant leak test, the binding-exclusivity test, the
-money test, the index-scope test, the admin-plane test, the join-flow test, the bind-flow test, the OTP test and the messaging-access test — plus their **negative controls**,
-which create an unprotected table and an unaudited `app_admin` function on purpose and require the
-matching gate to go red. Never skipped, never deleted, never narrowed to pass. A gate that has
+money test, the index-scope test, the admin-plane test, the join-flow test, the bind-flow test, the **customer-scope test**, the OTP test and the messaging-access test — plus their **negative controls**,
+which create - on purpose - an unprotected table, an unaudited `app_admin` function, an
+owner-callable payment-key function and a customer table protected only by `salon_id`, and require
+the matching gate to go red. Never skipped, never deleted, never narrowed to pass. A gate that has
 only ever been seen passing is not known to be a gate.
 
 **Adding a function to `app_admin`?** Call `app_admin.close_privileges()` at the end of that

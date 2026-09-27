@@ -63,6 +63,8 @@ Seven database gates fail the build. They are never skipped, deleted, or narrowe
 - **Index scope** — tenant indexes lead with `salon_id`, or are named and justified
 - **Admin plane** — no tenant role can reach `app_admin`, every admin mutation is audited in the
   same transaction, provisioning is atomic, and no credential can be read back
+- **Customer scope** — inside one salon, a customer reads only their own rows; staff phone numbers
+  are unreachable; a new table naming a customer without a restrictive policy fails the build
 - **App Link fingerprints** — `join/public/.well-known/assetlinks.json` is generated at deploy,
   never committed, and must hold real fingerprints. A placeholder fails verification silently,
   which would send every customer to the website instead of the app

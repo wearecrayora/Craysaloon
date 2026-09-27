@@ -47,7 +47,31 @@ const MUST_FAIL = [
 ];
 
 const LEAK_TEST = 'supabase/tests/rls/leak_test.sql';
+const SCOPE_TEST = 'supabase/tests/rls/customer_scope_test.sql';
 const ADMIN_TEST = 'supabase/tests/admin/admin_plane_test.sql';
+
+// A new table naming a customer, protected the way EVERY tenant table was
+// protected until 0038: one permissive policy scoped to the salon. It looks
+// careful and it leaks - a customer reads every row of their salon, because
+// permissive policies are OR'd. This is the bug that shipped, reproduced, and
+// the customer-scope gate must notice it on the day such a table is added.
+const SCOPE_CANARY = `
+  create table public.scope_canary (
+    id          uuid primary key default gen_random_uuid(),
+    salon_id    uuid not null,
+    customer_id uuid not null,
+    note        text
+  );
+  alter table public.scope_canary enable row level security;
+  alter table public.scope_canary force row level security;
+  create policy scope_canary_tenant on public.scope_canary
+    for all to authenticated
+    using (salon_id = app.current_salon_id())
+    with check (salon_id = app.current_salon_id());
+  grant select, insert, update, delete on public.scope_canary to authenticated;
+`;
+
+const SCOPE_MUST_FAIL = [/every table naming a customer has a RESTRICTIVE policy/];
 
 // A function in app_admin that mutates a table and never writes audit_log -
 // exactly the mistake RULES 6.5 exists to prevent.
@@ -158,6 +182,12 @@ try {
       ADMIN_TEST,
       CREDENTIAL_CANARY,
       CREDENTIAL_MUST_FAIL,
+    ),
+    await check(
+      'customer scope / a new customer table protected only by salon_id',
+      SCOPE_TEST,
+      SCOPE_CANARY,
+      SCOPE_MUST_FAIL,
     ),
   ];
 

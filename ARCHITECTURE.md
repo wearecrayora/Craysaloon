@@ -402,14 +402,42 @@ create policy bookings_tenant_update on public.bookings for update to authentica
   with check ( salon_id = app.current_salon_id() and app.salon_writable(salon_id) );
 ```
 
-Row-ownership *within* a salon (a customer seeing only their own bookings) is a **second,
-narrower policy**, not a replacement for the tenant policy:
+Row-ownership *within* a salon is a **RESTRICTIVE** policy. **This paragraph used to say "a
+second, narrower policy" and showed a permissive one. That was wrong, and it shipped** (v2.8,
+migration 0038):
+
+> **PostgreSQL policies are PERMISSIVE by default, and permissive policies are OR'd.** A narrow
+> policy sitting beside a broad one grants the **union**, so `bookings_customer_own` next to
+> `bookings_tenant_select` did not confine a customer to their own rows - it added nothing at all.
+> Every tenant table read `salon_id = app.current_salon_id()` for `authenticated`, and
+> `authenticated` includes customers, so a signed-in customer could read every other customer of
+> their salon - names, phone numbers, wallet balances, ledger rows, visits, consents - and every
+> staff member's personal mobile number from `public.users`. Found on 2026-09-27 by signing in as
+> a real customer on the hosted project and asking PostgREST what it would return.
 
 ```sql
-create policy bookings_customer_own on public.bookings for select to authenticated
-  using ( salon_id = app.current_salon_id()
-          and customer_id = app.current_customer_id() );
+-- RESTRICTIVE: AND-ed with every permissive policy, present and future.
+create policy customer_scope on public.bookings
+  as restrictive for all to authenticated
+  using      ( app.current_app_role() <> 'customer'
+               or customer_id = app.current_customer_id() )
+  with check ( app.current_app_role() <> 'customer'
+               or customer_id = app.current_customer_id() );
 ```
+
+Why restrictive rather than narrowing each tenant policy: a restrictive rule cannot be undone by
+adding a permissive policy later, which is precisely how this was introduced. Staff keep the
+salon-wide view their job needs; the customer is confined without every future table having to
+remember. 0038 applies it catalogue-driven to every table naming a customer, plus `customers`
+itself, plus the tables reached through a parent (`booking_items`, `payment_allocations`,
+`notification_deliveries`, `referrals`), and closes the staff-and-business tables (`users`,
+`audit_log`, `subscriptions`, metrics, schedules) to customers entirely. Stylist names for booking
+come from `public.staff`, which holds no phone number.
+
+**The lesson for gates, not just for policies:** the cross-tenant leak test passed throughout. It
+proves salon A cannot see salon B. Nothing proved that one customer cannot see another *inside* a
+salon, so nothing went red for months. `supabase/tests/rls/customer_scope_test.sql` is that gate,
+with a negative control that adds a table protected the old way and requires it to fail.
 
 Four things that are easy to get wrong and expensive to discover later:
 
@@ -1848,6 +1876,7 @@ invariants.
 | **ADR-38** | **After the trial, an optional grace period; then a salon with no Message Central account of its own is blocked — computed from dates, lifting as soon as its account is entered** | Letting customers log in on Crayora's account indefinitely after a trial (ADR-37's original choice); suspending the salon; a scheduled job that flips a flag | The owner's instruction: trial, grace, then block. Suspension would start the road to purging data over a setup step. A job can fail to run; a condition read at the moment of use cannot. Reads and consent withdrawal stay open because blocked customers still have money the salon owes them, and DPDP consent rights do not pause for a commercial dispute |
 | **ADR-39** | **Binding runs inside `otp-verify` before the session is minted, and a binding that moves or goes ends the customer's Auth sessions (a trigger on `customer_identities`) instead of bumping `cver`** | A tenant-callable `bind_customer` RPC after login, with a `cver` bump to force a refresh | Since ADR-36 the server, not the client, completes login, so it can bind first: the first token already carries the salon and no unbound window exists to design for. A `cver` bump works only if the client honours it; a deleted session cannot be refreshed by any client. A trigger covers every path that changes a binding, including ones not yet written |
 | **ADR-40** | **Branding is published RESOLVED: the console derives the light and dark token sets at publish, the database refuses a document without them, and the Flutter app only reads them** | Port `packages/design-tokens`' derivation to Dart so the app resolves its own tokens | Two implementations of the same maths in two languages drift, and the first palette where they disagreed would make the operator's preview lie about the customer's phone - the failure ADR-22 exists to prevent. Deriving once at publish also makes the published document self-contained, so an offline app themes from its cache with no maths at all |
+| **ADR-41** | **Intra-tenant isolation is enforced with RESTRICTIVE policies keyed on `app.current_customer_id()`, not by narrowing each tenant policy** | Rewrite every permissive tenant policy to include the role and ownership test | Permissive policies are OR'd, so the leak came from a *broad* policy sitting beside a narrow one; narrowing each one leaves the next table free to reintroduce it. A restrictive rule is AND-ed with everything, present and future, and reads as what it is: "a customer may only ever touch their own row" |
 
 ---
 
