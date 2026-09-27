@@ -558,6 +558,16 @@ it must stay safe, but no feature should be designed around it.
 - **QR:** encodes `https://join.craysalon.in/s/<code>` — an Android App Link that opens the app
   if installed, otherwise the Play listing, carrying the code through install (Play Install
   Referrer) so the join screen is pre-filled.
+- **The domain, built at M4 (`join/`):** a static site on its own Vercel project, separate from the
+  console so nothing public sits behind the console's authentication or near its environment.
+  `/s/<code>` shows the code in large type and links to Play with `referrer=code=CRAY-XXXXXX`;
+  `/` names no salon and lists none. **`assetlinks.json` is generated, never committed**
+  (`scripts/join/assetlinks.mjs`, GATE-8): it must carry the fingerprint the release APK is
+  really signed with, and a placeholder would fail Android's verification *silently* - every
+  customer's QR quietly opening the website instead of the app, with nothing in any log to say
+  why. Release signing is M13, so until then the link opens the site, which is exactly why that
+  page shows the code rather than redirecting. Reading the install referrer back in the app is
+  still to build; until it is, a customer who installs from that page types the code they can see.
 - **Public resolution (widened in v2.2):** `app.resolve_join_code()` is `SECURITY DEFINER`,
   callable by `anon`, and now returns `display_name` **plus the branding token document**
   (§7.1) — because the app must theme its own login screen before anyone authenticates. It
@@ -1693,8 +1703,10 @@ licensing question, not a design question. Second: never add a code path that de
 /console               Next.js admin console (Vercel)                            [from M2]
 /packages
   /design-tokens       shared branding token schema — consumed by app AND console (§7.2)
+/join                  join.craysalon.in - static, its own Vercel project (§5.6)  [from M4]
 /scripts               lint-gates.sh, secret-scan.sh, l10n-check.sh, build-apk.sh, db-push.sh
   /db                  run.mjs (migrate | test | sql | file), negative-control.mjs, env.mjs
+  /join                assetlinks.mjs - generates the App Link fingerprint file
 /supabase
   /migrations          forward-only SQL, one concern per file
   /ci                  bootstrap.sql — the roles and auth schema the CI image does not ship

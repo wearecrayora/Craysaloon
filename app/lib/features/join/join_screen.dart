@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/join/cray_api.dart';
 import '../../l10n/app_localizations.dart';
 import 'join_controller.dart';
+import 'qr_scan_sheet.dart';
 
 /// U2-U6, the whole join flow.
 ///
@@ -119,10 +120,22 @@ class _CodeStepState extends ConsumerState<_CodeStep> {
 
     return ListView(
       children: [
-        // No "scan the QR" affordance until there IS a scanner: the camera step
-        // and the join.craysalon.in deep link are still to build, and a label
-        // for something that does not work is worse than no label. The string
-        // stays in the arb files, unused, waiting for it.
+        // Scanning is the fast path; typing is the one that always works. Both
+        // are offered, and a refused camera lands back here rather than in a
+        // dead end (IMPLEMENTATION U2).
+        FilledButton.icon(
+          onPressed: state.busy
+              ? null
+              : () async {
+                  final code = await QrScanSheet.open(context);
+                  if (code == null || !context.mounted) return;
+                  _controller.text = code.value;
+                  await ref.read(joinControllerProvider.notifier).submitCode(code.value);
+                },
+          icon: const Icon(Icons.qr_code_scanner),
+          label: Text(l10n.joinScanButton),
+        ),
+        const SizedBox(height: 24),
         Text(l10n.joinEnterCode, style: Theme.of(context).textTheme.labelMedium),
         const SizedBox(height: 8),
         TextField(

@@ -168,6 +168,16 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get shortcutAdded => 'जुड़ गया। होम स्क्रीन पर देखिए।';
+
+  @override
+  String get scanHint => 'कैमरे को सैलॉन के QR कोड पर रखें';
+
+  @override
+  String get scanCameraUnavailable =>
+      'कैमरा उपलब्ध नहीं है। आप सैलॉन कोड हाथ से भी डाल सकते हैं।';
+
+  @override
+  String get joinScanButton => 'QR कोड स्कैन करें';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -335,4 +345,14 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get shortcutAdded => 'Add ho gaya. Home screen par dekhiye.';
+
+  @override
+  String get scanHint => 'Camera ko salon ke QR code par rakhiye';
+
+  @override
+  String get scanCameraUnavailable =>
+      'Camera available nahi hai. Aap salon code haath se bhi daal sakte hain.';
+
+  @override
+  String get joinScanButton => 'QR code scan kijiye';
 }

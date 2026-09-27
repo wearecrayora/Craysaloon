@@ -44,5 +44,8 @@
   "shortcutBody": "Ek tap mein apna salon kholiye. Aapka phone confirm karne ke liye poochhega.",
   "shortcutAdd": "Home screen par add kijiye",
   "shortcutNotNow": "Abhi nahi",
-  "shortcutAdded": "Add ho gaya. Home screen par dekhiye."
+  "shortcutAdded": "Add ho gaya. Home screen par dekhiye.",
+  "scanHint": "Camera ko salon ke QR code par rakhiye",
+  "scanCameraUnavailable": "Camera available nahi hai. Aap salon code haath se bhi daal sakte hain.",
+  "joinScanButton": "QR code scan kijiye"
 }

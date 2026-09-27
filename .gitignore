@@ -44,3 +44,8 @@ Thumbs.db
 .claude/skills/
 
 scripts/db/node_modules/
+
+# Generated at deploy time from the real signing certificate, never committed:
+# a placeholder fingerprint fails Android App Link verification silently
+# (join/README.md, GATE-8).
+join/public/.well-known/assetlinks.json

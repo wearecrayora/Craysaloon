@@ -77,6 +77,15 @@ jobs:
           flutter analyze
           flutter test
 
+      # analyze and test never touch the native half. Since M4 there IS a native
+      # half - two method channels, an App Link intent filter and a camera
+      # plugin - and a Kotlin or manifest break would otherwise reach a phone
+      # before it reached anyone here. Debug, because release signing is M13.
+      - name: Android build (the native half analyze cannot see)
+        if: steps.check.outputs.exists == 'true'
+        working-directory: app
+        run: flutter build apk --debug
+
   # The app launches on Android first for cost reasons, but the code must stay
   # iOS-buildable (RULES.md 8.11). Nobody here has a Mac, so this runner IS the
   # iOS compatibility check - without it, breakage is discovered months later.

@@ -117,7 +117,8 @@ The rest follow the patterns in `DESIGN.md` §6. These do not.
 | **Writes** | `app.start_join(code, phone)` → `join_intents` · `otp-send` → challenge · `otp-verify {challenge_id, code, consents}` → **binds, then** returns the session (ADR-36, ADR-39). There is no client-side bind call |
 | **States** | Idle · scanning (camera permission denied → manual entry) · resolving · **invalid code** · **salon not active** · rate-limited · OTP sent · OTP wrong (attempts left) · OTP expired · **already bound** · binding · bound |
 | **Theming** | From U3 onward the app wears the salon's branding — logo, palette, fonts. This is the moment the white-label promise is kept. Built from the **resolved** token sets the console publishes (ADR-40); a document the app cannot theme from falls back to the neutral default **whole**, never half-themed |
-| **Not yet** | The QR camera scanner and the `join.craysalon.in` deep link. Manual code entry is the only route in, and the screen says nothing about scanning until scanning works |
+| **Scanning** | In-app camera (`mobile_scanner`), and the same code arriving as a deep link when the phone's own scanner opens the QR. Both go through `JoinLink.parse`, so a wifi or payment QR is ignored rather than mistaken for a code. **A refused camera is a supported path**: manual entry always works. A link pre-fills the code and can never skip the confirmation screen |
+| **Not yet** | Play Install Referrer - the `/s/<code>` page already passes the code to Play, but reading it back on first launch needs a Play Console listing to test against (M13) |
 
 **Rules that bite here**
 

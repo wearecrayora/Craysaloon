@@ -367,6 +367,24 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Added. Look for it on your home screen.'**
   String get shortcutAdded;
+
+  /// No description provided for @scanHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Point the camera at the salon\'s QR code'**
+  String get scanHint;
+
+  /// A refused camera is a supported path, not an error: manual entry always works (IMPLEMENTATION U2).
+  ///
+  /// In en, this message translates to:
+  /// **'The camera isn\'t available. You can enter the salon code by hand instead.'**
+  String get scanCameraUnavailable;
+
+  /// No description provided for @joinScanButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the QR code'**
+  String get joinScanButton;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

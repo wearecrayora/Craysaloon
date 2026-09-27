@@ -172,5 +172,13 @@
   "shortcutNotNow": "Not now",
   "@shortcutNotNow": {},
   "shortcutAdded": "Added. Look for it on your home screen.",
-  "@shortcutAdded": {}
+  "@shortcutAdded": {},
+  "scanHint": "Point the camera at the salon's QR code",
+  "@scanHint": {},
+  "scanCameraUnavailable": "The camera isn't available. You can enter the salon code by hand instead.",
+  "@scanCameraUnavailable": {
+    "description": "A refused camera is a supported path, not an error: manual entry always works (IMPLEMENTATION U2)."
+  },
+  "joinScanButton": "Scan the QR code",
+  "@joinScanButton": {}
 }

@@ -539,6 +539,11 @@ A change is not done until all of these hold.
       and every piped gate reports success regardless of result
 - [ ] Secret scan clean, including the APK and the Vercel client bundle
 - [ ] Lints: domain purity, no `.from(` outside `data/remote/`, no raw `Color(0x…)`
+- [ ] **The App Link fingerprint file is real or absent (GATE-8).**
+      `join/public/.well-known/assetlinks.json` is generated at deploy from the certificate the
+      release APK is actually signed with, and is never committed. A placeholder fails Android's
+      verification **silently**: every customer's QR quietly opens the website instead of the app,
+      with nothing in any log to say why
 
 **Also required:**
 

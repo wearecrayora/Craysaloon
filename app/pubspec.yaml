@@ -31,6 +31,15 @@ dependencies:
   sentry_flutter: ^9.29.0
   firebase_core: ^4.14.0
   firebase_messaging: ^16.6.0
+  # The salon's QR, scanned in-app (IMPLEMENTATION U2). Camera permission
+  # denied is a supported path, not an error: manual entry stays.
+  mobile_scanner: ^7.4.2
+
+  # The printed QR encodes https://join.craysalon.in/s/<code>, so an install
+  # that already exists opens straight into the join flow with the code filled
+  # in. Declared explicitly rather than leaned on as supabase_flutter's
+  # transitive dependency.
+  app_links: ^7.2.1
 
 dev_dependencies:
   flutter_test:

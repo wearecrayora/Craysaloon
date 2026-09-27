@@ -168,4 +168,14 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get shortcutAdded => 'Added. Look for it on your home screen.';
+
+  @override
+  String get scanHint => 'Point the camera at the salon\'s QR code';
+
+  @override
+  String get scanCameraUnavailable =>
+      'The camera isn\'t available. You can enter the salon code by hand instead.';
+
+  @override
+  String get joinScanButton => 'Scan the QR code';
 }

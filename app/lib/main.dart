@@ -9,6 +9,7 @@ import 'core/theme/brand_tokens.dart';
 import 'data/local/branding_store.dart';
 import 'data/local/device_key.dart';
 import 'data/remote/supabase_cray_api.dart';
+import 'features/join/deep_link_listener.dart';
 import 'features/join/join_controller.dart';
 import 'features/join/join_screen.dart';
 import 'features/salon/salon_home.dart';
@@ -100,7 +101,11 @@ class CraySalonApp extends ConsumerWidget {
       supportedLocales: AppL10n.supportedLocales,
       theme: brandTheme(tokensFor(Brightness.light)),
       darkTheme: brandTheme(tokensFor(Brightness.dark)),
-      home: ref.watch(hasSessionProvider) ? const SalonHome() : const JoinScreen(),
+      // A tapped or scanned join link pre-fills the code; it can never skip the
+      // confirmation screen, and it is ignored once someone is bound.
+      home: ref.watch(hasSessionProvider)
+          ? const SalonHome()
+          : const DeepLinkListener(child: JoinScreen()),
     );
   }
 }

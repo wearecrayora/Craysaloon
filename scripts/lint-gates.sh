@@ -99,5 +99,32 @@ else
   note "ok"
 fi
 
+printf '\n[GATE-8] the App Link fingerprint file must be real, or absent\n'
+# join/public/.well-known/assetlinks.json is GENERATED, never committed
+# (join/README.md). A placeholder fails Android's verification SILENTLY: every
+# customer's QR quietly opens the website instead of the app, and nothing
+# anywhere says why. So it must not be tracked, and a local copy must carry only
+# real SHA-256 fingerprints.
+ASSETLINKS=join/public/.well-known/assetlinks.json
+if git ls-files --error-unmatch "$ASSETLINKS" >/dev/null 2>&1; then
+  note "$ASSETLINKS is tracked - generate it at deploy time instead"
+  note "(scripts/join/assetlinks.mjs)"
+  fail=1
+elif [ -f "$ASSETLINKS" ]; then
+  BAD=$(grep -oiE 'placeholder|todo|fixme|example|xx:xx' "$ASSETLINKS" || true)
+  PRINTS=$(grep -cE '([0-9A-Fa-f]{2}:){31}[0-9A-Fa-f]{2}' "$ASSETLINKS" || true)
+  if [ -n "$BAD" ]; then
+    note "placeholder fingerprint in $ASSETLINKS: $BAD"
+    fail=1
+  elif [ "$PRINTS" -eq 0 ]; then
+    note "$ASSETLINKS carries no SHA-256 fingerprint - App Links would fail silently"
+    fail=1
+  else
+    note "ok (generated, untracked, $PRINTS real fingerprint line(s))"
+  fi
+else
+  note "ok (absent - generated at deploy time)"
+fi
+
 printf '\n%s\n' "$([ $fail -eq 0 ] && echo 'ALL GATES PASS' || echo 'GATES FAILED')"
 exit $fail

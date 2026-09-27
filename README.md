@@ -63,9 +63,12 @@ Seven database gates fail the build. They are never skipped, deleted, or narrowe
 - **Index scope** — tenant indexes lead with `salon_id`, or are named and justified
 - **Admin plane** — no tenant role can reach `app_admin`, every admin mutation is audited in the
   same transaction, provisioning is atomic, and no credential can be read back
-- **Negative controls** — an unprotected table and an unaudited admin function are created on
-  purpose, and the matching gate *must* go red. A gate only ever observed passing is not known to
-  be a gate
+- **App Link fingerprints** — `join/public/.well-known/assetlinks.json` is generated at deploy,
+  never committed, and must hold real fingerprints. A placeholder fails verification silently,
+  which would send every customer to the website instead of the app
+- **Negative controls** — an unprotected table, an unaudited admin function and an owner-callable
+  payment-key function are created on purpose, and the matching gate *must* go red. A gate only
+  ever observed passing is not known to be a gate
 
 ## Security
 

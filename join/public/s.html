@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Join your salon</title>
+<!--
+  What a phone sees when it opens a printed QR and the app is NOT installed.
+
+  With the app installed and the App Link verified, Android opens the app
+  instead and this page is never rendered. So this page has exactly one job:
+  get the customer to the app WITH their salon code, and show them the code so
+  it survives even if every clever mechanism fails.
+
+  Deliberately: no tracking, no fonts, no analytics, no framework. It loads on
+  a slow connection in a salon, which is where it will actually be used.
+-->
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0; padding: 32px 20px;
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #fcfcfb; color: #1a1a19;
+  }
+  @media (prefers-color-scheme: dark) { body { background: #1a1a19; color: #fff; } }
+  main { max-width: 26rem; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 8px; }
+  p { margin: 0 0 20px; }
+  .code {
+    font: 600 26px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .06em; padding: 16px; border-radius: 12px;
+    background: #f4f3f0; text-align: center; margin: 0 0 20px;
+  }
+  @media (prefers-color-scheme: dark) { .code { background: #232320; } }
+  a.cta {
+    display: block; text-align: center; text-decoration: none;
+    padding: 14px 16px; border-radius: 12px;
+    background: #3f3d39; color: #fff; font-weight: 600;
+  }
+  @media (prefers-color-scheme: dark) { a.cta { background: #d8d5cc; color: #1a1a19; } }
+  small { display: block; margin-top: 20px; color: #6b6964; }
+  @media (prefers-color-scheme: dark) { small { color: #9d9b93; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Install the app to join</h1>
+  <p>Your salon's code is below. Keep this screen if you need to type it in.</p>
+  <p class="code" id="code">—</p>
+  <a class="cta" id="play" href="https://play.google.com/store/apps/details?id=com.crayora.craysalon">Get the app on Google Play</a>
+  <small id="note">On iPhone, the app is coming soon. Ask at the counter.</small>
+</main>
+<script>
+  // The code is the last path segment: /s/CRAY-XXXXXX
+  var raw = decodeURIComponent(location.pathname.split('/').filter(Boolean).pop() || '');
+  var code = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (code.indexOf('CRAY') === 0) code = code.slice(4);
+  // Same alphabet as the printed code: no 0/O, 1/I/L (ARCHITECTURE 5.6).
+  var valid = /^[A-HJKMNP-Z2-9]{6}$/.test(code);
+
+  if (valid) {
+    document.getElementById('code').textContent = 'CRAY-' + code;
+    // Play Install Referrer carries the code through the install, so a fresh
+    // install can open on the right salon without anyone retyping it.
+    document.getElementById('play').href =
+      'https://play.google.com/store/apps/details?id=com.crayora.craysalon' +
+      '&referrer=' + encodeURIComponent('code=CRAY-' + code);
+  } else {
+    // A mistyped or damaged link. Say so rather than showing a code that is
+    // not a code.
+    document.getElementById('code').textContent = 'Code not readable';
+    document.getElementById('note').textContent =
+      'This link is incomplete. Ask at the counter for the salon code.';
+  }
+</script>
+</body>
+</html>
