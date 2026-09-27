@@ -180,5 +180,87 @@
     "description": "A refused camera is a supported path, not an error: manual entry always works (IMPLEMENTATION U2)."
   },
   "joinScanButton": "Scan the QR code",
-  "@joinScanButton": {}
+  "@joinScanButton": {},
+  "customersTitle": "Customers",
+  "@customersTitle": {},
+  "customersSearchHint": "Name, or full mobile number",
+  "@customersSearchHint": {},
+  "customersEmpty": "No customers yet. They join by scanning your QR code.",
+  "@customersEmpty": {},
+  "customersNoMatch": "Nobody matched that. Try the full number, or fewer letters.",
+  "@customersNoMatch": {},
+  "customerNeverVisited": "Not visited yet",
+  "@customerNeverVisited": {},
+  "customerLastVisit": "Last visit {date}",
+  "@customerLastVisit": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "4 Mar"
+      }
+    }
+  },
+  "customerVisits": "{count, plural, =0{No visits} =1{1 visit} other{{count} visits}}",
+  "@customerVisits": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "customerLoyalty": "{points} points",
+  "@customerLoyalty": {
+    "placeholders": {
+      "points": {
+        "type": "String",
+        "example": "120"
+      }
+    }
+  },
+  "cachedAsOf": "Shown from this device, last updated {time}.",
+  "@cachedAsOf": {
+    "description": "Cached data is LABELLED, never passed off as live (ARCHITECTURE 10.2).",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "2:40 pm"
+      }
+    }
+  },
+  "cachedNeverLoaded": "Not loaded yet. Connect once to see your customers.",
+  "@cachedNeverLoaded": {},
+  "loadMore": "Load more",
+  "@loadMore": {},
+  "catalogueServices": "Services",
+  "@catalogueServices": {},
+  "catalogueAddOns": "Add-ons",
+  "@catalogueAddOns": {},
+  "staffTitle": "Team",
+  "@staffTitle": {},
+  "catalogueEmpty": "Nothing here yet. Crayora sets this up with you.",
+  "@catalogueEmpty": {},
+  "inactiveLabel": "Hidden",
+  "@inactiveLabel": {},
+  "minutesShort": "{minutes} min",
+  "@minutesShort": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "addsMinutes": "adds {minutes} min",
+  "@addsMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "dayViewSoon": "The day view arrives with bookings.",
+  "@dayViewSoon": {},
+  "balanceReadOnly": "Balance is set by top-ups and visits. It cannot be edited here.",
+  "@balanceReadOnly": {
+    "description": "O5 shows a balance and cannot change it: no control, no endpoint, no permission (RULES 2, 5.2)."
+  }
 }

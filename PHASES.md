@@ -176,6 +176,14 @@ the Drift read cache.
 *Read:* PRD §8.2 · ARCHITECTURE §6.2, §9, §10.1 · `DESIGN.md` §6.
 *Done when:* every list is keyset-paginated, reads work offline from cache, and lists render at
 200% text scale.
+*Progress (2026-09-27):* the read half is built and gated. `public.list_customers` - keyset on
+(last_visit_at, id), name-prefix or whole-number search, **SECURITY INVOKER** so every RLS policy
+still applies (gate: `rls/list_customers_test.sql`, 13 assertions). In the app: the Drift read
+cache, `RecordsRepository` (server first, cache when offline, and the screen SAYS which), the
+role-based router and shells (ARCH 9.1), O4 customer list, O5 customer record - **balance shown,
+not editable, asserted by a test that requires the controls to be absent** - and the read-only
+catalogue lists O7/O8/O9. 200% text scale is asserted as a test, not eyeballed. **Still to
+build:** catalogue CRUD from the owner app, and O1 the day view, which belongs with bookings (M6).
 
 **M6 — Booking, slots, add-ons, offline queue.** The exclusion constraint, `app.available_slots()`
 shared by client and server, `booking_items` **with price snapshots** (dependency ④), the outbox,

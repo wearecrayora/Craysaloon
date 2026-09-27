@@ -178,6 +178,90 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get joinScanButton => 'QR कोड स्कैन करें';
+
+  @override
+  String get customersTitle => 'ग्राहक';
+
+  @override
+  String get customersSearchHint => 'नाम, या पूरा मोबाइल नंबर';
+
+  @override
+  String get customersEmpty =>
+      'अभी कोई ग्राहक नहीं। वे आपका QR कोड स्कैन करके जुड़ते हैं।';
+
+  @override
+  String get customersNoMatch =>
+      'कोई मैच नहीं मिला। पूरा नंबर डालें, या कम अक्षर।';
+
+  @override
+  String get customerNeverVisited => 'अभी तक नहीं आए';
+
+  @override
+  String customerLastVisit(String date) {
+    return 'पिछली विज़िट $date';
+  }
+
+  @override
+  String customerVisits(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count विज़िट',
+      one: '1 विज़िट',
+      zero: 'कोई विज़िट नहीं',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String customerLoyalty(String points) {
+    return '$points पॉइंट';
+  }
+
+  @override
+  String cachedAsOf(String time) {
+    return 'इस डिवाइस से दिखाया गया, आखिरी अपडेट $time।';
+  }
+
+  @override
+  String get cachedNeverLoaded =>
+      'अभी लोड नहीं हुआ। एक बार कनेक्ट करके अपने ग्राहक देखें।';
+
+  @override
+  String get loadMore => 'और दिखाएं';
+
+  @override
+  String get catalogueServices => 'सेवाएं';
+
+  @override
+  String get catalogueAddOns => 'ऐड-ऑन';
+
+  @override
+  String get staffTitle => 'टीम';
+
+  @override
+  String get catalogueEmpty =>
+      'अभी यहां कुछ नहीं। Crayora आपके साथ इसे सेट करता है।';
+
+  @override
+  String get inactiveLabel => 'छिपा हुआ';
+
+  @override
+  String minutesShort(int minutes) {
+    return '$minutes मिनट';
+  }
+
+  @override
+  String addsMinutes(int minutes) {
+    return '$minutes मिनट बढ़ाता है';
+  }
+
+  @override
+  String get dayViewSoon => 'दिन का व्यू बुकिंग के साथ आएगा।';
+
+  @override
+  String get balanceReadOnly =>
+      'बैलेंस टॉप-अप और विज़िट से बनता है। इसे यहां बदला नहीं जा सकता।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -355,4 +439,88 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get joinScanButton => 'QR code scan kijiye';
+
+  @override
+  String get customersTitle => 'Customers';
+
+  @override
+  String get customersSearchHint => 'Naam, ya poora mobile number';
+
+  @override
+  String get customersEmpty =>
+      'Abhi koi customer nahi. Wo aapka QR code scan karke judte hain.';
+
+  @override
+  String get customersNoMatch =>
+      'Koi match nahi mila. Poora number daaliye, ya kam letters.';
+
+  @override
+  String get customerNeverVisited => 'Abhi tak nahi aaye';
+
+  @override
+  String customerLastVisit(String date) {
+    return 'Pichhli visit $date';
+  }
+
+  @override
+  String customerVisits(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count visits',
+      one: '1 visit',
+      zero: 'Koi visit nahi',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String customerLoyalty(String points) {
+    return '$points points';
+  }
+
+  @override
+  String cachedAsOf(String time) {
+    return 'Is device se dikhaya gaya, last update $time.';
+  }
+
+  @override
+  String get cachedNeverLoaded =>
+      'Abhi load nahi hua. Ek baar connect karke apne customers dekhiye.';
+
+  @override
+  String get loadMore => 'Aur dikhaiye';
+
+  @override
+  String get catalogueServices => 'Services';
+
+  @override
+  String get catalogueAddOns => 'Add-ons';
+
+  @override
+  String get staffTitle => 'Team';
+
+  @override
+  String get catalogueEmpty =>
+      'Abhi yahan kuch nahi. Crayora aapke saath ise set karta hai.';
+
+  @override
+  String get inactiveLabel => 'Chhipa hua';
+
+  @override
+  String minutesShort(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String addsMinutes(int minutes) {
+    return '$minutes min badhata hai';
+  }
+
+  @override
+  String get dayViewSoon => 'Din ka view booking ke saath aayega.';
+
+  @override
+  String get balanceReadOnly =>
+      'Balance top-up aur visits se banta hai. Ise yahan badla nahi ja sakta.';
 }

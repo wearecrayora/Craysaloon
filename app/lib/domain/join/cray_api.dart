@@ -82,6 +82,24 @@ class CrayApiException implements Exception {
   String toString() => 'CrayApiException($kind)';
 }
 
+/// Who is signed in, as the token says.
+///
+/// The claims are a CACHE of the database, never the source of truth
+/// (`ARCHITECTURE.md` 5.2): they decide which shell the app shows, and nothing
+/// else. Every read is still authorised in the database.
+class AppSession {
+  const AppSession({required this.appRole, required this.salonId});
+
+  /// owner | manager | staff | customer | customer_unbound | platform_admin
+  final String appRole;
+
+  /// Absent for an unbound customer, and for a platform admin (RULES 6.7).
+  final String? salonId;
+
+  bool get isStaff => appRole == 'owner' || appRole == 'manager' || appRole == 'staff';
+  bool get isBoundCustomer => appRole == 'customer' && salonId != null;
+}
+
 abstract interface class CrayApi {
   /// Pre-auth, `anon`-callable, rate-limited. Null when the code matches no
   /// ACTIVE salon - a salon still in setup looks exactly like a code that does
@@ -106,6 +124,9 @@ abstract interface class CrayApi {
     bool promotional = false,
     bool whatsapp = false,
   });
+
+  /// The stored session, or null when nobody is signed in.
+  AppSession? get session;
 
   /// True when a session is already stored on the device.
   bool get hasSession;

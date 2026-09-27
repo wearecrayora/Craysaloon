@@ -385,6 +385,126 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Scan the QR code'**
   String get joinScanButton;
+
+  /// No description provided for @customersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get customersTitle;
+
+  /// No description provided for @customersSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Name, or full mobile number'**
+  String get customersSearchHint;
+
+  /// No description provided for @customersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers yet. They join by scanning your QR code.'**
+  String get customersEmpty;
+
+  /// No description provided for @customersNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody matched that. Try the full number, or fewer letters.'**
+  String get customersNoMatch;
+
+  /// No description provided for @customerNeverVisited.
+  ///
+  /// In en, this message translates to:
+  /// **'Not visited yet'**
+  String get customerNeverVisited;
+
+  /// No description provided for @customerLastVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Last visit {date}'**
+  String customerLastVisit(String date);
+
+  /// No description provided for @customerVisits.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No visits} =1{1 visit} other{{count} visits}}'**
+  String customerVisits(int count);
+
+  /// No description provided for @customerLoyalty.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} points'**
+  String customerLoyalty(String points);
+
+  /// Cached data is LABELLED, never passed off as live (ARCHITECTURE 10.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Shown from this device, last updated {time}.'**
+  String cachedAsOf(String time);
+
+  /// No description provided for @cachedNeverLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Not loaded yet. Connect once to see your customers.'**
+  String get cachedNeverLoaded;
+
+  /// No description provided for @loadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get loadMore;
+
+  /// No description provided for @catalogueServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get catalogueServices;
+
+  /// No description provided for @catalogueAddOns.
+  ///
+  /// In en, this message translates to:
+  /// **'Add-ons'**
+  String get catalogueAddOns;
+
+  /// No description provided for @staffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Team'**
+  String get staffTitle;
+
+  /// No description provided for @catalogueEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet. Crayora sets this up with you.'**
+  String get catalogueEmpty;
+
+  /// No description provided for @inactiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get inactiveLabel;
+
+  /// No description provided for @minutesShort.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String minutesShort(int minutes);
+
+  /// No description provided for @addsMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'adds {minutes} min'**
+  String addsMinutes(int minutes);
+
+  /// No description provided for @dayViewSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'The day view arrives with bookings.'**
+  String get dayViewSoon;
+
+  /// O5 shows a balance and cannot change it: no control, no endpoint, no permission (RULES 2, 5.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Balance is set by top-ups and visits. It cannot be edited here.'**
+  String get balanceReadOnly;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

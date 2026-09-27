@@ -523,6 +523,11 @@ A change is not done until all of these hold.
       nothing else; a salon in setup and an unknown code look identical (no oracle); typing
       variants normalise, but a character outside the alphabet is never guessed at; a live join
       intent decides which salon's account sends the OTP
+- [ ] **Customer list test** — the owner's list function is **SECURITY INVOKER** (a definer version
+      would outrank RLS and undo 3.8a), pages by keyset rather than OFFSET with no row repeated or
+      skipped, searches by name prefix or WHOLE number but never a partial number, cannot be asked
+      for an unbounded page, is unreachable before login, and returns a customer nothing but
+      themselves
 - [ ] **Customer scope test** — inside ONE salon, a signed-in customer reads only their own
       customer row, wallet, ledger, consents and bookings; the other customer's rows are
       unreachable by any query they can express; the staff table - which holds staff phone

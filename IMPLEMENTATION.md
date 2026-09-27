@@ -55,10 +55,10 @@
 | O1 | `/day` | **Day view — mark-complete. The most important screen.** | 5 |
 | O2 | `/day/walk-in` | Add walk-in booking | 6 |
 | O3 | `/attention` | **Needs attention** — rejected offline actions | 6 |
-| O4 | `/customers` | Customer list — keyset paginated, searchable | 5 |
-| O5 | `/customers/:id` | Customer detail — history, **balance read-only** | 5 |
+| O4 | `/customers` | Customer list — keyset paginated, searchable · *built 2026-09-27: `list_customers` (keyset, name prefix or whole number), cache-first with an "as of" label, 200% text scale asserted* | 5 |
+| O5 | `/customers/:id` | Customer detail — history, **balance read-only** · *built 2026-09-27; a test asserts the editing controls are ABSENT, not disabled* | 5 |
 | O6 | `/dashboard` | **Dashboard** — stat tiles + cohort chart | 10 |
-| O7 | `/catalogue/services` | Services CRUD | 5 |
+| O7 | `/catalogue/services` | Services CRUD · *read list built 2026-09-27; CRUD next. Nothing is shown disabled - an absent control promises nothing* | 5 |
 | O8 | `/catalogue/addons` | Add-ons CRUD + relevance | 5 |
 | O9 | `/staff` | Staff + working hours | 5 |
 | O10 | `/settings/rules` | **Wallet bonus rule + bonus expiry**, reminder cycles, cancellation policy | 7 |

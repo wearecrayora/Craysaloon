@@ -1151,6 +1151,13 @@ client-side image compression; `ListView.builder` everywhere.
 
 - **Store:** Drift/SQLite, in two roles — a **read cache** (last-known server state, safe to
   discard) and an **outbox** (the only local source of truth for unsynced intent).
+  *Built at M5* (`app/lib/data/local/cache_db.dart`): the read cache holds the catalogue, the first
+  page of customers and per-customer visit history, every row carrying its `salonId` so a transfer
+  cannot leave the previous salon's rows on screen, plus `wipe()` for exactly that moment. Two
+  refusals are deliberate: **a search is never answered from the cache**, and a *later* page is
+  never faked from it — a stale search result reads like an answer about who is a customer, and an
+  endless-scroll spinner that never resolves is worse than "you are offline". Every cached read is
+  **labelled with the time it was fetched**; the outbox arrives with M6.
 - **Outbox row:** `client_action_id (uuid v4)`, `op`, `payload jsonb`, `created_at`, `attempts`,
   `status (pending|syncing|applied|rejected)`, `last_error`.
 - **Drain:** FIFO on reconnect with exponential backoff, ordered per entity so "create customer →

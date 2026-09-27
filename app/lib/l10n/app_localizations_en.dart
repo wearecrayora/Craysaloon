@@ -178,4 +178,88 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get joinScanButton => 'Scan the QR code';
+
+  @override
+  String get customersTitle => 'Customers';
+
+  @override
+  String get customersSearchHint => 'Name, or full mobile number';
+
+  @override
+  String get customersEmpty =>
+      'No customers yet. They join by scanning your QR code.';
+
+  @override
+  String get customersNoMatch =>
+      'Nobody matched that. Try the full number, or fewer letters.';
+
+  @override
+  String get customerNeverVisited => 'Not visited yet';
+
+  @override
+  String customerLastVisit(String date) {
+    return 'Last visit $date';
+  }
+
+  @override
+  String customerVisits(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count visits',
+      one: '1 visit',
+      zero: 'No visits',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String customerLoyalty(String points) {
+    return '$points points';
+  }
+
+  @override
+  String cachedAsOf(String time) {
+    return 'Shown from this device, last updated $time.';
+  }
+
+  @override
+  String get cachedNeverLoaded =>
+      'Not loaded yet. Connect once to see your customers.';
+
+  @override
+  String get loadMore => 'Load more';
+
+  @override
+  String get catalogueServices => 'Services';
+
+  @override
+  String get catalogueAddOns => 'Add-ons';
+
+  @override
+  String get staffTitle => 'Team';
+
+  @override
+  String get catalogueEmpty =>
+      'Nothing here yet. Crayora sets this up with you.';
+
+  @override
+  String get inactiveLabel => 'Hidden';
+
+  @override
+  String minutesShort(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String addsMinutes(int minutes) {
+    return 'adds $minutes min';
+  }
+
+  @override
+  String get dayViewSoon => 'The day view arrives with bookings.';
+
+  @override
+  String get balanceReadOnly =>
+      'Balance is set by top-ups and visits. It cannot be edited here.';
 }

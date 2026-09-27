@@ -1,6 +1,8 @@
 import 'package:craysalon/core/platform/home_shortcut.dart';
 import 'package:craysalon/core/platform/salon_notifications.dart';
+import 'package:craysalon/app/providers.dart';
 import 'package:craysalon/data/local/branding_store.dart';
+import 'package:craysalon/domain/join/cray_api.dart';
 import 'package:craysalon/features/join/join_controller.dart';
 import 'package:craysalon/features/salon/salon_home.dart';
 import 'package:craysalon/main.dart';
@@ -62,6 +64,14 @@ void main() {
         overrides: [
           crayApiProvider.overrideWithValue(FakeCrayApi()),
           hasSessionProvider.overrideWithValue(true),
+          // A bound customer: the router picks the shell from app_role, so the
+          // role IS the thing that puts this screen on screen (ARCH 9.1).
+          sessionProvider.overrideWithValue(
+            const AppSession(
+              appRole: 'customer',
+              salonId: '11111111-0000-4000-8000-000000000001',
+            ),
+          ),
           initialBrandingProvider.overrideWithValue(branding),
           homeShortcutProvider.overrideWithValue(shortcut),
           salonNotificationsProvider.overrideWithValue(notifications),

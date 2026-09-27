@@ -27,8 +27,14 @@ class FakeCrayApi implements CrayApi {
   final List<String> sentTo = [];
   final List<Map<String, Object?>> verifications = [];
 
+  /// The session the app would have after login. Null means nobody is signed in.
+  AppSession? sessionValue;
+
   @override
-  bool get hasSession => false;
+  AppSession? get session => sessionValue;
+
+  @override
+  bool get hasSession => sessionValue != null;
 
   @override
   Future<SalonSummary?> resolveJoinCode(String code, {required String deviceKey}) async {

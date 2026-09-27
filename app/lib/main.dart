@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'app/providers.dart';
+import 'app/router.dart';
 import 'core/observability/sentry_setup.dart';
 import 'core/push/push_setup.dart';
 import 'core/theme/brand_theme.dart';
@@ -9,10 +11,7 @@ import 'core/theme/brand_tokens.dart';
 import 'data/local/branding_store.dart';
 import 'data/local/device_key.dart';
 import 'data/remote/supabase_cray_api.dart';
-import 'features/join/deep_link_listener.dart';
 import 'features/join/join_controller.dart';
-import 'features/join/join_screen.dart';
-import 'features/salon/salon_home.dart';
 import 'l10n/app_localizations.dart';
 
 /// Configuration arrives with `--dart-define`, never from a file in the repo.
@@ -43,6 +42,7 @@ Future<void> main() async {
         overrides: [
           if (api != null) crayApiProvider.overrideWithValue(api),
           if (api != null) hasSessionProvider.overrideWithValue(api.hasSession),
+          if (api != null) sessionProvider.overrideWithValue(api.session),
           if (deviceKey != null) deviceKeyProvider.overrideWithValue(deviceKey),
           if (cached != null) initialBrandingProvider.overrideWithValue(cached),
         ],
@@ -92,7 +92,7 @@ class CraySalonApp extends ConsumerWidget {
         BrandTokens.fromPublished(document, brightness: brightness, version: version) ??
         BrandTokens.neutral(brightness: brightness, displayName: branding?.displayName);
 
-    return MaterialApp(
+    return MaterialApp.router(
       // The salon's name is the app's name once there is one (DESIGN 2.1).
       onGenerateTitle: (context) => branding?.displayName ?? AppL10n.of(context).appTitle,
       debugShowCheckedModeBanner: false,
@@ -101,11 +101,9 @@ class CraySalonApp extends ConsumerWidget {
       supportedLocales: AppL10n.supportedLocales,
       theme: brandTheme(tokensFor(Brightness.light)),
       darkTheme: brandTheme(tokensFor(Brightness.dark)),
-      // A tapped or scanned join link pre-fills the code; it can never skip the
-      // confirmation screen, and it is ignored once someone is bound.
-      home: ref.watch(hasSessionProvider)
-          ? const SalonHome()
-          : const DeepLinkListener(child: JoinScreen()),
+      // The shell comes from app_role: the join flow when there is no salon, the
+      // customer's salon when there is, the owner's shell for staff (ARCH 9.1).
+      routerConfig: ref.watch(routerProvider),
     );
   }
 }
