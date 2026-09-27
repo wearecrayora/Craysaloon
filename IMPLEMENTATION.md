@@ -218,10 +218,10 @@ re-themes installed apps on their next open.
 | `app.resolve_join_code(code)` | **anon** | `{display_name, branding}` | Active salons only · nothing else, ever · rate-limited |
 | `app.start_join(code, phone)` | **anon** | `{ok}` | Writes `join_intents` (15 min TTL) · tightest rate limit in the system |
 | `app.get_branding()` | any tenant | token document | Tenant-scoped |
-| `app.available_slots(salon_id, service_id, staff_id, date)` | customer, owner | slot list | Same function client and server use |
-| `app.create_booking(...)` | customer, owner | `{booking_id}` | Idempotent on `client_action_id` · exclusion constraint decides conflicts |
-| `app.cancel_booking(booking_id, reason)` | customer, owner | `{ok}` | Status transition · emits `booking.cancelled` |
-| `app.mark_visit_complete(booking_id, final_amount, tip, client_action_id)` | owner, staff | `{visit_id}` | **Idempotent** · offline-queued · emits `visit.completed` |
+| `public.available_slots(salon_id, service_id, staff_id, date, add_on_ids, step)` | customer, owner | slot list | Same function client and server use · *built 2026-09-27; SECURITY DEFINER because customers cannot read staff rotas (0041) but must see when they can come in* |
+| `public.create_booking(client_action_id, service_id, starts_at, staff_id, customer_id, add_on_ids, source, notes)` | customer, owner | `{ok, booking_id, total_paise, minutes}` | Idempotent on `client_action_id` · exclusion constraint decides conflicts · price and duration SNAPSHOTTED onto `booking_items` · a customer books only for themselves, resolved from the database · *built 2026-09-27* |
+| `public.cancel_booking(client_action_id, booking_id, reason)` | customer, owner | `{ok}` | Status transition · emits `booking.cancelled` · frees the slot at once (the constraint counts only pending/confirmed) · charges nothing, because a fee is money (M7) · *built 2026-09-27* |
+| `public.mark_visit_complete(client_action_id, booking_id, final_amount, tip)` | owner, staff | `{ok, visit_id, already}` | **Idempotent** · offline-queued · emits `visit.completed` · a customer cannot call it at all · *built 2026-09-27; the wallet debit, loyalty award and package decrement land here at M7 (RULES 9.5)* |
 | `app.record_consent(purpose, granted)` | customer | `{ok}` | Append-only |
 | `app.ack_notification(delivery_id)` | any tenant | `{ok}` | Stamps `acked_at` — gates escalation |
 | `app.request_data_export()` | customer | `{job_id}` | DPDP |

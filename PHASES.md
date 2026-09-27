@@ -197,6 +197,13 @@ and the **"Needs attention"** inbox.
 *Done when:* two concurrent bookings for the same barber cannot both succeed · **no add-on is ever
 pre-checked** · mark-complete is one tap and works offline · a rejected offline action surfaces
 with a one-tap fix and is never dropped.
+*Progress (2026-09-27):* the server half is built and gated - `available_slots` (one definition,
+shared by both apps and the server), `create_booking` (price and duration snapshotted, idempotent
+on `client_action_id`, races decided by the exclusion constraint), `mark_visit_complete`
+(idempotent transition, replays are no-ops) and `cancel_booking` (frees the chair immediately).
+Gate: `booking/booking_test.sql`, 34 assertions, with a negative control that DROPS the exclusion
+constraint and requires the gate to go red. **Still to build:** the app side - day view (O1),
+walk-in (O2), the outbox, and the "Needs attention" inbox (O3).
 
 ### Phase 3 — The loop closes *(M7–M10)*
 

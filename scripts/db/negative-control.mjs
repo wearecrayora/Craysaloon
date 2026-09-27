@@ -48,6 +48,7 @@ const MUST_FAIL = [
 
 const LEAK_TEST = 'supabase/tests/rls/leak_test.sql';
 const SCOPE_TEST = 'supabase/tests/rls/customer_scope_test.sql';
+const BOOKING_TEST = 'supabase/tests/booking/booking_test.sql';
 const ADMIN_TEST = 'supabase/tests/admin/admin_plane_test.sql';
 
 // A new table naming a customer, protected the way EVERY tenant table was
@@ -72,6 +73,17 @@ const SCOPE_CANARY = `
 `;
 
 const SCOPE_MUST_FAIL = [/every table naming a customer has a RESTRICTIVE policy/];
+
+// Double-booking is prevented by ONE thing: the exclusion constraint
+// (ARCHITECTURE 6.5). Drop it and the database will happily seat two people in
+// the same chair - a create_booking that "looks fine" in every test that does
+// not race. So the booking gate must notice its absence, or it is testing the
+// happy path of a mechanism that is no longer there.
+const BOOKING_CANARY = `
+  alter table public.bookings drop constraint bookings_no_staff_overlap;
+`;
+
+const BOOKING_MUST_FAIL = [/cannot be booked twice/];
 
 // A function in app_admin that mutates a table and never writes audit_log -
 // exactly the mistake RULES 6.5 exists to prevent.
@@ -188,6 +200,12 @@ try {
       SCOPE_TEST,
       SCOPE_CANARY,
       SCOPE_MUST_FAIL,
+    ),
+    await check(
+      'booking / the exclusion constraint that prevents double-booking, removed',
+      BOOKING_TEST,
+      BOOKING_CANARY,
+      BOOKING_MUST_FAIL,
     ),
   ];
 

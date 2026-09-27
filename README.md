@@ -63,6 +63,8 @@ Seven database gates fail the build. They are never skipped, deleted, or narrowe
 - **Index scope** — tenant indexes lead with `salon_id`, or are named and justified
 - **Admin plane** — no tenant role can reach `app_admin`, every admin mutation is audited in the
   same transaction, provisioning is atomic, and no credential can be read back
+- **Booking** — the same chair cannot be booked twice, prices are snapshotted, and mark-complete is
+  idempotent however many times the offline queue delivers it
 - **Write scope** — an owner cannot activate their own salon or rewrite its branding, a stylist
   cannot promote themselves, and a customer cannot touch the menu or write their own visit history
 - **Customer list** — the owner's list function stays SECURITY INVOKER, pages by keyset, and never

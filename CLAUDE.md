@@ -121,7 +121,7 @@ Each feature passes its PRD acceptance criteria, the milestone gates in `PHASES.
 per-screen checklist in `IMPLEMENTATION.md` §7.
 
 **Hard CI gates:** the catalogue-driven cross-tenant leak test, the binding-exclusivity test, the
-money test, the index-scope test, the admin-plane test, the join-flow test, the bind-flow test, the **customer-scope test**, the **write-scope test**, the **customer-list test**, the OTP test and the messaging-access test — plus their **negative controls**,
+money test, the index-scope test, the admin-plane test, the join-flow test, the bind-flow test, the **customer-scope test**, the **write-scope test**, the **customer-list test**, the **booking test**, the OTP test and the messaging-access test — plus their **negative controls**,
 which create - on purpose - an unprotected table, an unaudited `app_admin` function, an
 owner-callable payment-key function and a customer table protected only by `salon_id`, and require
 the matching gate to go red. Never skipped, never deleted, never narrowed to pass. A gate that has

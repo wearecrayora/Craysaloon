@@ -540,6 +540,13 @@ A change is not done until all of these hold.
       nothing else; a salon in setup and an unknown code look identical (no oracle); typing
       variants normalise, but a character outside the alphabet is never guessed at; a live join
       intent decides which salon's account sends the OTP
+- [ ] **Booking test** — two bookings for the same chair at the same time cannot both succeed, nor
+      can an overlapping one, while the minute the first ends is free; a replayed booking returns
+      the original and creates no second row; price and duration are snapshotted, so repricing a
+      service never rewrites what a past booking cost; an add-on not offered with the service is
+      refused; mark-complete is idempotent under a replay AND under a fresh action id; a customer
+      books and cancels only their own, and never completes a visit. Negative control: **dropping
+      the exclusion constraint makes it go red**
 - [ ] **Write scope test** — every tenant-writable table names WHO may write it or is a documented
       own-rows table; an owner cannot change their salon's status, join code or branding; a staff
       member cannot promote themselves in `public.users`; a customer cannot touch the catalogue or
