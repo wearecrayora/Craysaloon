@@ -318,6 +318,98 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get dayTitle => 'आज';
+
+  @override
+  String get dayEmpty => 'आज कोई बुकिंग नहीं।';
+
+  @override
+  String get dayDone => 'हो गया';
+
+  @override
+  String get dayCancelled => 'रद्द';
+
+  @override
+  String daySyncPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count बदलाव सिंक होने बाकी',
+      one: '1 बदलाव सिंक होना बाकी',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dayCancelBooking => 'अपॉइंटमेंट रद्द करें';
+
+  @override
+  String get attentionEmpty => 'कुछ भी ध्यान देने लायक नहीं।';
+
+  @override
+  String get attentionDiscard => 'हटा दें';
+
+  @override
+  String get attentionOpComplete => 'पूरा करें';
+
+  @override
+  String get attentionOpBooking => 'नई बुकिंग';
+
+  @override
+  String get attentionOpCancel => 'रद्दीकरण';
+
+  @override
+  String get reasonSlotTaken =>
+      'वह समय किसी और ने ले लिया। दूसरा समय चुनकर कोशिश करें।';
+
+  @override
+  String get reasonForbidden => 'आपका अकाउंट यह नहीं कर सकता। मालिक से कहें।';
+
+  @override
+  String get reasonNotCompletable =>
+      'वह अपॉइंटमेंट पहले ही पूरा या रद्द हो चुका है।';
+
+  @override
+  String get reasonSalonUnavailable => 'सैलॉन अभी बदलाव नहीं ले पा रहा है।';
+
+  @override
+  String get reasonSalonChanged =>
+      'यह उस सैलॉन के लिए था जिसमें यह फ़ोन अब साइन इन नहीं है।';
+
+  @override
+  String get reasonGeneric => 'सर्वर इसे स्वीकार नहीं कर सका।';
+
+  @override
+  String get walkInTitle => 'वॉक-इन';
+
+  @override
+  String get walkInCustomer => 'ग्राहक';
+
+  @override
+  String get walkInService => 'सेवा';
+
+  @override
+  String get walkInAddOns => 'ऐड-ऑन (वैकल्पिक)';
+
+  @override
+  String get walkInStaff => 'किसके साथ';
+
+  @override
+  String get walkInAnyStaff => 'कोई भी';
+
+  @override
+  String get walkInTime => 'समय';
+
+  @override
+  String get walkInNoSlots => 'उस दिन के लिए कोई खाली समय नहीं।';
+
+  @override
+  String get walkInBook => 'बुक करें';
+
+  @override
+  String get walkInBooked => 'बुक हो गया।';
+
+  @override
+  String get walkInQueuedOffline => 'सेव हो गया। ऑनलाइन आते ही बुक हो जाएगा।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -637,4 +729,99 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get dayTitle => 'Aaj';
+
+  @override
+  String get dayEmpty => 'Aaj koi booking nahi.';
+
+  @override
+  String get dayDone => 'Ho gaya';
+
+  @override
+  String get dayCancelled => 'Cancel';
+
+  @override
+  String daySyncPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count changes sync hone baaki',
+      one: '1 change sync hona baaki',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dayCancelBooking => 'Appointment cancel kijiye';
+
+  @override
+  String get attentionEmpty => 'Kuch bhi dhyan dene layak nahi.';
+
+  @override
+  String get attentionDiscard => 'Hata dijiye';
+
+  @override
+  String get attentionOpComplete => 'Complete karein';
+
+  @override
+  String get attentionOpBooking => 'Nayi booking';
+
+  @override
+  String get attentionOpCancel => 'Cancellation';
+
+  @override
+  String get reasonSlotTaken =>
+      'Wo time kisi aur ne le liya. Dusra time chunkar try kijiye.';
+
+  @override
+  String get reasonForbidden =>
+      'Aapka account yeh nahi kar sakta. Owner se kahiye.';
+
+  @override
+  String get reasonNotCompletable =>
+      'Wo appointment pehle hi complete ya cancel ho chuka hai.';
+
+  @override
+  String get reasonSalonUnavailable =>
+      'Salon abhi changes nahi le pa raha hai.';
+
+  @override
+  String get reasonSalonChanged =>
+      'Yeh us salon ke liye tha jismein yeh phone ab sign in nahi hai.';
+
+  @override
+  String get reasonGeneric => 'Server ise accept nahi kar saka.';
+
+  @override
+  String get walkInTitle => 'Walk-in';
+
+  @override
+  String get walkInCustomer => 'Customer';
+
+  @override
+  String get walkInService => 'Service';
+
+  @override
+  String get walkInAddOns => 'Add-ons (optional)';
+
+  @override
+  String get walkInStaff => 'Kiske saath';
+
+  @override
+  String get walkInAnyStaff => 'Koi bhi';
+
+  @override
+  String get walkInTime => 'Time';
+
+  @override
+  String get walkInNoSlots => 'Us din ke liye koi free time nahi.';
+
+  @override
+  String get walkInBook => 'Book kijiye';
+
+  @override
+  String get walkInBooked => 'Book ho gaya.';
+
+  @override
+  String get walkInQueuedOffline =>
+      'Save ho gaya. Online aate hi book ho jayega.';
 }

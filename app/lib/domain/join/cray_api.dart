@@ -74,6 +74,15 @@ enum CrayErrorKind {
   /// or a stylist trying to change the catalogue, say (0041). Never retried:
   /// the answer will not change.
   forbidden,
+
+  /// Someone else has that chair at that time. Not a fault and not a refusal of
+  /// the account: the exclusion constraint decided a race, and the answer is to
+  /// pick another slot (ARCHITECTURE 6.5).
+  slotTaken,
+
+  /// The booking cannot move to that state - already completed, already
+  /// cancelled. Asking again will not change it.
+  notCompletable,
   server,
 }
 

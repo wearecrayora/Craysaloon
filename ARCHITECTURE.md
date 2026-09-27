@@ -1159,7 +1159,12 @@ client-side image compression; `ListView.builder` everywhere.
   endless-scroll spinner that never resolves is worse than "you are offline". Every cached read is
   **labelled with the time it was fetched**; the outbox arrives with M6.
 - **Outbox row:** `client_action_id (uuid v4)`, `op`, `payload jsonb`, `created_at`, `attempts`,
-  `status (pending|syncing|applied|rejected)`, `last_error`.
+  `status (pending|syncing|applied|rejected)`, `last_error`. *Built at M6.* Two things the
+  implementation makes explicit: the outbox is **excluded from the cache wipe and from the schema
+  migration's table drop** - both would otherwise discard a morning of mark-completes - and
+  **unreachable is not refused**: a network failure returns the row to `pending`, while a policy or
+  a state saying no moves it to `rejected` for "Needs attention". Treating the first as the second
+  fills the inbox with noise; treating the second as the first retries forever and tells nobody.
 - **Drain:** FIFO on reconnect with exponential backoff, ordered per entity so "create customer →
   book → complete" replays coherently.
 - **Idempotency:** every server RPC takes `client_action_id`; `idempotency_keys(salon_id, key)`

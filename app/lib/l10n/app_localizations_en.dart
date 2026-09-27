@@ -319,4 +319,98 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get dayTitle => 'Today';
+
+  @override
+  String get dayEmpty => 'Nothing booked today.';
+
+  @override
+  String get dayDone => 'Done';
+
+  @override
+  String get dayCancelled => 'Cancelled';
+
+  @override
+  String daySyncPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count changes waiting to sync',
+      one: '1 change waiting to sync',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dayCancelBooking => 'Cancel appointment';
+
+  @override
+  String get attentionEmpty => 'Nothing needs attention.';
+
+  @override
+  String get attentionDiscard => 'Discard';
+
+  @override
+  String get attentionOpComplete => 'Mark complete';
+
+  @override
+  String get attentionOpBooking => 'New booking';
+
+  @override
+  String get attentionOpCancel => 'Cancellation';
+
+  @override
+  String get reasonSlotTaken =>
+      'That time was taken by someone else. Pick another and try again.';
+
+  @override
+  String get reasonForbidden => 'Your account cannot do this. Ask the owner.';
+
+  @override
+  String get reasonNotCompletable =>
+      'That appointment was already finished or cancelled.';
+
+  @override
+  String get reasonSalonUnavailable =>
+      'The salon cannot accept changes right now.';
+
+  @override
+  String get reasonSalonChanged =>
+      'This was for a salon this phone is no longer signed in to.';
+
+  @override
+  String get reasonGeneric => 'The server could not accept this.';
+
+  @override
+  String get walkInTitle => 'Walk-in';
+
+  @override
+  String get walkInCustomer => 'Customer';
+
+  @override
+  String get walkInService => 'Service';
+
+  @override
+  String get walkInAddOns => 'Add-ons (optional)';
+
+  @override
+  String get walkInStaff => 'With';
+
+  @override
+  String get walkInAnyStaff => 'Anyone';
+
+  @override
+  String get walkInTime => 'Time';
+
+  @override
+  String get walkInNoSlots => 'No free times left for that day.';
+
+  @override
+  String get walkInBook => 'Book';
+
+  @override
+  String get walkInBooked => 'Booked.';
+
+  @override
+  String get walkInQueuedOffline =>
+      'Saved. It will book when you are back online.';
 }

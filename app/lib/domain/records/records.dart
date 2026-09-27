@@ -154,3 +154,83 @@ abstract interface class SalonWrites {
 
   Future<String> saveStaff({String? id, required String name, required bool active});
 }
+
+/// An appointment, as the day view shows it.
+class BookingRow {
+  const BookingRow({
+    required this.id,
+    required this.customerId,
+    required this.startsAt,
+    required this.endsAt,
+    required this.status,
+    required this.totalPaise,
+    this.customerName,
+    this.staffName,
+    this.serviceNames = '',
+  });
+
+  final String id;
+  final String customerId;
+  final DateTime startsAt;
+  final DateTime endsAt;
+
+  /// pending | confirmed | completed | cancelled | no_show
+  final String status;
+  final int totalPaise;
+  final String? customerName;
+  final String? staffName;
+  final String serviceNames;
+
+  bool get isOpen => status == 'pending' || status == 'confirmed';
+}
+
+class Slot {
+  const Slot({required this.staffId, required this.startsAt, required this.endsAt});
+
+  final String staffId;
+  final DateTime startsAt;
+  final DateTime endsAt;
+}
+
+/// The day's work: what is booked, and the three writes that change it.
+///
+/// Every write takes a `clientActionId` the CALLER generates and reuses for
+/// every retry (`RULES.md` 9.3). That is what lets the app send the same
+/// instruction twice - which offline guarantees it will - without doing the work
+/// twice. The server decides everything else: a race for the same chair, whether
+/// a booking can still be completed, whether this account may.
+abstract interface class SalonBookings {
+  Future<List<BookingRow>> bookingsOn(DateTime day);
+
+  Future<List<Slot>> slots({
+    required String serviceId,
+    required DateTime day,
+    String? staffId,
+    List<String> addOnIds = const [],
+  });
+
+  /// Returns the booking id. Throws [CrayApiException] with
+  /// [CrayErrorKind.slotTaken] when the chair went to someone else.
+  Future<String> createBooking({
+    required String clientActionId,
+    required String serviceId,
+    required DateTime startsAt,
+    String? staffId,
+    String? customerId,
+    List<String> addOnIds = const [],
+    String? notes,
+  });
+
+  Future<void> markComplete({
+    required String clientActionId,
+    required String bookingId,
+    int? finalAmountPaise,
+    int tipPaise = 0,
+  });
+
+  Future<void> cancelBooking({
+    required String clientActionId,
+    required String bookingId,
+    String? reason,
+  });
+}

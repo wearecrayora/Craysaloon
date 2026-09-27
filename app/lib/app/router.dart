@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../features/catalogue/catalogue_screens.dart';
 import '../features/customers/customers_screen.dart';
+import '../features/day/attention_screen.dart';
+import '../features/day/day_screen.dart';
+import '../features/day/walk_in_screen.dart';
 import '../features/join/deep_link_listener.dart';
 import '../features/join/join_screen.dart';
 import '../features/salon/salon_home.dart';
@@ -38,7 +41,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (session.isStaff) {
         // The owner's own routes only. '/' means "wherever this role starts".
         const staffRoutes = {
-          '/day', '/customers', '/catalogue/services', '/catalogue/addons', '/staff',
+          '/day', '/day/walk-in', '/attention',
+          '/customers', '/catalogue/services', '/catalogue/addons', '/staff',
         };
         return staffRoutes.contains(location) ? null : '/day';
       }
@@ -62,7 +66,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       ShellRoute(
         builder: (context, state, child) => OwnerShell(child: child),
         routes: [
-          GoRoute(path: '/day', builder: (_, _) => const _DayViewPlaceholder()),
+          GoRoute(path: '/day', builder: (_, _) => const DayScreen()),
+          GoRoute(path: '/day/walk-in', builder: (_, _) => const WalkInScreen()),
+          GoRoute(path: '/attention', builder: (_, _) => const AttentionScreen()),
           GoRoute(path: '/customers', builder: (_, _) => const CustomersScreen()),
           GoRoute(path: '/catalogue/services', builder: (_, _) => const ServicesScreen()),
           GoRoute(path: '/catalogue/addons', builder: (_, _) => const AddOnsScreen()),
@@ -129,26 +135,6 @@ class OwnerShell extends StatelessWidget {
             label: l10n.staffTitle,
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// O1 lands here until bookings exist (M6). It says what is missing rather than
-/// showing an empty day that looks broken.
-class _DayViewPlaceholder extends StatelessWidget {
-  const _DayViewPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppL10n.of(context);
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.dayTitle)),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(l10n.dayViewSoon, style: Theme.of(context).textTheme.bodyMedium),
-        ),
       ),
     );
   }

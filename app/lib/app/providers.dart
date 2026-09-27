@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/local/cache_db.dart';
+import '../data/local/outbox.dart';
+import '../data/repositories/day_repository.dart';
 import '../data/repositories/records_repository.dart';
 import '../domain/join/cray_api.dart';
 import '../domain/records/records.dart';
@@ -32,6 +34,31 @@ final recordsRepositoryProvider = Provider<RecordsRepository?>((ref) {
     cache: ref.watch(cacheDbProvider),
     salonId: salonId,
     writes: api is SalonWrites ? api as SalonWrites : null,
+  );
+});
+
+/// The outbox: unsent work. Null until there is a salon to scope it to.
+final outboxProvider = Provider<Outbox?>((ref) {
+  final salonId = ref.watch(sessionProvider)?.salonId;
+  if (salonId == null) return null;
+  return Outbox(ref.watch(cacheDbProvider));
+});
+
+/// The day's work. Needs the same three things the records repository does, plus
+/// the outbox - because every write here is queued before it is sent.
+final dayRepositoryProvider = Provider<DayRepository?>((ref) {
+  final salonId = ref.watch(sessionProvider)?.salonId;
+  final outbox = ref.watch(outboxProvider);
+  if (salonId == null || outbox == null) return null;
+
+  final api = ref.watch(crayApiProvider);
+  if (api is! SalonBookings) return null;
+
+  return DayRepository(
+    remote: api as SalonBookings,
+    cache: ref.watch(cacheDbProvider),
+    outbox: outbox,
+    salonId: salonId,
   );
 });
 

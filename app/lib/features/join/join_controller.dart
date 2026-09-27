@@ -254,8 +254,12 @@ class JoinController extends Notifier<JoinState> {
         CrayErrorKind.accountConflict => JoinProblem.accountConflict,
         CrayErrorKind.server => JoinProblem.generic,
         // Nothing in the join flow is role-gated - there is no role yet - so a
-        // refusal here would be a server fault, not a permission.
-        CrayErrorKind.forbidden => JoinProblem.generic,
+        // refusal here would be a server fault, not a permission. The booking
+        // kinds cannot reach this flow at all.
+        CrayErrorKind.forbidden ||
+        CrayErrorKind.slotTaken ||
+        CrayErrorKind.notCompletable =>
+          JoinProblem.generic,
       };
 }
 

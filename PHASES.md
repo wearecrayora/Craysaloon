@@ -202,8 +202,16 @@ shared by both apps and the server), `create_booking` (price and duration snapsh
 on `client_action_id`, races decided by the exclusion constraint), `mark_visit_complete`
 (idempotent transition, replays are no-ops) and `cancel_booking` (frees the chair immediately).
 Gate: `booking/booking_test.sql`, 34 assertions, with a negative control that DROPS the exclusion
-constraint and requires the gate to go red. **Still to build:** the app side - day view (O1),
-walk-in (O2), the outbox, and the "Needs attention" inbox (O3).
+constraint and requires the gate to go red.
+*App side (same day):* the **outbox** (`data/local/outbox.dart`) - the one local source of truth,
+which survives a cache wipe and an app upgrade because both would otherwise throw away a morning's
+mark-completes; the **day view (O1)** with one-tap complete at 56dp, working with the wi-fi off and
+showing how much work is waiting; **walk-in (O2)** with add-ons that start unticked and times that
+come from the same function the database accepts; and **"Needs attention" (O3)** where a refusal
+lands with a reason a person can act on, a one-tap retry that reuses the same action id, and a
+discard that is always deliberate. Gates: `app/test/outbox_test.dart` (13) and
+`day_screen_test.dart` (8). **Still to build:** connectivity-triggered draining (today the queue
+drains when the day view opens or acts) and the reminder engine's side of visits (M8).
 
 ### Phase 3 — The loop closes *(M7–M10)*
 

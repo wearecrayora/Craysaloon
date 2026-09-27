@@ -304,5 +304,70 @@
   "dayTitle": "Today",
   "@dayTitle": {
     "description": "O1, the day view. The tab is the DAY; mark-complete is an action on it, not its name."
+  },
+  "dayEmpty": "Nothing booked today.",
+  "@dayEmpty": {},
+  "dayDone": "Done",
+  "@dayDone": {},
+  "dayCancelled": "Cancelled",
+  "@dayCancelled": {},
+  "daySyncPending": "{count, plural, =1{1 change waiting to sync} other{{count} changes waiting to sync}}",
+  "@daySyncPending": {
+    "description": "Shown when work is queued: the owner must never wonder whether a tap was lost (RULES 9.6).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dayCancelBooking": "Cancel appointment",
+  "@dayCancelBooking": {},
+  "attentionEmpty": "Nothing needs attention.",
+  "@attentionEmpty": {},
+  "attentionDiscard": "Discard",
+  "@attentionDiscard": {},
+  "attentionOpComplete": "Mark complete",
+  "@attentionOpComplete": {},
+  "attentionOpBooking": "New booking",
+  "@attentionOpBooking": {},
+  "attentionOpCancel": "Cancellation",
+  "@attentionOpCancel": {},
+  "reasonSlotTaken": "That time was taken by someone else. Pick another and try again.",
+  "@reasonSlotTaken": {},
+  "reasonForbidden": "Your account cannot do this. Ask the owner.",
+  "@reasonForbidden": {},
+  "reasonNotCompletable": "That appointment was already finished or cancelled.",
+  "@reasonNotCompletable": {},
+  "reasonSalonUnavailable": "The salon cannot accept changes right now.",
+  "@reasonSalonUnavailable": {},
+  "reasonSalonChanged": "This was for a salon this phone is no longer signed in to.",
+  "@reasonSalonChanged": {},
+  "reasonGeneric": "The server could not accept this.",
+  "@reasonGeneric": {},
+  "walkInTitle": "Walk-in",
+  "@walkInTitle": {},
+  "walkInCustomer": "Customer",
+  "@walkInCustomer": {},
+  "walkInService": "Service",
+  "@walkInService": {},
+  "walkInAddOns": "Add-ons (optional)",
+  "@walkInAddOns": {
+    "description": "NEVER pre-selected (RULES 9). The label says optional and every box starts empty."
+  },
+  "walkInStaff": "With",
+  "@walkInStaff": {},
+  "walkInAnyStaff": "Anyone",
+  "@walkInAnyStaff": {},
+  "walkInTime": "Time",
+  "@walkInTime": {},
+  "walkInNoSlots": "No free times left for that day.",
+  "@walkInNoSlots": {},
+  "walkInBook": "Book",
+  "@walkInBook": {},
+  "walkInBooked": "Booked.",
+  "@walkInBooked": {},
+  "walkInQueuedOffline": "Saved. It will book when you are back online.",
+  "@walkInQueuedOffline": {
+    "description": "Capture works offline (RULES 9.1); money and binding never do (9.2)."
   }
 }

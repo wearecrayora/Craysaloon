@@ -2046,6 +2046,622 @@ class CachedVisitsCompanion extends UpdateCompanion<CachedVisit> {
   }
 }
 
+class $CachedBookingsTable extends CachedBookings
+    with TableInfo<$CachedBookingsTable, CachedBooking> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CachedBookingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _salonIdMeta = const VerificationMeta(
+    'salonId',
+  );
+  @override
+  late final GeneratedColumn<String> salonId = GeneratedColumn<String>(
+    'salon_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _customerIdMeta = const VerificationMeta(
+    'customerId',
+  );
+  @override
+  late final GeneratedColumn<String> customerId = GeneratedColumn<String>(
+    'customer_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _customerNameMeta = const VerificationMeta(
+    'customerName',
+  );
+  @override
+  late final GeneratedColumn<String> customerName = GeneratedColumn<String>(
+    'customer_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _staffNameMeta = const VerificationMeta(
+    'staffName',
+  );
+  @override
+  late final GeneratedColumn<String> staffName = GeneratedColumn<String>(
+    'staff_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _serviceNamesMeta = const VerificationMeta(
+    'serviceNames',
+  );
+  @override
+  late final GeneratedColumn<String> serviceNames = GeneratedColumn<String>(
+    'service_names',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _startsAtMeta = const VerificationMeta(
+    'startsAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startsAt = GeneratedColumn<DateTime>(
+    'starts_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endsAtMeta = const VerificationMeta('endsAt');
+  @override
+  late final GeneratedColumn<DateTime> endsAt = GeneratedColumn<DateTime>(
+    'ends_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _totalPaiseMeta = const VerificationMeta(
+    'totalPaise',
+  );
+  @override
+  late final GeneratedColumn<int> totalPaise = GeneratedColumn<int>(
+    'total_paise',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    salonId,
+    customerId,
+    customerName,
+    staffName,
+    serviceNames,
+    startsAt,
+    endsAt,
+    status,
+    totalPaise,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cached_bookings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CachedBooking> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('salon_id')) {
+      context.handle(
+        _salonIdMeta,
+        salonId.isAcceptableOrUnknown(data['salon_id']!, _salonIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_salonIdMeta);
+    }
+    if (data.containsKey('customer_id')) {
+      context.handle(
+        _customerIdMeta,
+        customerId.isAcceptableOrUnknown(data['customer_id']!, _customerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_customerIdMeta);
+    }
+    if (data.containsKey('customer_name')) {
+      context.handle(
+        _customerNameMeta,
+        customerName.isAcceptableOrUnknown(
+          data['customer_name']!,
+          _customerNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('staff_name')) {
+      context.handle(
+        _staffNameMeta,
+        staffName.isAcceptableOrUnknown(data['staff_name']!, _staffNameMeta),
+      );
+    }
+    if (data.containsKey('service_names')) {
+      context.handle(
+        _serviceNamesMeta,
+        serviceNames.isAcceptableOrUnknown(
+          data['service_names']!,
+          _serviceNamesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('starts_at')) {
+      context.handle(
+        _startsAtMeta,
+        startsAt.isAcceptableOrUnknown(data['starts_at']!, _startsAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startsAtMeta);
+    }
+    if (data.containsKey('ends_at')) {
+      context.handle(
+        _endsAtMeta,
+        endsAt.isAcceptableOrUnknown(data['ends_at']!, _endsAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_endsAtMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('total_paise')) {
+      context.handle(
+        _totalPaiseMeta,
+        totalPaise.isAcceptableOrUnknown(data['total_paise']!, _totalPaiseMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CachedBooking map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CachedBooking(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      salonId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}salon_id'],
+      )!,
+      customerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}customer_id'],
+      )!,
+      customerName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}customer_name'],
+      ),
+      staffName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}staff_name'],
+      ),
+      serviceNames: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}service_names'],
+      )!,
+      startsAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}starts_at'],
+      )!,
+      endsAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}ends_at'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      totalPaise: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total_paise'],
+      )!,
+    );
+  }
+
+  @override
+  $CachedBookingsTable createAlias(String alias) {
+    return $CachedBookingsTable(attachedDatabase, alias);
+  }
+}
+
+class CachedBooking extends DataClass implements Insertable<CachedBooking> {
+  final String id;
+  final String salonId;
+  final String customerId;
+  final String? customerName;
+  final String? staffName;
+  final String serviceNames;
+  final DateTime startsAt;
+  final DateTime endsAt;
+  final String status;
+  final int totalPaise;
+  const CachedBooking({
+    required this.id,
+    required this.salonId,
+    required this.customerId,
+    this.customerName,
+    this.staffName,
+    required this.serviceNames,
+    required this.startsAt,
+    required this.endsAt,
+    required this.status,
+    required this.totalPaise,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['salon_id'] = Variable<String>(salonId);
+    map['customer_id'] = Variable<String>(customerId);
+    if (!nullToAbsent || customerName != null) {
+      map['customer_name'] = Variable<String>(customerName);
+    }
+    if (!nullToAbsent || staffName != null) {
+      map['staff_name'] = Variable<String>(staffName);
+    }
+    map['service_names'] = Variable<String>(serviceNames);
+    map['starts_at'] = Variable<DateTime>(startsAt);
+    map['ends_at'] = Variable<DateTime>(endsAt);
+    map['status'] = Variable<String>(status);
+    map['total_paise'] = Variable<int>(totalPaise);
+    return map;
+  }
+
+  CachedBookingsCompanion toCompanion(bool nullToAbsent) {
+    return CachedBookingsCompanion(
+      id: Value(id),
+      salonId: Value(salonId),
+      customerId: Value(customerId),
+      customerName: customerName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customerName),
+      staffName: staffName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(staffName),
+      serviceNames: Value(serviceNames),
+      startsAt: Value(startsAt),
+      endsAt: Value(endsAt),
+      status: Value(status),
+      totalPaise: Value(totalPaise),
+    );
+  }
+
+  factory CachedBooking.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CachedBooking(
+      id: serializer.fromJson<String>(json['id']),
+      salonId: serializer.fromJson<String>(json['salonId']),
+      customerId: serializer.fromJson<String>(json['customerId']),
+      customerName: serializer.fromJson<String?>(json['customerName']),
+      staffName: serializer.fromJson<String?>(json['staffName']),
+      serviceNames: serializer.fromJson<String>(json['serviceNames']),
+      startsAt: serializer.fromJson<DateTime>(json['startsAt']),
+      endsAt: serializer.fromJson<DateTime>(json['endsAt']),
+      status: serializer.fromJson<String>(json['status']),
+      totalPaise: serializer.fromJson<int>(json['totalPaise']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'salonId': serializer.toJson<String>(salonId),
+      'customerId': serializer.toJson<String>(customerId),
+      'customerName': serializer.toJson<String?>(customerName),
+      'staffName': serializer.toJson<String?>(staffName),
+      'serviceNames': serializer.toJson<String>(serviceNames),
+      'startsAt': serializer.toJson<DateTime>(startsAt),
+      'endsAt': serializer.toJson<DateTime>(endsAt),
+      'status': serializer.toJson<String>(status),
+      'totalPaise': serializer.toJson<int>(totalPaise),
+    };
+  }
+
+  CachedBooking copyWith({
+    String? id,
+    String? salonId,
+    String? customerId,
+    Value<String?> customerName = const Value.absent(),
+    Value<String?> staffName = const Value.absent(),
+    String? serviceNames,
+    DateTime? startsAt,
+    DateTime? endsAt,
+    String? status,
+    int? totalPaise,
+  }) => CachedBooking(
+    id: id ?? this.id,
+    salonId: salonId ?? this.salonId,
+    customerId: customerId ?? this.customerId,
+    customerName: customerName.present ? customerName.value : this.customerName,
+    staffName: staffName.present ? staffName.value : this.staffName,
+    serviceNames: serviceNames ?? this.serviceNames,
+    startsAt: startsAt ?? this.startsAt,
+    endsAt: endsAt ?? this.endsAt,
+    status: status ?? this.status,
+    totalPaise: totalPaise ?? this.totalPaise,
+  );
+  CachedBooking copyWithCompanion(CachedBookingsCompanion data) {
+    return CachedBooking(
+      id: data.id.present ? data.id.value : this.id,
+      salonId: data.salonId.present ? data.salonId.value : this.salonId,
+      customerId: data.customerId.present
+          ? data.customerId.value
+          : this.customerId,
+      customerName: data.customerName.present
+          ? data.customerName.value
+          : this.customerName,
+      staffName: data.staffName.present ? data.staffName.value : this.staffName,
+      serviceNames: data.serviceNames.present
+          ? data.serviceNames.value
+          : this.serviceNames,
+      startsAt: data.startsAt.present ? data.startsAt.value : this.startsAt,
+      endsAt: data.endsAt.present ? data.endsAt.value : this.endsAt,
+      status: data.status.present ? data.status.value : this.status,
+      totalPaise: data.totalPaise.present
+          ? data.totalPaise.value
+          : this.totalPaise,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedBooking(')
+          ..write('id: $id, ')
+          ..write('salonId: $salonId, ')
+          ..write('customerId: $customerId, ')
+          ..write('customerName: $customerName, ')
+          ..write('staffName: $staffName, ')
+          ..write('serviceNames: $serviceNames, ')
+          ..write('startsAt: $startsAt, ')
+          ..write('endsAt: $endsAt, ')
+          ..write('status: $status, ')
+          ..write('totalPaise: $totalPaise')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    salonId,
+    customerId,
+    customerName,
+    staffName,
+    serviceNames,
+    startsAt,
+    endsAt,
+    status,
+    totalPaise,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CachedBooking &&
+          other.id == this.id &&
+          other.salonId == this.salonId &&
+          other.customerId == this.customerId &&
+          other.customerName == this.customerName &&
+          other.staffName == this.staffName &&
+          other.serviceNames == this.serviceNames &&
+          other.startsAt == this.startsAt &&
+          other.endsAt == this.endsAt &&
+          other.status == this.status &&
+          other.totalPaise == this.totalPaise);
+}
+
+class CachedBookingsCompanion extends UpdateCompanion<CachedBooking> {
+  final Value<String> id;
+  final Value<String> salonId;
+  final Value<String> customerId;
+  final Value<String?> customerName;
+  final Value<String?> staffName;
+  final Value<String> serviceNames;
+  final Value<DateTime> startsAt;
+  final Value<DateTime> endsAt;
+  final Value<String> status;
+  final Value<int> totalPaise;
+  final Value<int> rowid;
+  const CachedBookingsCompanion({
+    this.id = const Value.absent(),
+    this.salonId = const Value.absent(),
+    this.customerId = const Value.absent(),
+    this.customerName = const Value.absent(),
+    this.staffName = const Value.absent(),
+    this.serviceNames = const Value.absent(),
+    this.startsAt = const Value.absent(),
+    this.endsAt = const Value.absent(),
+    this.status = const Value.absent(),
+    this.totalPaise = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CachedBookingsCompanion.insert({
+    required String id,
+    required String salonId,
+    required String customerId,
+    this.customerName = const Value.absent(),
+    this.staffName = const Value.absent(),
+    this.serviceNames = const Value.absent(),
+    required DateTime startsAt,
+    required DateTime endsAt,
+    required String status,
+    this.totalPaise = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       salonId = Value(salonId),
+       customerId = Value(customerId),
+       startsAt = Value(startsAt),
+       endsAt = Value(endsAt),
+       status = Value(status);
+  static Insertable<CachedBooking> custom({
+    Expression<String>? id,
+    Expression<String>? salonId,
+    Expression<String>? customerId,
+    Expression<String>? customerName,
+    Expression<String>? staffName,
+    Expression<String>? serviceNames,
+    Expression<DateTime>? startsAt,
+    Expression<DateTime>? endsAt,
+    Expression<String>? status,
+    Expression<int>? totalPaise,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (salonId != null) 'salon_id': salonId,
+      if (customerId != null) 'customer_id': customerId,
+      if (customerName != null) 'customer_name': customerName,
+      if (staffName != null) 'staff_name': staffName,
+      if (serviceNames != null) 'service_names': serviceNames,
+      if (startsAt != null) 'starts_at': startsAt,
+      if (endsAt != null) 'ends_at': endsAt,
+      if (status != null) 'status': status,
+      if (totalPaise != null) 'total_paise': totalPaise,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CachedBookingsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? salonId,
+    Value<String>? customerId,
+    Value<String?>? customerName,
+    Value<String?>? staffName,
+    Value<String>? serviceNames,
+    Value<DateTime>? startsAt,
+    Value<DateTime>? endsAt,
+    Value<String>? status,
+    Value<int>? totalPaise,
+    Value<int>? rowid,
+  }) {
+    return CachedBookingsCompanion(
+      id: id ?? this.id,
+      salonId: salonId ?? this.salonId,
+      customerId: customerId ?? this.customerId,
+      customerName: customerName ?? this.customerName,
+      staffName: staffName ?? this.staffName,
+      serviceNames: serviceNames ?? this.serviceNames,
+      startsAt: startsAt ?? this.startsAt,
+      endsAt: endsAt ?? this.endsAt,
+      status: status ?? this.status,
+      totalPaise: totalPaise ?? this.totalPaise,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (salonId.present) {
+      map['salon_id'] = Variable<String>(salonId.value);
+    }
+    if (customerId.present) {
+      map['customer_id'] = Variable<String>(customerId.value);
+    }
+    if (customerName.present) {
+      map['customer_name'] = Variable<String>(customerName.value);
+    }
+    if (staffName.present) {
+      map['staff_name'] = Variable<String>(staffName.value);
+    }
+    if (serviceNames.present) {
+      map['service_names'] = Variable<String>(serviceNames.value);
+    }
+    if (startsAt.present) {
+      map['starts_at'] = Variable<DateTime>(startsAt.value);
+    }
+    if (endsAt.present) {
+      map['ends_at'] = Variable<DateTime>(endsAt.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (totalPaise.present) {
+      map['total_paise'] = Variable<int>(totalPaise.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CachedBookingsCompanion(')
+          ..write('id: $id, ')
+          ..write('salonId: $salonId, ')
+          ..write('customerId: $customerId, ')
+          ..write('customerName: $customerName, ')
+          ..write('staffName: $staffName, ')
+          ..write('serviceNames: $serviceNames, ')
+          ..write('startsAt: $startsAt, ')
+          ..write('endsAt: $endsAt, ')
+          ..write('status: $status, ')
+          ..write('totalPaise: $totalPaise, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $CacheStampsTable extends CacheStamps
     with TableInfo<$CacheStampsTable, CacheStamp> {
   @override
@@ -2266,6 +2882,578 @@ class CacheStampsCompanion extends UpdateCompanion<CacheStamp> {
   }
 }
 
+class $OutboxActionsTable extends OutboxActions
+    with TableInfo<$OutboxActionsTable, OutboxAction> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $OutboxActionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _clientActionIdMeta = const VerificationMeta(
+    'clientActionId',
+  );
+  @override
+  late final GeneratedColumn<String> clientActionId = GeneratedColumn<String>(
+    'client_action_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _salonIdMeta = const VerificationMeta(
+    'salonId',
+  );
+  @override
+  late final GeneratedColumn<String> salonId = GeneratedColumn<String>(
+    'salon_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _opMeta = const VerificationMeta('op');
+  @override
+  late final GeneratedColumn<String> op = GeneratedColumn<String>(
+    'op',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payloadMeta = const VerificationMeta(
+    'payload',
+  );
+  @override
+  late final GeneratedColumn<String> payload = GeneratedColumn<String>(
+    'payload',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _attemptsMeta = const VerificationMeta(
+    'attempts',
+  );
+  @override
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastErrorMeta = const VerificationMeta(
+    'lastError',
+  );
+  @override
+  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
+    'last_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    clientActionId,
+    salonId,
+    op,
+    payload,
+    status,
+    attempts,
+    lastError,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'outbox_actions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<OutboxAction> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('client_action_id')) {
+      context.handle(
+        _clientActionIdMeta,
+        clientActionId.isAcceptableOrUnknown(
+          data['client_action_id']!,
+          _clientActionIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_clientActionIdMeta);
+    }
+    if (data.containsKey('salon_id')) {
+      context.handle(
+        _salonIdMeta,
+        salonId.isAcceptableOrUnknown(data['salon_id']!, _salonIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_salonIdMeta);
+    }
+    if (data.containsKey('op')) {
+      context.handle(_opMeta, op.isAcceptableOrUnknown(data['op']!, _opMeta));
+    } else if (isInserting) {
+      context.missing(_opMeta);
+    }
+    if (data.containsKey('payload')) {
+      context.handle(
+        _payloadMeta,
+        payload.isAcceptableOrUnknown(data['payload']!, _payloadMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('attempts')) {
+      context.handle(
+        _attemptsMeta,
+        attempts.isAcceptableOrUnknown(data['attempts']!, _attemptsMeta),
+      );
+    }
+    if (data.containsKey('last_error')) {
+      context.handle(
+        _lastErrorMeta,
+        lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {clientActionId};
+  @override
+  OutboxAction map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OutboxAction(
+      clientActionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}client_action_id'],
+      )!,
+      salonId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}salon_id'],
+      )!,
+      op: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}op'],
+      )!,
+      payload: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      attempts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempts'],
+      )!,
+      lastError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $OutboxActionsTable createAlias(String alias) {
+    return $OutboxActionsTable(attachedDatabase, alias);
+  }
+}
+
+class OutboxAction extends DataClass implements Insertable<OutboxAction> {
+  /// The idempotency key the server dedupes on (RULES 9.3). Generated once, on
+  /// this device, and reused for every retry - which is what makes a replay a
+  /// no-op rather than a second booking.
+  final String clientActionId;
+  final String salonId;
+
+  /// mark_visit_complete | create_booking | cancel_booking
+  final String op;
+
+  /// The call's arguments, as JSON. Deliberately opaque to the cache: the
+  /// server's function signature is the contract, not a local table shape.
+  final String payload;
+
+  /// pending | syncing | applied | rejected
+  final String status;
+  final int attempts;
+
+  /// Why the server said no, in words a person can act on.
+  final String? lastError;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const OutboxAction({
+    required this.clientActionId,
+    required this.salonId,
+    required this.op,
+    required this.payload,
+    required this.status,
+    required this.attempts,
+    this.lastError,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['client_action_id'] = Variable<String>(clientActionId);
+    map['salon_id'] = Variable<String>(salonId);
+    map['op'] = Variable<String>(op);
+    map['payload'] = Variable<String>(payload);
+    map['status'] = Variable<String>(status);
+    map['attempts'] = Variable<int>(attempts);
+    if (!nullToAbsent || lastError != null) {
+      map['last_error'] = Variable<String>(lastError);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  OutboxActionsCompanion toCompanion(bool nullToAbsent) {
+    return OutboxActionsCompanion(
+      clientActionId: Value(clientActionId),
+      salonId: Value(salonId),
+      op: Value(op),
+      payload: Value(payload),
+      status: Value(status),
+      attempts: Value(attempts),
+      lastError: lastError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastError),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory OutboxAction.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OutboxAction(
+      clientActionId: serializer.fromJson<String>(json['clientActionId']),
+      salonId: serializer.fromJson<String>(json['salonId']),
+      op: serializer.fromJson<String>(json['op']),
+      payload: serializer.fromJson<String>(json['payload']),
+      status: serializer.fromJson<String>(json['status']),
+      attempts: serializer.fromJson<int>(json['attempts']),
+      lastError: serializer.fromJson<String?>(json['lastError']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'clientActionId': serializer.toJson<String>(clientActionId),
+      'salonId': serializer.toJson<String>(salonId),
+      'op': serializer.toJson<String>(op),
+      'payload': serializer.toJson<String>(payload),
+      'status': serializer.toJson<String>(status),
+      'attempts': serializer.toJson<int>(attempts),
+      'lastError': serializer.toJson<String?>(lastError),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  OutboxAction copyWith({
+    String? clientActionId,
+    String? salonId,
+    String? op,
+    String? payload,
+    String? status,
+    int? attempts,
+    Value<String?> lastError = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => OutboxAction(
+    clientActionId: clientActionId ?? this.clientActionId,
+    salonId: salonId ?? this.salonId,
+    op: op ?? this.op,
+    payload: payload ?? this.payload,
+    status: status ?? this.status,
+    attempts: attempts ?? this.attempts,
+    lastError: lastError.present ? lastError.value : this.lastError,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  OutboxAction copyWithCompanion(OutboxActionsCompanion data) {
+    return OutboxAction(
+      clientActionId: data.clientActionId.present
+          ? data.clientActionId.value
+          : this.clientActionId,
+      salonId: data.salonId.present ? data.salonId.value : this.salonId,
+      op: data.op.present ? data.op.value : this.op,
+      payload: data.payload.present ? data.payload.value : this.payload,
+      status: data.status.present ? data.status.value : this.status,
+      attempts: data.attempts.present ? data.attempts.value : this.attempts,
+      lastError: data.lastError.present ? data.lastError.value : this.lastError,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OutboxAction(')
+          ..write('clientActionId: $clientActionId, ')
+          ..write('salonId: $salonId, ')
+          ..write('op: $op, ')
+          ..write('payload: $payload, ')
+          ..write('status: $status, ')
+          ..write('attempts: $attempts, ')
+          ..write('lastError: $lastError, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    clientActionId,
+    salonId,
+    op,
+    payload,
+    status,
+    attempts,
+    lastError,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OutboxAction &&
+          other.clientActionId == this.clientActionId &&
+          other.salonId == this.salonId &&
+          other.op == this.op &&
+          other.payload == this.payload &&
+          other.status == this.status &&
+          other.attempts == this.attempts &&
+          other.lastError == this.lastError &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class OutboxActionsCompanion extends UpdateCompanion<OutboxAction> {
+  final Value<String> clientActionId;
+  final Value<String> salonId;
+  final Value<String> op;
+  final Value<String> payload;
+  final Value<String> status;
+  final Value<int> attempts;
+  final Value<String?> lastError;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const OutboxActionsCompanion({
+    this.clientActionId = const Value.absent(),
+    this.salonId = const Value.absent(),
+    this.op = const Value.absent(),
+    this.payload = const Value.absent(),
+    this.status = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  OutboxActionsCompanion.insert({
+    required String clientActionId,
+    required String salonId,
+    required String op,
+    required String payload,
+    this.status = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.lastError = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : clientActionId = Value(clientActionId),
+       salonId = Value(salonId),
+       op = Value(op),
+       payload = Value(payload),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<OutboxAction> custom({
+    Expression<String>? clientActionId,
+    Expression<String>? salonId,
+    Expression<String>? op,
+    Expression<String>? payload,
+    Expression<String>? status,
+    Expression<int>? attempts,
+    Expression<String>? lastError,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (clientActionId != null) 'client_action_id': clientActionId,
+      if (salonId != null) 'salon_id': salonId,
+      if (op != null) 'op': op,
+      if (payload != null) 'payload': payload,
+      if (status != null) 'status': status,
+      if (attempts != null) 'attempts': attempts,
+      if (lastError != null) 'last_error': lastError,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  OutboxActionsCompanion copyWith({
+    Value<String>? clientActionId,
+    Value<String>? salonId,
+    Value<String>? op,
+    Value<String>? payload,
+    Value<String>? status,
+    Value<int>? attempts,
+    Value<String?>? lastError,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return OutboxActionsCompanion(
+      clientActionId: clientActionId ?? this.clientActionId,
+      salonId: salonId ?? this.salonId,
+      op: op ?? this.op,
+      payload: payload ?? this.payload,
+      status: status ?? this.status,
+      attempts: attempts ?? this.attempts,
+      lastError: lastError ?? this.lastError,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (clientActionId.present) {
+      map['client_action_id'] = Variable<String>(clientActionId.value);
+    }
+    if (salonId.present) {
+      map['salon_id'] = Variable<String>(salonId.value);
+    }
+    if (op.present) {
+      map['op'] = Variable<String>(op.value);
+    }
+    if (payload.present) {
+      map['payload'] = Variable<String>(payload.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (attempts.present) {
+      map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (lastError.present) {
+      map['last_error'] = Variable<String>(lastError.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OutboxActionsCompanion(')
+          ..write('clientActionId: $clientActionId, ')
+          ..write('salonId: $salonId, ')
+          ..write('op: $op, ')
+          ..write('payload: $payload, ')
+          ..write('status: $status, ')
+          ..write('attempts: $attempts, ')
+          ..write('lastError: $lastError, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$CacheDb extends GeneratedDatabase {
   _$CacheDb(QueryExecutor e) : super(e);
   $CacheDbManager get managers => $CacheDbManager(this);
@@ -2277,7 +3465,9 @@ abstract class _$CacheDb extends GeneratedDatabase {
     this,
   );
   late final $CachedVisitsTable cachedVisits = $CachedVisitsTable(this);
+  late final $CachedBookingsTable cachedBookings = $CachedBookingsTable(this);
   late final $CacheStampsTable cacheStamps = $CacheStampsTable(this);
+  late final $OutboxActionsTable outboxActions = $OutboxActionsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2288,7 +3478,9 @@ abstract class _$CacheDb extends GeneratedDatabase {
     cachedStaffMembers,
     cachedCustomers,
     cachedVisits,
+    cachedBookings,
     cacheStamps,
+    outboxActions,
   ];
 }
 
@@ -3434,6 +4626,318 @@ typedef $$CachedVisitsTableProcessedTableManager =
       CachedVisit,
       PrefetchHooks Function()
     >;
+typedef $$CachedBookingsTableCreateCompanionBuilder =
+    CachedBookingsCompanion Function({
+      required String id,
+      required String salonId,
+      required String customerId,
+      Value<String?> customerName,
+      Value<String?> staffName,
+      Value<String> serviceNames,
+      required DateTime startsAt,
+      required DateTime endsAt,
+      required String status,
+      Value<int> totalPaise,
+      Value<int> rowid,
+    });
+typedef $$CachedBookingsTableUpdateCompanionBuilder =
+    CachedBookingsCompanion Function({
+      Value<String> id,
+      Value<String> salonId,
+      Value<String> customerId,
+      Value<String?> customerName,
+      Value<String?> staffName,
+      Value<String> serviceNames,
+      Value<DateTime> startsAt,
+      Value<DateTime> endsAt,
+      Value<String> status,
+      Value<int> totalPaise,
+      Value<int> rowid,
+    });
+
+class $$CachedBookingsTableFilterComposer
+    extends Composer<_$CacheDb, $CachedBookingsTable> {
+  $$CachedBookingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get salonId => $composableBuilder(
+    column: $table.salonId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get customerId => $composableBuilder(
+    column: $table.customerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get customerName => $composableBuilder(
+    column: $table.customerName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get staffName => $composableBuilder(
+    column: $table.staffName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get serviceNames => $composableBuilder(
+    column: $table.serviceNames,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startsAt => $composableBuilder(
+    column: $table.startsAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endsAt => $composableBuilder(
+    column: $table.endsAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get totalPaise => $composableBuilder(
+    column: $table.totalPaise,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CachedBookingsTableOrderingComposer
+    extends Composer<_$CacheDb, $CachedBookingsTable> {
+  $$CachedBookingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get salonId => $composableBuilder(
+    column: $table.salonId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get customerId => $composableBuilder(
+    column: $table.customerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get customerName => $composableBuilder(
+    column: $table.customerName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get staffName => $composableBuilder(
+    column: $table.staffName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get serviceNames => $composableBuilder(
+    column: $table.serviceNames,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startsAt => $composableBuilder(
+    column: $table.startsAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endsAt => $composableBuilder(
+    column: $table.endsAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get totalPaise => $composableBuilder(
+    column: $table.totalPaise,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CachedBookingsTableAnnotationComposer
+    extends Composer<_$CacheDb, $CachedBookingsTable> {
+  $$CachedBookingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get salonId =>
+      $composableBuilder(column: $table.salonId, builder: (column) => column);
+
+  GeneratedColumn<String> get customerId => $composableBuilder(
+    column: $table.customerId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get customerName => $composableBuilder(
+    column: $table.customerName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get staffName =>
+      $composableBuilder(column: $table.staffName, builder: (column) => column);
+
+  GeneratedColumn<String> get serviceNames => $composableBuilder(
+    column: $table.serviceNames,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get startsAt =>
+      $composableBuilder(column: $table.startsAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endsAt =>
+      $composableBuilder(column: $table.endsAt, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get totalPaise => $composableBuilder(
+    column: $table.totalPaise,
+    builder: (column) => column,
+  );
+}
+
+class $$CachedBookingsTableTableManager
+    extends
+        RootTableManager<
+          _$CacheDb,
+          $CachedBookingsTable,
+          CachedBooking,
+          $$CachedBookingsTableFilterComposer,
+          $$CachedBookingsTableOrderingComposer,
+          $$CachedBookingsTableAnnotationComposer,
+          $$CachedBookingsTableCreateCompanionBuilder,
+          $$CachedBookingsTableUpdateCompanionBuilder,
+          (
+            CachedBooking,
+            BaseReferences<_$CacheDb, $CachedBookingsTable, CachedBooking>,
+          ),
+          CachedBooking,
+          PrefetchHooks Function()
+        > {
+  $$CachedBookingsTableTableManager(_$CacheDb db, $CachedBookingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CachedBookingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CachedBookingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CachedBookingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> salonId = const Value.absent(),
+                Value<String> customerId = const Value.absent(),
+                Value<String?> customerName = const Value.absent(),
+                Value<String?> staffName = const Value.absent(),
+                Value<String> serviceNames = const Value.absent(),
+                Value<DateTime> startsAt = const Value.absent(),
+                Value<DateTime> endsAt = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int> totalPaise = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CachedBookingsCompanion(
+                id: id,
+                salonId: salonId,
+                customerId: customerId,
+                customerName: customerName,
+                staffName: staffName,
+                serviceNames: serviceNames,
+                startsAt: startsAt,
+                endsAt: endsAt,
+                status: status,
+                totalPaise: totalPaise,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String salonId,
+                required String customerId,
+                Value<String?> customerName = const Value.absent(),
+                Value<String?> staffName = const Value.absent(),
+                Value<String> serviceNames = const Value.absent(),
+                required DateTime startsAt,
+                required DateTime endsAt,
+                required String status,
+                Value<int> totalPaise = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CachedBookingsCompanion.insert(
+                id: id,
+                salonId: salonId,
+                customerId: customerId,
+                customerName: customerName,
+                staffName: staffName,
+                serviceNames: serviceNames,
+                startsAt: startsAt,
+                endsAt: endsAt,
+                status: status,
+                totalPaise: totalPaise,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CachedBookingsTable, CachedBooking>(table),
+                  BaseReferences<
+                    _$CacheDb,
+                    $CachedBookingsTable,
+                    CachedBooking
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CachedBookingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$CacheDb,
+      $CachedBookingsTable,
+      CachedBooking,
+      $$CachedBookingsTableFilterComposer,
+      $$CachedBookingsTableOrderingComposer,
+      $$CachedBookingsTableAnnotationComposer,
+      $$CachedBookingsTableCreateCompanionBuilder,
+      $$CachedBookingsTableUpdateCompanionBuilder,
+      (
+        CachedBooking,
+        BaseReferences<_$CacheDb, $CachedBookingsTable, CachedBooking>,
+      ),
+      CachedBooking,
+      PrefetchHooks Function()
+    >;
 typedef $$CacheStampsTableCreateCompanionBuilder =
     CacheStampsCompanion Function({
       required String key,
@@ -3585,6 +5089,293 @@ typedef $$CacheStampsTableProcessedTableManager =
       CacheStamp,
       PrefetchHooks Function()
     >;
+typedef $$OutboxActionsTableCreateCompanionBuilder =
+    OutboxActionsCompanion Function({
+      required String clientActionId,
+      required String salonId,
+      required String op,
+      required String payload,
+      Value<String> status,
+      Value<int> attempts,
+      Value<String?> lastError,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$OutboxActionsTableUpdateCompanionBuilder =
+    OutboxActionsCompanion Function({
+      Value<String> clientActionId,
+      Value<String> salonId,
+      Value<String> op,
+      Value<String> payload,
+      Value<String> status,
+      Value<int> attempts,
+      Value<String?> lastError,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$OutboxActionsTableFilterComposer
+    extends Composer<_$CacheDb, $OutboxActionsTable> {
+  $$OutboxActionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get clientActionId => $composableBuilder(
+    column: $table.clientActionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get salonId => $composableBuilder(
+    column: $table.salonId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get op => $composableBuilder(
+    column: $table.op,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$OutboxActionsTableOrderingComposer
+    extends Composer<_$CacheDb, $OutboxActionsTable> {
+  $$OutboxActionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get clientActionId => $composableBuilder(
+    column: $table.clientActionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get salonId => $composableBuilder(
+    column: $table.salonId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get op => $composableBuilder(
+    column: $table.op,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$OutboxActionsTableAnnotationComposer
+    extends Composer<_$CacheDb, $OutboxActionsTable> {
+  $$OutboxActionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get clientActionId => $composableBuilder(
+    column: $table.clientActionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get salonId =>
+      $composableBuilder(column: $table.salonId, builder: (column) => column);
+
+  GeneratedColumn<String> get op =>
+      $composableBuilder(column: $table.op, builder: (column) => column);
+
+  GeneratedColumn<String> get payload =>
+      $composableBuilder(column: $table.payload, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get attempts =>
+      $composableBuilder(column: $table.attempts, builder: (column) => column);
+
+  GeneratedColumn<String> get lastError =>
+      $composableBuilder(column: $table.lastError, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$OutboxActionsTableTableManager
+    extends
+        RootTableManager<
+          _$CacheDb,
+          $OutboxActionsTable,
+          OutboxAction,
+          $$OutboxActionsTableFilterComposer,
+          $$OutboxActionsTableOrderingComposer,
+          $$OutboxActionsTableAnnotationComposer,
+          $$OutboxActionsTableCreateCompanionBuilder,
+          $$OutboxActionsTableUpdateCompanionBuilder,
+          (
+            OutboxAction,
+            BaseReferences<_$CacheDb, $OutboxActionsTable, OutboxAction>,
+          ),
+          OutboxAction,
+          PrefetchHooks Function()
+        > {
+  $$OutboxActionsTableTableManager(_$CacheDb db, $OutboxActionsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$OutboxActionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$OutboxActionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$OutboxActionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> clientActionId = const Value.absent(),
+                Value<String> salonId = const Value.absent(),
+                Value<String> op = const Value.absent(),
+                Value<String> payload = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => OutboxActionsCompanion(
+                clientActionId: clientActionId,
+                salonId: salonId,
+                op: op,
+                payload: payload,
+                status: status,
+                attempts: attempts,
+                lastError: lastError,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String clientActionId,
+                required String salonId,
+                required String op,
+                required String payload,
+                Value<String> status = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => OutboxActionsCompanion.insert(
+                clientActionId: clientActionId,
+                salonId: salonId,
+                op: op,
+                payload: payload,
+                status: status,
+                attempts: attempts,
+                lastError: lastError,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$OutboxActionsTable, OutboxAction>(table),
+                  BaseReferences<_$CacheDb, $OutboxActionsTable, OutboxAction>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$OutboxActionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$CacheDb,
+      $OutboxActionsTable,
+      OutboxAction,
+      $$OutboxActionsTableFilterComposer,
+      $$OutboxActionsTableOrderingComposer,
+      $$OutboxActionsTableAnnotationComposer,
+      $$OutboxActionsTableCreateCompanionBuilder,
+      $$OutboxActionsTableUpdateCompanionBuilder,
+      (
+        OutboxAction,
+        BaseReferences<_$CacheDb, $OutboxActionsTable, OutboxAction>,
+      ),
+      OutboxAction,
+      PrefetchHooks Function()
+    >;
 
 class $CacheDbManager {
   final _$CacheDb _db;
@@ -3599,6 +5390,10 @@ class $CacheDbManager {
       $$CachedCustomersTableTableManager(_db, _db.cachedCustomers);
   $$CachedVisitsTableTableManager get cachedVisits =>
       $$CachedVisitsTableTableManager(_db, _db.cachedVisits);
+  $$CachedBookingsTableTableManager get cachedBookings =>
+      $$CachedBookingsTableTableManager(_db, _db.cachedBookings);
   $$CacheStampsTableTableManager get cacheStamps =>
       $$CacheStampsTableTableManager(_db, _db.cacheStamps);
+  $$OutboxActionsTableTableManager get outboxActions =>
+      $$OutboxActionsTableTableManager(_db, _db.outboxActions);
 }

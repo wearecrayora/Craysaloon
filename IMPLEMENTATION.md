@@ -52,9 +52,9 @@
 
 | # | Route | Screen | M |
 |---|---|---|---|
-| O1 | `/day` | **Day view — mark-complete. The most important screen.** | 5 |
-| O2 | `/day/walk-in` | Add walk-in booking | 6 |
-| O3 | `/attention` | **Needs attention** — rejected offline actions | 6 |
+| O1 | `/day` | **Day view — mark-complete. The most important screen.** · *built 2026-09-27: one tap, 56dp, no dialog; works offline through the outbox; shows how many changes are waiting* | 5 |
+| O2 | `/day/walk-in` | Add walk-in booking · *built 2026-09-27: add-ons start UNTICKED, times come from `available_slots`, and the message says "booked" or "will book when you are online" - never the wrong one* | 6 |
+| O3 | `/attention` | **Needs attention** — rejected offline actions · *built 2026-09-27: the reason in words (never a server string), retry reusing the same action id, and discard only ever by hand* | 6 |
 | O4 | `/customers` | Customer list — keyset paginated, searchable · *built 2026-09-27: `list_customers` (keyset, name prefix or whole number), cache-first with an "as of" label, 200% text scale asserted* | 5 |
 | O5 | `/customers/:id` | Customer detail — history, **balance read-only** · *built 2026-09-27; a test asserts the editing controls are ABSENT, not disabled* | 5 |
 | O6 | `/dashboard` | **Dashboard** — stat tiles + cohort chart | 10 |

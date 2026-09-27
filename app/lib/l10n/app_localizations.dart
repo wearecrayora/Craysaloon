@@ -613,6 +613,168 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Today'**
   String get dayTitle;
+
+  /// No description provided for @dayEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing booked today.'**
+  String get dayEmpty;
+
+  /// No description provided for @dayDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get dayDone;
+
+  /// No description provided for @dayCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get dayCancelled;
+
+  /// Shown when work is queued: the owner must never wonder whether a tap was lost (RULES 9.6).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 change waiting to sync} other{{count} changes waiting to sync}}'**
+  String daySyncPending(int count);
+
+  /// No description provided for @dayCancelBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel appointment'**
+  String get dayCancelBooking;
+
+  /// No description provided for @attentionEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing needs attention.'**
+  String get attentionEmpty;
+
+  /// No description provided for @attentionDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get attentionDiscard;
+
+  /// No description provided for @attentionOpComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark complete'**
+  String get attentionOpComplete;
+
+  /// No description provided for @attentionOpBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'New booking'**
+  String get attentionOpBooking;
+
+  /// No description provided for @attentionOpCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation'**
+  String get attentionOpCancel;
+
+  /// No description provided for @reasonSlotTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'That time was taken by someone else. Pick another and try again.'**
+  String get reasonSlotTaken;
+
+  /// No description provided for @reasonForbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account cannot do this. Ask the owner.'**
+  String get reasonForbidden;
+
+  /// No description provided for @reasonNotCompletable.
+  ///
+  /// In en, this message translates to:
+  /// **'That appointment was already finished or cancelled.'**
+  String get reasonNotCompletable;
+
+  /// No description provided for @reasonSalonUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The salon cannot accept changes right now.'**
+  String get reasonSalonUnavailable;
+
+  /// No description provided for @reasonSalonChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'This was for a salon this phone is no longer signed in to.'**
+  String get reasonSalonChanged;
+
+  /// No description provided for @reasonGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'The server could not accept this.'**
+  String get reasonGeneric;
+
+  /// No description provided for @walkInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in'**
+  String get walkInTitle;
+
+  /// No description provided for @walkInCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get walkInCustomer;
+
+  /// No description provided for @walkInService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get walkInService;
+
+  /// NEVER pre-selected (RULES 9). The label says optional and every box starts empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Add-ons (optional)'**
+  String get walkInAddOns;
+
+  /// No description provided for @walkInStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'With'**
+  String get walkInStaff;
+
+  /// No description provided for @walkInAnyStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone'**
+  String get walkInAnyStaff;
+
+  /// No description provided for @walkInTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get walkInTime;
+
+  /// No description provided for @walkInNoSlots.
+  ///
+  /// In en, this message translates to:
+  /// **'No free times left for that day.'**
+  String get walkInNoSlots;
+
+  /// No description provided for @walkInBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get walkInBook;
+
+  /// No description provided for @walkInBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked.'**
+  String get walkInBooked;
+
+  /// Capture works offline (RULES 9.1); money and binding never do (9.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Saved. It will book when you are back online.'**
+  String get walkInQueuedOffline;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

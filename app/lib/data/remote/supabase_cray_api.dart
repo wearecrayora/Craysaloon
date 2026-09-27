@@ -14,7 +14,7 @@ import '../../domain/records/records.dart';
 ///   request cannot move a login to a different salon (ADR-36).
 /// * **It never logs a phone number, a code, a challenge id or a token.** The
 ///   error paths carry a kind, not a payload.
-class SupabaseCrayApi implements CrayApi, SalonReads, SalonWrites {
+class SupabaseCrayApi implements CrayApi, SalonReads, SalonWrites, SalonBookings {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -392,6 +392,161 @@ class SupabaseCrayApi implements CrayApi, SalonReads, SalonWrites {
       throw CrayApiException(
         e.code == '42501' ? CrayErrorKind.forbidden : _postgrestKind(e),
       );
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // SalonBookings (M6). Every write is one RPC that decides everything: the
+  // race, the snapshot, the idempotency. This layer only carries the
+  // client_action_id through and turns a refusal into a kind the outbox can
+  // tell apart from "no signal".
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<List<BookingRow>> bookingsOn(DateTime day) async {
+    final start = DateTime(day.year, day.month, day.day);
+    final end = start.add(const Duration(days: 1));
+
+    final rows = await _rows(
+      () => _client
+          .from('bookings')
+          .select('id,customer_id,starts_at,ends_at,status,total_paise,'
+              'customers(name),staff(name),booking_items(name_snapshot,kind)')
+          .gte('starts_at', start.toUtc().toIso8601String())
+          .lt('starts_at', end.toUtc().toIso8601String())
+          .order('starts_at'),
+    );
+
+    return rows.map((r) {
+      final items = (r['booking_items'] as List?) ?? const [];
+      final services = items
+          .whereType<Map<Object?, Object?>>()
+          .where((i) => i['kind'] == 'service')
+          .map((i) => i['name_snapshot'] as String? ?? '')
+          .where((n) => n.isNotEmpty)
+          .join(', ');
+      return BookingRow(
+        id: r['id'] as String,
+        customerId: r['customer_id'] as String,
+        startsAt: _time(r['starts_at']) ?? DateTime.now(),
+        endsAt: _time(r['ends_at']) ?? DateTime.now(),
+        status: r['status'] as String? ?? 'confirmed',
+        totalPaise: _int(r['total_paise']),
+        customerName: _asMap(r['customers'])?['name'] as String?,
+        staffName: _asMap(r['staff'])?['name'] as String?,
+        serviceNames: services,
+      );
+    }).toList();
+  }
+
+  @override
+  Future<List<Slot>> slots({
+    required String serviceId,
+    required DateTime day,
+    String? staffId,
+    List<String> addOnIds = const [],
+  }) async {
+    try {
+      final result = await _client.rpc<dynamic>('available_slots', params: {
+        // The server ignores the salon we name and uses the token's, but the
+        // signature keeps it so a mismatch is loud rather than silent.
+        'p_salon_id': session?.salonId,
+        'p_service_id': serviceId,
+        'p_staff_id': staffId,
+        'p_date': '${day.year.toString().padLeft(4, '0')}-'
+            '${day.month.toString().padLeft(2, '0')}-'
+            '${day.day.toString().padLeft(2, '0')}',
+        'p_add_on_ids': addOnIds,
+      });
+
+      return (result is List ? result : const [])
+          .whereType<Map<Object?, Object?>>()
+          .map((r) => r.cast<String, Object?>())
+          .map((r) => Slot(
+                staffId: r['staff_id'] as String,
+                startsAt: _time(r['starts_at']) ?? DateTime.now(),
+                endsAt: _time(r['ends_at']) ?? DateTime.now(),
+              ))
+          .toList();
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  @override
+  Future<String> createBooking({
+    required String clientActionId,
+    required String serviceId,
+    required DateTime startsAt,
+    String? staffId,
+    String? customerId,
+    List<String> addOnIds = const [],
+    String? notes,
+  }) async {
+    final body = await _call('create_booking', {
+      'p_client_action_id': clientActionId,
+      'p_service_id': serviceId,
+      'p_starts_at': startsAt.toUtc().toIso8601String(),
+      'p_staff_id': staffId,
+      'p_customer_id': customerId,
+      'p_add_on_ids': addOnIds,
+      'p_notes': notes,
+    });
+    return body['booking_id'] as String;
+  }
+
+  @override
+  Future<void> markComplete({
+    required String clientActionId,
+    required String bookingId,
+    int? finalAmountPaise,
+    int tipPaise = 0,
+  }) async {
+    await _call('mark_visit_complete', {
+      'p_client_action_id': clientActionId,
+      'p_booking_id': bookingId,
+      'p_final_amount_paise': finalAmountPaise,
+      'p_tip_paise': tipPaise,
+    });
+  }
+
+  @override
+  Future<void> cancelBooking({
+    required String clientActionId,
+    required String bookingId,
+    String? reason,
+  }) async {
+    await _call('cancel_booking', {
+      'p_client_action_id': clientActionId,
+      'p_booking_id': bookingId,
+      'p_reason': reason,
+    });
+  }
+
+  /// Calls one of the booking RPCs and turns `{ok:false, reason}` into an
+  /// exception the outbox can classify. A reason is NOT a transport failure:
+  /// retrying it would never help, and it belongs in "Needs attention".
+  Future<Map<String, Object?>> _call(String fn, Map<String, Object?> params) async {
+    try {
+      final result = await _client.rpc<dynamic>(fn, params: params);
+      final body = _asMap(result) ?? const {};
+      if (body['ok'] == true) return body;
+      throw CrayApiException(switch (body['reason']) {
+        'slot_taken' => CrayErrorKind.slotTaken,
+        'salon_unavailable' => CrayErrorKind.salonUnavailable,
+        'already_completed' || 'not_completable' => CrayErrorKind.notCompletable,
+        _ => CrayErrorKind.server,
+      });
+    } on PostgrestException catch (e) {
+      throw CrayApiException(
+        e.code == '42501' ? CrayErrorKind.forbidden : _postgrestKind(e),
+      );
+    } on CrayApiException {
+      rethrow;
     } catch (_) {
       throw const CrayApiException(CrayErrorKind.network);
     }
