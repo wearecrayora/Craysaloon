@@ -460,5 +460,101 @@
     "description": "Erasure is anonymisation, and the app says so BEFORE rather than letting it be discovered after (RULES 11.8)."
   },
   "erasureConfirmAction": "Yes, ask for deletion",
-  "@erasureConfirmAction": {}
+  "@erasureConfirmAction": {},
+  "walletTitle": "Wallet",
+  "@walletTitle": {},
+  "walletPaidLabel": "Paid credit",
+  "@walletPaidLabel": {},
+  "walletBonusLabel": "Bonus credit",
+  "@walletBonusLabel": {},
+  "walletBonusExpiryNote": "{amount} of bonus expires on {date}.",
+  "@walletBonusExpiryNote": {
+    "description": "A bonus total with no date attached tells a customer nothing they can act on.",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "₹100"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "walletAddMoney": "Add money",
+  "@walletAddMoney": {},
+  "walletHistoryHeading": "Recent activity",
+  "@walletHistoryHeading": {},
+  "walletHistoryEmpty": "Nothing yet. Money you add, and money you use here, shows up in this list.",
+  "@walletHistoryEmpty": {},
+  "entryTopUp": "Money added",
+  "@entryTopUp": {},
+  "entryBonus": "Bonus",
+  "@entryBonus": {},
+  "entrySpend": "Used at the salon",
+  "@entrySpend": {},
+  "entryExpiry": "Bonus expired",
+  "@entryExpiry": {},
+  "entryReversal": "Reversed",
+  "@entryReversal": {},
+  "entryReferral": "Referral reward",
+  "@entryReferral": {},
+  "entryCorrection": "Correction",
+  "@entryCorrection": {},
+  "addMoneyTitle": "Add money",
+  "@addMoneyTitle": {},
+  "addMoneyAmount": "Amount",
+  "@addMoneyAmount": {},
+  "addMoneyBonusYouGet": "You get {bonus} extra.",
+  "@addMoneyBonusYouGet": {
+    "placeholders": {
+      "bonus": {
+        "type": "String",
+        "example": "₹50"
+      }
+    }
+  },
+  "addMoneyNoBonus": "No bonus on this amount.",
+  "@addMoneyNoBonus": {},
+  "addMoneyNotRefundable": "A top-up cannot be refunded or taken out as cash.",
+  "@addMoneyNotRefundable": {
+    "description": "Disclosure block, above the pay button (RULES 5.3.6). Body size, not caption."
+  },
+  "addMoneyDisclosureHeading": "Before you pay",
+  "@addMoneyDisclosureHeading": {},
+  "addMoneyPay": "Pay {amount}",
+  "@addMoneyPay": {
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "₹500"
+      }
+    }
+  },
+  "addMoneyBelowMinimum": "The smallest top-up here is {min}.",
+  "@addMoneyBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String",
+        "example": "₹100"
+      }
+    }
+  },
+  "addMoneyInvalid": "Enter an amount to add.",
+  "@addMoneyInvalid": {},
+  "addMoneyUnavailable": "This salon cannot take payments yet. Ask at the counter.",
+  "@addMoneyUnavailable": {
+    "description": "The salon has no usable Razorpay account, and there is no Crayora account to fall back on."
+  },
+  "addMoneyCheckoutNotReady": "Paying from the app is not switched on in this version yet. Your money has not moved.",
+  "@addMoneyCheckoutNotReady": {
+    "description": "The order is real; the checkout hand-off is not wired. Say so rather than showing a dead button."
+  },
+  "addMoneySubmitted": "Payment sent. Your credit appears as soon as the bank confirms it.",
+  "@addMoneySubmitted": {
+    "description": "Never say \"paid\": the credit follows the webhook, not the sheet."
+  },
+  "addMoneyCancelled": "Payment cancelled. Nothing was charged.",
+  "@addMoneyCancelled": {},
+  "addMoneyFailed": "That payment did not go through. Nothing was charged.",
+  "@addMoneyFailed": {}
 }

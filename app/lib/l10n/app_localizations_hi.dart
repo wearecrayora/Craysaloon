@@ -519,6 +519,103 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get erasureConfirmAction => 'हाँ, मिटाने के लिए कहें';
+
+  @override
+  String get walletTitle => 'वॉलेट';
+
+  @override
+  String get walletPaidLabel => 'भुगतान किया हुआ बैलेंस';
+
+  @override
+  String get walletBonusLabel => 'बोनस बैलेंस';
+
+  @override
+  String walletBonusExpiryNote(String amount, String date) {
+    return '$amount बोनस $date को समाप्त हो जाएगा।';
+  }
+
+  @override
+  String get walletAddMoney => 'पैसे जोड़ें';
+
+  @override
+  String get walletHistoryHeading => 'हाल की गतिविधि';
+
+  @override
+  String get walletHistoryEmpty =>
+      'अभी कुछ नहीं। आप जो पैसे जोड़ेंगे और यहाँ खर्च करेंगे, वह इस सूची में दिखेगा।';
+
+  @override
+  String get entryTopUp => 'पैसे जोड़े गए';
+
+  @override
+  String get entryBonus => 'बोनस';
+
+  @override
+  String get entrySpend => 'सैलून में उपयोग हुआ';
+
+  @override
+  String get entryExpiry => 'बोनस समाप्त हुआ';
+
+  @override
+  String get entryReversal => 'वापस किया गया';
+
+  @override
+  String get entryReferral => 'रेफरल इनाम';
+
+  @override
+  String get entryCorrection => 'सुधार';
+
+  @override
+  String get addMoneyTitle => 'पैसे जोड़ें';
+
+  @override
+  String get addMoneyAmount => 'राशि';
+
+  @override
+  String addMoneyBonusYouGet(String bonus) {
+    return 'आपको $bonus अतिरिक्त मिलेंगे।';
+  }
+
+  @override
+  String get addMoneyNoBonus => 'इस राशि पर कोई बोनस नहीं।';
+
+  @override
+  String get addMoneyNotRefundable =>
+      'जोड़े गए पैसे वापस नहीं होते और नकद नहीं निकाले जा सकते।';
+
+  @override
+  String get addMoneyDisclosureHeading => 'भुगतान से पहले';
+
+  @override
+  String addMoneyPay(String amount) {
+    return '$amount का भुगतान करें';
+  }
+
+  @override
+  String addMoneyBelowMinimum(String min) {
+    return 'यहाँ कम से कम $min जोड़े जा सकते हैं।';
+  }
+
+  @override
+  String get addMoneyInvalid => 'जोड़ने के लिए राशि डालें।';
+
+  @override
+  String get addMoneyUnavailable =>
+      'यह सैलून अभी भुगतान नहीं ले सकता। काउंटर पर पूछें।';
+
+  @override
+  String get addMoneyCheckoutNotReady =>
+      'इस वर्ज़н में ऐप से भुगतान अभी चालू नहीं है। आपके पैसे नहीं कटे हैं।';
+
+  @override
+  String get addMoneySubmitted =>
+      'भुगतान भेज दिया गया। बैंक की पुष्टि होते ही आपका बैलेंस दिखेगा।';
+
+  @override
+  String get addMoneyCancelled => 'भुगतान रद्द हुआ। कुछ नहीं कटा।';
+
+  @override
+  String get addMoneyFailed => 'यह भुगतान पूरा नहीं हुआ। कुछ नहीं कटा।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -1043,4 +1140,101 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get erasureConfirmAction => 'Haan, mitane ke liye kahein';
+
+  @override
+  String get walletTitle => 'Wallet';
+
+  @override
+  String get walletPaidLabel => 'Paid credit';
+
+  @override
+  String get walletBonusLabel => 'Bonus credit';
+
+  @override
+  String walletBonusExpiryNote(String amount, String date) {
+    return '$amount ka bonus $date ko khatam ho jaayega.';
+  }
+
+  @override
+  String get walletAddMoney => 'Paise jodein';
+
+  @override
+  String get walletHistoryHeading => 'Recent activity';
+
+  @override
+  String get walletHistoryEmpty =>
+      'Abhi kuch nahi. Aap jo paise jodenge aur yahan kharch karenge, woh is list mein dikhega.';
+
+  @override
+  String get entryTopUp => 'Paise jode gaye';
+
+  @override
+  String get entryBonus => 'Bonus';
+
+  @override
+  String get entrySpend => 'Salon mein use hua';
+
+  @override
+  String get entryExpiry => 'Bonus khatam hua';
+
+  @override
+  String get entryReversal => 'Wapas kiya gaya';
+
+  @override
+  String get entryReferral => 'Referral reward';
+
+  @override
+  String get entryCorrection => 'Correction';
+
+  @override
+  String get addMoneyTitle => 'Paise jodein';
+
+  @override
+  String get addMoneyAmount => 'Amount';
+
+  @override
+  String addMoneyBonusYouGet(String bonus) {
+    return 'Aapko $bonus extra milenge.';
+  }
+
+  @override
+  String get addMoneyNoBonus => 'Is amount par koi bonus nahi.';
+
+  @override
+  String get addMoneyNotRefundable =>
+      'Jode gaye paise wapas nahi hote aur cash nahi nikal sakte.';
+
+  @override
+  String get addMoneyDisclosureHeading => 'Pay karne se pehle';
+
+  @override
+  String addMoneyPay(String amount) {
+    return '$amount pay karein';
+  }
+
+  @override
+  String addMoneyBelowMinimum(String min) {
+    return 'Yahan kam se kam $min jod sakte hain.';
+  }
+
+  @override
+  String get addMoneyInvalid => 'Jodne ke liye amount daalein.';
+
+  @override
+  String get addMoneyUnavailable =>
+      'Yeh salon abhi payment nahi le sakta. Counter par poochein.';
+
+  @override
+  String get addMoneyCheckoutNotReady =>
+      'Is version mein app se payment abhi chaalu nahi hai. Aapke paise nahi kate hain.';
+
+  @override
+  String get addMoneySubmitted =>
+      'Payment bhej diya gaya. Bank ki confirmation ke baad aapka balance dikhega.';
+
+  @override
+  String get addMoneyCancelled => 'Payment cancel hua. Kuch nahi kata.';
+
+  @override
+  String get addMoneyFailed => 'Yeh payment poora nahi hua. Kuch nahi kata.';
 }

@@ -955,6 +955,174 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Yes, ask for deletion'**
   String get erasureConfirmAction;
+
+  /// No description provided for @walletTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get walletTitle;
+
+  /// No description provided for @walletPaidLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid credit'**
+  String get walletPaidLabel;
+
+  /// No description provided for @walletBonusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus credit'**
+  String get walletBonusLabel;
+
+  /// A bonus total with no date attached tells a customer nothing they can act on.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} of bonus expires on {date}.'**
+  String walletBonusExpiryNote(String amount, String date);
+
+  /// No description provided for @walletAddMoney.
+  ///
+  /// In en, this message translates to:
+  /// **'Add money'**
+  String get walletAddMoney;
+
+  /// No description provided for @walletHistoryHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent activity'**
+  String get walletHistoryHeading;
+
+  /// No description provided for @walletHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing yet. Money you add, and money you use here, shows up in this list.'**
+  String get walletHistoryEmpty;
+
+  /// No description provided for @entryTopUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Money added'**
+  String get entryTopUp;
+
+  /// No description provided for @entryBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus'**
+  String get entryBonus;
+
+  /// No description provided for @entrySpend.
+  ///
+  /// In en, this message translates to:
+  /// **'Used at the salon'**
+  String get entrySpend;
+
+  /// No description provided for @entryExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus expired'**
+  String get entryExpiry;
+
+  /// No description provided for @entryReversal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reversed'**
+  String get entryReversal;
+
+  /// No description provided for @entryReferral.
+  ///
+  /// In en, this message translates to:
+  /// **'Referral reward'**
+  String get entryReferral;
+
+  /// No description provided for @entryCorrection.
+  ///
+  /// In en, this message translates to:
+  /// **'Correction'**
+  String get entryCorrection;
+
+  /// No description provided for @addMoneyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add money'**
+  String get addMoneyTitle;
+
+  /// No description provided for @addMoneyAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get addMoneyAmount;
+
+  /// No description provided for @addMoneyBonusYouGet.
+  ///
+  /// In en, this message translates to:
+  /// **'You get {bonus} extra.'**
+  String addMoneyBonusYouGet(String bonus);
+
+  /// No description provided for @addMoneyNoBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'No bonus on this amount.'**
+  String get addMoneyNoBonus;
+
+  /// Disclosure block, above the pay button (RULES 5.3.6). Body size, not caption.
+  ///
+  /// In en, this message translates to:
+  /// **'A top-up cannot be refunded or taken out as cash.'**
+  String get addMoneyNotRefundable;
+
+  /// No description provided for @addMoneyDisclosureHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Before you pay'**
+  String get addMoneyDisclosureHeading;
+
+  /// No description provided for @addMoneyPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount}'**
+  String addMoneyPay(String amount);
+
+  /// No description provided for @addMoneyBelowMinimum.
+  ///
+  /// In en, this message translates to:
+  /// **'The smallest top-up here is {min}.'**
+  String addMoneyBelowMinimum(String min);
+
+  /// No description provided for @addMoneyInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount to add.'**
+  String get addMoneyInvalid;
+
+  /// The salon has no usable Razorpay account, and there is no Crayora account to fall back on.
+  ///
+  /// In en, this message translates to:
+  /// **'This salon cannot take payments yet. Ask at the counter.'**
+  String get addMoneyUnavailable;
+
+  /// The order is real; the checkout hand-off is not wired. Say so rather than showing a dead button.
+  ///
+  /// In en, this message translates to:
+  /// **'Paying from the app is not switched on in this version yet. Your money has not moved.'**
+  String get addMoneyCheckoutNotReady;
+
+  /// Never say "paid": the credit follows the webhook, not the sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment sent. Your credit appears as soon as the bank confirms it.'**
+  String get addMoneySubmitted;
+
+  /// No description provided for @addMoneyCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment cancelled. Nothing was charged.'**
+  String get addMoneyCancelled;
+
+  /// No description provided for @addMoneyFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'That payment did not go through. Nothing was charged.'**
+  String get addMoneyFailed;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

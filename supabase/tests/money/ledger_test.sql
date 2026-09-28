@@ -7,7 +7,7 @@
 -- FOR EACH ROW trigger never fired and the probe proved nothing. A statement
 -- that succeeds against zero rows is not evidence.
 
-select plan(31);
+select plan(45);
 
 select set_config('app.phone_hash_pepper', 'money-test-pepper', true);
 
@@ -449,5 +449,147 @@ select is(
   'a correction in the customer''s favour never expires - it is PAID-kind credit'
 );
 
+
+
+-- ---------------------------------------------------------------------------
+-- Automation B: a top-up that landed owes a receipt
+-- ---------------------------------------------------------------------------
+--
+-- The event is emitted in the SAME transaction as the credit, so there is no
+-- state where the money arrived and nobody was told. Its idempotency is the
+-- credit's own: one credit, one receipt, however many times Razorpay redelivers.
+
+insert into auth.users (id) values ('bbbbbbbb-aaaa-4000-8000-00000000000a');
+
+insert into public.salons (id, legal_name, display_name, join_code, status,
+                           activated_by, activated_at, wallet_rule)
+values ('bbbbbbbb-0000-4000-8000-000000000001', 'Bonus Salon Ltd', 'Bonus Salon',
+        'CRAY-BNSAA2', 'active', '00000000-0000-4000-8000-00000000000a', now(),
+        '{"bonus_percent": 10, "min_topup_paise": 10000, "bonus_expiry_days": 30}'::jsonb);
+
+insert into public.customers (id, salon_id, auth_user_id, name, phone_hash)
+values ('bbbbbbbb-1111-4000-8000-000000000001', 'bbbbbbbb-0000-4000-8000-000000000001',
+        'bbbbbbbb-aaaa-4000-8000-00000000000a', 'Bonus cust', app.phone_hash('9700000003'));
+
+insert into public.payments (id, salon_id, customer_id, method, amount_paise, status, captured_at)
+values ('bbbbbbbb-2222-4000-8000-000000000001', 'bbbbbbbb-0000-4000-8000-000000000001',
+        'bbbbbbbb-1111-4000-8000-000000000001', 'upi', 100000, 'captured', now());
+
+create temp table receipted as
+  select app.wallet_credit_from_payment('bbbbbbbb-2222-4000-8000-000000000001') as r;
+
+select is((select r ->> 'bonus_paise' from receipted), '10000',
+  'a 1000-rupee top-up at 10% issues a 100-rupee bonus lot');
+
+select is(
+  (select count(*)::int from public.domain_events
+    where type = 'wallet.topped_up'
+      and aggregate_id = 'bbbbbbbb-2222-4000-8000-000000000001'),
+  1,
+  'Automation B: the credit emits exactly one wallet.topped_up');
+
+select is(
+  (select payload ->> 'bonus_paise' from public.domain_events
+    where type = 'wallet.topped_up'
+      and aggregate_id = 'bbbbbbbb-2222-4000-8000-000000000001'),
+  '10000',
+  'and it CARRIES the bonus, so a receipt never re-derives its own trigger');
+
+select is(
+  (select (payload ->> 'bonus_expires_at') is not null from public.domain_events
+    where type = 'wallet.topped_up'
+      and aggregate_id = 'bbbbbbbb-2222-4000-8000-000000000001'),
+  true,
+  'with the expiry date the disclosure promised at the pay button');
+
+select is(
+  (app.wallet_credit_from_payment('bbbbbbbb-2222-4000-8000-000000000001') ->> 'already'),
+  'true',
+  'a redelivered webhook credits nothing twice');
+
+select is(
+  (select count(*)::int from public.domain_events
+    where type = 'wallet.topped_up'
+      and aggregate_id = 'bbbbbbbb-2222-4000-8000-000000000001'),
+  1,
+  'and sends no second receipt - the event inherits the credit''s guard');
+
+-- ---------------------------------------------------------------------------
+-- Automation L: expiry, and one warning before it
+-- ---------------------------------------------------------------------------
+
+select is(
+  (app.nudge_expiring_bonus('bbbbbbbb-0000-4000-8000-000000000001', 60) ->> 'nudged'),
+  '1',
+  'a bonus lot expiring inside the window is warned about');
+
+select is(
+  (app.nudge_expiring_bonus('bbbbbbbb-0000-4000-8000-000000000001', 60) ->> 'nudged'),
+  '0',
+  'and warned about ONCE, ever - a nightly sweep is not a nightly message');
+
+-- Backdate the bonus lot: the expiry is due now.
+update public.wallet_lots
+   set expires_at = now() - interval '1 day'
+ where customer_id = 'bbbbbbbb-1111-4000-8000-000000000001' and kind = 'bonus';
+
+create temp table swept as
+  select app.expire_due_bonus_lots('bbbbbbbb-0000-4000-8000-000000000001') as r;
+
+select is((select r ->> 'lots_expired' from swept), '1',
+  'Automation L expires the due bonus lot');
+
+select is((select r ->> 'paise_expired' from swept), '10000',
+  'for the whole of what was left in it');
+
+select is(
+  (app.expire_due_bonus_lots('bbbbbbbb-0000-4000-8000-000000000001') ->> 'lots_expired'),
+  '0',
+  'and a second run expires nothing - expired_at is the guard, not "we call it once"');
+
+select is(
+  (select count(*)::int from public.wallet_lots
+    where customer_id = 'bbbbbbbb-1111-4000-8000-000000000001'
+      and kind = 'paid' and expired_at is null),
+  1,
+  'the PAID lot is untouched by every sweep that will ever run (RULES 5.3.3)');
+
+select is(
+  (select balance_paise from public.wallet_accounts
+    where customer_id = 'bbbbbbbb-1111-4000-8000-000000000001'),
+  100000::bigint,
+  'and the balance is back to what was actually paid');
+
+-- ---------------------------------------------------------------------------
+-- What the customer sees - as the customer, or it proves nothing
+-- ---------------------------------------------------------------------------
+
+set local role authenticated;
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"bbbbbbbb-aaaa-4000-8000-00000000000a",'
+  '"app_role":"customer",'
+  '"salon_id":"bbbbbbbb-0000-4000-8000-000000000001"}',
+  true
+);
+
+select is((select (public.my_wallet() ->> 'paid_paise')::bigint), 100000::bigint,
+  'the wallet reports paid credit separately (DESIGN 6.2)');
+
+select is((select (public.my_wallet() ->> 'bonus_paise')::bigint), 0::bigint,
+  'and bonus separately - the summary is one number, the detail is honest');
+
+select is(
+  (select count(*)::int from public.my_wallet_history()),
+  3,
+  'the history is the customer''s OWN ledger: two credits and the expiry');
+
+select is(
+  (select count(*)::int from public.my_wallet_history()
+    where kind not in ('credit_topup', 'credit_bonus', 'debit_expiry')),
+  0,
+  'and nothing that belongs to anybody else');
+
+reset role;
 
 select * from finish();

@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/privacy/privacy.dart';
 import '../../domain/records/records.dart';
+import '../../domain/wallet/wallet.dart';
 
 /// The only file in the app that talks to Supabase (`RULES.md` 3.7 / GATE-1).
 ///
@@ -16,7 +17,7 @@ import '../../domain/records/records.dart';
 /// * **It never logs a phone number, a code, a challenge id or a token.** The
 ///   error paths carry a kind, not a payload.
 class SupabaseCrayApi
-    implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi {
+    implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi, WalletApi {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -639,6 +640,110 @@ class SupabaseCrayApi
           outcome: row['outcome'] as String?,
         ),
     ];
+  }
+
+  // -------------------------------------------------------------------------
+  // WalletApi (M7). Reads come from SECURITY DEFINER functions keyed on the
+  // caller's own customer id (0057), so there is no salon filter written here
+  // to get wrong - and no table read that a future policy change could widen.
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<WalletSummary> wallet() async {
+    try {
+      final row = _asMap(await _client.rpc<dynamic>('my_wallet')) ?? const {};
+      return WalletSummary(
+        balancePaise: _int(row['balance_paise']),
+        paidPaise: _int(row['paid_paise']),
+        bonusPaise: _int(row['bonus_paise']),
+        nextBonusExpiry: _time(row['next_bonus_expiry']),
+        nextBonusPaise: _int(row['next_bonus_paise']),
+      );
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  @override
+  Future<List<WalletEntry>> walletHistory({int limit = 20, int? before}) async {
+    final rows = await _rows(
+      () async => (await _client.rpc<dynamic>(
+        'my_wallet_history',
+        params: {'p_limit': limit, 'p_before': before},
+      ) as List)
+          .cast<Map<String, dynamic>>(),
+    );
+    return [
+      for (final row in rows)
+        WalletEntry(
+          id: _int(row['id']),
+          kind: row['kind'] as String? ?? '',
+          amountPaise: _int(row['amount_paise']),
+          balanceAfter: _int(row['balance_after']),
+          createdAt: _time(row['created_at']) ?? DateTime.now(),
+          reason: row['reason'] as String?,
+        ),
+    ];
+  }
+
+  @override
+  Future<TopupQuote> topupQuote(int amountPaise) async {
+    try {
+      final row = _asMap(await _client.rpc<dynamic>(
+            'topup_quote',
+            params: {'p_amount_paise': amountPaise},
+          )) ??
+          const {};
+      return TopupQuote(
+        amountPaise: _int(row['amount_paise']),
+        bonusPaise: _int(row['bonus_paise']),
+        minTopupPaise: _int(row['min_topup_paise']),
+        bonusExpiresAt: _time(row['bonus_expires_at']),
+      );
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  @override
+  Future<TopupOrder> startTopup({
+    required String clientActionId,
+    required int amountPaise,
+  }) async {
+    final response = await _invoke('create-payment-order', {
+      'client_action_id': clientActionId,
+      'amount_paise': amountPaise,
+    });
+    final body = _asMap(response.data) ?? const {};
+
+    if (response.status != 200) {
+      // Each of these is a different sentence to the customer. "Something went
+      // wrong" in front of a pay button is how a salon loses a top-up and never
+      // finds out why.
+      throw switch (body['error']) {
+        'below_minimum' => TopupException(
+            TopupProblem.belowMinimum,
+            minTopupPaise: _int(body['min_topup_paise']),
+          ),
+        'invalid_amount' || 'above_maximum' =>
+          const TopupException(TopupProblem.invalidAmount),
+        'payments_unavailable' =>
+          const TopupException(TopupProblem.paymentsUnavailable),
+        'salon_unavailable' => const TopupException(TopupProblem.salonUnavailable),
+        _ => const TopupException(TopupProblem.network),
+      };
+    }
+
+    return TopupOrder(
+      paymentId: body['payment_id'] as String? ?? '',
+      orderId: body['order_id'] as String? ?? '',
+      keyId: body['key_id'] as String? ?? '',
+      amountPaise: _int(body['amount_paise']),
+    );
   }
 
   static int _int(Object? value) => switch (value) {

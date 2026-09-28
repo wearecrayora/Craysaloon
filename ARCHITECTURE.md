@@ -1235,7 +1235,7 @@ bad tenant cannot stall the platform.
 | I | Subscription lifecycle | `pg_cron` daily | subscription status transition |
 | **J** | **Customer bound** | `domain_events: customer.bound` | `customer_identities` primary key |
 | **K** | **Escalation sweep** | `pg_cron` every minute | `notification_deliveries` per-channel row |
-| **L** | **Bonus-lot expiry** | `pg_cron` nightly | `wallet_lots.expired_at` set once |
+| **L** | **Bonus-lot expiry** | `pg_cron` nightly — **functions built (0056), schedule attached at M8**; pg_cron is not installed yet | `wallet_lots.expired_at` set once; the warning by a unique index on `domain_events` |
 
 **Pattern:** every automation is guarded by a *database* uniqueness or state-transition
 constraint, not by "we only call it once." At-least-once delivery plus idempotent handlers is the

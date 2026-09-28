@@ -34,9 +34,9 @@
 | # | Route | Screen | M |
 |---|---|---|---|
 | C1 | `/home` | **Home** — balance, next-visit-due, Book CTA, active offer | 7 |
-| C2 | `/wallet` | **Wallet** — balance, paid/bonus breakdown, history | 7 |
-| C3 | `/wallet/add` | **Add Money** — packs, **disclosure block**, pay | 7 |
-| C4 | `/wallet/add/result` | Payment result — success / pending / failed | 7 |
+| C2 | `/wallet` | **Wallet** — balance (never shown alone), paid/bonus separately, history. **Built** | 7 |
+| C3 | `/wallet/add` | **Add Money** — packs, **disclosure block above the pay button**, server-priced quote. **Built**; the Razorpay hand-off is behind `PaymentSheet` and not yet wired | 7 |
+| C4 | *(on C3)* | Payment result — sent / cancelled / failed, stated on the Add Money screen itself. A separate route would be a screen the customer lands on with nothing to do. **Never says "paid"**: the credit follows the webhook | 7 |
 | C5 | `/book/service` | Book ① service select | 6 |
 | C6 | `/book/addons` | Book ② **add-ons — never pre-selected** | 6 |
 | C7 | `/book/slot` | Book ③ barber + slot | 6 |

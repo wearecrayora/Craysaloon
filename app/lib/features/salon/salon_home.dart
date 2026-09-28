@@ -108,6 +108,16 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
             Text(l10n.joinedTitle(salonName), style: text.headlineSmall),
             const SizedBox(height: 8),
             Text(l10n.homeReady, style: text.bodyMedium),
+            const SizedBox(height: 24),
+            // The wallet is the retention loop's front door. It is a
+            // destination, not a number on this screen: a balance shown here
+            // would have to carry its own "only at this salon, not cash" line
+            // (DESIGN 6.1), and two places saying it is two places to get it
+            // wrong.
+            FilledButton.tonal(
+              onPressed: () => context.push('/wallet'),
+              child: Text(l10n.walletTitle),
+            ),
             if (_confirmation != null) ...[
               const SizedBox(height: 16),
               Text(_confirmation!, style: text.bodySmall),

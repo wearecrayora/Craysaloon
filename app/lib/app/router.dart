@@ -10,6 +10,8 @@ import '../features/day/walk_in_screen.dart';
 import '../features/join/deep_link_listener.dart';
 import '../features/join/join_screen.dart';
 import '../features/privacy/your_data_screen.dart';
+import '../features/wallet/add_money_screen.dart';
+import '../features/wallet/wallet_screen.dart';
 import '../features/salon/salon_home.dart';
 import '../l10n/app_localizations.dart';
 import 'providers.dart';
@@ -52,7 +54,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         // Two destinations, and the second is not optional: "Your data" is
         // where consent is withdrawn and erasure is asked for, and the Act
         // measures withdrawal against how easy consent was (s.6(4)).
-        const customerRoutes = {'/home', '/your-data'};
+        const customerRoutes = {'/home', '/your-data', '/wallet', '/wallet/add'};
         return customerRoutes.contains(location) ? null : '/home';
       }
 
@@ -66,6 +68,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/home', builder: (_, _) => const SalonHome()),
       GoRoute(path: '/your-data', builder: (_, _) => const YourDataScreen()),
+      GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
+      GoRoute(path: '/wallet/add', builder: (_, _) => const AddMoneyScreen()),
       GoRoute(path: '/console-only', builder: (_, _) => const _ConsoleOnly()),
 
       // The owner shell: one bar, the destinations an owner uses all day.

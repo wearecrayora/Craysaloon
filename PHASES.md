@@ -243,8 +243,27 @@ against the payment row before a paisa is credited. Razorpay needs two secrets, 
 collects both and shows the operator that salon's webhook URL to paste into their dashboard.
 0049 also **generalised the one credential door** rather than adding a second: `otp_salon_sender`
 now calls `salon_provider_secret`, so the schema still has exactly one function that reads Vault -
-asserted by the gate, which names both it and the pepper reader. **Still to build:** the Add Money
-screen with its disclosure block, and Automations B and L.
+asserted by the gate, which names both it and the pepper reader. *App and automations (2026-09-28):* the **wallet (C2)** and **Add Money (C3)** are built. The
+disclosure block is above the pay button, at body size, uncollapsed, and every number on it comes
+from `topup_quote` - the screen never computes a bonus, so it cannot promise one the ledger would
+refuse. The pay button is **disabled until the quote lands**, because a pay button live before the
+disclosure is a payment made without it. A test asserts the block sits physically above the button.
+
+**The app never says a payment succeeded.** `PaymentSheet` can report `submitted` at best; the
+credit follows Razorpay's webhook. The Razorpay SDK is deliberately not wired yet
+(`UnavailablePaymentSheet`), and the screen says the last step is not switched on rather than
+offering a dead button - a simulated sheet that reported success would be one merge from shipping,
+and the customer it fails believes they hold credit they do not have. **Live Razorpay with the
+salon's test keys is the remaining M7 item.**
+
+**Automation B** is the `wallet.topped_up` event, emitted inside the same transaction as the
+credit, carrying the amount, the bonus and its expiry so a receipt never re-derives its own
+trigger. It inherits the credit's idempotency: one credit, one receipt, however many times
+Razorpay redelivers. **Automation L** is `app.expire_due_bonus_lots` (per salon, guarded by
+`wallet_lots.expired_at`) and `app.nudge_expiring_bonus` (one warning per lot, ever, guarded by a
+unique index - a nightly sweep is not a nightly message). **The schedule is not attached**: pg_cron
+is not installed on this project, so M8 wires the nightly trigger with the rest of the scheduled
+surface. Gate: 14 new assertions in `money/ledger_test.sql`.
 
 **M8 — Reminders and push.** Automations A, C, K; the ack protocol; learned intervals.
 *Read:* PRD §9.2, §10.1, §12 · ARCHITECTURE §6.6, §6.7, §11, §12.

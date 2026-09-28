@@ -521,4 +521,102 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get erasureConfirmAction => 'Yes, ask for deletion';
+
+  @override
+  String get walletTitle => 'Wallet';
+
+  @override
+  String get walletPaidLabel => 'Paid credit';
+
+  @override
+  String get walletBonusLabel => 'Bonus credit';
+
+  @override
+  String walletBonusExpiryNote(String amount, String date) {
+    return '$amount of bonus expires on $date.';
+  }
+
+  @override
+  String get walletAddMoney => 'Add money';
+
+  @override
+  String get walletHistoryHeading => 'Recent activity';
+
+  @override
+  String get walletHistoryEmpty =>
+      'Nothing yet. Money you add, and money you use here, shows up in this list.';
+
+  @override
+  String get entryTopUp => 'Money added';
+
+  @override
+  String get entryBonus => 'Bonus';
+
+  @override
+  String get entrySpend => 'Used at the salon';
+
+  @override
+  String get entryExpiry => 'Bonus expired';
+
+  @override
+  String get entryReversal => 'Reversed';
+
+  @override
+  String get entryReferral => 'Referral reward';
+
+  @override
+  String get entryCorrection => 'Correction';
+
+  @override
+  String get addMoneyTitle => 'Add money';
+
+  @override
+  String get addMoneyAmount => 'Amount';
+
+  @override
+  String addMoneyBonusYouGet(String bonus) {
+    return 'You get $bonus extra.';
+  }
+
+  @override
+  String get addMoneyNoBonus => 'No bonus on this amount.';
+
+  @override
+  String get addMoneyNotRefundable =>
+      'A top-up cannot be refunded or taken out as cash.';
+
+  @override
+  String get addMoneyDisclosureHeading => 'Before you pay';
+
+  @override
+  String addMoneyPay(String amount) {
+    return 'Pay $amount';
+  }
+
+  @override
+  String addMoneyBelowMinimum(String min) {
+    return 'The smallest top-up here is $min.';
+  }
+
+  @override
+  String get addMoneyInvalid => 'Enter an amount to add.';
+
+  @override
+  String get addMoneyUnavailable =>
+      'This salon cannot take payments yet. Ask at the counter.';
+
+  @override
+  String get addMoneyCheckoutNotReady =>
+      'Paying from the app is not switched on in this version yet. Your money has not moved.';
+
+  @override
+  String get addMoneySubmitted =>
+      'Payment sent. Your credit appears as soon as the bank confirms it.';
+
+  @override
+  String get addMoneyCancelled => 'Payment cancelled. Nothing was charged.';
+
+  @override
+  String get addMoneyFailed =>
+      'That payment did not go through. Nothing was charged.';
 }
