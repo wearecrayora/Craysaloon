@@ -547,7 +547,9 @@ at all.
 **6 hours** to CERT-In for a listed cyber incident, and **72 hours** to the Data Protection Board
 with facts, cause, mitigation and findings - with affected customers told without delay, in plain
 language, by the **salon** as Data Fiduciary. Never wait for certainty before notifying: the Rules
-expect an initial report and an update, not one perfect one.
+expect an initial report and an update, not one perfect one. The steps, the contacts and the
+wording are in **`RUNBOOK-BREACH.md`**, which names one human as owner and is rehearsed - an
+unrehearsed runbook has unknown steps in it.
 
 11.11 **Every data-principal right is answerable with a date.** Access, erasure and grievance are
 rows with a due date and an outcome (`data_rights_requests`, 0051). A refusal is allowed; silence
