@@ -92,6 +92,20 @@ verify_jwt = false
 [functions.otp-verify]
 verify_jwt = false
 
+# The customer must be signed in to top up their own wallet, and the function
+# forwards their JWT to start_topup so the DATABASE decides which customer they
+# are. Verifying here as well means an unauthenticated request never reaches the
+# payment gateway.
+[functions.create-payment-order]
+verify_jwt = true
+
+# Razorpay cannot present a Supabase JWT. This one authenticates differently and
+# more strongly: the salon comes from a path token nobody else knows, and the
+# body's HMAC is verified with that salon's own webhook secret before a single
+# field is read (ARCHITECTURE 8.3).
+[functions.rzp-webhook]
+verify_jwt = false
+
 [storage]
 enabled = false  # files live in Cloudflare R2, not Supabase Storage
 

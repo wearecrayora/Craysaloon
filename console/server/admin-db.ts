@@ -301,6 +301,24 @@ export async function getSalon(salonId: string) {
   return row ?? null;
 }
 
+/**
+ * The salon's own webhook path token.
+ *
+ * Razorpay has to be told where to send that salon's payment notifications, and
+ * the URL carries this token: it is how the webhook knows WHICH salon it is for,
+ * without trusting anything in the body (ARCHITECTURE 8.3). Shown to the
+ * operator so they can paste it into the salon's Razorpay dashboard.
+ *
+ * It is not a secret in the credential sense - it identifies, it does not
+ * authorise; the signature does that - but it is per-salon and not published.
+ */
+export async function getWebhookToken(salonId: string) {
+  const sql = client();
+  const [row] = await sql<{ webhook_token: string | null }[]>`
+    select webhook_token from public.salons where id = ${salonId}::uuid`;
+  return row?.webhook_token ?? null;
+}
+
 export async function getBranding(salonId: string): Promise<SalonBranding> {
   const sql = client();
   const [row] = await sql<{ version: number; tokens: SettingsJson }[]>`

@@ -235,9 +235,16 @@ lot**), and `app_admin.wallet_correct` - super-admin only, reason required, audi
 human path to a balance anywhere. `app.referral_release_reward` is deliberately absent until
 referrals exist (M9): a function that moves money before the rule justifying it is worse than a
 missing one. Gate: 18 new assertions in `money/ledger_test.sql`, plus a negative control that adds a
-second ledger writer and requires the gate to go red. **Still to build:** the payment waterfall with
-Razorpay (per-salon keys, path-token webhook), the Add Money screen with its disclosure block, and
-Automations B and L.
+second ledger writer and requires the gate to go red. *Payments (same session):* `create-payment-order` and `rzp-webhook/{token}` are built, with the
+salon's own Razorpay keys fetched at the moment of use - **no Crayora account exists to fall back
+on, by design** (RULES 8). The webhook resolves the salon from its path token, verifies the body's
+HMAC with that salon's own webhook secret, dedupes on the event id, and re-verifies the amount
+against the payment row before a paisa is credited. Razorpay needs two secrets, so the console now
+collects both and shows the operator that salon's webhook URL to paste into their dashboard.
+0049 also **generalised the one credential door** rather than adding a second: `otp_salon_sender`
+now calls `salon_provider_secret`, so the schema still has exactly one function that reads Vault -
+asserted by the gate, which names both it and the pepper reader. **Still to build:** the Add Money
+screen with its disclosure block, and Automations B and L.
 
 **M8 — Reminders and push.** Automations A, C, K; the ack protocol; learned intervals.
 *Read:* PRD §9.2, §10.1, §12 · ARCHITECTURE §6.6, §6.7, §11, §12.

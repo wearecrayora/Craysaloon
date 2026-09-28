@@ -138,6 +138,29 @@ export function CredentialForm({
         </div>
       </div>
 
+      {row.provider === 'razorpay' && (
+        <>
+          <label htmlFor={`webhook-${row.provider}`}>
+            {row.has_secret ? 'Replace the webhook secret' : 'Webhook secret'}
+          </label>
+          <input
+            id={`webhook-${row.provider}`}
+            name="webhookSecret"
+            type="password"
+            autoComplete="off"
+            spellCheck={false}
+            placeholder="From Razorpay Dashboard → Settings → Webhooks"
+            required
+          />
+          <p className="hint" style={{ margin: '4px 0 0' }}>
+            Razorpay uses two secrets. The key secret signs our calls to them; this one verifies
+            what they send back. <strong>Without it, payment notifications cannot be verified and
+            are refused</strong> - so top-ups would never credit. Set the same value in the
+            salon&rsquo;s Razorpay dashboard, on a webhook pointing at that salon&rsquo;s own URL.
+          </p>
+        </>
+      )}
+
       {(row.provider === 'whatsapp' || row.provider === 'rcs') && (
         <>
           <label htmlFor={`sender-${row.provider}`}>Sender</label>

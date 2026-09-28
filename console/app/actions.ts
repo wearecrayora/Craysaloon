@@ -276,6 +276,7 @@ export async function setSecretAction(_prev: ActionState, form: FormData): Promi
   const secret = String(form.get('secret') ?? '');
   const publicKeyId = String(form.get('publicKeyId') ?? '').trim() || null;
   const senderId = String(form.get('senderId') ?? '').trim() || null;
+  const webhookSecret = String(form.get('webhookSecret') ?? '').trim();
 
   if (!PROVIDERS.includes(provider)) {
     return { error: 'Unknown provider.' };
@@ -301,12 +302,35 @@ export async function setSecretAction(_prev: ActionState, form: FormData): Promi
     }
   }
 
+  // Razorpay uses TWO secrets that do different jobs: the key secret signs API
+  // calls, and the webhook secret verifies what Razorpay sends back. One opaque
+  // string cannot carry both, so they are stored together as JSON - and the
+  // webhook secret is required, because without it a payment notification cannot
+  // be verified and the only safe response is to refuse every one of them.
+  if (provider === 'razorpay') {
+    if (!publicKeyId) {
+      return { error: 'Enter the salon’s Razorpay Key ID as well as its key secret.' };
+    }
+    if (!webhookSecret) {
+      return {
+        error:
+          'Enter the webhook secret too. Without it the salon’s payment notifications ' +
+          'cannot be verified, and unverified ones are refused - so top-ups would never credit.',
+      };
+    }
+  }
+
+  const stored =
+    provider === 'razorpay'
+      ? JSON.stringify({ key_secret: secret.trim(), webhook_secret: webhookSecret })
+      : secret.trim();
+
   try {
     await setIntegrationSecret(
       admin.id,
       salonId,
       provider,
-      secret.trim(),
+      stored,
       publicKeyId,
       // VerifyNow sends under Message Central's own registered sender, so a
       // sender id for Message Central would be stored and never used.

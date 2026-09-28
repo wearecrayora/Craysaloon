@@ -173,16 +173,19 @@ select is(
   'no OTP function is callable by anon or authenticated - only by the Edge Functions'
 );
 
--- otp_salon_sender returns a decrypted credential. It must be the only public
--- function that does.
+-- Exactly ONE public function returns a decrypted provider credential. It used
+-- to be otp_salon_sender; 0049 generalised it to salon_provider_secret so
+-- Razorpay could be served by the same door rather than a second one, and
+-- otp_salon_sender now calls it. The property under test is the COUNT, not the
+-- name - one auditable door, whatever it is called.
 select set_eq(
   $$with fns as materialized (
       select p.oid, p.proname from pg_proc p
        where p.pronamespace = 'public'::regnamespace and p.prokind = 'f')
     select proname::text from fns
      where pg_get_functiondef(oid) ~* 'decrypted_secret'$$,
-  $$values ('otp_salon_sender')$$,
-  'exactly one public function reads a decrypted secret, and it is the OTP sender'
+  $$values ('salon_provider_secret')$$,
+  'exactly one public function reads a decrypted credential (0049 renamed the door)'
 );
 
 -- ---------------------------------------------------------------------------
