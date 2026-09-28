@@ -328,6 +328,15 @@ a trigger for `dispatch-notifications` from outside the database - deliberately 
 nothing scheduled in the database may hold a credential (RULES 8.12). The function is written,
 type-checked, and reports `push_not_configured` rather than pretending.
 
+**Checkout (2026-09-29, M7's missing seam).** `app.wallet_debit_at_checkout` had existed since
+0048 and **nothing had ever called it**; nothing set `visits.payment_status` either, so every visit
+was still `unpaid` and the wallet could be filled and never spent. Both halves were individually
+correct and individually gated - the seam between them did not exist, so nothing tested it.
+`public.checkout_visit` (0069, 0070) takes the amount FROM THE VISIT, draws the wallet down as far
+as it goes, records the remainder at the counter, and is idempotent on the client action id because
+the mark-complete before it works offline. 11 new assertions. **plpgsql_check caught 0069's
+ON CONFLICT against a partial index before any test ran**, which is the whole argument for it.
+
 **M9 — Refer & Earn.** Automation D.
 *Done when:* a reward releases only after a completed **paid** first visit; self-referral rejected
 by constraint; a cancelled or refunded visit releases nothing.

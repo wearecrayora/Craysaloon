@@ -7,7 +7,7 @@
 -- FOR EACH ROW trigger never fired and the probe proved nothing. A statement
 -- that succeeds against zero rows is not evidence.
 
-select plan(52);
+select plan(63);
 
 select set_config('app.phone_hash_pepper', 'money-test-pepper', true);
 
@@ -642,5 +642,146 @@ select is(
   'the quote promises exactly the bonus the ledger already issued for that amount');
 
 reset role;
+
+-- ---------------------------------------------------------------------------
+-- Checkout: the seam between a completed visit and the money
+-- ---------------------------------------------------------------------------
+--
+-- The wallet debit was gated. Mark-complete was gated. NOTHING connected them,
+-- so every visit stayed `unpaid` and the wallet could be filled and never
+-- spent (0069). Each piece proven, the seam untested - the same shape as the
+-- reminder that was scheduled and never sent.
+
+insert into auth.users (id) values ('ffffffff-aaaa-4000-8000-00000000000a');
+
+insert into public.salons (id, legal_name, display_name, join_code, status,
+                           activated_by, activated_at, wallet_rule)
+values ('ffffffff-0000-4000-8000-000000000001', 'Till Salon Ltd', 'Till Salon',
+        'CRAY-TXKS22', 'active', '99999999-aaaa-4000-8000-00000000000f', now(),
+        '{"topup_paise": 50000, "bonus_paise": 5000, "min_topup_paise": 10000}'::jsonb);
+
+insert into public.customers (id, salon_id, auth_user_id, name, phone_hash)
+values ('ffffffff-1111-4000-8000-00000000000c', 'ffffffff-0000-4000-8000-000000000001',
+        'ffffffff-aaaa-4000-8000-00000000000a', 'Till cust', app.phone_hash('9722200011'));
+
+insert into public.staff (id, salon_id, name, active)
+values ('ffffffff-3333-4000-8000-000000000001', 'ffffffff-0000-4000-8000-000000000001',
+        'Till stylist', true);
+
+insert into public.bookings (id, salon_id, customer_id, staff_id, starts_at, ends_at, status)
+values ('ffffffff-4444-4000-8000-000000000001', 'ffffffff-0000-4000-8000-000000000001',
+        'ffffffff-1111-4000-8000-00000000000c', 'ffffffff-3333-4000-8000-000000000001',
+        now(), now() + interval '30 minutes', 'completed');
+
+-- A Rs 450 visit, and Rs 200 of credit: the case the design is actually for.
+insert into public.visits (id, salon_id, booking_id, customer_id, staff_id,
+                           final_amount_paise, completed_at)
+values ('ffffffff-5555-4000-8000-000000000001', 'ffffffff-0000-4000-8000-000000000001',
+        'ffffffff-4444-4000-8000-000000000001', 'ffffffff-1111-4000-8000-00000000000c',
+        'ffffffff-3333-4000-8000-000000000001', 45000, now());
+
+insert into public.wallet_accounts (customer_id, salon_id, balance_paise)
+values ('ffffffff-1111-4000-8000-00000000000c', 'ffffffff-0000-4000-8000-000000000001', 20000);
+
+insert into public.wallet_lots
+  (salon_id, customer_id, kind, amount_paise, remaining_paise)
+values ('ffffffff-0000-4000-8000-000000000001', 'ffffffff-1111-4000-8000-00000000000c',
+        'paid', 20000, 20000);
+
+select is(
+  (select payment_status::text from public.visits
+    where id = 'ffffffff-5555-4000-8000-000000000001'),
+  'unpaid',
+  'a completed visit starts unpaid - completing is not paying');
+
+set local role authenticated;
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"ffffffff-aaaa-4000-8000-00000000000a",'
+  '"app_role":"customer",'
+  '"salon_id":"ffffffff-0000-4000-8000-000000000001"}',
+  true
+);
+
+select throws_ok(
+  $q$select public.checkout_visit('ffffffff-5555-4000-8000-000000000001',
+                                  'ffffffff-9999-4000-8000-000000000001')$q$,
+  '42501', null,
+  'a CUSTOMER cannot settle their own bill - the salon decides what was delivered');
+
+reset role;
+
+set local role authenticated;
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"99999999-aaaa-4000-8000-00000000000f",'
+  '"app_role":"owner",'
+  '"salon_id":"ffffffff-0000-4000-8000-000000000001"}',
+  true
+);
+
+create temp table till as
+  select public.checkout_visit('ffffffff-5555-4000-8000-000000000001',
+                               'ffffffff-9999-4000-8000-000000000001') as r;
+grant select on till to public;
+
+select is((select r ->> 'from_wallet_paise' from till), '20000',
+  'the wallet pays as far as it goes - all Rs 200 of it');
+
+select is((select r ->> 'from_counter_paise' from till), '25000',
+  'and the counter takes the remaining Rs 250');
+
+select is((select r ->> 'payment_status' from till), 'paid',
+  'partial payment from a wallet is not a partial SETTLEMENT - the visit is paid');
+
+reset role;
+
+select is(
+  (select balance_paise from public.wallet_accounts
+    where customer_id = 'ffffffff-1111-4000-8000-00000000000c'),
+  0::bigint,
+  'the credit is gone from the wallet, through the one posting function');
+
+select is(
+  (select count(*)::int from public.wallet_transactions
+    where customer_id = 'ffffffff-1111-4000-8000-00000000000c' and kind = 'debit_spend'),
+  1,
+  'as exactly one ledger row - checkout does not write ledgers, it calls the caller that does');
+
+select results_eq(
+  $q$select method::text, amount_paise from public.payments
+      where visit_id = 'ffffffff-5555-4000-8000-000000000001'
+      order by method::text$q$,
+  $q$values ('cash', 25000::bigint), ('wallet', 20000::bigint)$q$,
+  'both halves are recorded as payments, so the settlement reads the same whatever paid it');
+
+set local role authenticated;
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"99999999-aaaa-4000-8000-00000000000f",'
+  '"app_role":"owner",'
+  '"salon_id":"ffffffff-0000-4000-8000-000000000001"}',
+  true
+);
+
+select is(
+  (public.checkout_visit('ffffffff-5555-4000-8000-000000000001',
+                         'ffffffff-9999-4000-8000-000000000001') ->> 'already'),
+  'true',
+  'a REPLAYED checkout takes nothing twice - mark-complete is offline, so this is too');
+
+reset role;
+
+select is(
+  (select count(*)::int from public.payments
+    where visit_id = 'ffffffff-5555-4000-8000-000000000001'),
+  2,
+  'and writes no third payment row');
+
+select is(
+  (select count(*)::int from public.domain_events
+    where type = 'visit.paid' and aggregate_id = 'ffffffff-5555-4000-8000-000000000001'),
+  1,
+  'one visit.paid event - what a referral reward will key off (RULES 10)');
 
 select * from finish();
