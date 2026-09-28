@@ -56,6 +56,7 @@ missing; they are absent on purpose. If a ticket asks for one, escalate rather t
 | An in-app owner self-signup or self-provisioning wizard | Crayora provisions salons; owners do not |
 | A hard delete of any row in `invoices`, `payments`, `wallet_transactions`, `loyalty_ledger` | Statutory retention. Archive and anonymise instead |
 | A global phone-number lookup across salons | Cross-tenant enumeration |
+| **Promotional SMS** - any marketing campaign delivered by SMS | Message Central's own DLT registration covers the OTP and service messages it sends under its name. Nobody has confirmed **in writing** that it extends to a salon's marketing content, and unregistered promotional SMS is a TRAI/TCCCPA violation billed to whoever sent it. Decision of 28 Sep 2026: **no promotional SMS until that confirmation exists.** Push and WhatsApp marketing are unaffected, and push is preferred anyway (§12) |
 | **Any owner, manager or staff screen, endpoint or permission to view or change the salon's provider credentials** — Message Central Customer ID or token, Razorpay keys, WhatsApp, RCS | They are set and changed **only by Crayora**, in the super-admin console, behind MFA, audited (8.12). A salon-side path would put the account that receives customers' money one stolen owner phone away from an attacker: change the Razorpay key and every top-up lands in someone else's account |
 
 ---
@@ -516,6 +517,18 @@ is opt-in and starts **off**.
 11.7 **The salon is the Data Fiduciary; Crayora is the Data Processor.** The app shows a
 **per-salon** grievance contact, not just a Crayora one.
 
+11.7a **A salon cannot be activated without a named privacy contact** - a person, plus an email or
+a phone number (`app_admin.activate_salon` refuses; 0053). It is published **before login**, by
+`resolve_join_code`, with the salon's name and branding, because the notice has to be readable at
+the moment consent is asked for. Crayora is the escalation when a salon does not answer in 30 days,
+never the first line.
+
+11.7b **The published privacy policy is a statement about the system**, not marketing copy
+(`join/public/privacy.html`, served at `join.craysalon.in/privacy`). Every claim in it must be
+checkable against a migration, a gate or an Edge Function. **If the software changes, the policy
+changes in the same commit** - a policy that describes a system we no longer run is worse evidence
+than no policy at all.
+
 11.8 Erasure is **anonymisation**: clear name and birthday, replace phone with its salted hash,
 detach `auth_user_id`, hard-delete photos from R2, **retain** financial rows against the anonymous
 id.
@@ -523,6 +536,12 @@ id.
 11.9 Purging a salon deletes **operational and personal** data only. `invoices`, `payments`,
 `wallet_transactions` and `loyalty_ledger` move to a restricted, anonymised archive for the
 statutory period. Offer an export first, and require outstanding credit to be settled.
+
+11.9a **The statutory period is 8 years** from the end of the financial year, for `invoices`,
+`payments`, `wallet_transactions` and `loyalty_ledger` (decision of 28 Sep 2026; **to be confirmed
+by a CA**, and that confirmation is owed before the first real salon). The published privacy policy
+states this number to customers, so the retention job, this rule and that page move together or not
+at all.
 
 11.10 **A breach has two clocks, and both start when we become AWARE.**
 **6 hours** to CERT-In for a listed cyber incident, and **72 hours** to the Data Protection Board

@@ -29,6 +29,35 @@ Then point `join.craysalon.in` at it, and add the same domain to
 QR already printed encodes `https://join.craysalon.in/s/<code>`, and those cards are
 on salon counters. **The path shape is now permanent.**
 
+## `/privacy` — the published policy
+
+`public/privacy.html`, served at `https://join.craysalon.in/privacy` (`cleanUrls`). It is the
+URL the Play listing points at, the URL the in-app consent notice links to, and the document a
+customer is entitled to under DPDP s.5. It is linked from `/` and from `/s/<code>`.
+
+**Two things must happen before this URL is published or given to Play:**
+
+1. **Fill the placeholders.** Every `[SQUARE-BRACKET]` item is one of Crayora's own registered
+   details — legal name, registered address, the named privacy contact and its email. Grep for
+   `[` before deploying:
+
+   ```
+   grep -n "\[[A-Z ]\+\]" join/public/privacy.html
+   ```
+
+   No hits means it is ready. A published policy naming nobody is worse than no policy: it is
+   evidence that the obligation was noticed and skipped.
+
+2. **Have a lawyer read it.** It is written to be accurate about what the software does — every
+   claim in it can be checked against a migration, a gate or an Edge Function — but accuracy is
+   not the same as legal sufficiency, and Crayora's own corporate details are not something code
+   review can verify.
+
+**When the software changes, this page changes in the same commit.** If it says photos need
+separate consent, or that credentials cannot be read back, those are statements about the
+system that a regulator is entitled to test. Hindi and Hinglish translations are still owed
+(the app ships `en`/`hi`/`hi_Latn`).
+
 ## assetlinks.json — why it is not committed
 
 The file must carry the **SHA-256 fingerprint of the certificate the release APK is

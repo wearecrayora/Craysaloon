@@ -213,20 +213,24 @@ Built and gated this session (migrations 0051–0052, `privacy/data_rights_test.
 
 ---
 
-## 6. Decisions only you can make
+## 6. Decisions taken, 28 September 2026
 
-1. **Who is the grievance contact for each salon?** The Act expects a named, reachable channel, and
-   `RULES.md` 11.7 already says it must be the salon's, not Crayora's. Needs a field in
-   provisioning and a value per salon.
-2. **Crayora's own contact** for processor matters, and whether you appoint a DPO (not required
-   unless notified as an SDF, but a named person is good practice and cheap).
-3. **A Data Processing Agreement with each salon**, and **sub-processor terms** with Supabase,
-   Cloudflare, Razorpay, Message Central, Sentry and Google. Templates exist commercially; a lawyer
-   should adapt one.
-4. **A published privacy policy** — needed for Play, and referenced by the notice.
-5. **Retention periods** for financial records: a CA's answer.
-6. **Message Central's DLT position** for promotional SMS (above).
-7. Whether to **move Sentry to an EU/India region** or accept the transfer and disclose it.
+These were open questions. They are answered now, and the answers are binding on the code — where
+one has a mechanism, the mechanism is named.
+
+| # | Question | Decision | Where it lives |
+|---|---|---|---|
+| 1 | Who is the grievance contact per salon? | **The salon answers; Crayora escalates.** A named person plus at least one reachable channel, captured before activation | `salons.grievance_name/email/phone`, `app_admin.set_grievance_contact` (0053); `activate_salon` **refuses** without one; published pre-login by `resolve_join_code` (0055); console page at `/salon/[id]/privacy` |
+| 2 | Crayora's own contact, and a DPO? | **A named person, no DPO title.** We are not a Significant Data Fiduciary and inventing the title would claim a status we do not hold | Privacy policy, contact block |
+| 3 | A published privacy policy | **Written**: `join/public/privacy.html`, served at `join.craysalon.in/privacy` | Linked from `/`, `/s/<code>`, the in-app notice and the Play listing. Placeholders + lawyer review are the two open items — see `join/README.md` |
+| 4 | Retention of financial records | **8 years** from the end of the financial year, **to be confirmed with a CA**. Applied as the stated period now, so the promise and the behaviour match | Privacy policy; still to be enforced by a purge job (M12) |
+| 5 | Contracts | **Data-processing terms inside the salon agreement**, plus a published sub-processor list | Sub-processor table is in the privacy policy; the salon agreement is a lawyer's document |
+| 6 | Message Central's DLT position for promotional SMS | **No promotional SMS until Message Central confirms in writing** that its registration covers salon marketing content. Transactional/service SMS and the OTP are unaffected — those go under Message Central's own registration | New entry in `RULES.md` §2: promotional SMS is a capability that deliberately does not exist yet |
+| 7 | Sentry region, and file location | **Pin files to India/Asia-Pacific, keep Sentry where it is, and disclose both.** Crash reports are technical, not customer records; moving them would buy little and cost a working error pipeline | Privacy policy names both, and says plainly which two sub-processors are outside India. R2 bucket location is a deployment instruction, still open (work queue #7) |
+
+**What decision 6 means in practice:** we can send an OTP and a booking confirmation today. We
+cannot send "20% off this Friday" by SMS until that confirmation exists. Push notification and
+WhatsApp are unaffected — and push is the preferred channel anyway (RULES 12).
 
 ---
 
@@ -237,10 +241,12 @@ Built and gated this session (migrations 0051–0052, `privacy/data_rights_test.
 | 1 | **Itemised consent notice** in the join flow, in all three languages | Consent without notice is not valid consent — it undermines every purpose we rely on | Next |
 | 2 | **"Your data" screen**: consent toggles, request a copy, request erasure, grievance contact | Withdrawal must be as easy as consent; the server side is done | Next |
 | 3 | **Breach runbook**: 6h CERT-In, 72h Board, principal notification, with a named owner and a rehearsal | The one gap where being unprepared converts an incident into a failure | Next |
-| 4 | **Grievance contact per salon**, captured at provisioning and shown in the app | Required by the notice, and by §6 item 1 | Next |
+| 4 | ~~**Grievance contact per salon**~~ | **Done** (0053/0055 + console). The *app* half — showing it — is part of item 1 | Done |
 | 5 | Nomination (s.14) | Statutory, low volume | M12 |
 | 6 | Children's-details rule: no DOB or photos for a minor, and a consent purpose if notes are kept | s.9 applies to a note as much as to a profile | M12 |
-| 7 | R2 location hint (India/APAC) + sub-processor list in the notice | Disclosure and data localisation hygiene | Before first real salon |
+| 7 | R2 bucket pinned to India/APAC at creation | The sub-processor list is published now; the bucket location is a deployment instruction nobody has executed | Before first real salon |
+| 7b | Fill the privacy policy's placeholders, and have a lawyer read it | A published policy naming nobody is evidence the obligation was noticed and skipped | Before first real salon |
+| 7c | Hindi and Hinglish translations of the policy | The app ships three languages; the notice behind it must too | M13 |
 | 8 | Test a backup restore | An untested backup is a belief, not a safeguard | Before first real salon |
 | 9 | Play Data Safety declaration + privacy policy URL | Blocks release | M13 |
 | 10 | Access-log retention aligned to 180 days in India | CERT-In | Before first real salon |
