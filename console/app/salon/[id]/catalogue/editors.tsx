@@ -348,7 +348,11 @@ export function Staff({ salonId, rows }: { salonId: string; rows: StaffRow[] }) 
 export function RulesForm({ salonId, rules }: { salonId: string; rules: SalonRules | null }) {
   const [state, save, saving] = useActionState(setRulesAction, empty);
 
-  const wallet = (rules?.wallet_rule ?? {}) as { topup_paise?: number; bonus_paise?: number };
+  const wallet = (rules?.wallet_rule ?? {}) as {
+    topup_paise?: number;
+    bonus_paise?: number;
+    min_topup_paise?: number;
+  };
 
   return (
     <Section title="Rules">
@@ -382,6 +386,28 @@ export function RulesForm({ salonId, rules }: { salonId: string; rules: SalonRul
               required
             />
           </div>
+        </div>
+
+        <div className="row">
+          <div>
+            <label htmlFor="minTopup">Smallest top-up a customer may make (₹)</label>
+            <input
+              id="minTopup"
+              name="walletMinTopupRupees"
+              type="number"
+              min={0}
+              step="1"
+              defaultValue={wallet.min_topup_paise ? wallet.min_topup_paise / 100 : 100}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="notice">
+          <strong>The bonus is a slab, not a one-off.</strong> “₹500 → +₹50” means a ₹2,000
+          top-up earns ₹200 — the customer gets one bonus for every whole threshold they reach.
+          Below the minimum there is no bonus at all, and the Add Money screen says so before
+          anyone pays rather than after.
         </div>
 
         <div className="notice">

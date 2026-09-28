@@ -61,7 +61,11 @@ insert into public.salons (id, legal_name, display_name, join_code, status, webh
                            wallet_rule, activated_by, activated_at)
 values ('aaaaaaab-0000-4000-8000-000000000001', 'Pay Salon Ltd', 'Pay Salon',
         'CRAY-PAYQQQ', 'active', 'whk_pay_salon_token',
-        '{"bonus_percent": 10, "min_topup_paise": 50000, "bonus_expiry_days": 90}'::jsonb,
+        -- THE SHAPE THE CONSOLE WRITES (PRD "Rs 500 -> +Rs 50"), not a shape
+        -- invented to suit the function under test. A fixture that agrees with
+        -- the code proves only that the code agrees with itself - which is
+        -- exactly how the percent/slab mismatch survived until 0058.
+        '{"topup_paise": 50000, "bonus_paise": 5000, "min_topup_paise": 50000}'::jsonb,
         'aaaaaaab-aaaa-4000-8000-00000000000f', now());
 
 insert into public.customers (id, salon_id, auth_user_id, name, phone, phone_hash)
@@ -102,7 +106,7 @@ grant select on quote to public;
 select results_eq(
   $q$select (q ->> 'amount_paise')::bigint, (q ->> 'bonus_paise')::bigint from quote$q$,
   $q$values (100000::bigint, 10000::bigint)$q$,
-  'the quote states the bonus the ledger will actually grant - 10 per cent of Rs 1000'
+  'the quote states the bonus the ledger will actually grant - two slabs of Rs 50'
 );
 
 select is(

@@ -136,7 +136,7 @@ The rest follow the patterns in `DESIGN.md` §6. These do not.
 
 | | |
 |---|---|
-| **Reads** | `salons.wallet_rule` (bonus rule, min top-up, **bonus expiry days**) |
+| **Reads** | `salons.wallet_rule` (`topup_paise`, `bonus_paise`, `min_topup_paise`, and **`bonus_expiry_days`** which only the owner sets, default 180) via `topup_quote`. The bonus is a **slab**: floor(amount / `topup_paise`) x `bonus_paise`, computed by `app.wallet_bonus_for` - the one function the credit also calls (0058) |
 | **Writes** | Edge Function `create-payment-order` → Razorpay (the **salon's** account) |
 | **States** | Idle · amount chosen · creating order · gateway open · pending · **captured** · failed · cancelled |
 

@@ -511,6 +511,7 @@ export async function setRulesAction(_prev: ActionState, form: FormData): Promis
 
   const topup = rupeesToPaise(form.get('walletTopupRupees'));
   const bonus = rupeesToPaise(form.get('walletBonusRupees'));
+  const minTopup = rupeesToPaise(form.get('walletMinTopupRupees'));
   const cycle = Number(form.get('reminderCycleDays') ?? 0);
 
   if (topup === null || topup <= 0) {
@@ -519,13 +520,23 @@ export async function setRulesAction(_prev: ActionState, form: FormData): Promis
   if (bonus === null) {
     return { error: 'Enter the bonus in rupees, for example 50.' };
   }
+  if (minTopup === null || minTopup < 0) {
+    return { error: 'Enter the smallest top-up in rupees, for example 100.' };
+  }
   if (!Number.isInteger(cycle) || cycle <= 0) {
     return { error: 'The reminder cycle must be a whole number of days.' };
   }
 
   try {
     await setSalonRules(admin.id, salonId, {
-      wallet_rule: { topup_paise: topup, bonus_paise: bonus },
+      // The shape the ledger reads, through app.wallet_bonus_for (0058). These
+      // three keys and no others: a fourth one here would be a rule the money
+      // never applies, which is what min_topup_paise silently was until now.
+      wallet_rule: {
+        topup_paise: topup,
+        bonus_paise: bonus,
+        min_topup_paise: minTopup,
+      },
       default_reminder_cycle_days: cycle,
       cancellation_policy: String(form.get('cancellationPolicy') ?? '').trim() || null,
     });

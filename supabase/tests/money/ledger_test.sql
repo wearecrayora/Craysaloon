@@ -7,7 +7,7 @@
 -- FOR EACH ROW trigger never fired and the probe proved nothing. A statement
 -- that succeeds against zero rows is not evidence.
 
-select plan(45);
+select plan(52);
 
 select set_config('app.phone_hash_pepper', 'money-test-pepper', true);
 
@@ -246,7 +246,8 @@ insert into public.salons (id, legal_name, display_name, join_code, status,
                            wallet_rule, activated_by, activated_at)
 values ('99999999-0000-4000-8000-000000000001', 'Money Salon Ltd', 'Money Salon',
         'CRAY-MNYQQQ', 'active',
-        '{"bonus_percent": 10, "min_topup_paise": 50000, "bonus_expiry_days": 180}'::jsonb,
+        -- The console's shape: Rs 500 -> +Rs 50, minimum Rs 500 (0058).
+        '{"topup_paise": 50000, "bonus_paise": 5000, "min_topup_paise": 50000}'::jsonb,
         '99999999-aaaa-4000-8000-00000000000f', now());
 
 insert into public.customers (id, salon_id, name, phone, phone_hash)
@@ -264,7 +265,7 @@ select app.wallet_credit_from_payment('99999999-7777-4000-8000-000000000001') as
 select results_eq(
   $q$select (r ->> 'paid_paise')::bigint, (r ->> 'bonus_paise')::bigint from credited$q$,
   $q$values (100000::bigint, 10000::bigint)$q$,
-  'a Rs 1000 top-up credits Rs 1000 paid and Rs 100 bonus - 10 per cent, in whole paise'
+  'a Rs 1000 top-up credits Rs 1000 paid and Rs 100 bonus - two slabs, in whole paise'
 );
 
 select results_eq(
@@ -465,7 +466,9 @@ insert into public.salons (id, legal_name, display_name, join_code, status,
                            activated_by, activated_at, wallet_rule)
 values ('bbbbbbbb-0000-4000-8000-000000000001', 'Bonus Salon Ltd', 'Bonus Salon',
         'CRAY-BNSAA2', 'active', '00000000-0000-4000-8000-00000000000a', now(),
-        '{"bonus_percent": 10, "min_topup_paise": 10000, "bonus_expiry_days": 30}'::jsonb);
+        -- THE SHAPE THE CONSOLE WRITES (PRD "Rs 500 -> +Rs 50"), not a shape
+        -- invented to suit the function under test (0058).
+        '{"topup_paise": 50000, "bonus_paise": 5000, "min_topup_paise": 10000}'::jsonb);
 
 insert into public.customers (id, salon_id, auth_user_id, name, phone_hash)
 values ('bbbbbbbb-1111-4000-8000-000000000001', 'bbbbbbbb-0000-4000-8000-000000000001',
@@ -479,7 +482,44 @@ create temp table receipted as
   select app.wallet_credit_from_payment('bbbbbbbb-2222-4000-8000-000000000001') as r;
 
 select is((select r ->> 'bonus_paise' from receipted), '10000',
-  'a 1000-rupee top-up at 10% issues a 100-rupee bonus lot');
+  'a 1000-rupee top-up on a "Rs 500 -> +Rs 50" rule issues two slabs: a 100-rupee bonus lot');
+
+-- The rule the CONSOLE writes, computed by the one function both halves use.
+-- Every one of these was wrong before 0058, in the same direction: nothing.
+select is(
+  (app.wallet_bonus_for('{"topup_paise": 50000, "bonus_paise": 5000}'::jsonb, 50000)
+     ->> 'bonus_paise')::bigint,
+  5000::bigint,
+  'one slab pays one bonus');
+
+select is(
+  (app.wallet_bonus_for('{"topup_paise": 50000, "bonus_paise": 5000}'::jsonb, 200000)
+     ->> 'bonus_paise')::bigint,
+  20000::bigint,
+  'four slabs pay four - a big top-up is worth making (decision of 28 Sep 2026)');
+
+select is(
+  (app.wallet_bonus_for('{"topup_paise": 50000, "bonus_paise": 5000}'::jsonb, 70000)
+     ->> 'bonus_paise')::bigint,
+  5000::bigint,
+  'and a part slab pays nothing extra - integer division, never a float');
+
+select is(
+  (app.wallet_bonus_for(
+     '{"topup_paise": 50000, "bonus_paise": 5000, "min_topup_paise": 100000}'::jsonb, 50000)
+     ->> 'bonus_paise')::bigint,
+  0::bigint,
+  'below the salon''s minimum there is no bonus at all');
+
+select is(
+  (app.wallet_bonus_for('{}'::jsonb, 100000) ->> 'bonus_paise')::bigint,
+  0::bigint,
+  'a salon with no rule yet gives no bonus - it does not guess one');
+
+select is(
+  (app.wallet_bonus_for('{}'::jsonb, 100000) ->> 'expiry_days')::integer,
+  180,
+  'bonus expiry defaults to 180 days, not to NEVER (ARCHITECTURE 14.2)');
 
 select is(
   (select count(*)::int from public.domain_events
@@ -518,13 +558,15 @@ select is(
 -- Automation L: expiry, and one warning before it
 -- ---------------------------------------------------------------------------
 
+-- 200 days, because the bonus lot this salon issued carries the DEFAULT expiry
+-- of 180 (ARCHITECTURE 14.2) - the window has to reach it to warn about it.
 select is(
-  (app.nudge_expiring_bonus('bbbbbbbb-0000-4000-8000-000000000001', 60) ->> 'nudged'),
+  (app.nudge_expiring_bonus('bbbbbbbb-0000-4000-8000-000000000001', 200) ->> 'nudged'),
   '1',
   'a bonus lot expiring inside the window is warned about');
 
 select is(
-  (app.nudge_expiring_bonus('bbbbbbbb-0000-4000-8000-000000000001', 60) ->> 'nudged'),
+  (app.nudge_expiring_bonus('bbbbbbbb-0000-4000-8000-000000000001', 200) ->> 'nudged'),
   '0',
   'and warned about ONCE, ever - a nightly sweep is not a nightly message');
 
@@ -589,6 +631,15 @@ select is(
     where kind not in ('credit_topup', 'credit_bonus', 'debit_expiry')),
   0,
   'and nothing that belongs to anybody else');
+
+-- THE ASSERTION THAT WAS MISSING. The screen's promise and the ledger's act,
+-- for the same amount, compared against each other rather than each against its
+-- own fixture. Before 0058 the quote said 0 and the ledger issued 0 - agreeing,
+-- and both wrong, because each read a key the console never wrote.
+select is(
+  (public.topup_quote(100000) ->> 'bonus_paise')::bigint,
+  10000::bigint,
+  'the quote promises exactly the bonus the ledger already issued for that amount');
 
 reset role;
 
