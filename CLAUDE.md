@@ -19,6 +19,7 @@ do **not** self-onboard.
 | `Cray-Salon-PRD-v4.md` | Scope, features, acceptance criteria |
 | `ARCHITECTURE.md` | Mechanisms, invariants, ADRs. **On mechanism, ARCHITECTURE wins** |
 | `DESIGN.md` | Tokens, typography, layout, components, motion, charts |
+| `COMPLIANCE.md` | DPDP Act + Rules 2025, CERT-In, RBI/PA boundaries, dark patterns: what is built, what is a gap, what needs a lawyer. **Read before touching consent, notices, erasure or breach handling** |
 
 Scope disputes go to the PRD. Mechanism disputes go to ARCHITECTURE. Fix the loser in the same
 session — drift between the documents is how a rule quietly dies.
@@ -89,8 +90,12 @@ Full list in `RULES.md`. The ones most often broken:
     **ack**, never on FCM's response.
 13. Owner write-actions — above all **mark-complete** — work offline and sync idempotently.
     Rejected actions surface in "Needs attention", never dropped.
-14. Consent is per-purpose and withdrawable. The **salon** is the Data Fiduciary; Crayora is the
-    Processor. Never hard-delete a financial record — archive and anonymise.
+14. Consent is per-purpose and withdrawable, and **withdrawal must be as easy as consent**
+    (`set_consent`, 0051). **Consent without an itemised notice is not consent** (RULES 11.6a), and
+    only the person themselves may give it — no staff path ticks a box for a customer. The **salon**
+    is the Data Fiduciary; Crayora is the Processor. Never hard-delete a financial record — erasure
+    is anonymisation: identity goes, the books stay. A breach has two clocks: **6h CERT-In, 72h
+    Board** (RULES 11.10).
 15. **The launcher icon cannot be changed at runtime** on either platform. Android: in-app
     branding + pinned home-screen shortcut. **iOS has no equivalent** - in-app branding only.
     Do not attempt anything else.
@@ -121,7 +126,7 @@ Each feature passes its PRD acceptance criteria, the milestone gates in `PHASES.
 per-screen checklist in `IMPLEMENTATION.md` §7.
 
 **Hard CI gates:** the catalogue-driven cross-tenant leak test, the binding-exclusivity test, the
-money test, the index-scope test, the admin-plane test, the join-flow test, the bind-flow test, the **customer-scope test**, the **write-scope test**, the **customer-list test**, the **booking test**, the OTP test and the messaging-access test — plus their **negative controls**,
+money test, the index-scope test, the admin-plane test, the join-flow test, the bind-flow test, the **customer-scope test**, the **write-scope test**, the **customer-list test**, the **booking test**, the **data-rights test**, the OTP test and the messaging-access test — plus their **negative controls**,
 which create - on purpose - an unprotected table, an unaudited `app_admin` function, an
 owner-callable payment-key function and a customer table protected only by `salon_id`, and require
 the matching gate to go red. Never skipped, never deleted, never narrowed to pass. A gate that has

@@ -56,6 +56,8 @@ Seven database gates fail the build. They are never skipped, deleted, or narrowe
 
 - **Cross-tenant leak test** — catalogue-driven, so a table added today is covered today
 - **Binding exclusivity** — one phone number, exactly one salon, no switch path anywhere
+- **Data rights** — consent is withdrawable by the customer themselves and the withdrawal is a new
+  ledger row; erasure removes the person and keeps the books (DPDP)
 - **Money** — ledgers are append-only, and neither owner nor manager can reach one
 - **Join flow and OTP** — an unknown code and a salon in setup look identical; no salon context
   means no SMS; codes are checked only against a server-issued challenge; only accounts the

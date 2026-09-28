@@ -497,7 +497,21 @@ short-lived presigned URLs issued only after an access check. Photos additionall
 causes a paid SMS), salon-code lookup, bind attempts.
 
 11.6 **Consent is a ledger, not a boolean.** Per-purpose, append-only, withdrawal is a new row.
-Withdrawal must be as easy as consent.
+Withdrawal must be as easy as consent. "Latest wins" is ordered by `occurred_at` **and `id`**: two
+changes in one transaction share a timestamp, and the wrong tiebreak resolves to *still consented*
+(0052).
+
+11.6a **Consent without notice is not consent.** Before or with the request, the customer is told -
+in their own language, one of `en` / `hi` / `hi_Latn` - **what** is collected, **why**, **who** the
+Data Fiduciary is (the salon, not Crayora), **how to withdraw**, **how to complain**, and to whom.
+A tick-box with no notice is a defect, not a shortcut (DPDP ss.5, 6).
+
+11.6b **Only the person themselves may consent.** No owner, manager or stylist path ticks a box for
+a customer, and the database refuses one that tries. Consent someone else gave is not consent.
+
+11.6c **`service_communication` is the service**, not marketing: booking confirmations, receipts and
+the reminder they asked for. It is not offered as a toggle; the way out is erasure. Everything else
+is opt-in and starts **off**.
 
 11.7 **The salon is the Data Fiduciary; Crayora is the Data Processor.** The app shows a
 **per-salon** grievance contact, not just a Crayora one.
@@ -510,10 +524,20 @@ id.
 `wallet_transactions` and `loyalty_ledger` move to a restricted, anonymised archive for the
 statutory period. Offer an export first, and require outstanding credit to be settled.
 
-11.10 A wallet top-up produces a **receipt, never a tax invoice**. GST arises on the service
+11.10 **A breach has two clocks, and both start when we become AWARE.**
+**6 hours** to CERT-In for a listed cyber incident, and **72 hours** to the Data Protection Board
+with facts, cause, mitigation and findings - with affected customers told without delay, in plain
+language, by the **salon** as Data Fiduciary. Never wait for certainty before notifying: the Rules
+expect an initial report and an update, not one perfect one.
+
+11.11 **Every data-principal right is answerable with a date.** Access, erasure and grievance are
+rows with a due date and an outcome (`data_rights_requests`, 0051). A refusal is allowed; silence
+is not, and "we kept your invoices because the law requires it" is an answer.
+
+11.12 A wallet top-up produces a **receipt, never a tax invoice**. GST arises on the service
 invoice at redemption. Invoice numbers are sequential per salon per financial year.
 
-11.11 **Licensing boundaries — if a change would cross one, stop and escalate.** It is a licensing
+11.13 **Licensing boundaries — if a change would cross one, stop and escalate.** It is a licensing
 question, not a design question:
 - customer money into a Crayora account, or
 - credit spendable at a salon that did not issue it.
@@ -547,6 +571,11 @@ A change is not done until all of these hold.
       cannot together overdraw; a PAID lot cannot be expired even by the expiry function; a
       correction is audited and issues paid-kind credit. Negative control: **a second function that
       writes a ledger row makes it go red**
+- [ ] **Data rights test** — a customer can see what they agreed to and withdraw it themselves;
+      withdrawal is a NEW ledger row and the original consent survives unedited; the SALON cannot
+      tick a consent box for a customer; access, erasure and grievance can be asked for and land on
+      the salon with a due date; erasure removes name, number, birthday and the login link while the
+      salted hash and every financial row remain (DPDP ss.6, 11, 12(3), 13)
 - [ ] **Booking test** — two bookings for the same chair at the same time cannot both succeed, nor
       can an overlapping one, while the minute the first ends is free; a replayed booking returns
       the original and creates no second row; price and duration are snapshotted, so repricing a
