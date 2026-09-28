@@ -95,8 +95,14 @@ select is(
 -- deliberate decision made here, not a side effect elsewhere.
 select set_eq(
   $$select jsonb_object_keys(public.resolve_join_code('CRAY-AAABBB'))$$,
-  $$values ('salon_id'), ('display_name'), ('branding_version'), ('branding')$$,
-  'the pre-auth payload carries exactly four keys and no customer data'
+  $$values ('salon_id'), ('display_name'), ('branding_version'), ('branding'),
+           ('grievance')$$,
+  -- `grievance` joined the payload in 0053, deliberately: the consent notice is
+  -- shown BEFORE login and must say who to ask and how to complain (DPDP s.5).
+  -- It is the salon's own business contact. The point of this assertion is
+  -- unchanged - the list is exhaustive, so any FIFTH key, or anything resembling
+  -- customer data, fails here.
+  'the pre-auth payload carries exactly these five keys and no customer data'
 );
 
 -- ---------------------------------------------------------------------------

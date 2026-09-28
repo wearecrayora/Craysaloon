@@ -24,6 +24,7 @@ import {
   setMessagingGrace,
   setMessagingTrial,
   setSalonRules,
+  setGrievanceContact,
   setSalonStatus,
   upsertAddOn,
   upsertService,
@@ -122,6 +123,39 @@ export async function provisionAction(
       ok: `${v.displayName} provisioned in setup.`,
       joinCode: result.join_code,
     };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+/**
+ * The person at the salon who answers a privacy question or an erasure request.
+ *
+ * DPDP s.5 says the consent notice must tell a customer how to contact the Data
+ * Fiduciary about their data, and s.13 gives them a right to grievance
+ * redressal. The salon is the Fiduciary (RULES 11.7), so this is the salon's own
+ * contact, and it is REQUIRED before activation - the database refuses to
+ * activate without it, so this form is part of provisioning, not an extra.
+ */
+export async function grievanceAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const name = String(form.get('name') ?? '').trim();
+  const email = String(form.get('email') ?? '').trim() || null;
+  const phone = String(form.get('phone') ?? '').trim() || null;
+
+  if (!name) {
+    return { error: 'Name the person, not a department - a customer needs someone to ask.' };
+  }
+  if (!email && !phone) {
+    return { error: 'An email or a phone number is required - a name alone is unreachable.' };
+  }
+
+  try {
+    await setGrievanceContact(admin.id, salonId, name, email, phone);
+    revalidatePath(`/salon/${salonId}/privacy`);
+    revalidatePath('/');
+    return { ok: 'Privacy contact saved. It appears in the consent notice customers see before login.' };
   } catch (e) {
     return { error: message(e) };
   }

@@ -114,6 +114,9 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
           <Link href={`/salon/${salon.id}/credentials`} style={{ fontSize: 13, marginRight: 10 }}>
             Credentials
           </Link>
+          <Link href={`/salon/${salon.id}/privacy`} style={{ fontSize: 13, marginRight: 10 }}>
+            Privacy contact
+          </Link>
           <Link href={`/salon/${salon.id}/qr`} style={{ fontSize: 13, marginRight: 10 }}>
             QR pack
           </Link>

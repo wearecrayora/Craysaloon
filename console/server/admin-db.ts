@@ -221,6 +221,37 @@ export async function listTransferDestinations() {
      order by display_name`;
 }
 
+/**
+ * The salon's named privacy contact (DPDP ss.5, 13).
+ *
+ * Not a secret: this is published to every customer in the consent notice,
+ * BEFORE they log in, because that is the only moment it matters. It is read
+ * back here on purpose - an operator has to be able to see and correct it.
+ */
+export async function getGrievanceContact(salonId: string) {
+  const sql = client();
+  const [row] = await sql<
+    { grievance_name: string | null; grievance_email: string | null; grievance_phone: string | null }[]
+  >`
+    select grievance_name, grievance_email, grievance_phone
+      from public.salons where id = ${salonId}::uuid`;
+  return row ?? null;
+}
+
+/** A name plus at least one reachable channel. The database enforces both (0053). */
+export async function setGrievanceContact(
+  actorAdminId: string,
+  salonId: string,
+  name: string,
+  email: string | null,
+  phone: string | null,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.set_grievance_contact(
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${name}, ${email}, ${phone})`;
+}
+
 /** RULES 6.3 - the only door from setup to active, and it names a human. */
 export async function activateSalon(actorAdminId: string, salonId: string, reason: string | null) {
   const sql = client();
