@@ -344,6 +344,13 @@ the Play Store build.
 *Done when:* **every box in PRD §20 is ticked** · every box in `DESIGN.md` §13 is ticked · no
 secret appears in the APK or the Vercel client bundle · the app is live on the Play Store.
 
+**iOS push, owed here (2026-09-28).** `app/ios/Runner/GoogleService-Info.plist` is in place but is
+**not referenced by `Runner.xcodeproj`**, so it is not bundled and `Firebase.initializeApp()` finds
+no config on iOS. Adding the file reference by hand risks corrupting the project file for a
+platform nobody here can build, and it would not help yet: iOS push also needs an **APNs auth key**
+uploaded to Firebase and an **Apple team id**, neither of which exists. All three are one task,
+done on a Mac, at release. Android push is unaffected.
+
 ### Phase 6 — Deepen *(M14+)*
 Packages, loyalty, waitlist and queue, lifecycle automation, feedback/NPS, staff shell and
 commission, GST invoicing, photo gallery, home service. **All additive — no Tier 1 schema

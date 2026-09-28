@@ -40,8 +40,17 @@ type BatchRow = {
   purpose: string;
 };
 
-/** Message Central's per-message prices, in paise (ARCHITECTURE 12.2b). */
-const COST_PAISE: Record<string, number> = { push: 0, rcs: 10, whatsapp: 17, sms: 22 };
+/**
+ * Message Central's per-message prices, in paise (ARCHITECTURE 12.2b).
+ *
+ * **RCS is deliberately absent.** 12.2b prices push, WhatsApp Utility, SMS and
+ * WhatsApp Marketing; it does not price RCS, and an earlier version of this
+ * file carried 10 paise for it - a number nobody sourced. This figure is
+ * written into `daily_salon_metrics` as the SALON's spend, so inventing it
+ * would mean showing an owner a bill we made up. A channel with no confirmed
+ * price records nothing until the price comes off a real invoice.
+ */
+const COST_PAISE: Record<string, number> = { push: 0, whatsapp: 17, sms: 22 };
 
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return json(405, { error: 'method_not_allowed' });

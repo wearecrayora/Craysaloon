@@ -8,6 +8,14 @@ build/
 app/android/key.properties
 app/**/GoogleService-Info.plist
 app/android/app/google-services.json
+# ...and anywhere else they land. These arrive as downloads and get dropped at
+# the repo root on the way to app/; google-services.json carries an AIza key and
+# this repo is public, so the pattern is unanchored on purpose - a path-scoped
+# rule protects the copy you remembered to put in the right place.
+google-services.json
+GoogleService-Info.plist
+**/google-services.json
+**/GoogleService-Info.plist
 
 # Node
 node_modules/
