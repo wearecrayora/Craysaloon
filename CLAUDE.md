@@ -133,6 +133,11 @@ one-reminder-per-cycle index and an escalation sweep that ignores the ack, and r
 the matching gate to go red. Never skipped, never deleted, never narrowed to pass. A gate that has
 only ever been seen passing is not known to be a gate.
 
+**Every plpgsql body is statically checked** (`scripts/db/plpgsql-check.mjs`, in CI). PostgreSQL
+validates only syntax at `CREATE` time, so a function naming a column that does not exist is
+accepted and fails at the first call - in production, on a path nobody clicked. That happened three
+times in M8 alone. Do not add a function without running it.
+
 **Adding a function to `app_admin`?** Call `app_admin.close_privileges()` at the end of that
 migration. `CREATE FUNCTION` grants EXECUTE to PUBLIC, and `ALTER DEFAULT PRIVILEGES` does not
 stick on this database (migration 0020), so the admin plane is closed by an action, not a

@@ -13,7 +13,7 @@
 --   * **a salon with no WhatsApp templates and no RCS agent still works
 --     completely** - the rungs it cannot use are skipped, never errored on
 
-select plan(33);
+select plan(36);
 
 insert into auth.users (id) values
   ('eeeeeeee-aaaa-4000-8000-00000000000a'),
@@ -401,5 +401,48 @@ select is(
   'and one with NO token never waits out a push window for a device that cannot receive');
 
 reset role;
+
+-- ---------------------------------------------------------------------------
+-- The sweep: one bad salon must not stall every other salon
+-- ---------------------------------------------------------------------------
+
+-- A second live salon, so "the others still ran" means something.
+insert into public.salons (id, legal_name, display_name, join_code, status,
+                           activated_by, activated_at)
+values ('eeeeeeee-0000-4000-8000-000000000002', 'Other Salon Ltd', 'Other Salon',
+        'CRAY-THERS2', 'active',
+        'eeeeeeee-aaaa-4000-8000-00000000000f', now());
+
+-- Break ONE salon's expiry, inside this transaction only. This is the realistic
+-- shape of the failure: bad data in one tenant, not a bug in the sweep.
+create or replace function app.expire_due_bonus_lots(p_salon_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $broken$
+begin
+  if p_salon_id = 'eeeeeeee-0000-4000-8000-000000000001' then
+    raise exception 'canary: this salon''s data is broken';
+  end if;
+  return jsonb_build_object('ok', true, 'lots_expired', 0, 'paise_expired', 0);
+end;
+$broken$;
+
+create temp table swept as select app.run_due_automations() as r;
+
+select is((select r ->> 'ok' from swept), 'true',
+  'the sweep completes even when a salon inside it throws');
+
+select is((select r ->> 'salons_failed' from swept), '1',
+  'exactly the broken salon fails - the rest of the loop is unaffected');
+
+select is(
+  (select count(*)::int from public.domain_events
+    where type = 'automation.failed'
+      and salon_id = 'eeeeeeee-0000-4000-8000-000000000001'),
+  1,
+  'and its failure is RECORDED, not swallowed - silence here is how a salon''s '
+  'reminders stop for a month before anyone notices');
 
 select * from finish();

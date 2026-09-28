@@ -14,6 +14,7 @@ import 'data/local/cache_lifecycle.dart';
 import 'data/local/device_key.dart';
 import 'data/remote/supabase_cray_api.dart';
 import 'features/join/join_controller.dart';
+import 'features/notifications/background_ack.dart';
 import 'l10n/app_localizations.dart';
 
 /// Configuration arrives with `--dart-define`, never from a file in the repo.
@@ -26,6 +27,10 @@ Future<void> main() async {
   await runWithObservability(() async {
     WidgetsFlutterBinding.ensureInitialized();
     await Push.init();
+    // Registered before anything else touches Firebase: most pushes arrive when
+    // nobody is looking at the app, and an unacked push escalates to a channel
+    // the SALON pays for (ARCHITECTURE 12.3).
+    registerBackgroundAck();
 
     SupabaseCrayApi? api;
     String? deviceKey;

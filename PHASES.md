@@ -297,10 +297,16 @@ first mark-complete. The fourth was real: a replay converted its OWN reminder, f
 index and inserting a duplicate, so a replayed offline mark-complete would have sent two reminders
 for one haircut and billed the salon for both.
 
-**Still to build:** the background-isolate ack (foreground and opened-from-tray are wired), the
-cron schedule that drives the dispatcher and Automation L, and a live push - which needs an FCM
-service account the project does not have. `dispatch-notifications` is written, type-checked and
-reports `push_not_configured` rather than pretending.
+**The ack is wired in all three places**, including the background isolate - which is the one that
+matters, because most pushes arrive when nobody is looking at the app, and an unacked push
+escalates to a channel the salon pays for. The schedule is live: one `pg_cron` entry a minute,
+running `app.run_due_automations()` with per-salon exception isolation, verified firing on the
+hosted project.
+
+**Still to build:** a live push, which needs an FCM service account the project does not have, and
+a trigger for `dispatch-notifications` from outside the database - deliberately outside, because
+nothing scheduled in the database may hold a credential (RULES 8.12). The function is written,
+type-checked, and reports `push_not_configured` rather than pretending.
 
 **M9 — Refer & Earn.** Automation D.
 *Done when:* a reward releases only after a completed **paid** first visit; self-referral rejected

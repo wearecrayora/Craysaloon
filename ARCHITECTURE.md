@@ -1235,11 +1235,25 @@ bad tenant cannot stall the platform.
 | I | Subscription lifecycle | `pg_cron` daily | subscription status transition |
 | **J** | **Customer bound** | `domain_events: customer.bound` | `customer_identities` primary key |
 | **K** | **Escalation sweep** | `pg_cron` every minute | `notification_deliveries` per-channel row |
-| **L** | **Bonus-lot expiry** | `pg_cron` nightly — **functions built (0056), schedule attached at M8**; pg_cron is not installed yet | `wallet_lots.expired_at` set once; the warning by a unique index on `domain_events` |
+| **L** | **Bonus-lot expiry** | `pg_cron`, in `app.run_due_automations` with K (0065) | `wallet_lots.expired_at` set once; the warning by a unique index on `domain_events` |
 
 **Pattern:** every automation is guarded by a *database* uniqueness or state-transition
 constraint, not by "we only call it once." At-least-once delivery plus idempotent handlers is the
 only combination that survives retries, offline replay and redeploys.
+
+**Scheduling (M8).** One `pg_cron` entry, `cray-automations`, every minute, calling
+`app.run_due_automations()` — which iterates live salons with **each salon's work inside its own
+exception block**. That keeps what the per-salon sharding was for (a broken tenant fails alone, and
+is recorded as an `automation.failed` event) without a cron row per salon that provisioning could
+forget to create. It lives in `scripts/db/schedule.sql`, not in a migration: pg_cron needs
+`shared_preload_libraries`, which the hosted project has and CI's container does not, and
+"migrations apply from zero" is worth more than the convenience.
+
+**Nothing scheduled in the database needs a secret, by design.** Sending a message needs the
+salon's provider credentials and Crayora's service key, and neither may sit in a `cron.job` command
+string where a superuser session could read it back (RULES 8.12). So cron runs the database half —
+the escalation sweep, bonus expiry, the expiry warning — and `dispatch-notifications`, which
+actually spends money, is called from outside with its credentials held outside.
 
 ---
 

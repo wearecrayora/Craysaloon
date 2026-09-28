@@ -245,6 +245,14 @@ jobs:
       - name: Run the release gates
         run: node scripts/db/run.mjs test
 
+      # PostgreSQL does not check a plpgsql body at CREATE time, so a function
+      # naming a column that does not exist is accepted and fails at the first
+      # call - in production, on a path nobody clicked. That happened three
+      # times in M8 alone. plpgsql_check resolves every statement in every body
+      # against the live catalog.
+      - name: Static-check every plpgsql function
+        run: node scripts/db/plpgsql-check.mjs
+
       # The claims hook decides what every token carries, and a hook that errors
       # stops EVERY login on the project. Probed here rather than only by hand
       # before enabling it.
