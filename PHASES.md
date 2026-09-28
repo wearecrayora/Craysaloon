@@ -311,8 +311,19 @@ to the code it tests inherits that code's blind spot. `app.send_due_reminders` i
 closing a refused customer's reminder as `opted_out` rather than `sent` so the conversion rate
 stays honest, and a canary removes the sending half and requires the gate to go red.
 
-**Still to build:** a live push, which needs the app installed on a device (the FCM service account
-is set and verified against Google and FCM), and
+**Push is live, end to end, on a real phone (2026-09-28 18:30 UTC):** sent, delivered, and
+**acked 181 ms later**, cost 0 paise, nothing escalated. That is the whole design in one line - the
+salon paid nothing because the device said the message arrived.
+
+Getting there found two failures the gate could not see. `render_template` threw on a malformed
+`params`, and because it runs inside the dispatcher's batch query, one bad row took down every
+message for that salon (0067). And the dispatcher called four functions that live in schema `app`
+over PostgREST, which exposes only `public` - so every call was "function not found" and nothing
+had ever been sent (0068). **The gate stayed green through both**, because pgTAP calls those
+functions as a database session, where `app.x()` resolves fine. The transport was never exercised,
+and the transport was the broken part.
+
+**Still to build:** 
 a trigger for `dispatch-notifications` from outside the database - deliberately outside, because
 nothing scheduled in the database may hold a credential (RULES 8.12). The function is written,
 type-checked, and reports `push_not_configured` rather than pretending.

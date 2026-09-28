@@ -43,7 +43,10 @@ try {
   console.log('Registered devices:\n');
   for (const t of tokens) {
     console.log(
-      `  ${t.salon} / ${t.customer ?? '(anonymised)'} · ${t.platform} · ...${t.token_tail}` +
+      // A null name is NOT necessarily an erasure - the join flow does not
+      // collect a name yet, so a freshly bound customer has none. Labelling it
+      // "(anonymised)" made a normal state look like a DPDP action.
+      `  ${t.salon} / ${t.customer ?? '(no name yet)'} · ${t.platform} · ...${t.token_tail}` +
         `${t.dead_at ? '  DEAD' : ''}  (${t.updated_at.toISOString()})`,
     );
   }
@@ -61,11 +64,15 @@ try {
 
   // A transactional message, so consent cannot be the reason it does not arrive
   // - service_communication is the service itself and cannot be withdrawn.
+  //
+  // sql.json, NOT JSON.stringify: passing a string and casting it to jsonb
+  // stores a JSON *string*, not an object. That double-encoding is what broke
+  // the first real send, and it took the whole salon's batch down with it (0067).
   const [created] = await sql`
     select app.notify(
       ${target.salon_id}::uuid, ${target.customer_id}::uuid,
       'booking_confirmed', 'transactional', 'booking_confirmed',
-      ${JSON.stringify({ when: 'this is a test from the Crayora console' })}::jsonb
+      ${sql.json({ when: 'this is a test from the Crayora console' })}
     ) as id`;
 
   console.log(`\nNotification ${created.id} created (pending).`);
