@@ -23,6 +23,41 @@ patterns=(
 )
 
 # ---------------------------------------------------------------------------
+# Phase 0: THE WORKING TREE - files that are neither tracked nor ignored
+# ---------------------------------------------------------------------------
+#
+# Phase 1 scans TRACKED files, which is correct and insufficient. A credential
+# that has been downloaded into the repo and not yet committed is not tracked,
+# so it passes - and it is exactly one `git add -A` from being published.
+#
+# That is not hypothetical: a Firebase service-account key (a real RSA private
+# key) was saved into the repo root on 2026-09-28, and this script called the
+# repository clean. The ignore rules did not cover it either, because they were
+# written for the files anyone thought to name.
+#
+# So: anything git would pick up on a broad `add` gets the same patterns applied.
+# Putting the file in .gitignore is the fix that silences this, which is the
+# correct fix - an ignored credential is a local file, like .env.
+
+untracked=$(git ls-files --others --exclude-standard 2>/dev/null || true)
+
+if [ -n "$untracked" ]; then
+  for p in "${patterns[@]}"; do
+    # -l, not -n: file NAMES only. The first version of this printed the
+    # matching line, which put 120 characters of a live RSA private key into the
+    # build log - a scanner that leaks the secret it found is worse than none.
+    hits=$(echo "$untracked" | xargs grep -lEI "$p" 2>/dev/null || true)
+    if [ -n "$hits" ]; then
+      echo "CREDENTIAL IN THE WORKING TREE, NOT IGNORED [$p]"
+      echo "$hits" | sed 's/^/  /'
+      echo "  ^ untracked and unignored: one 'git add -A' from being published."
+      echo "    Move it outside the repo, or add it to .gitignore."
+      fail=1
+    fi
+  done
+fi
+
+# ---------------------------------------------------------------------------
 # Phase 1: THE REPOSITORY
 # ---------------------------------------------------------------------------
 

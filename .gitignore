@@ -7,6 +7,13 @@ build/
 .flutter-plugins-dependencies
 app/android/key.properties
 app/**/GoogleService-Info.plist
+
+# Firebase/Google service-account keys. These are RSA PRIVATE KEYS - the server
+# credential that can send push as this project - and they download with a
+# generated name nobody would think to list. Pattern, not filename.
+*-firebase-adminsdk-*.json
+**/*service-account*.json
+**/*serviceaccount*.json
 app/android/app/google-services.json
 # ...and anywhere else they land. These arrive as downloads and get dropped at
 # the repo root on the way to app/; google-services.json carries an AIza key and
