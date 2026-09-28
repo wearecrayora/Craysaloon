@@ -43,7 +43,7 @@
 | C8 | `/book/review` | Book ④ review, total, confirm | 6 |
 | C9 | `/booking/:id` | Booking detail — reschedule / cancel | 6 |
 | C10 | `/visits` | Visit history | 5 |
-| C11 | `/refer` | **Refer & Earn** — code, share, pending/successful | 9 |
+| C11 | `/refer` | **Refer & Earn** — code, share link, pending/earned counts. The reward condition is stated ABOVE the code. **Built** | 9 |
 | C12 | `/settings` | Settings — language, notifications | 4 |
 | C13 | `/your-data` | **Your data** — consent per purpose, ask for a copy, ask for erasure, the salon's privacy contact. **Built (M7)**, not M12: withdrawal must be as easy as consent, and consent ships in M4 | 7 |
 | C14 | `/feedback/:visitId` | Post-visit rating *(Tier 2)* | 14+ |

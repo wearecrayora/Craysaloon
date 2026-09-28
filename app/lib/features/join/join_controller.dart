@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/local/branding_store.dart';
 import '../../domain/join/cray_api.dart';
+import '../../domain/referral/referral.dart';
 import '../../domain/join/join_code.dart';
 
 /// Where the customer is in the join flow.
@@ -43,6 +44,7 @@ class JoinState {
     this.outcome,
     this.promotional = false,
     this.whatsapp = false,
+    this.referral,
   });
 
   final JoinStep step;
@@ -53,6 +55,13 @@ class JoinState {
   /// The code the customer typed, canonical. `start_join` takes a code, not a
   /// salon id: the server resolves it again rather than trusting our lookup.
   final String code;
+
+  /// A friend's referral code, if the link that opened the app carried one.
+  ///
+  /// Claimed AFTER binding, never before: there is no customer to attach it to
+  /// until then. A referral that fails to claim must never affect the join -
+  /// the salon is the point, the referral is a bonus (RULES 10).
+  final String? referral;
 
   /// Held only to show "sent to …" and to resend. Never persisted, never logged.
   final String phone;
@@ -70,6 +79,7 @@ class JoinState {
     JoinProblem? problem,
     SalonSummary? salon,
     String? code,
+    String? referral,
     String? phone,
     OtpChallenge? challenge,
     int? attemptsLeft,
@@ -83,6 +93,7 @@ class JoinState {
       problem: problem ?? this.problem,
       salon: salon ?? this.salon,
       code: code ?? this.code,
+      referral: referral ?? this.referral,
       phone: phone ?? this.phone,
       challenge: challenge ?? this.challenge,
       attemptsLeft: attemptsLeft ?? this.attemptsLeft,
@@ -127,7 +138,7 @@ class JoinController extends Notifier<JoinState> {
 
   /// U2. The code is normalised locally only to catch a typo early; the server
   /// decides what exists.
-  Future<void> submitCode(String raw) async {
+  Future<void> submitCode(String raw, {String? referral}) async {
     final code = JoinCode.tryParse(raw);
     if (code == null) {
       state = state.copyWith(problem: JoinProblem.codeNotFound);
@@ -161,6 +172,7 @@ class JoinController extends Notifier<JoinState> {
         busy: false,
         salon: salon,
         code: code.value,
+        referral: referral,
         step: JoinStep.confirm,
       );
     } on CrayApiException catch (e) {
@@ -233,6 +245,23 @@ class JoinController extends Notifier<JoinState> {
               document: branding.document,
               grievance: branding.grievance,
             );
+      }
+
+      // Bound, so there is finally a customer to attach a referral to. It is
+      // deliberately the LAST thing and its failure is swallowed: a friend's
+      // code that cannot be claimed must never turn a successful join into a
+      // failed one (RULES 10 - the salon is the point).
+      final referral = state.referral;
+      if (referral != null && outcome == LoginOutcome.bound) {
+        final api = _api;
+        if (api is ReferralApi) {
+          try {
+            await (api as ReferralApi).claimReferral(referral);
+          } on CrayApiException {
+            // Nothing to say and nothing to retry: the customer can enter the
+            // code by hand on the Refer & Earn screen.
+          }
+        }
       }
 
       state = state.copyWith(busy: false, outcome: outcome, step: JoinStep.done);

@@ -619,4 +619,87 @@ class AppL10nEn extends AppL10n {
   @override
   String get addMoneyFailed =>
       'That payment did not go through. Nothing was charged.';
+
+  @override
+  String get referTitle => 'Refer & Earn';
+
+  @override
+  String referHeadline(String referred, String referrer) {
+    return 'Give $referred, get $referrer';
+  }
+
+  @override
+  String referHowItWorks(String salonName) {
+    return 'Share your code. When your friend joins $salonName and finishes their first paid visit, you both get credit in your wallets.';
+  }
+
+  @override
+  String get referYourCode => 'Your code';
+
+  @override
+  String get referCopy => 'Copy';
+
+  @override
+  String get referCopied => 'Copied';
+
+  @override
+  String get referShare => 'Share';
+
+  @override
+  String referWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count friends have joined and not visited yet',
+      one: '1 friend has joined and not visited yet',
+      zero: 'No one is waiting on a first visit',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get referEarnedNone => 'Nothing earned yet.';
+
+  @override
+  String referEarned(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count friends have visited. You have earned $amount.',
+      one: '1 friend has visited. You have earned $amount.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String referNotCash(String salonName) {
+    return 'Referral credit is usable only at $salonName and cannot be taken out as cash.';
+  }
+
+  @override
+  String get referClaimTitle => 'Were you invited?';
+
+  @override
+  String get referClaimHint => 'Enter your friend\'s code';
+
+  @override
+  String get referClaimAction => 'Apply code';
+
+  @override
+  String get referClaimed =>
+      'Code applied. You both get credit after your first paid visit.';
+
+  @override
+  String get referClaimUnknown => 'That code does not belong to this salon.';
+
+  @override
+  String get referClaimSelf => 'That is your own code.';
+
+  @override
+  String get referClaimAlready =>
+      'A friend\'s code has already been applied to your account.';
+
+  @override
+  String get referClaimNotNew =>
+      'Referral codes are for a first visit, and you have already been in.';
 }

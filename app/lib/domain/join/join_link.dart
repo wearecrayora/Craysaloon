@@ -47,4 +47,28 @@ class JoinLink {
 
   /// The canonical link for a code - what the console prints on the QR.
   static String forCode(JoinCode code) => 'https://join.craysalon.in/s/${code.value}';
+
+  /// A referral code riding along on the same link: `/s/<salon>?r=ABCDEF`.
+  ///
+  /// It is a SEPARATE thing from the salon code and is parsed separately, on
+  /// purpose. A referral code that fails to parse must never stop somebody
+  /// joining a salon - the salon is the point, the referral is a bonus - so
+  /// this returns null and the join flow carries on.
+  static String? referralFrom(String raw) {
+    final uri = Uri.tryParse(raw.trim());
+    if (uri == null || !uri.hasScheme) return null;
+    if (!hosts.contains(uri.host.toLowerCase())) return null;
+
+    final value = uri.queryParameters['r'] ?? uri.queryParameters['ref'];
+    if (value == null) return null;
+
+    final code = value.trim().toUpperCase();
+    // The same unambiguous alphabet the server generates from (0071). Anything
+    // else is not a referral code, and guessing would send a wrong one.
+    return RegExp(r'^[A-HJKMNP-Z2-9]{6}$').hasMatch(code) ? code : null;
+  }
+
+  /// The link a customer shares: their salon, and their own code on the end.
+  static String shareLink(JoinCode salon, String referral) =>
+      'https://join.craysalon.in/s/${salon.value}?r=$referral';
 }

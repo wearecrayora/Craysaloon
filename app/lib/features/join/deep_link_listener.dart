@@ -54,7 +54,12 @@ class _DeepLinkListenerState extends ConsumerState<DeepLinkListener> {
     // Mid-flow or finished: leave it alone rather than restarting someone who
     // is halfway through typing a code from the card in their hand.
     if (state.step != JoinStep.code || state.busy) return;
-    ref.read(joinControllerProvider.notifier).submitCode(code.value);
+    // A referral code riding on the same link (?r=ABCDEF). Parsed separately,
+    // because one failing to parse must never stop somebody joining a salon.
+    ref.read(joinControllerProvider.notifier).submitCode(
+          code.value,
+          referral: JoinLink.referralFrom(uri.toString()),
+        );
   }
 
   @override

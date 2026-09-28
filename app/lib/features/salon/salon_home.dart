@@ -140,6 +140,11 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
               onPressed: () => context.push('/wallet'),
               child: Text(l10n.walletTitle),
             ),
+            const SizedBox(height: 8),
+            OutlinedButton(
+              onPressed: () => context.push('/refer'),
+              child: Text(l10n.referTitle),
+            ),
             if (_confirmation != null) ...[
               const SizedBox(height: 16),
               Text(_confirmation!, style: text.bodySmall),

@@ -616,6 +616,89 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get addMoneyFailed => 'यह भुगतान पूरा नहीं हुआ। कुछ नहीं कटा।';
+
+  @override
+  String get referTitle => 'रेफ़र करें, कमाएँ';
+
+  @override
+  String referHeadline(String referred, String referrer) {
+    return '$referred दिलाएँ, $referrer पाएँ';
+  }
+
+  @override
+  String referHowItWorks(String salonName) {
+    return 'अपना कोड शेयर करें। जब आपका दोस्त $salonName से जुड़कर अपनी पहली विज़िट का भुगतान कर लेगा, तब दोनों को वॉलेट में क्रेडिट मिलेगा।';
+  }
+
+  @override
+  String get referYourCode => 'आपका कोड';
+
+  @override
+  String get referCopy => 'कॉपी करें';
+
+  @override
+  String get referCopied => 'कॉपी हो गया';
+
+  @override
+  String get referShare => 'शेयर करें';
+
+  @override
+  String referWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count दोस्त जुड़े हैं, अभी आए नहीं',
+      one: '1 दोस्त जुड़ा है, अभी आया नहीं',
+      zero: 'कोई पहली विज़िट के इंतज़ार में नहीं',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get referEarnedNone => 'अभी कुछ नहीं कमाया।';
+
+  @override
+  String referEarned(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count दोस्त आ चुके हैं। आपने $amount कमाए।',
+      one: '1 दोस्त आ चुका है। आपने $amount कमाए।',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String referNotCash(String salonName) {
+    return 'रेफ़रल क्रेडिट केवल $salonName में उपयोग होता है और नकद नहीं निकाला जा सकता।';
+  }
+
+  @override
+  String get referClaimTitle => 'क्या आपको किसी ने बुलाया है?';
+
+  @override
+  String get referClaimHint => 'दोस्त का कोड डालें';
+
+  @override
+  String get referClaimAction => 'कोड लगाएँ';
+
+  @override
+  String get referClaimed =>
+      'कोड लग गया। पहली भुगतान की गई विज़िट के बाद दोनों को क्रेडिट मिलेगा।';
+
+  @override
+  String get referClaimUnknown => 'यह कोड इस सैलून का नहीं है।';
+
+  @override
+  String get referClaimSelf => 'यह आपका अपना कोड है।';
+
+  @override
+  String get referClaimAlready =>
+      'आपके खाते पर पहले से एक दोस्त का कोड लगा है।';
+
+  @override
+  String get referClaimNotNew =>
+      'रेफ़रल कोड पहली विज़िट के लिए होते हैं, और आप पहले आ चुके हैं।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -1237,4 +1320,87 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get addMoneyFailed => 'Yeh payment poora nahi hua. Kuch nahi kata.';
+
+  @override
+  String get referTitle => 'Refer karein, kamayein';
+
+  @override
+  String referHeadline(String referred, String referrer) {
+    return '$referred dilayein, $referrer payein';
+  }
+
+  @override
+  String referHowItWorks(String salonName) {
+    return 'Apna code share karein. Jab aapka dost $salonName se judkar apni pehli visit ka payment kar lega, tab dono ko wallet mein credit milega.';
+  }
+
+  @override
+  String get referYourCode => 'Aapka code';
+
+  @override
+  String get referCopy => 'Copy karein';
+
+  @override
+  String get referCopied => 'Copy ho gaya';
+
+  @override
+  String get referShare => 'Share karein';
+
+  @override
+  String referWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dost jude hain, abhi aaye nahi',
+      one: '1 dost juda hai, abhi aaya nahi',
+      zero: 'Koi pehli visit ke intezaar mein nahi',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get referEarnedNone => 'Abhi kuch nahi kamaya.';
+
+  @override
+  String referEarned(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dost aa chuke hain. Aapne $amount kamaye.',
+      one: '1 dost aa chuka hai. Aapne $amount kamaye.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String referNotCash(String salonName) {
+    return 'Referral credit sirf $salonName mein use hota hai aur cash nahi nikala ja sakta.';
+  }
+
+  @override
+  String get referClaimTitle => 'Kya aapko kisi ne bulaya hai?';
+
+  @override
+  String get referClaimHint => 'Dost ka code daalein';
+
+  @override
+  String get referClaimAction => 'Code lagayein';
+
+  @override
+  String get referClaimed =>
+      'Code lag gaya. Pehli paid visit ke baad dono ko credit milega.';
+
+  @override
+  String get referClaimUnknown => 'Yeh code is salon ka nahi hai.';
+
+  @override
+  String get referClaimSelf => 'Yeh aapka apna code hai.';
+
+  @override
+  String get referClaimAlready =>
+      'Aapke account par pehle se ek dost ka code laga hai.';
+
+  @override
+  String get referClaimNotNew =>
+      'Referral code pehli visit ke liye hote hain, aur aap pehle aa chuke hain.';
 }

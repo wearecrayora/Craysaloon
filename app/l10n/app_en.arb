@@ -556,5 +556,84 @@
   "addMoneyCancelled": "Payment cancelled. Nothing was charged.",
   "@addMoneyCancelled": {},
   "addMoneyFailed": "That payment did not go through. Nothing was charged.",
-  "@addMoneyFailed": {}
+  "@addMoneyFailed": {},
+  "referTitle": "Refer & Earn",
+  "@referTitle": {},
+  "referHeadline": "Give {referred}, get {referrer}",
+  "@referHeadline": {
+    "placeholders": {
+      "referred": {
+        "type": "String",
+        "example": "₹50"
+      },
+      "referrer": {
+        "type": "String",
+        "example": "₹100"
+      }
+    }
+  },
+  "referHowItWorks": "Share your code. When your friend joins {salonName} and finishes their first paid visit, you both get credit in your wallets.",
+  "@referHowItWorks": {
+    "description": "States the condition plainly. A screen that implies the reward arrives on sign-up produces a complaint the moment somebody shares and gets nothing (RULES 10).",
+    "placeholders": {
+      "salonName": {
+        "type": "String"
+      }
+    }
+  },
+  "referYourCode": "Your code",
+  "@referYourCode": {},
+  "referCopy": "Copy",
+  "@referCopy": {},
+  "referCopied": "Copied",
+  "@referCopied": {},
+  "referShare": "Share",
+  "@referShare": {},
+  "referWaiting": "{count, plural, =0{No one is waiting on a first visit} =1{1 friend has joined and not visited yet} other{{count} friends have joined and not visited yet}}",
+  "@referWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "referEarnedNone": "Nothing earned yet.",
+  "@referEarnedNone": {},
+  "referEarned": "{count, plural, =1{1 friend has visited. You have earned {amount}.} other{{count} friends have visited. You have earned {amount}.}}",
+  "@referEarned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String",
+        "example": "₹200"
+      }
+    }
+  },
+  "referNotCash": "Referral credit is usable only at {salonName} and cannot be taken out as cash.",
+  "@referNotCash": {
+    "description": "A balance is never shown alone (DESIGN 6.1), and credit somebody did not pay for is no exception.",
+    "placeholders": {
+      "salonName": {
+        "type": "String"
+      }
+    }
+  },
+  "referClaimTitle": "Were you invited?",
+  "@referClaimTitle": {},
+  "referClaimHint": "Enter your friend's code",
+  "@referClaimHint": {},
+  "referClaimAction": "Apply code",
+  "@referClaimAction": {},
+  "referClaimed": "Code applied. You both get credit after your first paid visit.",
+  "@referClaimed": {},
+  "referClaimUnknown": "That code does not belong to this salon.",
+  "@referClaimUnknown": {},
+  "referClaimSelf": "That is your own code.",
+  "@referClaimSelf": {},
+  "referClaimAlready": "A friend's code has already been applied to your account.",
+  "@referClaimAlready": {},
+  "referClaimNotNew": "Referral codes are for a first visit, and you have already been in.",
+  "@referClaimNotNew": {}
 }

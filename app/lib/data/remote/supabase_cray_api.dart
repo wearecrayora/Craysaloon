@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/notifications/push_api.dart';
 import '../../domain/privacy/privacy.dart';
+import '../../domain/referral/referral.dart';
 import '../../domain/records/records.dart';
 import '../../domain/wallet/wallet.dart';
 
@@ -19,7 +20,7 @@ import '../../domain/wallet/wallet.dart';
 ///   error paths carry a kind, not a payload.
 class SupabaseCrayApi
     implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi, WalletApi,
-        PushApi {
+        PushApi, ReferralApi {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -770,6 +771,53 @@ class SupabaseCrayApi
   Future<void> ackNotification(String deliveryId) async {
     try {
       await _client.rpc<dynamic>('ack_notification', params: {'p_delivery_id': deliveryId});
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // ReferralApi (M9). Two RPCs, both keyed on the caller's own customer id:
+  // the summary deliberately returns counts and no names (0074).
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<ReferralSummary> referralSummary() async {
+    try {
+      final code = _asMap(await _client.rpc<dynamic>('my_referral_code')) ?? const {};
+      final mine = _asMap(await _client.rpc<dynamic>('my_referrals')) ?? const {};
+      return ReferralSummary(
+        code: code['code'] as String? ?? '',
+        referrerPaise: _int(code['referrer_paise']),
+        referredPaise: _int(code['referred_paise']),
+        pending: _int(mine['pending']),
+        rewarded: _int(mine['rewarded']),
+        earnedPaise: _int(mine['earned_paise']),
+      );
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  @override
+  Future<ClaimRefusal?> claimReferral(String code) async {
+    try {
+      final body = _asMap(await _client.rpc<dynamic>(
+            'claim_referral',
+            params: {'p_code': code},
+          )) ??
+          const {};
+      if (body['ok'] == true) return null;
+      return switch (body['reason']) {
+        'already_referred' => ClaimRefusal.alreadyReferred,
+        'self_referral' => ClaimRefusal.selfReferral,
+        'not_a_new_customer' => ClaimRefusal.notNewCustomer,
+        _ => ClaimRefusal.unknownCode,
+      };
     } on PostgrestException catch (e) {
       throw CrayApiException(_postgrestKind(e));
     } catch (_) {

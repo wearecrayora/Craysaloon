@@ -355,8 +355,18 @@ The canary releases on a *completed* visit rather than a paid one, which is not 
 but the obvious "fix" for a support complaint that rewards were not arriving - and it would pay out
 for every no-show somebody marked done.
 
-**Still to build:** C11, the Refer & Earn screen, and carrying a referral code through the join
-link so a friend does not have to type it.
+*App side done the same day:* **C11** is built - the condition ("when your friend joins and
+finishes their first paid visit") is stated **above** the code rather than under it, because a
+customer who shares and gets nothing will report a bug unless the screen said so first, and a test
+asserts that vertical order. Both amounts come from the server. Referral credit carries the same
+"only here, not cash" line as every other balance. The join link carries `?r=<code>`, claimed after
+binding and never before - and its failure is swallowed, because a friend's code that cannot be
+claimed must not turn a successful join into a failed one. 10 app tests.
+
+`public.my_referrals` returns **counts and no names** (0074): whether a friend has been to the
+salon is the friend's business, not the business of whoever gave them a code.
+
+**Still to build:** nothing for M9 beyond a live run once a second real customer exists.
 
 **M10 — Dashboard and cohorts.** Automation E, `daily_salon_metrics`, `retention_cohorts`, nightly
 reconciliation.

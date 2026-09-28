@@ -1123,6 +1123,120 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'That payment did not go through. Nothing was charged.'**
   String get addMoneyFailed;
+
+  /// No description provided for @referTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Refer & Earn'**
+  String get referTitle;
+
+  /// No description provided for @referHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Give {referred}, get {referrer}'**
+  String referHeadline(String referred, String referrer);
+
+  /// States the condition plainly. A screen that implies the reward arrives on sign-up produces a complaint the moment somebody shares and gets nothing (RULES 10).
+  ///
+  /// In en, this message translates to:
+  /// **'Share your code. When your friend joins {salonName} and finishes their first paid visit, you both get credit in your wallets.'**
+  String referHowItWorks(String salonName);
+
+  /// No description provided for @referYourCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Your code'**
+  String get referYourCode;
+
+  /// No description provided for @referCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get referCopy;
+
+  /// No description provided for @referCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get referCopied;
+
+  /// No description provided for @referShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get referShare;
+
+  /// No description provided for @referWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No one is waiting on a first visit} =1{1 friend has joined and not visited yet} other{{count} friends have joined and not visited yet}}'**
+  String referWaiting(int count);
+
+  /// No description provided for @referEarnedNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing earned yet.'**
+  String get referEarnedNone;
+
+  /// No description provided for @referEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 friend has visited. You have earned {amount}.} other{{count} friends have visited. You have earned {amount}.}}'**
+  String referEarned(int count, String amount);
+
+  /// A balance is never shown alone (DESIGN 6.1), and credit somebody did not pay for is no exception.
+  ///
+  /// In en, this message translates to:
+  /// **'Referral credit is usable only at {salonName} and cannot be taken out as cash.'**
+  String referNotCash(String salonName);
+
+  /// No description provided for @referClaimTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Were you invited?'**
+  String get referClaimTitle;
+
+  /// No description provided for @referClaimHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your friend\'s code'**
+  String get referClaimHint;
+
+  /// No description provided for @referClaimAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply code'**
+  String get referClaimAction;
+
+  /// No description provided for @referClaimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Code applied. You both get credit after your first paid visit.'**
+  String get referClaimed;
+
+  /// No description provided for @referClaimUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'That code does not belong to this salon.'**
+  String get referClaimUnknown;
+
+  /// No description provided for @referClaimSelf.
+  ///
+  /// In en, this message translates to:
+  /// **'That is your own code.'**
+  String get referClaimSelf;
+
+  /// No description provided for @referClaimAlready.
+  ///
+  /// In en, this message translates to:
+  /// **'A friend\'s code has already been applied to your account.'**
+  String get referClaimAlready;
+
+  /// No description provided for @referClaimNotNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Referral codes are for a first visit, and you have already been in.'**
+  String get referClaimNotNew;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
