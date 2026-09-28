@@ -39,6 +39,25 @@ class Push {
     }
   }
 
+  /// Asks for permission to show notifications.
+  ///
+  /// Android 13+ and every iOS version require it. **A refusal is not an
+  /// error**: the token still works and the server still sends, the message is
+  /// simply not displayed - so the ack never fires and every message escalates
+  /// to a channel the salon pays for. That is worth knowing about, which is why
+  /// this returns the answer rather than swallowing it.
+  static Future<bool> requestPermission() async {
+    if (!_available) return false;
+    try {
+      final settings = await FirebaseMessaging.instance.requestPermission();
+      return settings.authorizationStatus == AuthorizationStatus.authorized ||
+          settings.authorizationStatus == AuthorizationStatus.provisional;
+    } catch (error) {
+      debugPrint('Could not request notification permission: $error');
+      return false;
+    }
+  }
+
   /// The device's FCM registration token, or null when push is unavailable.
   ///
   /// At M8 this is stored in `notification_tokens` and refreshed on rotation;

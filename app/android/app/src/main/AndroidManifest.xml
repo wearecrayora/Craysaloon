@@ -1,4 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Android 13 (API 33) made notifications a RUNTIME permission. Without
+         this, and without asking for it, a push is delivered to the device and
+         silently dropped instead of being shown - the token works, the ack
+         never fires, and every message escalates to a channel the salon pays
+         for. The failure is invisible: nothing errors. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
     <application
         android:label="craysalon"
         android:name="${applicationName}"

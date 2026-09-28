@@ -41,6 +41,11 @@ class PushRegistration {
   Future<void> start() async {
     if (!Push.available) return;
 
+    // Asked before the token is stored, because a token with no permission to
+    // display anything is a customer whose every message escalates to a paid
+    // channel - and nothing about that failure is visible from the server.
+    await Push.requestPermission();
+
     final token = await Push.token();
     if (token != null) await _register(token);
 
