@@ -34,14 +34,12 @@ enum PaymentOutcome {
   unavailable,
 }
 
-/// The implementation this build ships with.
+/// The no-op, kept for the case the real sheet cannot run.
 ///
-/// Live Razorpay is the step after this one (PHASES M7: "simulated payments are
-/// acceptable here; real Razorpay before Phase 5"), and it needs the salon's
-/// **test** keys in the console plus the `razorpay_flutter` SDK on both
-/// platforms. Until then the screen is complete and honest: it prices the
-/// top-up, states every disclosure, creates the real order against the salon's
-/// own account - and then says the last step is not switched on yet.
+/// The shipping implementation is `RazorpayPaymentSheet`. This one exists so a
+/// build without the SDK - or a platform where it is unavailable - still has a
+/// PaymentSheet that says plainly that the last step is not switched on, rather
+/// than offering a button that does nothing.
 ///
 /// **Deliberately not a simulation that reports success.** A fake pay button
 /// that reports "paid" would be one merge away from shipping, and the failure

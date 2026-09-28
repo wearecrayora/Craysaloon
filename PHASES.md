@@ -253,8 +253,20 @@ disclosure is a payment made without it. A test asserts the block sits physicall
 credit follows Razorpay's webhook. The Razorpay SDK is deliberately not wired yet
 (`UnavailablePaymentSheet`), and the screen says the last step is not switched on rather than
 offering a dead button - a simulated sheet that reported success would be one merge from shipping,
-and the customer it fails believes they hold credit they do not have. **Live Razorpay with the
-salon's test keys is the remaining M7 item.**
+and the customer it fails believes they hold credit they do not have. **Razorpay wired the same
+day:** `RazorpayPaymentSheet` opens Checkout against the salon's own key, and it **drops the
+payment id and signature the callback carries** - a client-reported payment id is a claim, and
+treating a claim as evidence is how a wallet gets credited for a payment nobody made. Proguard
+keeps are in place before minification is turned on at M13, because Razorpay is reached by
+reflection and R8 would strip it in the one build nobody tests by hand. `create-payment-order` and
+`rzp-webhook` were **not deployed** until now; both are, with the verify_jwt settings config.toml
+specifies, and both refuse an unauthenticated call.
+
+**What is left is console work, not code:** the test salon has **no stored Razorpay credential and
+no wallet rule** (`{}`, so no bonus and no minimum), and its **Message Central credential is
+missing too** - which means every OTP so far went out on Crayora's fallback account and raised a
+fallback alert, exactly as designed but not as intended for a live test. All three are set in the
+console, which is deliberately the only path (RULES 8.12).
 
 **Automation B** is the `wallet.topped_up` event, emitted inside the same transaction as the
 credit, carrying the amount, the bonus and its expiry so a receipt never re-derives its own

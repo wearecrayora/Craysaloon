@@ -4,14 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/format/money.dart';
 import '../../core/platform/payment_sheet.dart';
+import '../../core/platform/razorpay_payment_sheet.dart';
 import '../../data/local/outbox.dart';
 import '../../domain/wallet/wallet.dart';
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
 import 'wallet_controller.dart';
 
-final paymentSheetProvider =
-    Provider<PaymentSheet>((ref) => const UnavailablePaymentSheet());
+/// Razorpay Checkout, against the salon's own account. Overridden with a fake
+/// in tests: a pay button has to be testable without a payment gateway, and
+/// nothing about the money may depend on which implementation is installed.
+final paymentSheetProvider = Provider<PaymentSheet>((ref) => RazorpayPaymentSheet());
 
 /// The amounts offered, in paise. Round numbers a customer would hand over at a
 /// counter; the field below them takes anything the salon allows.

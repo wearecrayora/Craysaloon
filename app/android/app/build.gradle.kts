@@ -51,6 +51,14 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+
+            // Inert while minification is off, and deliberately in place before
+            // it is turned on: Razorpay is reached by reflection, so R8 would
+            // strip it and the checkout would fail only in release (M13).
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 }
