@@ -151,6 +151,24 @@ const ACK_CANARY = `
 
 const ACK_MUST_FAIL = [/an ACKED push escalates nothing/];
 
+// The hole 0066 filled: reminders were scheduled and NOTHING read
+// scheduled_for, so every one sat in the table forever. The gate did not notice
+// because it asserted the scheduling, beside the code that scheduled. This
+// canary removes the sending half and requires the gate to go red - so the day
+// somebody "simplifies" the sweep, the reminder loop cannot silently stop.
+const SEND_CANARY = `
+  create or replace function app.send_due_reminders(p_salon_id uuid, p_limit integer default 200)
+  returns jsonb
+  language sql
+  security definer
+  set search_path = ''
+  as $canary$
+    select jsonb_build_object('ok', true, 'sent', 0, 'opted_out', 0);
+  $canary$;
+`;
+
+const SEND_MUST_FAIL = [/a reminder that is due becomes a message/];
+
 // A function in app_admin that mutates a table and never writes audit_log -
 // exactly the mistake RULES 6.5 exists to prevent.
 const AUDIT_CANARY = `
@@ -290,6 +308,12 @@ try {
       REMINDER_TEST,
       ACK_CANARY,
       ACK_MUST_FAIL,
+    ),
+    await check(
+      'reminders / a sweep that schedules them and never sends them',
+      REMINDER_TEST,
+      SEND_CANARY,
+      SEND_MUST_FAIL,
     ),
   ];
 

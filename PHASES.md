@@ -303,7 +303,16 @@ escalates to a channel the salon pays for. The schedule is live: one `pg_cron` e
 running `app.run_due_automations()` with per-salon exception isolation, verified firing on the
 hosted project.
 
-**Still to build:** a live push, which needs an FCM service account the project does not have, and
+**0066 closed a hole the gate had been written around:** Automation A scheduled reminders, the
+one-per-cycle index kept them unique, the sweep ran every minute - and nothing read
+`scheduled_for`. Every reminder ever scheduled would have sat in the table forever. The gate did
+not notice because it asserted the scheduling, beside the code that scheduled; a gate written next
+to the code it tests inherits that code's blind spot. `app.send_due_reminders` is in the sweep now,
+closing a refused customer's reminder as `opted_out` rather than `sent` so the conversion rate
+stays honest, and a canary removes the sending half and requires the gate to go red.
+
+**Still to build:** a live push, which needs the app installed on a device (the FCM service account
+is set and verified against Google and FCM), and
 a trigger for `dispatch-notifications` from outside the database - deliberately outside, because
 nothing scheduled in the database may hold a credential (RULES 8.12). The function is written,
 type-checked, and reports `push_not_configured` rather than pretending.

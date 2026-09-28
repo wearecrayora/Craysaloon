@@ -13,7 +13,7 @@
 --   * **a salon with no WhatsApp templates and no RCS agent still works
 --     completely** - the rungs it cannot use are skipped, never errored on
 
-select plan(36);
+select plan(44);
 
 insert into auth.users (id) values
   ('eeeeeeee-aaaa-4000-8000-00000000000a'),
@@ -444,5 +444,72 @@ select is(
   1,
   'and its failure is RECORDED, not swallowed - silence here is how a salon''s '
   'reminders stop for a month before anyone notices');
+
+-- ---------------------------------------------------------------------------
+-- A scheduled reminder is worth nothing until it is SENT
+-- ---------------------------------------------------------------------------
+--
+-- The gate above asserts that a visit schedules exactly one reminder, and that
+-- a replay schedules none. Both were true while NOTHING read scheduled_for -
+-- every reminder this system scheduled sat in the table forever (0066). A gate
+-- written beside the code it tests inherits that code's blind spot, so this
+-- section deliberately starts from the other end: from the message.
+
+-- Vikram agreed to marketing; Asha refused it. Give each a due reminder.
+insert into public.reminders
+  (salon_id, customer_id, service_id, cycle_key, type, scheduled_for, status)
+values
+  ('eeeeeeee-0000-4000-8000-000000000001', 'eeeeeeee-1111-4000-8000-00000000000d',
+   'eeeeeeee-2222-4000-8000-000000000001', 'due-now-vikram', 'service_due',
+   now() - interval '1 hour', 'scheduled'),
+  ('eeeeeeee-0000-4000-8000-000000000001', 'eeeeeeee-1111-4000-8000-00000000000c',
+   'eeeeeeee-2222-4000-8000-000000000001', 'due-now-asha', 'service_due',
+   now() - interval '1 hour', 'scheduled'),
+  -- And one that is NOT due, which must not move.
+  ('eeeeeeee-0000-4000-8000-000000000001', 'eeeeeeee-1111-4000-8000-00000000000d',
+   null, 'not-due-yet', 'service_due', now() + interval '10 days', 'scheduled');
+
+create temp table reminded as
+  select app.send_due_reminders('eeeeeeee-0000-4000-8000-000000000001') as r;
+
+select is((select r ->> 'sent' from reminded), '1',
+  'a reminder that is due becomes a message');
+
+select is((select r ->> 'opted_out' from reminded), '1',
+  'and one for a customer who refused marketing is closed as opted_out, not sent - '
+  'counting it as sent would quietly deflate the conversion rate');
+
+select is(
+  (select status::text from public.reminders where cycle_key = 'due-now-vikram'),
+  'sent',
+  'the sent reminder leaves `scheduled`, which is what stops it being sent twice');
+
+select is(
+  (select status::text from public.reminders where cycle_key = 'not-due-yet'),
+  'scheduled',
+  'a reminder that is not due yet is untouched');
+
+select is(
+  (app.send_due_reminders('eeeeeeee-0000-4000-8000-000000000001') ->> 'sent'),
+  '0',
+  'running the sweep again sends nothing - the status transition is the guard');
+
+-- Scoped to the reminder that produced it. An earlier section of this file also
+-- creates service_due notifications, and a count that catches those is a count
+-- that would stay green if this code stopped working.
+select is(
+  (select count(*)::int from public.notifications
+    where purpose = 'service_due' and category = 'marketing' and status = 'pending'
+      and params ? 'reminder_id'),
+  1,
+  'the message exists and is queued for the dispatcher');
+
+-- The whole point of scheduling one: it must reach the ladder.
+select is(
+  (select count(*)::int from public.notifications n
+    where n.purpose = 'service_due' and n.customer_id = 'eeeeeeee-1111-4000-8000-00000000000c'
+      and n.status = 'suppressed' and n.params ? 'reminder_id'),
+  1,
+  'and the refused one is written down rather than dropped');
 
 select * from finish();
