@@ -1,0 +1,78 @@
+name: Dispatch notifications
+
+# The messages the database has queued are actually SENT here.
+#
+# Why this runs in GitHub Actions rather than in the database, where the rest of
+# the schedule lives: sending needs Crayora's service key, and a key in a
+# `cron.job` command string - or in Vault behind a third function that reads it -
+# is a credential sitting inside the thing it protects. `scripts/db/schedule.sql`
+# keeps the database half secret-free on purpose (RULES 8.12), so the half that
+# spends money runs out here, with its credential in repository secrets.
+#
+# **The cost is latency.** GitHub's shortest cron is five minutes and it is
+# best-effort, so a booking confirmation can wait a few minutes for its push.
+# That is survivable and visible; it is not free. The alternative - pg_net
+# calling the function every minute, with the key in Vault - is a deliberate
+# trade of one invariant for that latency, and it needs a decision rather than a
+# commit.
+#
+# A queued-but-unsent delivery is never escalated: `escalate_due_deliveries`
+# only looks at rows with `sent_at` set. So a late dispatch delays a message; it
+# never causes a paid escalation for one that was never sent.
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  # Two overlapping runs would claim the same batch. The database would cope -
+  # claiming writes the delivery row first - but there is no reason to find out.
+  group: dispatch-notifications
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    # Without the secrets this would fail every five minutes forever, which
+    # trains everyone to ignore a red workflow. It skips instead, loudly enough
+    # to find in the run log.
+    if: ${{ github.repository_owner != '' }}
+    steps:
+      - name: Dispatch every active salon's queue
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          CRAY_SECRET_KEY: ${{ secrets.CRAY_SECRET_KEY }}
+          SALON_IDS: ${{ secrets.DISPATCH_SALON_IDS }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${CRAY_SECRET_KEY:-}" ]; then
+            echo "SUPABASE_URL or CRAY_SECRET_KEY is not set in repository secrets."
+            echo "Nothing dispatched. Add them under Settings > Secrets > Actions."
+            exit 0
+          fi
+          if [ -z "${SALON_IDS:-}" ]; then
+            echo "DISPATCH_SALON_IDS is not set - no salon to dispatch for."
+            echo "Set it to a comma-separated list of salon uuids."
+            exit 0
+          fi
+
+          failed=0
+          IFS=',' read -ra ids <<< "$SALON_IDS"
+          for id in "${ids[@]}"; do
+            salon=$(echo "$id" | tr -d '[:space:]')
+            [ -z "$salon" ] && continue
+            # The salon id is not a secret; the response is a count, not content.
+            body=$(curl -sS -o /tmp/out -w '%{http_code}' \
+              -X POST "$SUPABASE_URL/functions/v1/dispatch-notifications" \
+              -H "Authorization: Bearer $CRAY_SECRET_KEY" \
+              -H 'Content-Type: application/json' \
+              -d "{\"salon_id\":\"$salon\",\"limit\":100}") || body=000
+            echo "$salon -> HTTP $body $(cat /tmp/out)"
+            [ "$body" = "200" ] || failed=1
+          done
+
+          # A non-200 fails the run. A dispatcher that has been broken for a
+          # week should not look the same as one that sent nothing because there
+          # was nothing to send.
+          exit $failed
