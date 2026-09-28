@@ -51,6 +51,7 @@ const SCOPE_TEST = 'supabase/tests/rls/customer_scope_test.sql';
 const BOOKING_TEST = 'supabase/tests/booking/booking_test.sql';
 const MONEY_TEST = 'supabase/tests/money/ledger_test.sql';
 const ADMIN_TEST = 'supabase/tests/admin/admin_plane_test.sql';
+const REMINDER_TEST = 'supabase/tests/messaging/reminder_test.sql';
 
 // A new table naming a customer, protected the way EVERY tenant table was
 // protected until 0038: one permissive policy scoped to the salon. It looks
@@ -105,6 +106,50 @@ const LEDGER_CANARY = `
 `;
 
 const LEDGER_MUST_FAIL = [/exactly ONE function inserts a wallet ledger row/];
+
+// ARCHITECTURE 6.6: "exactly one reminder per cycle" is the INDEX's promise, not
+// the application's. Drop the index and the code reads identically - the
+// duplicate only appears when an offline mark-complete replays, which is the
+// normal case on salon wifi and the hardest one to reproduce by hand.
+const REMINDER_CANARY = `
+  drop index public.reminders_one_per_cycle;
+`;
+
+const REMINDER_MUST_FAIL = [/replaying the SAME visit schedules nothing new/];
+
+// The ack is the only thing standing between "push, free" and "WhatsApp, billed
+// to the salon, on every message". This is the plausible mistake: a sweep that
+// escalates on age alone, because acked_at "is usually null anyway".
+const ACK_CANARY = `
+  create or replace function app.escalate_due_deliveries(p_salon_id uuid)
+  returns jsonb
+  language plpgsql
+  security definer
+  set search_path = ''
+  as $canary$
+  declare
+    v_row record;
+    v_escalated integer := 0;
+  begin
+    for v_row in
+      select d.id, d.notification_id, n.category
+        from public.notification_deliveries d
+        join public.notifications n on n.id = d.notification_id
+       where d.salon_id = p_salon_id
+         and d.sent_at is not null
+         and d.sent_at + app.escalation_window(n.purpose) <= now()
+    loop
+      insert into public.notification_deliveries
+        (salon_id, notification_id, channel, provider_status)
+      values (p_salon_id, v_row.notification_id, 'sms', 'queued');
+      v_escalated := v_escalated + 1;
+    end loop;
+    return jsonb_build_object('ok', true, 'escalated', v_escalated, 'exhausted', 0);
+  end;
+  $canary$;
+`;
+
+const ACK_MUST_FAIL = [/an ACKED push escalates nothing/];
 
 // A function in app_admin that mutates a table and never writes audit_log -
 // exactly the mistake RULES 6.5 exists to prevent.
@@ -233,6 +278,18 @@ try {
       MONEY_TEST,
       LEDGER_CANARY,
       LEDGER_MUST_FAIL,
+    ),
+    await check(
+      'reminders / the one-per-cycle index, dropped',
+      REMINDER_TEST,
+      REMINDER_CANARY,
+      REMINDER_MUST_FAIL,
+    ),
+    await check(
+      'messaging / an escalation sweep that ignores the ack',
+      REMINDER_TEST,
+      ACK_CANARY,
+      ACK_MUST_FAIL,
     ),
   ];
 
