@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/join/cray_api.dart';
+import '../../domain/notifications/push_api.dart';
 import '../../domain/privacy/privacy.dart';
 import '../../domain/records/records.dart';
 import '../../domain/wallet/wallet.dart';
@@ -17,7 +18,8 @@ import '../../domain/wallet/wallet.dart';
 /// * **It never logs a phone number, a code, a challenge id or a token.** The
 ///   error paths carry a kind, not a payload.
 class SupabaseCrayApi
-    implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi, WalletApi {
+    implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi, WalletApi,
+        PushApi {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -744,6 +746,35 @@ class SupabaseCrayApi
       keyId: body['key_id'] as String? ?? '',
       amountPaise: _int(body['amount_paise']),
     );
+  }
+
+  // -------------------------------------------------------------------------
+  // PushApi (M8). The device's half of the ack protocol.
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<void> registerPushToken({required String token, required String platform}) async {
+    try {
+      await _client.rpc<dynamic>(
+        'register_push_token',
+        params: {'p_token': token, 'p_platform': platform},
+      );
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  @override
+  Future<void> ackNotification(String deliveryId) async {
+    try {
+      await _client.rpc<dynamic>('ack_notification', params: {'p_delivery_id': deliveryId});
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
   }
 
   static int _int(Object? value) => switch (value) {

@@ -183,7 +183,7 @@ jobs:
       # that succeeds when it should not.
       - name: Type-check
         working-directory: supabase/functions
-        run: deno check otp-send/index.ts otp-verify/index.ts create-payment-order/index.ts rzp-webhook/index.ts
+        run: deno check otp-send/index.ts otp-verify/index.ts create-payment-order/index.ts rzp-webhook/index.ts dispatch-notifications/index.ts
 
   database:
     name: Database gates (leak, binding, money)

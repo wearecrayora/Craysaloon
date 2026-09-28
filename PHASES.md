@@ -282,6 +282,25 @@ surface. Gate: 14 new assertions in `money/ledger_test.sql`.
 *Done when:* exactly one reminder per cycle (enforced by index, not code) · escalation is
 **ack-gated**, never FCM-response-gated · a salon without approved WhatsApp templates still works
 completely.
+*Progress (2026-09-28):* **server half done and gated** (0059-0064, `messaging/reminder_test.sql`,
+33 assertions, two new negative controls). Automation A writes the last visit, the learned median,
+today's metrics and exactly one reminder; Automation C confirms and marks the reminder `converted`,
+which is also what makes conversion measurable; Automation K promotes only deliveries that are
+**unacked past their window**. The ladder skips every rung a salon has not configured, so a salon
+with no WhatsApp templates and no RCS agent works completely. Templates are seeded in all three
+locales and a trigger refuses any body that names the product to a customer.
+
+**Four bugs, and the gate found all four.** Three were a column or constraint assumed instead of
+read (`booking_items` has kind/ref_id, `customers` has last_visit_at, `sample_n` counts visits) -
+plpgsql validates no body at CREATE time, so each applied cleanly and would have failed at the
+first mark-complete. The fourth was real: a replay converted its OWN reminder, freeing the partial
+index and inserting a duplicate, so a replayed offline mark-complete would have sent two reminders
+for one haircut and billed the salon for both.
+
+**Still to build:** the background-isolate ack (foreground and opened-from-tray are wired), the
+cron schedule that drives the dispatcher and Automation L, and a live push - which needs an FCM
+service account the project does not have. `dispatch-notifications` is written, type-checked and
+reports `push_not_configured` rather than pretending.
 
 **M9 — Refer & Earn.** Automation D.
 *Done when:* a reward releases only after a completed **paid** first visit; self-referral rejected

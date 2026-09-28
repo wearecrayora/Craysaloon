@@ -8,6 +8,7 @@ import '../../core/platform/salon_notifications.dart';
 import '../../core/theme/brand_tokens.dart';
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
+import '../notifications/push_registration.dart';
 
 /// Injected so the offer can be tested without a launcher, and so iOS gets the
 /// same code path with a different answer (`RULES.md` 15b).
@@ -35,12 +36,33 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
 
   bool _showOffer = false;
   String? _confirmation;
+  PushRegistration? _push;
 
   @override
   void initState() {
     super.initState();
     _considerOffer();
     _ensureChannel();
+    _startPush();
+  }
+
+  /// Push is the free channel, and the ack is what keeps it free: until the
+  /// device says a message arrived, the server is counting down a window at the
+  /// end of which the SALON pays for WhatsApp or SMS (ARCHITECTURE 12.3).
+  @override
+  void dispose() {
+    // The streams outlive the widget otherwise, and an ack fired into a
+    // disposed ref is a crash in a notification handler.
+    _push?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _startPush() async {
+    final api = ref.read(pushApiProvider);
+    if (api == null) return;
+    final push = PushRegistration(api);
+    _push = push;
+    await push.start();
   }
 
   /// The channel is named for the salon, so Settings shows the customer their

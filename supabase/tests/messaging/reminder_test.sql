@@ -13,7 +13,7 @@
 --   * **a salon with no WhatsApp templates and no RCS agent still works
 --     completely** - the rungs it cannot use are skipped, never errored on
 
-select plan(26);
+select plan(33);
 
 insert into auth.users (id) values
   ('eeeeeeee-aaaa-4000-8000-00000000000a'),
@@ -341,6 +341,64 @@ select is(
   (public.ack_notification('eeeeeeee-6666-4000-8000-000000000001') ->> 'reason'),
   'not_found',
   'another customer cannot acknowledge a message that was not theirs');
+
+reset role;
+
+-- ---------------------------------------------------------------------------
+-- Templates: every message is the SALON's
+-- ---------------------------------------------------------------------------
+
+select is(
+  app.render_template('eeeeeeee-0000-4000-8000-000000000001', 'booking_confirmed',
+                      'hi', 'push', '{"when": "kal 4 baje"}'::jsonb),
+  'Bare Salon: आपका अपॉइंटमेंट kal 4 baje के लिए तय हो गया है।',
+  'a push body is rendered in the customer''s locale, with the SALON''s name in it');
+
+select is(
+  app.render_template('eeeeeeee-0000-4000-8000-000000000001', 'booking_confirmed',
+                      'ta', 'push', '{"when": "tomorrow"}'::jsonb),
+  'Bare Salon: your appointment is confirmed for tomorrow.',
+  'an unseeded locale falls back to English - a message in the wrong language still arrives');
+
+select is(
+  app.render_template('eeeeeeee-0000-4000-8000-000000000001', 'no_such_key',
+                      'en', 'push'),
+  null,
+  'and a key with no template renders nothing rather than something wrong');
+
+select throws_ok(
+  $q$insert into public.message_templates (salon_id, template_key, locale, channel, body)
+     values (null, 'canary_key', 'en', 'push', 'Cray Salon: your booking is confirmed.')$q$,
+  null, null,
+  'a template that names the PRODUCT to a customer is refused (PRD 6.6)');
+
+select throws_ok(
+  $q$insert into public.message_templates (salon_id, template_key, locale, channel, body)
+     values (null, 'canary_key', 'en', 'push', 'Your booking is confirmed.')$q$,
+  null, null,
+  'and so is a push body with no {{salon}} in it - every message is branded');
+
+-- ---------------------------------------------------------------------------
+-- The dispatcher's batch
+-- ---------------------------------------------------------------------------
+
+insert into public.notification_tokens (salon_id, customer_id, token, platform)
+values ('eeeeeeee-0000-4000-8000-000000000001', 'eeeeeeee-1111-4000-8000-00000000000d',
+        'fcm-token-vikram', 'android');
+
+create temp table batch as
+  select * from app.claim_notification_batch('eeeeeeee-0000-4000-8000-000000000001');
+
+select is(
+  (select channel::text from batch where customer_id = 'eeeeeeee-1111-4000-8000-00000000000d'),
+  'push',
+  'a customer with a live token gets the free channel first');
+
+select is(
+  (select count(*)::int from batch
+    where customer_id = 'eeeeeeee-1111-4000-8000-00000000000c' and channel = 'push'),
+  0,
+  'and one with NO token never waits out a push window for a device that cannot receive');
 
 reset role;
 
