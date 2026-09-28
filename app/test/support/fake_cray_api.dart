@@ -130,9 +130,19 @@ Map<String, Object?> publishedBranding({
   };
 }
 
-SalonSummary fakeSalon({String displayName = 'Studio Nine Salon'}) => SalonSummary(
+SalonSummary fakeSalon({
+  String displayName = 'Studio Nine Salon',
+  // An active salon always has one: activation refuses without it (0053). The
+  // default is present so the notice under test is the one customers see.
+  GrievanceContact? grievance = const GrievanceContact(
+    name: 'Sunita Rao',
+    email: 'privacy@studionine.example',
+  ),
+}) =>
+    SalonSummary(
       salonId: '11111111-0000-4000-8000-000000000001',
       displayName: displayName,
       brandingVersion: 3,
       branding: publishedBranding(displayName: displayName),
+      grievance: grievance,
     );

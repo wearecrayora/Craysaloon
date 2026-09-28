@@ -775,6 +775,186 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Saved. It will book when you are back online.'**
   String get walkInQueuedOffline;
+
+  /// DPDP s.5: the notice is shown WITH the consent request, never behind a link.
+  ///
+  /// In en, this message translates to:
+  /// **'What {salonName} will know about you'**
+  String noticeHeading(String salonName);
+
+  /// No description provided for @noticeItemPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your mobile number, to send your login code and to reach you about a booking.'**
+  String get noticeItemPhone;
+
+  /// No description provided for @noticeItemVisits.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name and your visits, so your history, balance and points stay right.'**
+  String get noticeItemVisits;
+
+  /// No description provided for @noticeItemOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Your birthday and photos are optional, asked for separately, and off unless you say yes.'**
+  String get noticeItemOptional;
+
+  /// No description provided for @noticeFiduciary.
+  ///
+  /// In en, this message translates to:
+  /// **'{salonName} decides what it keeps and why. Crayora makes the app and stores it for them.'**
+  String noticeFiduciary(String salonName);
+
+  /// No description provided for @noticeControl.
+  ///
+  /// In en, this message translates to:
+  /// **'You can withdraw any of this, ask for a copy of your data, or ask to be deleted — any time, under Your data.'**
+  String get noticeControl;
+
+  /// No description provided for @noticeContactHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions or complaints'**
+  String get noticeContactHeading;
+
+  /// No description provided for @noticeContactNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask at the salon counter. If nobody answers, write to Crayora.'**
+  String get noticeContactNone;
+
+  /// No description provided for @noticePolicyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the full privacy policy'**
+  String get noticePolicyLink;
+
+  /// No description provided for @noticeLinkFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing on this phone can open that. The address is above.'**
+  String get noticeLinkFailed;
+
+  /// No description provided for @yourDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data'**
+  String get yourDataTitle;
+
+  /// No description provided for @yourDataConsentsHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'What you have agreed to'**
+  String get yourDataConsentsHeading;
+
+  /// No description provided for @yourDataRightsHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rights'**
+  String get yourDataRightsHeading;
+
+  /// No description provided for @yourDataFiduciaryHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Who holds your data'**
+  String get yourDataFiduciaryHeading;
+
+  /// No description provided for @consentServiceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking and payment messages'**
+  String get consentServiceTitle;
+
+  /// No description provided for @consentServiceLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Part of the service. To stop these, ask for your account to be deleted.'**
+  String get consentServiceLocked;
+
+  /// No description provided for @consentPromotionalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers from this salon'**
+  String get consentPromotionalTitle;
+
+  /// No description provided for @consentWhatsappTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers on WhatsApp'**
+  String get consentWhatsappTitle;
+
+  /// No description provided for @consentPhotosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Before and after photos'**
+  String get consentPhotosTitle;
+
+  /// No description provided for @consentPhotosSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'So the salon can show you what was done last time.'**
+  String get consentPhotosSubtitle;
+
+  /// No description provided for @consentSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'That did not save. Check your connection and try again.'**
+  String get consentSaveFailed;
+
+  /// No description provided for @rightAccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for a copy of my data'**
+  String get rightAccessTitle;
+
+  /// No description provided for @rightErasureTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for my account to be deleted'**
+  String get rightErasureTitle;
+
+  /// No description provided for @rightGrievanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Raise a complaint about my data'**
+  String get rightGrievanceTitle;
+
+  /// The due date is the point: the obligation is visible, not remembered (RULES 11.11).
+  ///
+  /// In en, this message translates to:
+  /// **'Asked {asked}. Answer due by {due}.'**
+  String rightAsked(String asked, String due);
+
+  /// No description provided for @rightAnswered.
+  ///
+  /// In en, this message translates to:
+  /// **'Answered: {outcome}'**
+  String rightAnswered(String outcome);
+
+  /// No description provided for @rightAskedThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Asked. The salon has 30 days to answer.'**
+  String get rightAskedThanks;
+
+  /// No description provided for @erasureConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask to be deleted?'**
+  String get erasureConfirmTitle;
+
+  /// Erasure is anonymisation, and the app says so BEFORE rather than letting it be discovered after (RULES 11.8).
+  ///
+  /// In en, this message translates to:
+  /// **'Your name, number and birthday are removed, and you are logged out. Payments and wallet records stay without your name — the salon has to keep its books by law. This cannot be undone.'**
+  String get erasureConfirmBody;
+
+  /// No description provided for @erasureConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, ask for deletion'**
+  String get erasureConfirmAction;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/platform/home_shortcut.dart';
@@ -88,7 +89,18 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
     final text = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(title: Text(salonName)),
+      appBar: AppBar(
+        title: Text(salonName),
+        actions: [
+          // On the home screen, not three levels into a settings menu: a right
+          // nobody can find is a right nobody has (DPDP ss.6(4), 11-13).
+          IconButton(
+            onPressed: () => context.push('/your-data'),
+            icon: const Icon(Icons.shield_outlined),
+            tooltip: l10n.yourDataTitle,
+          ),
+        ],
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),

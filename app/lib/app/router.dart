@@ -9,6 +9,7 @@ import '../features/day/day_screen.dart';
 import '../features/day/walk_in_screen.dart';
 import '../features/join/deep_link_listener.dart';
 import '../features/join/join_screen.dart';
+import '../features/privacy/your_data_screen.dart';
 import '../features/salon/salon_home.dart';
 import '../l10n/app_localizations.dart';
 import 'providers.dart';
@@ -48,7 +49,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       if (session.isBoundCustomer) {
-        return location == '/home' ? null : '/home';
+        // Two destinations, and the second is not optional: "Your data" is
+        // where consent is withdrawn and erasure is asked for, and the Act
+        // measures withdrawal against how easy consent was (s.6(4)).
+        const customerRoutes = {'/home', '/your-data'};
+        return customerRoutes.contains(location) ? null : '/home';
       }
 
       return '/join';
@@ -60,6 +65,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, _) => const DeepLinkListener(child: JoinScreen()),
       ),
       GoRoute(path: '/home', builder: (_, _) => const SalonHome()),
+      GoRoute(path: '/your-data', builder: (_, _) => const YourDataScreen()),
       GoRoute(path: '/console-only', builder: (_, _) => const _ConsoleOnly()),
 
       // The owner shell: one bar, the destinations an owner uses all day.

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/join/cray_api.dart';
+import '../../domain/privacy/privacy.dart';
 import '../../domain/records/records.dart';
 
 /// The only file in the app that talks to Supabase (`RULES.md` 3.7 / GATE-1).
@@ -14,7 +15,8 @@ import '../../domain/records/records.dart';
 ///   request cannot move a login to a different salon (ADR-36).
 /// * **It never logs a phone number, a code, a challenge id or a token.** The
 ///   error paths carry a kind, not a payload.
-class SupabaseCrayApi implements CrayApi, SalonReads, SalonWrites, SalonBookings {
+class SupabaseCrayApi
+    implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -66,6 +68,7 @@ class SupabaseCrayApi implements CrayApi, SalonReads, SalonWrites, SalonBookings
         displayName: displayName,
         brandingVersion: (row['branding_version'] as num?)?.toInt() ?? 0,
         branding: _asMap(row['branding']) ?? const {},
+        grievance: GrievanceContact.fromJson(_asMap(row['grievance'])),
       );
     } on PostgrestException catch (e) {
       throw CrayApiException(_postgrestKind(e));
@@ -550,6 +553,92 @@ class SupabaseCrayApi implements CrayApi, SalonReads, SalonWrites, SalonBookings
     } catch (_) {
       throw const CrayApiException(CrayErrorKind.network);
     }
+  }
+
+  // -------------------------------------------------------------------------
+  // PrivacyApi. The rights the DPDP Act gives the customer (0051/0052).
+  //
+  // All four go through the database's own functions, which check that the
+  // caller IS the customer - the app is not trusted to have asked the right
+  // person, and a stylist holding someone's phone gets a 42501.
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<List<ConsentState>> consents() async {
+    final rows = await _rows(
+      () async => (await _client.rpc<dynamic>('my_consents') as List)
+          .cast<Map<String, dynamic>>(),
+    );
+    return [
+      for (final row in rows)
+        ConsentState(
+          purpose: row['purpose'] as String? ?? '',
+          granted: row['granted'] as bool? ?? false,
+          occurredAt: _time(row['occurred_at']) ?? DateTime.now(),
+        ),
+    ];
+  }
+
+  @override
+  Future<ConsentRefusal?> setConsent(String purpose, bool granted) async {
+    try {
+      final body = _asMap(await _client.rpc<dynamic>(
+            'set_consent',
+            params: {'p_purpose': purpose, 'p_granted': granted},
+          )) ??
+          const {};
+      if (body['ok'] == true) return null;
+      // One refusal exists, and it is an answer rather than a failure: service
+      // messages are the service (RULES 11.6c).
+      return body['reason'] == 'service_communication_required'
+          ? ConsentRefusal.serviceRequired
+          : throw const CrayApiException(CrayErrorKind.server);
+    } on PostgrestException catch (e) {
+      throw CrayApiException(
+        e.code == '42501' ? CrayErrorKind.forbidden : _postgrestKind(e),
+      );
+    } on CrayApiException {
+      rethrow;
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  @override
+  Future<DataRightRequest?> requestRight(String kind, {String? detail}) async {
+    final body = await _call('request_data_right', {
+      'p_kind': kind,
+      'p_detail': detail,
+    });
+    final id = body['request_id'] as String?;
+    if (id == null) return null;
+    // The function returns the id; the row carries the dates the screen shows,
+    // and reading it back is also a check that the customer can see their own
+    // request - which is the whole point of the restrictive policy (0038).
+    final mine = await myRequests();
+    return mine.where((r) => r.id == id).firstOrNull;
+  }
+
+  @override
+  Future<List<DataRightRequest>> myRequests() async {
+    final rows = await _rows(
+      () async => await _client
+          .from('data_rights_requests')
+          .select('id, kind, status, requested_at, due_at, outcome')
+          .order('requested_at', ascending: false)
+          .limit(20),
+    );
+    return [
+      for (final row in rows)
+        DataRightRequest(
+          id: row['id'] as String? ?? '',
+          kind: row['kind'] as String? ?? '',
+          status: row['status'] as String? ?? 'open',
+          requestedAt: _time(row['requested_at']) ?? DateTime.now(),
+          dueAt: _time(row['due_at']) ?? DateTime.now(),
+          outcome: row['outcome'] as String?,
+        ),
+    ];
   }
 
   static int _int(Object? value) => switch (value) {

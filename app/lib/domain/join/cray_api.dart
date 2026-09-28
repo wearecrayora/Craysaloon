@@ -15,6 +15,7 @@ class SalonSummary {
     required this.displayName,
     required this.brandingVersion,
     required this.branding,
+    this.grievance,
   });
 
   final String salonId;
@@ -23,6 +24,44 @@ class SalonSummary {
 
   /// The published branding document, carrying its resolved token sets.
   final Map<String, Object?> branding;
+
+  /// Who at this salon answers a question about the customer's data.
+  ///
+  /// Published before login on purpose (0053/0055): the consent notice must say
+  /// who to ask and how to complain, and the only moment that matters is the
+  /// moment consent is asked for - which is before anyone has an account.
+  ///
+  /// Null only for a salon activated before the contact became mandatory. The
+  /// notice degrades to the Crayora escalation rather than inventing a name.
+  final GrievanceContact? grievance;
+}
+
+/// A named human at the salon, with at least one way to reach them
+/// (DPDP ss.5, 13). A business contact - never a data principal's details.
+class GrievanceContact {
+  const GrievanceContact({required this.name, this.email, this.phone});
+
+  final String name;
+  final String? email;
+  final String? phone;
+
+  /// A name with no channel is not a contact, and the database refuses to store
+  /// one. This guards against a row written before that rule existed.
+  bool get isReachable =>
+      name.trim().isNotEmpty &&
+      ((email?.trim().isNotEmpty ?? false) || (phone?.trim().isNotEmpty ?? false));
+
+  static GrievanceContact? fromJson(Map<String, Object?>? json) {
+    if (json == null) return null;
+    final name = (json['name'] as String?)?.trim();
+    if (name == null || name.isEmpty) return null;
+    final contact = GrievanceContact(
+      name: name,
+      email: (json['email'] as String?)?.trim(),
+      phone: (json['phone'] as String?)?.trim(),
+    );
+    return contact.isReachable ? contact : null;
+  }
 }
 
 class OtpChallenge {

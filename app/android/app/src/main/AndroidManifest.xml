@@ -57,5 +57,23 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+
+        <!-- Android 11 package visibility. Without these the app cannot SEE a
+             browser, a mail app or a dialler, and every link in the privacy
+             notice fails silently - the privacy policy, and the salon's own
+             contact for a complaint. The notice is required to be reachable
+             (DPDP ss.5, 13), so this is not optional polish. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="mailto"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.DIAL"/>
+            <data android:scheme="tel"/>
+        </intent>
     </queries>
 </manifest>

@@ -25,7 +25,7 @@
 | U1 | `/` | Bootstrap — restore session, resolve shell, cached branding | 0 |
 | U2 | `/join` | **Salon code** — scan QR or type code | 3 |
 | U3 | `/join/confirm` | **Salon confirmation** — *"You're joining &lt;Salon&gt;"*, branded | 3 |
-| U4 | `/join/phone` | **Phone entry** — already salon-branded | 3 |
+| U4 | `/join/phone` | **Phone entry** — already salon-branded, and carrying the **itemised consent notice** above the field: what is collected, why, who the Fiduciary is, and the salon's own privacy contact (DPDP s.5). The field is deliberately **not** autofocused - focus would scroll the notice away | 3 |
 | U5 | `/join/otp` | **OTP verify** — resend with cooldown | 3 |
 | U6 | `/join/welcome` | Binding complete → offer home-screen shortcut | 4 |
 
@@ -45,7 +45,7 @@
 | C10 | `/visits` | Visit history | 5 |
 | C11 | `/refer` | **Refer & Earn** — code, share, pending/successful | 9 |
 | C12 | `/settings` | Settings — language, notifications | 4 |
-| C13 | `/settings/privacy` | **Consent per purpose**, export, delete request | 12 |
+| C13 | `/your-data` | **Your data** — consent per purpose, ask for a copy, ask for erasure, the salon's privacy contact. **Built (M7)**, not M12: withdrawal must be as easy as consent, and consent ships in M4 | 7 |
 | C14 | `/feedback/:visitId` | Post-visit rating *(Tier 2)* | 14+ |
 
 ### 1.3 App — Owner shell (`app_role: owner` / `manager`)

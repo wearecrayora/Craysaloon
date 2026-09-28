@@ -410,6 +410,115 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get walkInQueuedOffline => 'सेव हो गया। ऑनलाइन आते ही बुक हो जाएगा।';
+
+  @override
+  String noticeHeading(String salonName) {
+    return '$salonName आपके बारे में क्या जानेगा';
+  }
+
+  @override
+  String get noticeItemPhone =>
+      'आपका मोबाइल नंबर — लॉगिन कोड भेजने के लिए, और बुकिंग के बारे में संपर्क करने के लिए।';
+
+  @override
+  String get noticeItemVisits =>
+      'आपका नाम और आपकी विज़िट — ताकि आपका इतिहास, बैलेंस और पॉइंट सही रहें।';
+
+  @override
+  String get noticeItemOptional =>
+      'जन्मदिन और फ़ोटो वैकल्पिक हैं, अलग से पूछे जाते हैं, और आपकी हाँ के बिना बंद रहते हैं।';
+
+  @override
+  String noticeFiduciary(String salonName) {
+    return '$salonName तय करता है कि क्या रखा जाए और क्यों। Crayora ऐप बनाता है और उनके लिए डेटा रखता है।';
+  }
+
+  @override
+  String get noticeControl =>
+      'आप कभी भी सहमति वापस ले सकते हैं, अपने डेटा की कॉपी माँग सकते हैं, या मिटाने के लिए कह सकते हैं — “आपका डेटा” में।';
+
+  @override
+  String get noticeContactHeading => 'सवाल या शिकायत';
+
+  @override
+  String get noticeContactNone =>
+      'सैलून के काउंटर पर पूछें। जवाब न मिले तो Crayora को लिखें।';
+
+  @override
+  String get noticePolicyLink => 'पूरी प्राइवेसी पॉलिसी पढ़ें';
+
+  @override
+  String get noticeLinkFailed =>
+      'इस फ़ोन में इसे खोलने वाला कुछ नहीं है। पता ऊपर लिखा है।';
+
+  @override
+  String get yourDataTitle => 'आपका डेटा';
+
+  @override
+  String get yourDataConsentsHeading => 'आपने किन बातों के लिए हाँ कहा है';
+
+  @override
+  String get yourDataRightsHeading => 'आपके अधिकार';
+
+  @override
+  String get yourDataFiduciaryHeading => 'आपका डेटा किसके पास है';
+
+  @override
+  String get consentServiceTitle => 'बुकिंग और पेमेंट के मैसेज';
+
+  @override
+  String get consentServiceLocked =>
+      'यह सेवा का हिस्सा है। इन्हें रोकने के लिए अपना खाता मिटाने के लिए कहें।';
+
+  @override
+  String get consentPromotionalTitle => 'इस सैलून के ऑफ़र';
+
+  @override
+  String get consentWhatsappTitle => 'WhatsApp पर ऑफ़र';
+
+  @override
+  String get consentPhotosTitle => 'पहले और बाद की फ़ोटो';
+
+  @override
+  String get consentPhotosSubtitle =>
+      'ताकि सैलून आपको दिखा सके कि पिछली बार क्या किया गया था।';
+
+  @override
+  String get consentSaveFailed =>
+      'यह सेव नहीं हुआ। कनेक्शन देखकर फिर कोशिश करें।';
+
+  @override
+  String get rightAccessTitle => 'मेरे डेटा की कॉपी माँगें';
+
+  @override
+  String get rightErasureTitle => 'मेरा खाता मिटाने के लिए कहें';
+
+  @override
+  String get rightGrievanceTitle => 'अपने डेटा को लेकर शिकायत दर्ज करें';
+
+  @override
+  String rightAsked(String asked, String due) {
+    return '$asked को माँगा। जवाब $due तक आना चाहिए।';
+  }
+
+  @override
+  String rightAnswered(String outcome) {
+    return 'जवाब: $outcome';
+  }
+
+  @override
+  String get rightAskedThanks =>
+      'माँग दर्ज हो गई। सैलून के पास जवाब देने के लिए 30 दिन हैं।';
+
+  @override
+  String get erasureConfirmTitle => 'खाता मिटाने के लिए कहें?';
+
+  @override
+  String get erasureConfirmBody =>
+      'आपका नाम, नंबर और जन्मदिन हटा दिए जाएंगे और आप लॉग आउट हो जाएंगे। पेमेंट और वॉलेट के रिकॉर्ड आपके नाम के बिना रहेंगे — सैलून को कानूनन अपने हिसाब-किताब रखने होते हैं। यह वापस नहीं हो सकता।';
+
+  @override
+  String get erasureConfirmAction => 'हाँ, मिटाने के लिए कहें';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -824,4 +933,114 @@ class AppL10nHiLatn extends AppL10nHi {
   @override
   String get walkInQueuedOffline =>
       'Save ho gaya. Online aate hi book ho jayega.';
+
+  @override
+  String noticeHeading(String salonName) {
+    return '$salonName aapke baare mein kya jaanega';
+  }
+
+  @override
+  String get noticeItemPhone =>
+      'Aapka mobile number — login code bhejne ke liye, aur booking ke baare mein contact karne ke liye.';
+
+  @override
+  String get noticeItemVisits =>
+      'Aapka naam aur aapki visits — taaki aapki history, balance aur points sahi rahein.';
+
+  @override
+  String get noticeItemOptional =>
+      'Birthday aur photos optional hain, alag se pooche jaate hain, aur aapki haan ke bina band rehte hain.';
+
+  @override
+  String noticeFiduciary(String salonName) {
+    return '$salonName tay karta hai ki kya rakha jaaye aur kyun. Crayora app banata hai aur unke liye data rakhta hai.';
+  }
+
+  @override
+  String get noticeControl =>
+      'Aap kabhi bhi consent wapas le sakte hain, apne data ki copy maang sakte hain, ya mitane ke liye keh sakte hain — “Aapka data” mein.';
+
+  @override
+  String get noticeContactHeading => 'Sawaal ya shikayat';
+
+  @override
+  String get noticeContactNone =>
+      'Salon ke counter par poochein. Jawab na mile to Crayora ko likhein.';
+
+  @override
+  String get noticePolicyLink => 'Poori privacy policy padhein';
+
+  @override
+  String get noticeLinkFailed =>
+      'Is phone mein ise kholne wala kuch nahi hai. Pata upar likha hai.';
+
+  @override
+  String get yourDataTitle => 'Aapka data';
+
+  @override
+  String get yourDataConsentsHeading =>
+      'Aapne kin baaton ke liye haan kaha hai';
+
+  @override
+  String get yourDataRightsHeading => 'Aapke adhikaar';
+
+  @override
+  String get yourDataFiduciaryHeading => 'Aapka data kiske paas hai';
+
+  @override
+  String get consentServiceTitle => 'Booking aur payment ke message';
+
+  @override
+  String get consentServiceLocked =>
+      'Yeh service ka hissa hai. Inhe rokne ke liye apna account mitane ke liye kahein.';
+
+  @override
+  String get consentPromotionalTitle => 'Is salon ke offers';
+
+  @override
+  String get consentWhatsappTitle => 'WhatsApp par offers';
+
+  @override
+  String get consentPhotosTitle => 'Pehle aur baad ki photos';
+
+  @override
+  String get consentPhotosSubtitle =>
+      'Taaki salon aapko dikha sake ki pichhli baar kya kiya gaya tha.';
+
+  @override
+  String get consentSaveFailed =>
+      'Yeh save nahi hua. Connection dekh kar phir koshish karein.';
+
+  @override
+  String get rightAccessTitle => 'Mere data ki copy maangein';
+
+  @override
+  String get rightErasureTitle => 'Mera account mitane ke liye kahein';
+
+  @override
+  String get rightGrievanceTitle => 'Apne data ko lekar shikayat darj karein';
+
+  @override
+  String rightAsked(String asked, String due) {
+    return '$asked ko maanga. Jawab $due tak aana chahiye.';
+  }
+
+  @override
+  String rightAnswered(String outcome) {
+    return 'Jawab: $outcome';
+  }
+
+  @override
+  String get rightAskedThanks =>
+      'Maang darj ho gayi. Salon ke paas jawab dene ke liye 30 din hain.';
+
+  @override
+  String get erasureConfirmTitle => 'Account mitane ke liye kahein?';
+
+  @override
+  String get erasureConfirmBody =>
+      'Aapka naam, number aur birthday hata diye jaayenge aur aap log out ho jaayenge. Payment aur wallet ke record aapke naam ke bina rahenge — salon ko kanoonan apne hisaab-kitaab rakhne hote hain. Yeh wapas nahi ho sakta.';
+
+  @override
+  String get erasureConfirmAction => 'Haan, mitane ke liye kahein';
 }

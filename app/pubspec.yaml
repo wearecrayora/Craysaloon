@@ -40,6 +40,12 @@ dependencies:
   # in. Declared explicitly rather than leaned on as supabase_flutter's
   # transitive dependency.
   app_links: ^7.2.1
+  # Opening the published privacy policy, and the salon's own privacy contact
+  # (mailto:/tel:). The DPDP notice has to be REACHABLE, not merely printed -
+  # a customer on a phone should not have to retype an address to complain.
+  # Wrapped in core/platform/external_link.dart, because RULES 15b forbids
+  # platform-specific code outside a platform abstraction.
+  url_launcher: ^6.3.1
   drift: ^2.35.0
   drift_flutter: ^0.3.1
   go_router: ^18.0.1

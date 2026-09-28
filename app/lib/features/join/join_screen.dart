@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/join/cray_api.dart';
+import '../privacy/consent_notice.dart';
 import '../../l10n/app_localizations.dart';
 import 'join_controller.dart';
 import 'qr_scan_sheet.dart';
@@ -230,9 +231,23 @@ class _PhoneStepState extends ConsumerState<_PhoneStep> {
       children: [
         Text(l10n.phoneTitle, style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 12),
+        // The notice comes FIRST, then the number and the boxes together:
+        // consent without notice is not consent (DPDP s.5, RULES 11.6a), and a
+        // notice wedged between the field and the button is a wall someone
+        // scrolls past twice. It names the salon as the Data Fiduciary and
+        // carries the salon's own privacy contact, which the pre-auth lookup
+        // published for exactly this moment - nobody has an account yet.
+        ConsentNotice(
+          salonName: state.salon?.displayName ?? '',
+          grievance: state.salon?.grievance,
+        ),
+        const SizedBox(height: 16),
         TextField(
           controller: _controller,
-          autofocus: true,
+          // NOT autofocused, unlike the code and OTP fields. Focus scrolls the
+          // field into view, which would carry the customer straight past the
+          // notice above it - and a notice nobody is shown is not a notice
+          // (DPDP s.5). They tap the field when they have read enough.
           keyboardType: TextInputType.phone,
           textInputAction: TextInputAction.go,
           decoration: InputDecoration(hintText: l10n.phoneHint),

@@ -43,10 +43,20 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           a request within 30 days it comes to us - but the name below is the one its customers see.
         </div>
 
-        {salon.status === 'setup' && !reachable && (
+        {!reachable && (
           <div className="notice">
-            <strong>This salon is still in setup and has no privacy contact.</strong> Activation
-            will be refused until one is saved here.
+            {salon.status === 'setup' ? (
+              <>
+                <strong>This salon is still in setup and has no privacy contact.</strong>{' '}
+                Activation will be refused until one is saved here.
+              </>
+            ) : (
+              <>
+                <strong>This salon is live and has no privacy contact.</strong> It was activated
+                before one was required, so its customers are being shown an incomplete notice -
+                they are told to ask at the counter. Fix this before it is asked about.
+              </>
+            )}
           </div>
         )}
 

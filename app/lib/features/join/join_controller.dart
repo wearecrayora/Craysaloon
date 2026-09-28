@@ -152,6 +152,7 @@ class JoinController extends Notifier<JoinState> {
         displayName: salon.displayName,
         version: salon.brandingVersion,
         document: salon.branding,
+        grievance: salon.grievance,
       );
       // Theme now: from here on the customer is looking at their salon's app.
       ref.read(resolvedBrandingProvider.notifier).wear(branding);
@@ -230,6 +231,7 @@ class JoinController extends Notifier<JoinState> {
               displayName: branding.displayName,
               version: branding.version,
               document: branding.document,
+              grievance: branding.grievance,
             );
       }
 

@@ -238,8 +238,8 @@ WhatsApp are unaffected — and push is the preferred channel anyway (RULES 12).
 
 | # | Item | Why it ranks here | Milestone |
 |---|---|---|---|
-| 1 | **Itemised consent notice** in the join flow, in all three languages | Consent without notice is not valid consent — it undermines every purpose we rely on | Next |
-| 2 | **"Your data" screen**: consent toggles, request a copy, request erasure, grievance contact | Withdrawal must be as easy as consent; the server side is done | Next |
+| 1 | ~~**Itemised consent notice** in the join flow~~ | **Done.** `ConsentNotice`, shown above the number field on U4 and again on "Your data", in `en`/`hi`/`hi_Latn`. Carries the salon's own privacy contact | Done |
+| 2 | ~~**"Your data" screen**~~ | **Done.** `/your-data`, one tap from the customer's home. 13 widget tests assert the entitlements, including that a failed read is never shown as "consent off" | Done |
 | 3 | **Breach runbook**: 6h CERT-In, 72h Board, principal notification, with a named owner and a rehearsal | The one gap where being unprepared converts an incident into a failure | Next |
 | 4 | ~~**Grievance contact per salon**~~ | **Done** (0053/0055 + console). The *app* half — showing it — is part of item 1 | Done |
 | 5 | Nomination (s.14) | Statutory, low volume | M12 |

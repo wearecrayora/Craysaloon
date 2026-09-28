@@ -413,4 +413,112 @@ class AppL10nEn extends AppL10n {
   @override
   String get walkInQueuedOffline =>
       'Saved. It will book when you are back online.';
+
+  @override
+  String noticeHeading(String salonName) {
+    return 'What $salonName will know about you';
+  }
+
+  @override
+  String get noticeItemPhone =>
+      'Your mobile number, to send your login code and to reach you about a booking.';
+
+  @override
+  String get noticeItemVisits =>
+      'Your name and your visits, so your history, balance and points stay right.';
+
+  @override
+  String get noticeItemOptional =>
+      'Your birthday and photos are optional, asked for separately, and off unless you say yes.';
+
+  @override
+  String noticeFiduciary(String salonName) {
+    return '$salonName decides what it keeps and why. Crayora makes the app and stores it for them.';
+  }
+
+  @override
+  String get noticeControl =>
+      'You can withdraw any of this, ask for a copy of your data, or ask to be deleted — any time, under Your data.';
+
+  @override
+  String get noticeContactHeading => 'Questions or complaints';
+
+  @override
+  String get noticeContactNone =>
+      'Ask at the salon counter. If nobody answers, write to Crayora.';
+
+  @override
+  String get noticePolicyLink => 'Read the full privacy policy';
+
+  @override
+  String get noticeLinkFailed =>
+      'Nothing on this phone can open that. The address is above.';
+
+  @override
+  String get yourDataTitle => 'Your data';
+
+  @override
+  String get yourDataConsentsHeading => 'What you have agreed to';
+
+  @override
+  String get yourDataRightsHeading => 'Your rights';
+
+  @override
+  String get yourDataFiduciaryHeading => 'Who holds your data';
+
+  @override
+  String get consentServiceTitle => 'Booking and payment messages';
+
+  @override
+  String get consentServiceLocked =>
+      'Part of the service. To stop these, ask for your account to be deleted.';
+
+  @override
+  String get consentPromotionalTitle => 'Offers from this salon';
+
+  @override
+  String get consentWhatsappTitle => 'Offers on WhatsApp';
+
+  @override
+  String get consentPhotosTitle => 'Before and after photos';
+
+  @override
+  String get consentPhotosSubtitle =>
+      'So the salon can show you what was done last time.';
+
+  @override
+  String get consentSaveFailed =>
+      'That did not save. Check your connection and try again.';
+
+  @override
+  String get rightAccessTitle => 'Ask for a copy of my data';
+
+  @override
+  String get rightErasureTitle => 'Ask for my account to be deleted';
+
+  @override
+  String get rightGrievanceTitle => 'Raise a complaint about my data';
+
+  @override
+  String rightAsked(String asked, String due) {
+    return 'Asked $asked. Answer due by $due.';
+  }
+
+  @override
+  String rightAnswered(String outcome) {
+    return 'Answered: $outcome';
+  }
+
+  @override
+  String get rightAskedThanks => 'Asked. The salon has 30 days to answer.';
+
+  @override
+  String get erasureConfirmTitle => 'Ask to be deleted?';
+
+  @override
+  String get erasureConfirmBody =>
+      'Your name, number and birthday are removed, and you are logged out. Payments and wallet records stay without your name — the salon has to keep its books by law. This cannot be undone.';
+
+  @override
+  String get erasureConfirmAction => 'Yes, ask for deletion';
 }

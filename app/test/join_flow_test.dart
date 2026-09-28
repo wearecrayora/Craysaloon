@@ -32,6 +32,24 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// The phone step shows the DPDP notice above the controls, so the button and
+  /// the consent boxes start below the fold. **That is deliberate** (RULES
+  /// 11.6a): a customer scrolls past what their data is for on the way to
+  /// giving it. The test scrolls the same way a thumb does.
+  Future<void> scrollTo(WidgetTester tester, Finder finder) async {
+    // A ListView does not build what is off-screen, so ensureVisible cannot
+    // find it - the notice has to be scrolled through, exactly as a thumb does.
+    await tester.scrollUntilVisible(finder, 120,
+        scrollable: find.byType(Scrollable).first);
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> tapBelow(WidgetTester tester, Finder finder) async {
+    await scrollTo(tester, finder);
+    await tester.tap(finder);
+    await tester.pumpAndSettle();
+  }
+
   Future<void> enterCode(WidgetTester tester, String code) async {
     await tester.enterText(find.byType(TextField), code);
     await tester.tap(find.text('Continue'));
@@ -87,13 +105,21 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Your mobile number'), findsOneWidget);
 
+    // The notice is on this screen, with the salon named as the Data Fiduciary
+    // and the salon's OWN privacy contact - not Crayora's (RULES 11.7).
+    expect(find.text('What Studio Nine Salon will know about you'), findsOneWidget);
+    expect(find.text('Sunita Rao'), findsOneWidget);
+    expect(find.text('privacy@studionine.example'), findsOneWidget);
+
     // Marketing consent is opt-in: both boxes start unticked (RULES 11).
+    await scrollTo(tester, find.text('Offers on WhatsApp too'));
     final boxes = tester.widgetList<Checkbox>(find.byType(Checkbox)).toList();
+    expect(boxes, hasLength(2), reason: 'both consent boxes exist, and are asked separately');
     expect(boxes.every((b) => b.value == false), isTrue);
 
+    await scrollTo(tester, find.byType(TextField));
     await tester.enterText(find.byType(TextField), '8114325023');
-    await tester.tap(find.text('Get my code'));
-    await tester.pumpAndSettle();
+    await tapBelow(tester, find.text('Get my code'));
 
     expect(api.startedCodes, ['CRAY-22335S']);
     expect(api.sentTo, ['8114325023']);
@@ -118,12 +144,11 @@ void main() {
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Offers on WhatsApp too'));
-    await tester.pumpAndSettle();
+    await tapBelow(tester, find.text('Offers on WhatsApp too'));
 
+    await scrollTo(tester, find.byType(TextField));
     await tester.enterText(find.byType(TextField), '8114325023');
-    await tester.tap(find.text('Get my code'));
-    await tester.pumpAndSettle();
+    await tapBelow(tester, find.text('Get my code'));
     await tester.enterText(find.byType(TextField), '573649');
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
@@ -143,9 +168,9 @@ void main() {
     await enterCode(tester, 'CRAY-22335S');
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
+    await scrollTo(tester, find.byType(TextField));
     await tester.enterText(find.byType(TextField), '8114325023');
-    await tester.tap(find.text('Get my code'));
-    await tester.pumpAndSettle();
+    await tapBelow(tester, find.text('Get my code'));
     await tester.enterText(find.byType(TextField), '573649');
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
@@ -167,9 +192,9 @@ void main() {
     await enterCode(tester, 'CRAY-22335S');
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
+    await scrollTo(tester, find.byType(TextField));
     await tester.enterText(find.byType(TextField), '8114325023');
-    await tester.tap(find.text('Get my code'));
-    await tester.pumpAndSettle();
+    await tapBelow(tester, find.text('Get my code'));
 
     expect(
       find.text("This salon can't take sign-ins right now. Please ask at the counter."),
@@ -187,9 +212,9 @@ void main() {
     await enterCode(tester, 'CRAY-22335S');
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
+    await scrollTo(tester, find.byType(TextField));
     await tester.enterText(find.byType(TextField), '8114325023');
-    await tester.tap(find.text('Get my code'));
-    await tester.pumpAndSettle();
+    await tapBelow(tester, find.text('Get my code'));
     await tester.enterText(find.byType(TextField), '111111');
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
