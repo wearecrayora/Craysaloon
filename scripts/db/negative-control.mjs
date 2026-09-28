@@ -201,6 +201,23 @@ const REFERRAL_CANARY = `
 
 const REFERRAL_MUST_FAIL = [/a COMPLETED visit releases nothing/];
 
+// The seam. mark_visit_complete calling Automation A is one `perform` line, and
+// for three days it was absent - marking a visit complete scheduled no reminder
+// and wrote no metric, while both the automation's own gate and the booking gate
+// stayed green (0075). This canary removes that line.
+const SEAM_CANARY = `
+  create or replace function app.on_visit_completed(p_visit_id uuid)
+  returns jsonb
+  language sql
+  security definer
+  set search_path = ''
+  as $canary$
+    select jsonb_build_object('ok', true, 'reminder_id', null);
+  $canary$;
+`;
+
+const SEAM_MUST_FAIL = [/marking a visit complete SCHEDULES THE REMINDER/];
+
 // A function in app_admin that mutates a table and never writes audit_log -
 // exactly the mistake RULES 6.5 exists to prevent.
 const AUDIT_CANARY = `
@@ -352,6 +369,12 @@ try {
       REFERRAL_TEST,
       REFERRAL_CANARY,
       REFERRAL_MUST_FAIL,
+    ),
+    await check(
+      'automations / mark-complete that runs no automation at all',
+      BOOKING_TEST,
+      SEAM_CANARY,
+      SEAM_MUST_FAIL,
     ),
   ];
 

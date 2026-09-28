@@ -10,7 +10,7 @@
 --   * an add-on that is not offered with the service is refused
 --   * a customer books only for themselves, and never completes their own visit
 
-select plan(34);
+select plan(41);
 
 insert into auth.users (id) values
   ('ffffffff-aaaa-4000-8000-00000000000f'),
@@ -289,6 +289,32 @@ select is(
   'and the customer''s last visit moves, which is what the owner''s list sorts by'
 );
 
+-- THE SEAM. Automation A is gated in its own file by calling it directly, and
+-- it had NO CALLER for three days: marking a visit complete scheduled no
+-- reminder and wrote no metric (0075). Asserting a function works is not
+-- asserting that anything runs it.
+
+select is(
+  (select count(*)::int from public.reminders
+    where customer_id = 'ffffffff-1111-4000-8000-00000000000c' and status = 'scheduled'),
+  1,
+  'marking a visit complete SCHEDULES THE REMINDER - Automation A actually runs'
+);
+
+select is(
+  (select sum(completed)::int from public.daily_salon_metrics
+    where salon_id = 'ffffffff-0000-4000-8000-000000000001'),
+  1,
+  'and today''s numbers move'
+);
+
+select is(
+  (select sum(revenue_paise)::bigint from public.daily_salon_metrics
+    where salon_id = 'ffffffff-0000-4000-8000-000000000001'),
+  40000::bigint,
+  'by what the visit actually cost'
+);
+
 -- RULES 9.4: replays are no-ops. This is the assertion that makes offline safe.
 select is(
   (public.mark_visit_complete(
@@ -296,6 +322,55 @@ select is(
      (select (r ->> 'booking_id')::uuid from booked)) ->> 'visit_id'),
   (select (r ->> 'visit_id') from completed),
   'a replayed mark-complete returns the SAME visit'
+);
+
+-- And the replay must not run the automation a second time. The metrics are
+-- INCREMENTS, so a double count here is revenue the owner never took.
+select is(
+  (select sum(completed)::int from public.daily_salon_metrics
+    where salon_id = 'ffffffff-0000-4000-8000-000000000001'),
+  1,
+  'a replay counts the visit ONCE - the automation runs only on the path that created it'
+);
+
+select is(
+  (select sum(revenue_paise)::bigint from public.daily_salon_metrics
+    where salon_id = 'ffffffff-0000-4000-8000-000000000001'),
+  40000::bigint,
+  'and adds the revenue once - a double count is money the owner never took'
+);
+
+select is(
+  (select count(*)::int from public.reminders
+    where customer_id = 'ffffffff-1111-4000-8000-00000000000c'
+      and status in ('scheduled', 'sent', 'delivered')),
+  1,
+  'and schedules no second reminder'
+);
+
+-- Automation C, same seam: a booking that nobody is told about. Read with the
+-- role reset, because `notifications` is closed to staff by the restrictive
+-- customer-scope policy (0038) - correctly, and the automation's EFFECT is what
+-- is being asserted here rather than who may look at it.
+reset role;
+
+-- Scoped to THIS booking. A bare count over the salon passes for the wrong
+-- reason the moment another test above it books anything.
+select is(
+  (select count(*)::int from public.notifications
+    where purpose = 'booking_confirmed'
+      and params ->> 'booking_id' = (select r ->> 'booking_id' from booked)),
+  1,
+  'and creating a booking told the customer - Automation C runs too'
+);
+
+set local role authenticated;
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"ffffffff-aaaa-4000-8000-00000000000f",'
+  '"app_role":"owner",'
+  '"salon_id":"ffffffff-0000-4000-8000-000000000001"}',
+  true
 );
 
 select is(

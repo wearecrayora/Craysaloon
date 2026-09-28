@@ -368,6 +368,18 @@ salon is the friend's business, not the business of whoever gave them a code.
 
 **Still to build:** nothing for M9 beyond a live run once a second real customer exists.
 
+**Automations A and C had no caller (2026-09-29, 0075).** Both were built and gated at M8, and
+**nothing ever called either**: in production, marking a visit complete scheduled no reminder,
+learned no interval and wrote no metric; confirming a booking told nobody and stopped no reminder.
+The whole M8 reminder loop was reachable only from its own test.
+
+This is the fourth instance of one shape in three days - 0066, 0068, 0069, 0075. Each piece
+correct, each piece gated, the seam between pieces unexamined. The difference is that this one was
+found by **going looking** (a query over `pg_proc.prosrc` for functions nothing calls) rather than
+by tripping over it. The booking gate now asserts the seam - a completed visit schedules a
+reminder and moves the day's revenue, and a REPLAY does neither twice - and a canary empties the
+automation and requires it to go red.
+
 **M10 — Dashboard and cohorts.** Automation E, `daily_salon_metrics`, `retention_cohorts`, nightly
 reconciliation.
 *Read:* PRD §9.5 · ARCHITECTURE §6.8 · **`DESIGN.md` §6.6, §9** (stat tiles first; ≤3 series;
