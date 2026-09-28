@@ -52,6 +52,7 @@ const BOOKING_TEST = 'supabase/tests/booking/booking_test.sql';
 const MONEY_TEST = 'supabase/tests/money/ledger_test.sql';
 const ADMIN_TEST = 'supabase/tests/admin/admin_plane_test.sql';
 const REMINDER_TEST = 'supabase/tests/messaging/reminder_test.sql';
+const REFERRAL_TEST = 'supabase/tests/growth/referral_test.sql';
 
 // A new table naming a customer, protected the way EVERY tenant table was
 // protected until 0038: one permissive policy scoped to the salon. It looks
@@ -168,6 +169,37 @@ const SEND_CANARY = `
 `;
 
 const SEND_MUST_FAIL = [/a reminder that is due becomes a message/];
+
+// RULES 10: a reward releases only after a completed PAID first visit. The
+// plausible way that breaks is not malice - it is somebody "fixing" a support
+// complaint that rewards were not arriving, by releasing on a completed visit
+// instead of a paid one. That pays out for every no-show who was marked done.
+const REFERRAL_CANARY = `
+  create or replace function app.release_due_referrals(p_salon_id uuid)
+  returns jsonb
+  language plpgsql
+  security definer
+  set search_path = ''
+  as $canary$
+  declare
+    v_ref record;
+    v_paid integer := 0;
+  begin
+    for v_ref in
+      select r.id from public.referrals r
+       where r.salon_id = p_salon_id and r.status = 'pending_visit'
+         and exists (select 1 from public.visits v
+                      where v.customer_id = r.referred_customer_id)
+    loop
+      perform app.referral_release_reward(v_ref.id);
+      v_paid := v_paid + 1;
+    end loop;
+    return jsonb_build_object('ok', true, 'released', v_paid);
+  end;
+  $canary$;
+`;
+
+const REFERRAL_MUST_FAIL = [/a COMPLETED visit releases nothing/];
 
 // A function in app_admin that mutates a table and never writes audit_log -
 // exactly the mistake RULES 6.5 exists to prevent.
@@ -314,6 +346,12 @@ try {
       REMINDER_TEST,
       SEND_CANARY,
       SEND_MUST_FAIL,
+    ),
+    await check(
+      'referrals / a reward released on a COMPLETED visit rather than a paid one',
+      REFERRAL_TEST,
+      REFERRAL_CANARY,
+      REFERRAL_MUST_FAIL,
     ),
   ];
 

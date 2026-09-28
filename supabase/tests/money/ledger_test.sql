@@ -222,15 +222,16 @@ select set_eq(
     )
     select name from fns where def ~* 'wallet_post'$q$,
   $q$values ('wallet_credit_from_payment'), ('wallet_debit_at_checkout'),
-           ('wallet_expire_lot'), ('wallet_correct')$q$,
-  'and only the permitted callers call it - four today, referral reward at M9 (RULES 5.2)'
+           ('wallet_expire_lot'), ('wallet_correct'), ('referral_release_reward')$q$,
+  'and only the permitted callers call it - ALL FIVE now exist, and no sixth (RULES 5.2)'
 );
 
 select is(
   (select count(*)::int from pg_proc p
     where p.pronamespace in ('app'::regnamespace, 'app_admin'::regnamespace)
       and p.proname in ('wallet_post', 'wallet_credit_from_payment',
-                        'wallet_debit_at_checkout', 'wallet_expire_lot')
+                        'wallet_debit_at_checkout', 'wallet_expire_lot',
+                        'referral_release_reward')
       and (has_function_privilege('authenticated', p.oid, 'EXECUTE')
         or has_function_privilege('anon', p.oid, 'EXECUTE'))),
   0,

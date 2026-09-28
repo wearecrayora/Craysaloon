@@ -340,6 +340,23 @@ ON CONFLICT against a partial index before any test ran**, which is the whole ar
 **M9 — Refer & Earn.** Automation D.
 *Done when:* a reward releases only after a completed **paid** first visit; self-referral rejected
 by constraint; a cancelled or refunded visit releases nothing.
+*Server half done, 2026-09-29* (0071-0073, `growth/referral_test.sql`, 20 assertions, one new
+negative control). `app.referral_release_reward` is the **fifth and last** ledger caller RULES 5.2
+named at M1 - it was left unbuilt on purpose until the rule justifying it existed, and until a
+visit could actually be paid for (0069). Both rewards release together, once, as **bonus** credit
+carrying the salon's own expiry: paid credit is money a customer handed over, and a referral reward
+is promotional credit the salon issued. The amounts are captured onto the referral **at claim
+time**, so changing the rule later cannot alter what somebody was already promised.
+
+`reward_rule` is `{referrer_paise, referred_paise}`, defined in the migration and written by the
+console **in the same change** - 0058 is what happens when those are done separately.
+
+The canary releases on a *completed* visit rather than a paid one, which is not a malicious change
+but the obvious "fix" for a support complaint that rewards were not arriving - and it would pay out
+for every no-show somebody marked done.
+
+**Still to build:** C11, the Refer & Earn screen, and carrying a referral code through the join
+link so a friend does not have to type it.
 
 **M10 — Dashboard and cohorts.** Automation E, `daily_salon_metrics`, `retention_cohorts`, nightly
 reconciliation.

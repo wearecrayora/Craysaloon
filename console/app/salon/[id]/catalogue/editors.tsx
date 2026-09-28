@@ -354,6 +354,15 @@ export function RulesForm({ salonId, rules }: { salonId: string; rules: SalonRul
     min_topup_paise?: number;
   };
 
+  // The shape app.referral_release_reward reads (0071). Defined with the
+  // function rather than after it: when the console and the ledger each picked
+  // their own shape for the wallet bonus, the feature silently paid nothing
+  // (0058).
+  const reward = (rules?.reward_rule ?? {}) as {
+    referrer_paise?: number;
+    referred_paise?: number;
+  };
+
   return (
     <Section title="Rules">
       <Feedback state={state} />
@@ -408,6 +417,40 @@ export function RulesForm({ salonId, rules }: { salonId: string; rules: SalonRul
           top-up earns ₹200 — the customer gets one bonus for every whole threshold they reach.
           Below the minimum there is no bonus at all, and the Add Money screen says so before
           anyone pays rather than after.
+        </div>
+
+        <div className="row">
+          <div>
+            <label htmlFor="referrer">Referral reward — the referrer (₹)</label>
+            <input
+              id="referrer"
+              name="rewardReferrerRupees"
+              type="number"
+              min={0}
+              step="1"
+              defaultValue={reward.referrer_paise ? reward.referrer_paise / 100 : 100}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="referred">Referral reward — their friend (₹)</label>
+            <input
+              id="referred"
+              name="rewardReferredRupees"
+              type="number"
+              min={0}
+              step="1"
+              defaultValue={reward.referred_paise ? reward.referred_paise / 100 : 50}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="notice">
+          <strong>A referral reward is paid only after the friend&rsquo;s first completed,
+          paid visit</strong> — not when they sign up, and not when they book. Both people are
+          credited at the same moment. The amounts are fixed onto the referral when the code is
+          claimed, so changing them here never alters what somebody was already promised.
         </div>
 
         <div className="notice">
