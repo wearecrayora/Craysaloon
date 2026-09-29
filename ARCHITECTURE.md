@@ -1615,7 +1615,12 @@ switch, in `workerd`: the Postgres connection to the admin plane, the QR-pack PD
 signing, the security headers, and that `server-only` still **fails the build** when a client
 component imports the admin database layer. Secrets are declared in
 `console/cloudflare.config.ts` and set with `wrangler secret put`; nothing is cached at the
-edge - every page is per-admin.
+edge - every page is per-admin. **Cloudflare Access sits in front of the whole console** (live 29
+Sep 2026): a named-email allow list with a one-time code, 12-hour sessions, before any console page
+is served - and then the console's own MFA login. Preview URLs are off, so the console has exactly
+one public address. Deployed to the Crayoratech account at
+`https://craysalon-console.crayoratech.workers.dev`; database via the Supabase **transaction**
+pooler (port 6543).
 
 - Next.js App Router. **All privileged work happens in server route handlers**; the browser
   bundle holds no privileged key. `NEXT_PUBLIC_*` carries the Supabase URL and the **publishable**

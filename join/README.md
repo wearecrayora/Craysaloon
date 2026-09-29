@@ -22,9 +22,14 @@ nothing here should be able to reach the console's environment.
 
 ```
 cd join
-npx wrangler pages deploy        # project craysalon-join, output ./public (wrangler.jsonc)
-npx wrangler pages dev           # local check on http://localhost:8788
+npx wrangler deploy              # static assets from ./public (wrangler.jsonc)
+npx wrangler dev --ip 127.0.0.1  # local check
 ```
+
+Cloudflare has folded Pages into Workers: "Pages" is now a Worker that serves static assets and
+runs no script, and `_redirects` / `_headers` still apply. Live (29 Sep 2026) at
+`https://craysalon-join.crayoratech.workers.dev`. **`join.craysalon.in` is not attached yet** - see
+the privacy section below: the policy still has placeholders.
 
 Routing lives in `public/_redirects` (`/s/<code>` is a rewrite to `s.html`, so the address
 bar keeps the code the page reads) and headers in `public/_headers`. Pages serves

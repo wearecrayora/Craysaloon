@@ -17,6 +17,9 @@ export default defineConfig({
     compatibilityDate: "2026-09-29",
     compatibilityFlags: ["nodejs_compat"],
     assets: { notFoundHandling: "none" },
+    // An admin console gets ONE public address. Preview URLs would give every
+    // version its own, each a separate door to protect.
+    previewUrls: false,
     env: {
       ASSETS: bindings.assets(),
 
@@ -34,8 +37,11 @@ export default defineConfig({
       R2_ACCESS_KEY_ID: bindings.secret(),
       R2_SECRET_ACCESS_KEY: bindings.secret(),
 
-      // Optional: without it, server errors go only to the Worker logs.
-      SENTRY_DSN: bindings.secret(),
+      // SENTRY_DSN is optional, so it is deliberately NOT declared: a declared
+      // secret is REQUIRED, and a deploy without it is refused. Set it when a
+      // console Sentry project exists (`npx wrangler secret put SENTRY_DSN`);
+      // the Worker sees it without a declaration. Until then server errors go
+      // to the Worker's logs only.
     },
   }),
 });
