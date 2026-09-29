@@ -98,8 +98,11 @@ export function validateBranding(input: BrandInput): GateResult {
   if (!input.displayName?.trim()) {
     failures.push({ rule: "displayName", detail: "displayName is required - every message renders it." });
   }
-  if (!input.assets?.logo) {
-    failures.push({ rule: "assets.logo", detail: "A logo is required; it is the app bar and the notification large icon." });
+  // An uploaded logo is an https URL. Anything else - empty, or the studio's
+  // 'pending-upload' placeholder, which used to pass this check - is a salon
+  // going live with no logo on its app bar or its pushes.
+  if (!input.assets?.logo || !input.assets.logo.startsWith("https://")) {
+    failures.push({ rule: "assets.logo", detail: "Upload a logo first; it is the app bar and the notification image." });
   }
   if (input.typography?.script !== "latin" && input.typography?.script !== "devanagari") {
     failures.push({ rule: "script", detail: "typography.script must be 'latin' or 'devanagari' (DESIGN.md 5.3)." });

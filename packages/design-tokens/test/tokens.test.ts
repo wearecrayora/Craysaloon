@@ -174,4 +174,12 @@ describe("publish gate", () => {
     (b.assets as any).logo = "";
     expect(validateBranding(b).ok).toBe(false);
   });
+
+  test("the studio's placeholder is not a logo - it used to pass", () => {
+    for (const logo of ["pending-upload", "http://example.test/logo.png", "logos/x.png"]) {
+      const b = brand("#1F6F5C", "#7FD3BC");
+      (b.assets as any).logo = logo;
+      expect(validateBranding(b).ok).toBe(false);
+    }
+  });
 });

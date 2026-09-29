@@ -13,6 +13,12 @@ of how often they matter:
 
 Static, no framework, no analytics, no fonts. It is opened on salon wifi.
 
+One exception to "static": **`/brand/logos/<salon>/<sha-256>.<ext>`** serves salon logos from the
+`craysalon-brand` R2 bucket (`src/worker.ts`). They must be public - FCM pulls the logo onto every
+push - and this is the only public origin there is. Only that exact key shape is served, GET/HEAD
+only, immutable, as an image with a sandboxing CSP. `run_worker_first` sends only `/brand/*` to
+the script; every other path is plain static assets.
+
 ## Deploying
 
 **Cloudflare Pages** (moved from Vercel, 29 Sep 2026), a separate project from the

@@ -1,14 +1,24 @@
 {
-  // The join site (craysalon-join.crayoratech.workers.dev) - static, public, no secrets. Cloudflare Pages in its
-  // current form (Pages is now part of Workers: static assets, no script).
-  // public/_redirects and public/_headers still apply.
+  // The join site (craysalon-join.crayoratech.workers.dev) - public, no secrets.
+  // Static assets from ./public (what Cloudflare Pages has become), plus one
+  // small script that serves salon logos from the craysalon-brand bucket at
+  // /brand/* (src/worker.ts). Only /brand/* reaches the script; every other
+  // path is served straight from the assets, so public/_redirects and
+  // public/_headers still apply.
   // Deploy: npx wrangler deploy   (from this directory)
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "craysalon-join",
+  "main": "src/worker.ts",
   "compatibility_date": "2026-09-29",
   "assets": {
     "directory": "./public",
+    "binding": "ASSETS",
     "html_handling": "auto-trailing-slash",
-    "not_found_handling": "404-page"
-  }
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/brand/*"]
+  },
+  "r2_buckets": [
+    // Logos only, content-hashed. Written by the console, read only here.
+    { "binding": "BRAND", "bucket_name": "craysalon-brand" }
+  ]
 }

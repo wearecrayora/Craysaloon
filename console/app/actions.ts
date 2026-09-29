@@ -4,8 +4,9 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { resolveTokens, validateBranding, type BrandInput } from '@cray/design-tokens';
 import { requireAdmin } from '@/server/auth';
-import { renderQrPack } from '@/server/qr-pack';
-import { putObject, signedUrl } from '@/server/r2';
+import { JOIN_ORIGIN, renderQrPack } from '@/server/qr-pack';
+import { putBrandObject, putObject, signedUrl } from '@/server/r2';
+import { logoKey, logoProblem, sha256Hex, sniffLogo } from '@/lib/logo';
 import { checkMessageCentralCredentials } from '@/server/message-central-check';
 import { parseRupees } from '@/lib/money';
 import {
@@ -329,6 +330,40 @@ export async function featureFlagAction(_prev: ActionState, form: FormData): Pro
   }
 }
 
+
+export type UploadLogoState = { url?: string; error?: string };
+
+/**
+ * Upload a salon logo to the public brand bucket and hand back its URL.
+ *
+ * Nothing is published here: the URL goes into the studio's draft, and only
+ * Publish (below, audited) puts it in front of customers. The bytes decide what
+ * the file is (lib/logo.ts) - PNG, JPEG or WebP, 512 KB at most, never SVG - and
+ * the key is the content hash, so a new logo is a new URL that no cache can
+ * confuse with the old one.
+ */
+export async function uploadLogoAction(
+  _prev: UploadLogoState,
+  form: FormData,
+): Promise<UploadLogoState> {
+  await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const file = form.get('logo');
+  if (!(file instanceof File)) return { error: 'Choose a logo file first.' };
+
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const problem = logoProblem(bytes);
+  if (problem) return { error: problem };
+  const type = sniffLogo(bytes)!;
+
+  try {
+    const key = logoKey(salonId, await sha256Hex(bytes), type.ext);
+    await putBrandObject(key, bytes, type.contentType);
+    return { url: `${JOIN_ORIGIN}/brand/${key}` };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
 
 /**
  * Publish branding. DESIGN 3.3 and ARCHITECTURE 14.2: a failing palette BLOCKS

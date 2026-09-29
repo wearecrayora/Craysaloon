@@ -66,6 +66,26 @@ export async function putObject(key: string, body: Uint8Array, contentType: stri
 }
 
 /**
+ * The PUBLIC brand bucket - logos only, served by the join Worker at
+ * `<join origin>/brand/<key>` (join/src/worker.ts). Separate from the private
+ * bucket above so that nothing private can ever be published by a key typo.
+ * Keys are content hashes, so an object is written once and never changes.
+ */
+export const BRAND_BUCKET = 'craysalon-brand';
+
+export async function putBrandObject(key: string, body: Uint8Array, contentType: string) {
+  await client().send(
+    new PutObjectCommand({
+      Bucket: BRAND_BUCKET,
+      Key: key,
+      Body: body,
+      ContentType: contentType,
+      CacheControl: 'public, max-age=31536000, immutable',
+    }),
+  );
+}
+
+/**
  * A signed GET URL. Short by default: long enough to click "Download" and
  * open the file, not long enough to be worth leaking.
  */

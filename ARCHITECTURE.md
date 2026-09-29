@@ -1692,7 +1692,11 @@ bundle are additionally grepped for known key prefixes before shipping (PRD §20
   **presigned URL** from a server that first verifies the caller may access that object.
 - Keys are namespaced `salon/{salon_id}/{kind}/{uuid}` so a mis-scoped request is obvious in logs.
 - Branding assets are content-hashed and public-cacheable; photos, invoices and QR packs are
-  private and signed. Photos additionally require `photos.consent = true` before a URL is issued.
+  private and signed. **Logos (built 30 Sep 2026)** live in their own bucket, `craysalon-brand`, at
+  `logos/<salon_id>/<sha-256>.<png|jpg|webp>`, uploaded from the console's branding studio
+  (bytes sniffed, 512 KB cap, never SVG) and served publicly by the join Worker at
+  `/brand/<key>` - the only public address there is, and the only reader of that bucket. The
+  private bucket stays private. Publish refuses a document whose logo is not an https URL. Photos additionally require `photos.consent = true` before a URL is issued.
 - Versioning on for logos and invoices; lifecycle rules purge orphans.
 
 ### 15.3 Rate limiting and abuse

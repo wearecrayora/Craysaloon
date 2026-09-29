@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useMemo, useState } from 'react';
+import { useActionState, useEffect, useMemo, useState } from 'react';
 import {
   formatGate,
   resolveTokens,
@@ -8,7 +8,12 @@ import {
   type BrandInput,
   type Mode,
 } from '@cray/design-tokens';
-import { publishBrandingAction, type PublishState } from '@/app/actions';
+import {
+  publishBrandingAction,
+  uploadLogoAction,
+  type PublishState,
+  type UploadLogoState,
+} from '@/app/actions';
 
 const empty: PublishState = {};
 
@@ -76,6 +81,12 @@ export function Studio({
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 340px', gap: 24 }}>
       <div>
+        <LogoCard
+          salonId={salonId}
+          logo={input.assets.logo}
+          onUploaded={(url) => setInput((v) => ({ ...v, assets: { ...v.assets, logo: url } }))}
+        />
+
         <div className="card">
           <h2>Palette</h2>
           <p className="hint" style={{ marginTop: 0 }}>
@@ -235,6 +246,78 @@ export function Studio({
         <Preview input={input} mode="dark" />
       </div>
     </div>
+  );
+}
+
+const noUpload: UploadLogoState = {};
+
+/**
+ * Upload goes to the public brand bucket; the URL lands in the DRAFT. Customers
+ * see it only after Publish, like every other change here.
+ */
+function LogoCard({
+  salonId,
+  logo,
+  onUploaded,
+}: {
+  salonId: string;
+  logo: string;
+  onUploaded: (url: string) => void;
+}) {
+  const [state, upload, uploading] = useActionState(uploadLogoAction, noUpload);
+
+  useEffect(() => {
+    if (state.url) onUploaded(state.url);
+    // onUploaded is a fresh closure each render; the URL is the event.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.url]);
+
+  const hasLogo = logo.startsWith('https://');
+
+  return (
+    <form action={upload} className="card">
+      <input type="hidden" name="salonId" value={salonId} />
+      <h2>Logo</h2>
+      <p className="hint" style={{ marginTop: 0 }}>
+        PNG, JPEG or WebP, 512 KB at most - square works best. It goes on the app bar and on every
+        push notification. SVG is not accepted.
+      </p>
+      {state.error && <div className="error">{state.error}</div>}
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+        <div
+          style={{
+            width: 72,
+            height: 72,
+            borderRadius: 12,
+            border: '1px solid var(--line, #ddd)',
+            background: 'var(--bg-soft)',
+            display: 'grid',
+            placeItems: 'center',
+            overflow: 'hidden',
+            flex: 'none',
+          }}
+        >
+          {hasLogo ? (
+            // A remote, content-hashed image the operator just uploaded.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logo} alt="Salon logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          ) : (
+            <span style={{ fontSize: 12, color: 'var(--ink-soft)' }}>No logo</span>
+          )}
+        </div>
+        <div style={{ flex: 1 }}>
+          <input type="file" name="logo" accept="image/png,image/jpeg,image/webp" required />
+          <div className="actions" style={{ marginTop: 8 }}>
+            <button disabled={uploading}>{uploading ? 'Uploading…' : 'Upload logo'}</button>
+            {state.url && (
+              <span style={{ fontSize: 13, color: 'var(--ink-soft)' }}>
+                Uploaded. Publish to put it in front of customers.
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </form>
   );
 }
 
