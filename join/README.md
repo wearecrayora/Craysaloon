@@ -15,14 +15,21 @@ Static, no framework, no analytics, no fonts. It is opened on salon wifi.
 
 ## Deploying
 
-A separate Vercel project from `console/`, with this directory as the root. It is
-public and holds no secret, which is exactly why it must stay separate from the
-console: nothing here should sit behind the console's authentication, and nothing
-here should be able to reach the console's environment.
+**Cloudflare Pages** (moved from Vercel, 29 Sep 2026), a separate project from the
+console. It is public and holds no secret, which is exactly why it must stay separate
+from the console: nothing here should sit behind the console's authentication, and
+nothing here should be able to reach the console's environment.
 
 ```
-vercel --cwd join
+cd join
+npx wrangler pages deploy        # project craysalon-join, output ./public (wrangler.jsonc)
+npx wrangler pages dev           # local check on http://localhost:8788
 ```
+
+Routing lives in `public/_redirects` (`/s/<code>` is a rewrite to `s.html`, so the address
+bar keeps the code the page reads) and headers in `public/_headers`. Pages serves
+`/privacy` for `privacy.html` on its own. Checked locally on Cloudflare's Pages server:
+`/s/CRAY-7KQ2MX` 200 with the code intact, `/privacy` 200, `/privacy.html` 308 to `/privacy`.
 
 Then point `join.craysalon.in` at it, and add the same domain to
 `console/server/qr-pack.ts`'s expectations only if the URL shape ever changes — every

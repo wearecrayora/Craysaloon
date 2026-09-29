@@ -37,6 +37,12 @@
       "skillPath": "skills/durable-objects/SKILL.md",
       "computedHash": "c02fdc3bbf3cf892c3ab9e22c7c8dafc1db2275d02735389e7741c6b40da75ec"
     },
+    "migrate-to-vinext": {
+      "source": "cloudflare/vinext",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/migrate-to-vinext/SKILL.md",
+      "computedHash": "a0356b9e9d04ad991f44132643d8d4d32b4bb9da0647e23acadc82f450c1c85b"
+    },
     "nextjs-on-cloudflare": {
       "source": "cloudflare/skills",
       "sourceType": "github",

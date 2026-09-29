@@ -6,7 +6,7 @@ Multi-tenant SaaS Android app for local salons, **white-labelled per salon**. On
 database, many salons, fully isolated. Retention loop: wallet, reminders, add-ons, packages,
 loyalty, referrals, owner dashboard.
 
-**Crayora SELLS and PROVISIONS each salon** from a Next.js super-admin console on Vercel. Owners
+**Crayora SELLS and PROVISIONS each salon** from a Next.js super-admin console on Cloudflare. Owners
 do **not** self-onboard.
 
 ## Read these every session
@@ -28,7 +28,10 @@ session — drift between the documents is how a rule quietly dies.
 
 - **App:** Flutter / Dart, install-first. **Android ships first (cost), iOS-ready from day one.**
   `app/ios` exists and CI builds it on a macOS runner every commit - never let it rot
-- **Console:** Next.js on Vercel
+- **Console:** Next.js, built with **vinext** and served by **Cloudflare Workers**; the static
+  `join.craysalon.in` site (QR landing, privacy policy) on **Cloudflare Pages**. Moved from Vercel
+  on 29 Sep 2026 (ARCHITECTURE §14.1). Deploy the console with `npm run deploy` in `console/`,
+  the join site with `npx wrangler pages deploy` in `join/`
 - **Auth:** Supabase Auth for **sessions** — the OTP itself is Message Central's (below)
 - **OTP:** **Message Central VerifyNow generates, sends and verifies the code**, from **the
   salon's own account** (salon code is entered BEFORE login); Crayora's account is a logged,
@@ -54,7 +57,8 @@ session — drift between the documents is how a rule quietly dies.
   `sb_secret_…` (**server-side only**). JWTs are **ES256, verified via JWKS** — there is no shared
   symmetric secret.
 - Vendored agent skills are gitignored. Reinstall with:
-  `npx -y skills add cloudflare/skills --skill '*' --yes`
+  `npx -y skills add cloudflare/skills --skill '*' --yes` and
+  `npx -y skills add cloudflare/vinext --skill '*' --yes` (the console's build)
 
 ## Non-negotiable rules
 

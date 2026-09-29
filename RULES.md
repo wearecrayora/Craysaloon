@@ -7,7 +7,7 @@ This is the compressed, imperative form of `ARCHITECTURE.md`. It tells you what 
 
 | | |
 |---|---|
-| **Applies to** | Cray Salon — Flutter app, Supabase backend, Next.js console on Vercel |
+| **Applies to** | Cray Salon — Flutter app, Supabase backend, Next.js console on Cloudflare |
 | **Companions** | `ARCHITECTURE.md` (mechanisms) · `Cray-Salon-PRD-v4.md` (scope) · `DESIGN.md` (visual) · `PHASES.md` (order) · `IMPLEMENTATION.md` (screens, routes, API) |
 | **Status** | Binding. A rule here is not a preference |
 
@@ -272,7 +272,7 @@ same transaction.** A route handler cannot forget the audit because the write an
 statement.
 
 6.6 The service role key is used for exactly one thing: calling `app_admin.*`. It lives in Edge
-Function secrets and Vercel **server** env. Never in a browser bundle, never in the APK.
+Function secrets and the console Worker's encrypted secrets. Never in a browser bundle, never in the APK.
 
 6.7 Admin accounts require MFA and never carry a `salon_id` claim.
 
@@ -661,7 +661,7 @@ A change is not done until all of these hold.
       against a fresh container — never `db reset`, which would wipe the shared dev project)
 - [ ] CI steps run under `pipefail` (GATE-6). Without it, `cmd | tee log` takes `tee`'s exit code
       and every piped gate reports success regardless of result
-- [ ] Secret scan clean, including the APK and the Vercel client bundle
+- [ ] Secret scan clean, including the APK and the console client bundle
 - [ ] Lints: domain purity, no `.from(` outside `data/remote/`, no raw `Color(0x…)`
 - [ ] **The App Link fingerprint file is real or absent (GATE-8).**
       `join/public/.well-known/assetlinks.json` is generated at deploy from the certificate the

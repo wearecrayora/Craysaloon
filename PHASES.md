@@ -493,7 +493,7 @@ rule remain · the breach runbook is written, not rehearsed.
 the Play Store build.
 *Read:* `RULES.md` §12 · `DESIGN.md` §13 · PRD §20.
 *Done when:* **every box in PRD §20 is ticked** · every box in `DESIGN.md` §13 is ticked · no
-secret appears in the APK or the Vercel client bundle · the app is live on the Play Store.
+secret appears in the APK or the console client bundle · the app is live on the Play Store.
 
 **iOS push, owed here (2026-09-28).** `app/ios/Runner/GoogleService-Info.plist` is in place but is
 **not referenced by `Runner.xcodeproj`**, so it is not bundled and `Firebase.initializeApp()` finds

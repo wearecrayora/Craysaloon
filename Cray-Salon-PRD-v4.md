@@ -9,7 +9,7 @@
 | **Document type** | PRD + implementation brief for Claude Code |
 | **Version** | 4.7 (business model corrected; v3 gaps closed; join flow salon-code-first; decisions closed and legally reviewed — §16A; no DLT anywhere; message-control tiers — §12.1a; **RCS added to the channel ladder — §12.1b**) |
 | **Status** | Ready to build |
-| **Platform** | Flutter — **Android at launch, iOS-ready from day one** (install-first) + Next.js admin console on Vercel |
+| **Platform** | Flutter — **Android at launch, iOS-ready from day one** (install-first) + Next.js admin console on Cloudflare |
 | **Prepared** | September 2026 |
 | **Companions** | `ARCHITECTURE.md` — the *how* · `DESIGN.md` — visual rules · `PHASES.md` — build order · `IMPLEMENTATION.md` — screens & API · **`RULES.md` — binding, read every session** |
 
@@ -24,7 +24,7 @@ own salon with zero Crayora involvement. **That is no longer the model.** v4 rep
 | Area | v3 | v4 |
 |---|---|---|
 | **Acquisition** | Owner finds app, self-onboards | Owner sees an ad → contacts Crayora → **one-time setup fee (₹10,000–₹20,000)** → Crayora provisions |
-| **Provisioning** | In-app wizard, no human | **Crayora super-admin console** (Next.js on Vercel), operated by a Crayora person |
+| **Provisioning** | In-app wizard, no human | **Crayora super-admin console** (Next.js on Cloudflare), operated by a Crayora person |
 | **Super-admin console** | Internal support tool, Milestone 11 | **The primary provisioning surface — Milestone 3, a prerequisite for any salon existing** |
 | **Customer joins** | Salon join link | Scans the salon's **unique QR / enters the salon code**, binding is **permanent** |
 | **Customer ↔ salon** | May belong to many salons | **Exactly one salon, for life.** One phone number binds to one salon and can never be re-bound |
@@ -239,7 +239,7 @@ What changed is *who* does it: a Crayora operator, not the owner.
 4. A Crayora operator provisions the salon in the console (§6.2).
 5. Crayora hands over: the **salon code**, a **printable QR pack**, owner login, and training.
 
-### 6.2 Provisioning in the super-admin console (Next.js on Vercel)
+### 6.2 Provisioning in the super-admin console (Next.js on Cloudflare)
 
 The operator fills one guided, multi-step form. Everything is editable afterwards.
 
@@ -838,7 +838,7 @@ As per v3 §10.12–10.14.
 
 ---
 
-## 11. Crayora super-admin console (Next.js on **Vercel**) — now Tier 1, Milestone 3
+## 11. Crayora super-admin console (Next.js on **Cloudflare**) — now Tier 1, Milestone 3
 
 **This is no longer an internal support tool. It is the only way a salon comes into existence,
 so it must be built before any salon can exist.** It is a separate web application, on its own
@@ -1154,7 +1154,7 @@ all lists; client-side image compression.
 - **Isolation:** RLS **enabled and forced** on every table; scoped data layer; the
   catalogue-driven cross-tenant leak test is a release gate.
 - **Platform secrets:** Message Central, Razorpay, R2, FCM keys server-side only — never in the
-  APK, never in the Vercel client bundle.
+  APK, never in the console client bundle.
 - **Per-salon secrets:** the salon's Razorpay, Message Central and WhatsApp credentials are
   stored encrypted at rest with a reference-only row in `salon_integrations`. Decryptable **only**
   inside Edge Functions with the service role. No tenant role can select them; the console shows
@@ -1340,7 +1340,7 @@ separated this way.
 |---|---|
 | **0** | Repo + `CLAUDE.md` + `ARCHITECTURE.md` + Flutter + Supabase + FCM wired; i18n scaffold |
 | **1** | Full schema (§8) + RLS (§7) + **catalogue-driven cross-tenant leak test** |
-| **2** | ⭐ **Super-admin console v1 on Vercel** — provision a salon, branding, credentials (encrypted), salon code + QR pack, owner invite (§6.2, §11). **Moved ahead of auth in v4.2:** login now needs salon codes and per-salon Message Central credentials to exist first |
+| **2** | ⭐ **Super-admin console v1 (Vercel then; Cloudflare since 29 Sep 2026)** — provision a salon, branding, credentials (encrypted), salon code + QR pack, owner invite (§6.2, §11). **Moved ahead of auth in v4.2:** login now needs salon codes and per-salon Message Central credentials to exist first |
 | **3** | ⭐ **Salon-code-first auth** — resolve code → theme the app → OTP **from that salon's** Message Central (VerifyNow generates and verifies; Supabase issues the session after) → claims hook; per-phone/IP/device/salon rate limits; platform fallback (§6.4, §12.1) |
 | **4** | ⭐ **Binding + white-label** — bind atomically at first login (§6.5), full theming, pinned shortcut (§6.6) |
 | **5** | Services, add-ons, staff, customer profiles, visit history, offline cache |
@@ -1445,7 +1445,7 @@ wants · who marks services complete · GST registered? · preferred languages �
 
 **Security & compliance**
 
-- [ ] No secret keys in the APK or the Vercel client bundle
+- [ ] No secret keys in the APK or the console client bundle
 - [ ] Per-salon secrets unreadable after save
 - [ ] Per-salon WhatsApp templates authored in Message Central and Meta-approved before that salon's WhatsApp rung goes live
 - [ ] DPDP export and anonymise work; anonymise preserves ledger and binding integrity
@@ -1514,7 +1514,7 @@ rulings are in *Decisions locked in v4.1* at the top of this document.
 Multi-tenant SaaS Android app for local salons, per-salon white-labelled. One codebase,
 one database, many salons, fully isolated. Retention loop: wallet, reminders, add-ons,
 packages, loyalty, referrals, owner dashboard. Crayora SELLS and PROVISIONS each salon
-from a Next.js super-admin console on Vercel — owners do NOT self-onboard.
+from a Next.js super-admin console on Cloudflare — owners do NOT self-onboard.
 
 ## Read these every session
 - `RULES.md` — THE BINDING RULES. Read this first, every session, before any code.
@@ -1528,7 +1528,7 @@ building anything that sounds reasonable but is absent.
 ## Stack (do not substitute without asking)
 - App: Flutter / Dart, install-first. ANDROID SHIPS FIRST for cost reasons; the code
   stays iOS-compatible and app/ios must never rot (RULES 8.11)
-- Admin console: Next.js on Vercel
+- Admin console: Next.js on Cloudflare (Workers); static join site on Cloudflare Pages
 - Auth: Supabase Auth (phone OTP)
 - OTP: Message Central VerifyNow generates, sends AND verifies the code, from THE SALON'S
   OWN account (salon code is entered BEFORE login, so the salon is always known). Supabase

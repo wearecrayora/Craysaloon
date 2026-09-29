@@ -77,7 +77,7 @@
 | S2 | `/my/schedule/:id` | Mark complete, add-on/bill update, tip | 14+ |
 | S3 | `/my/earnings` | Commission from completed visits | 14+ |
 
-### 1.5 Console (Next.js on Vercel)
+### 1.5 Console (Next.js on Cloudflare)
 
 > **Provider credentials live only here, in the console** (RULES 8.12). The owner app has **no**
 > Integrations or Credentials screen: a salon can neither see nor change its Message Central,

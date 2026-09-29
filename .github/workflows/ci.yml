@@ -155,7 +155,9 @@ jobs:
       # The build is the real gate. `server-only` turns "a client component
       # imported the admin database layer" into a build failure, so this is
       # what stops the service-role connection reaching a browser bundle.
-      - name: Build
+      # Since 29 Sep 2026 this is the Cloudflare build (vinext, Vite); the
+      # server-only refusal was proven to hold on it before the switch.
+      - name: Build (Cloudflare)
         working-directory: console
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co

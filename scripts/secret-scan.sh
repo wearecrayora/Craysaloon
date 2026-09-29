@@ -78,7 +78,7 @@ done
 # Phase 2: BUILT ARTIFACTS
 # ---------------------------------------------------------------------------
 #
-# RULES 12 asks for a scan of "the APK and the Vercel client bundle", not just
+# RULES 12 asks for a scan of "the APK and the console client bundle", not just
 # the repository. Phase 1 above only sees tracked files, and a credential
 # reaching users does not have to be committed to get there - it only has to be
 # read at build time and inlined. NEXT_PUBLIC_* is exactly that mechanism, and
@@ -89,6 +89,8 @@ done
 
 artifacts=""
 [ -d console/.next/static ] && artifacts="$artifacts console/.next/static"
+# The console on Cloudflare (vinext): everything under assets/ is served to browsers.
+[ -d console/.cloudflare/output/v0/workers/default/assets ] &&   artifacts="$artifacts console/.cloudflare/output/v0/workers/default/assets"
 for apk in app/build/app/outputs/flutter-apk/*.apk \
            app/build/app/outputs/apk/*/*/*.apk; do
   [ -f "$apk" ] && artifacts="$artifacts $apk"

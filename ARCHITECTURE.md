@@ -47,7 +47,7 @@ request. See **RULES.md §2**.
 
 Cray Salon is a **multi-tenant, per-salon white-labelled SaaS retention loop** for Indian local
 salons: an install-first Flutter app - **Android at launch, iOS-ready** - plus a Crayora operations console (Next.js on
-Vercel), on a managed serverless backend (Supabase). Many salons, one codebase, one database,
+Cloudflare), on a managed serverless backend (Supabase). Many salons, one codebase, one database,
 hard row-level isolation — and to each customer it looks like their own salon's app.
 
 Optimised for six things, in priority order:
@@ -84,7 +84,7 @@ in order.
 | **D12** | **Per-salon API keys live in the platform** | PRD §16 | Vault-encrypted credentials, write-only UI, service-role-only decryption (§8) |
 | D7 | Patchy connectivity, low-end Android | PRD §15 | Local SQLite cache, keyset pagination, pre-aggregated dashboard reads (§6.8) |
 | D8 | India regulatory: DPDP, consumer protection, PPI-avoidance | PRD §16, §16A | Per-purpose consent ledger, anonymise-not-delete, closed-loop credit only (§15.4, §15.6) |
-| D9 | Crayora runs the SaaS without touching the DB | PRD §11 | Admin plane on Vercel, service-role server-side only, audit written inside the same transaction (§14) |
+| D9 | Crayora runs the SaaS without touching the DB | PRD §11 | Admin plane on Cloudflare, service-role server-side only, audit written inside the same transaction (§14) |
 | D10 | Ship Tier 1 before Tier 2/3 | PRD §5, §21 | Tier 2/3 tables *designed* now, *created* later; no schema rewrite at Tier 2 (§6.2) |
 
 ---
@@ -99,7 +99,7 @@ graph TB
     C["Customer"]
 
     subgraph CS["Cray Salon Platform"]
-      ADM["Admin console — Next.js on Vercel"]
+      ADM["Admin console — Next.js on Cloudflare"]
       APP["Flutter app — one binary, role-aware, salon-themed"]
       BE["Supabase — Postgres + RLS + Auth + Edge Functions + Vault"]
     end
@@ -128,9 +128,9 @@ graph TB
 ```
 
 **Trust boundaries.** The Flutter app is **untrusted** — it holds a user JWT and nothing else.
-The Vercel console is **partially trusted**: its *browser* half is untrusted, its *server* half
+The console is **partially trusted**: its *browser* half is untrusted, its *server* half
 holds the service role. Every third-party credential — platform-wide and per-salon — lives only
-in Edge Function secrets, Vercel server environment, or Supabase Vault. The APK contains the
+in Edge Function secrets, the console Worker's encrypted secrets, or Supabase Vault. The APK contains the
 Supabase URL and the **anon** key, both public by design and useless without RLS-passing claims.
 
 ---
@@ -149,7 +149,7 @@ graph LR
       DATA --> LOCAL
     end
 
-    subgraph Vercel
+    subgraph Cloudflare
       RSC["Next.js server routes — service role"]
       BROWSER["Console UI — no privileged keys"]
       BROWSER --> RSC
@@ -586,7 +586,7 @@ it must stay safe, but no feature should be designed around it.
 - **QR:** encodes `https://join.craysalon.in/s/<code>` — an Android App Link that opens the app
   if installed, otherwise the Play listing, carrying the code through install (Play Install
   Referrer) so the join screen is pre-filled.
-- **The domain, built at M4 (`join/`):** a static site on its own Vercel project, separate from the
+- **The domain, built at M4 (`join/`):** a static site on its own Cloudflare Pages project, separate from the
   console so nothing public sits behind the console's authentication or near its environment.
   `/s/<code>` shows the code in large type and links to Play with `referrer=code=CRAY-XXXXXX`;
   `/` names no salon and lists none. **`assetlinks.json` is generated, never committed**
@@ -1598,17 +1598,29 @@ sold  ──(fee paid offline: cash / bank transfer)──> recorded in console
 
 ---
 
-## 14. The Crayora console (Next.js on Vercel) — D5, D9
+## 14. The Crayora console (Next.js on Cloudflare) — D5, D9
 
 **No salon can exist without it, so it is built at M2, before any customer-facing
 surface.**
 
 ### 14.1 Shape
 
+**Hosting (changed 29 Sep 2026, from Vercel).** The console is built with **vinext** (Next.js's
+API on Vite) and served by **Cloudflare Workers**; the static `join.craysalon.in` site is on
+**Cloudflare Pages**. The console is not on Pages itself because it is server-rendered - server
+actions, route handlers, a Postgres connection, PDF generation - and Cloudflare's Pages adapter
+for Next.js (`next-on-pages`) is deprecated and would force every route onto the edge runtime.
+Workers is Cloudflare's supported path, in the same *Workers & Pages* product. Verified before the
+switch, in `workerd`: the Postgres connection to the admin plane, the QR-pack PDF, R2 URL
+signing, the security headers, and that `server-only` still **fails the build** when a client
+component imports the admin database layer. Secrets are declared in
+`console/cloudflare.config.ts` and set with `wrangler secret put`; nothing is cached at the
+edge - every page is per-admin.
+
 - Next.js App Router. **All privileged work happens in server route handlers**; the browser
   bundle holds no privileged key. `NEXT_PUBLIC_*` carries the Supabase URL and the **publishable**
   key only.
-- The service role key lives in Vercel **server** environment variables, and is used for exactly
+- The service role key lives in the console Worker's **encrypted secrets**, and is used for exactly
   one thing: calling `app_admin.*` functions.
 - **Every admin mutation goes through an `app_admin.*` `SECURITY DEFINER` function that writes
   `audit_log` in the same transaction.** Audit is therefore structurally impossible to skip — a
@@ -1657,12 +1669,12 @@ surface.**
 | Secret | Lives in | Never in |
 |---|---|---|
 | Supabase **publishable** key (`sb_publishable_...`) | APK, console browser | — (public by design) |
-| Supabase **secret** key (`sb_secret_...`) | Edge Function secrets, Vercel **server** env, CI | APK, browser bundle, git |
+| Supabase **secret** key (`sb_secret_...`) | Edge Function secrets, the console Worker's secrets, CI | APK, browser bundle, git |
 | **Per-salon Razorpay / Message Central / WhatsApp credentials** | **Supabase Vault** (§8) | anywhere client-side; any read API |
 | `phone_hash` pepper | Supabase Vault | any table, any log |
 | Message Central, FCM, R2 platform credentials | Edge Function secrets | anywhere client-side |
 
-CI runs a secret scanner on every PR and fails on a match. Release builds and the Vercel client
+CI runs a secret scanner on every PR and fails on a match. Release builds and the console client
 bundle are additionally grepped for known key prefixes before shipping (PRD §20).
 
 ### 15.2 File storage (R2)
@@ -1808,10 +1820,10 @@ licensing question, not a design question. Second: never add a code path that de
 /                      README.md, CLAUDE.md, RULES.md, PHASES.md, IMPLEMENTATION.md,
                        DESIGN.md, ARCHITECTURE.md, Cray-Salon-PRD-v4.md
 /app                   Flutter application (§9.1) — android/ and ios/ both live, CI builds both
-/console               Next.js admin console (Vercel)                            [from M2]
+/console               Next.js admin console (vinext on Cloudflare Workers)      [from M2]
 /packages
   /design-tokens       shared branding token schema — consumed by app AND console (§7.2)
-/join                  join.craysalon.in - static, its own Vercel project (§5.6)  [from M4]
+/join                  join.craysalon.in - static, Cloudflare Pages (§5.6)       [from M4]
 /scripts               lint-gates.sh, secret-scan.sh, l10n-check.sh, build-apk.sh, db-push.sh
   /db                  run.mjs (migrate | test | sql | file), negative-control.mjs, env.mjs
   /join                assetlinks.mjs - generates the App Link fingerprint file
@@ -1835,7 +1847,7 @@ Everything unmarked exists today. `Cray-Salon-PRD-v3.md` is also present at the 
 ## 18. Environments, CI/CD, testing
 
 **Environments:** `development` (the **hosted** Supabase dev project, providers stubbed) →
-`staging` (own Supabase project + Vercel preview, provider sandboxes, simulated payments) →
+`staging` (own Supabase project + a Cloudflare preview Worker, provider sandboxes, simulated payments) →
 `production`.
 
 **There is no local stack.** `supabase start` is not used, and `supabase db reset` is never run

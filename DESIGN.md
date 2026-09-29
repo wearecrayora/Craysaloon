@@ -538,7 +538,7 @@ Non-negotiable, and checked at publish for the salon's own palette (§3.3).
 
 ---
 
-## 12. The console (Next.js on Vercel)
+## 12. The console (Next.js on Cloudflare)
 
 Same tokens, different context: desktop, an operator repeating a task, no white-labelling of the
 console itself.

@@ -55,7 +55,7 @@ Check what the current plan includes **before** it is needed.
 8. Cron: run `scripts/db/schedule.sql` (it is not a migration).
 9. **The app has the old project URL and publishable key compiled in.** A new project means a new
    app build and a forced update - or a custom domain that was set up before the incident.
-10. Point the console (Vercel env `ADMIN_DATABASE_URL`, Supabase keys) and GitHub secrets at it.
+10. Point the console (Worker secrets `ADMIN_DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_*` - and rebuild, since the public ones are baked in) and GitHub secrets at it.
 11. Verify: `SOURCE_DB_URL=<old, if reachable> node scripts/ops/restore-verify.mjs snapshot`,
     then `TARGET_DB_URL=<new> node scripts/ops/restore-verify.mjs verify`, then
     `DATABASE_URL=<new> node scripts/db/run.mjs test`.

@@ -1,0 +1,13 @@
+# Cloudflare Pages headers (carried over from the old vercel.json).
+
+/.well-known/assetlinks.json
+  Content-Type: application/json
+  Cache-Control: public, max-age=300
+
+/s/*
+  Cache-Control: public, max-age=0, must-revalidate
+  Referrer-Policy: no-referrer
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY

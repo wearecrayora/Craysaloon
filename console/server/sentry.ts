@@ -40,7 +40,7 @@ export async function reportServerError(
       level: 'error',
       platform: 'javascript',
       logger: 'console',
-      environment: process.env.VERCEL_ENV ?? 'development',
+      environment: process.env.NODE_ENV === 'production' ? 'production' : 'development',
       exception: { values: [{ type: name, value: message }] },
       tags: { surface: 'console', route_type: where.routeType ?? 'unknown', method: where.method ?? '' },
       transaction: path,
@@ -57,6 +57,6 @@ export async function reportServerError(
       signal: AbortSignal.timeout(3000),
     });
   } catch {
-    // A report that fails must not fail the request. The error is in Vercel's log.
+    // A report that fails must not fail the request. The error is in the Worker's log.
   }
 }

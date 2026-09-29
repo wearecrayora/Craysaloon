@@ -1,0 +1,7 @@
+{
+  // join.craysalon.in on Cloudflare Pages - static, public, no secrets.
+  // Deploy: npx wrangler pages deploy (from this directory).
+  "name": "craysalon-join",
+  "pages_build_output_dir": "./public",
+  "compatibility_date": "2026-09-29"
+}

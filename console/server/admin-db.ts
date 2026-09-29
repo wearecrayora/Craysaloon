@@ -13,7 +13,7 @@ import postgres from 'postgres';
  * Everything here is `server-only`: importing this file from a client component
  * is a build error, not a runtime surprise.
  *
- * On Vercel, ADMIN_DATABASE_URL must be the TRANSACTION POOLER url (port 6543).
+ * On Cloudflare, ADMIN_DATABASE_URL must be the TRANSACTION POOLER url (port 6543).
  * Serverless invocations open and discard connections constantly and would
  * exhaust the direct connection slots within minutes of real use.
  */

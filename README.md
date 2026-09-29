@@ -27,7 +27,7 @@ Read these before changing anything. They are binding, not background.
 
 ## Stack
 
-Flutter app · Next.js console on Vercel · Supabase (Postgres, Auth, Edge Functions) ·
+Flutter app · Next.js console on Cloudflare · Supabase (Postgres, Auth, Edge Functions) ·
 Cloudflare R2 · Razorpay and Message Central **per salon, on the salon's own accounts** ·
 Firebase Cloud Messaging · Sentry · `en` / `hi` / `hi_Latn`.
 

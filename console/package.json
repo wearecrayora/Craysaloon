@@ -4,12 +4,15 @@
   "private": true,
   "description": "Crayora super-admin console. Provisions and operates salons; the only way a salon comes into existence.",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "vite dev --port 3001",
+    "build": "vite build",
+    "start": "vite preview",
+    "deploy": "vinext-cloudflare deploy",
     "typecheck": "tsc --noEmit",
     "lint": "next lint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "dev:next": "next dev",
+    "build:next": "next build"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1132.0",
@@ -17,21 +20,30 @@
     "@cray/design-tokens": "file:../packages/design-tokens",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.58.0",
+    "@vinext/cloudflare": "^1.0.0",
     "next": "^15.5.0",
     "pdf-lib": "^1.17.1",
     "postgres": "^3.4.7",
     "qrcode": "^1.5.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-server-dom-webpack": "^19.3.0",
     "server-only": "^0.0.1",
+    "vinext": "^1.0.0",
     "zod": "^4.1.0"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "2.0.0-beta.sha-ad79608dd",
     "@types/node": "^24.3.0",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitejs/plugin-rsc": "^0.5.35",
+    "cf": "1.0.0-beta.5",
     "typescript": "^5.9.0",
-    "vitest": "^3.2.7"
-  }
+    "vite": "^8.3.0",
+    "vitest": "^4.1.11"
+  },
+  "type": "module"
 }
