@@ -1,0 +1,125 @@
+# RESTORE DRILL - "an untested backup is not a backup" (ARCHITECTURE 16).
+#
+# Takes a logical backup of the hosted database the way Supabase documents it
+# (roles, schema, data), restores it into a brand-new, EMPTY Supabase stack on
+# this runner, and proves the copy is the database: every table, every RLS
+# protection, every row of money, every balance equal to its ledger - and then
+# runs the full release-gate suite against the copy.
+#
+# Monthly, and by hand before a release. Runbook: docs/runbooks/restore.md.
+#
+# Needs two repository secrets:
+#   RESTORE_DRILL_DB_URL  the hosted database's DIRECT connection string
+#                         (port 5432, not the pooler);
+#   RESTORE_DRILL_PEPPER  the phone-hash pepper (PHONE_HASH_PEPPER in .env).
+# The pepper lives in Vault, and Vault is encrypted per project: a restore into a
+# new project brings the ciphertext and cannot read it. Re-seeding the pepper is
+# therefore a step of every real restore, so the drill rehearses it - and the
+# verifier proves the copy hashes a number exactly as the source does.
+#
+# The dump holds real customer data. It exists only on this ephemeral runner,
+# is never uploaded as an artifact, and is deleted by the last step even when an
+# earlier one fails.
+
+name: Restore drill
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 21 1 * *' # 03:00 IST on the 1st of each month
+
+permissions:
+  contents: read
+
+jobs:
+  drill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      SOURCE_DB_URL: ${{ secrets.RESTORE_DRILL_DB_URL }}
+      # The empty stack `supabase start` brings up on this runner.
+      TARGET_DB_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Refuse to run without the secrets
+        env:
+          PEPPER: ${{ secrets.RESTORE_DRILL_PEPPER }}
+        run: |
+          if [ -z "$SOURCE_DB_URL" ] || [ -z "$PEPPER" ]; then
+            echo "::error::RESTORE_DRILL_DB_URL and RESTORE_DRILL_PEPPER must both be set (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install the runner's dependencies
+        working-directory: scripts
+        run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Snapshot the source (counts and protections only)
+        run: node scripts/ops/restore-verify.mjs snapshot
+
+      - name: Take the backup - roles, schema, data
+        working-directory: ${{ runner.temp }}
+        run: |
+          supabase db dump --db-url "$SOURCE_DB_URL" -f roles.sql --role-only
+          supabase db dump --db-url "$SOURCE_DB_URL" -f schema.sql
+          supabase db dump --db-url "$SOURCE_DB_URL" -f data.sql --use-copy --data-only
+          ls -la roles.sql schema.sql data.sql
+
+      # A fresh project with NOTHING of ours in it - not the repository's config,
+      # not its migrations - exactly what a real disaster restore starts from.
+      - name: Start an empty Supabase stack (Postgres 17, like the source)
+        working-directory: ${{ runner.temp }}
+        run: |
+          mkdir -p empty && cd empty
+          supabase init --force
+          sed -i 's/^major_version = .*/major_version = 17/' supabase/config.toml
+          supabase start -x studio,imgproxy,edge-runtime,logflare,vector,postgres-meta,supavisor
+
+      - name: Restore
+        working-directory: ${{ runner.temp }}
+        run: |
+          psql --single-transaction --variable ON_ERROR_STOP=1 \
+            --file roles.sql \
+            --file schema.sql \
+            --command 'SET session_replication_role = replica' \
+            --file data.sql \
+            --dbname "$TARGET_DB_URL"
+
+      # The step a real restore cannot skip (docs/runbooks/restore.md, step 4).
+      - name: Re-seed the phone-hash pepper into the copy's Vault
+        env:
+          PEPPER: ${{ secrets.RESTORE_DRILL_PEPPER }}
+        run: |
+          if [ -z "$PEPPER" ]; then
+            echo "::error::RESTORE_DRILL_PEPPER is not set."
+            exit 1
+          fi
+          psql "postgresql://supabase_admin:postgres@127.0.0.1:54322/postgres"             --variable ON_ERROR_STOP=1 --variable pepper="$PEPPER" <<'SQL'
+          delete from vault.secrets where name = 'phone_hash_pepper';
+          select vault.create_secret(:'pepper', 'phone_hash_pepper') is not null as seeded;
+          SQL
+
+      - name: Verify the copy is the database
+        run: node scripts/ops/restore-verify.mjs verify
+
+      - name: Run every release gate against the copy
+        env:
+          DATABASE_URL: ${{ env.TARGET_DB_URL }}
+        run: node scripts/db/run.mjs test
+
+      - name: Destroy the backup
+        if: always()
+        working-directory: ${{ runner.temp }}
+        run: |
+          rm -f roles.sql schema.sql data.sql restore-snapshot.json
+          (cd empty && supabase stop --no-backup) || true

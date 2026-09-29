@@ -8,6 +8,7 @@ import {
   setGraceAction,
   setTrialAction,
   suspendAction,
+  reactivateAction,
   type ActionState,
 } from './actions';
 
@@ -17,6 +18,7 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
   const [open, setOpen] = useState(false);
   const [activateState, activate, activating] = useActionState(activateAction, empty);
   const [suspendState, suspend, suspending] = useActionState(suspendAction, empty);
+  const [reactivateState, reactivate, reactivating] = useActionState(reactivateAction, empty);
   const [trialState, setTrial, settingTrial] = useActionState(setTrialAction, empty);
 
   // Days left in the messaging trial, rounded UP: a trial ending this evening
@@ -122,6 +124,9 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
           </Link>
           <Link href={`/salon/${salon.id}/billing`} style={{ fontSize: 13, marginRight: 10 }}>
             Billing
+          </Link>
+          <Link href={`/salon/${salon.id}/support`} style={{ fontSize: 13, marginRight: 10 }}>
+            Support
           </Link>
           <button type="button" className="secondary" onClick={() => setOpen((v) => !v)}>
             {open ? 'Close' : 'Manage'}
@@ -243,11 +248,13 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
                       so the OTPs are covered on purpose rather than as a fault.
                     </>
                   )}
-                  {salon.setup_fee_status !== 'paid' && (
+                  {salon.setup_fee_status === 'unpaid' && (
                     <>
                       {' '}
-                      <strong>The setup fee is not recorded as paid.</strong> That is a warning,
-                      not a block — you may have a reason, and it will be captured below.
+                      <strong>The setup fee is not recorded.</strong> Activation is refused until
+                      it is paid, or waived with a reason, on the{' '}
+                      <Link href={`/salon/${salon.id}/billing`}>Billing</Link> page. There is no
+                      free trial.
                     </>
                   )}
                 </p>
@@ -268,10 +275,34 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
                   <option value="suspended">Suspended — the salon stops operating</option>
                 </select>
                 <label htmlFor={`sr-${salon.id}`}>Reason (required)</label>
-                <input id={`sr-${salon.id}`} name="reason" placeholder="Non-payment, 30 days overdue" />
+                <input id={`sr-${salon.id}`} name="reason" placeholder="Fraud review opened, ticket 88" />
+                <p className="hint" style={{ margin: '4px 0 0' }}>
+                  For a decision about the salon. Non-payment needs nothing here - the billing
+                  dates make the salon read-only on their own.
+                </p>
                 <div className="actions">
                   <button className="secondary" disabled={suspending}>
                     {suspending ? 'Applying…' : 'Change status'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {(salon.status === 'grace' || salon.status === 'suspended') && (
+              <form action={reactivate} style={{ marginTop: 18 }}>
+                <input type="hidden" name="salonId" value={salon.id} />
+                <strong style={{ fontSize: 14 }}>Lift the {salon.status}</strong>
+                <p className="hint" style={{ margin: '4px 0 8px' }}>
+                  Super-admins only, with a reason. Refused for a purged salon, or one whose
+                  subscription has lapsed - record the payment first.
+                </p>
+                <label htmlFor={`ra-${salon.id}`}>Reason (required, audited)</label>
+                <input id={`ra-${salon.id}`} name="reason" placeholder="Fraud review cleared" />
+                {reactivateState.error && <div className="error">{reactivateState.error}</div>}
+                {reactivateState.ok && <div className="notice">{reactivateState.ok}</div>}
+                <div className="actions">
+                  <button className="secondary" disabled={reactivating}>
+                    {reactivating ? 'Reactivating…' : 'Reactivate'}
                   </button>
                 </div>
               </form>

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireAdmin } from '@/server/auth';
 import { listDataRightsRequests } from '@/server/admin-db';
 import { ErasureForm } from './erasure-form';
+import { AccessForm } from './access-form';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,6 +66,8 @@ export default async function Page() {
 
               {r.kind === 'erasure' ? (
                 <ErasureForm requestId={r.request_id} />
+              ) : r.kind === 'access' ? (
+                <AccessForm requestId={r.request_id} />
               ) : (
                 <p className="hint">
                   The salon answers this one. If it is overdue, contact the salon&rsquo;s privacy

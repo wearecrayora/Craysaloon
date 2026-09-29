@@ -12,7 +12,7 @@
 -- Plus RULES 6.3: billing never flips a salon's status - a payment does not
 -- activate, a date does not suspend.
 
-select plan(34);
+select plan(36);
 
 insert into auth.users (id) values
   ('77777777-aaaa-4000-8000-00000000000a'),   -- operator
@@ -328,8 +328,20 @@ select is(
 select app_admin.set_feature_flag('77777777-aaaa-4000-8000-00000000000a',
   '77777777-0000-4000-8000-000000000001', 'dashboard', false, 'not in their plan');
 
--- The fraud review is over.
-update public.salons set status = 'active' where id = '77777777-0000-4000-8000-000000000001';
+-- The fraud review is over: a person lifts it, on purpose (0092).
+select throws_like(
+  $q$select app_admin.reactivate_salon('77777777-aaaa-4000-8000-00000000000a',
+       '77777777-0000-4000-8000-000000000001', '   ')$q$,
+  '%needs a reason%',
+  'lifting a suspension needs a reason');
+
+select app_admin.reactivate_salon('77777777-aaaa-4000-8000-00000000000a',
+  '77777777-0000-4000-8000-000000000001', 'Fraud review cleared');
+
+select is(
+  (select status::text from public.salons where id = '77777777-0000-4000-8000-000000000001'),
+  'active',
+  'a suspended salon CAN be brought back - by a super-admin, with a reason, audited');
 
 set local role authenticated;
 select set_config('request.jwt.claims',

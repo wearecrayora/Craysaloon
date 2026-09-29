@@ -1574,7 +1574,10 @@ sold  ──(fee paid offline: cash / bank transfer)──> recorded in console
   - *Operational and personal data* — customers, bookings, photos, tokens, message history — is
     **purged**.
   - *Financial records* — `invoices`, `payments`, `wallet_transactions`, `loyalty_ledger` — move
-    to a **restricted archive** with personal identifiers anonymised (name cleared, phone
+    to a **restricted archive** *(built in place, 0089: the rows are not moved - the append-only
+    triggers that refuse DELETE are the protection the purge must keep - instead every path to
+    them is closed: customers and staff anonymised and unable to log in, the salon's status final,
+    reachable only by super-admins through the console)* with personal identifiers anonymised (name cleared, phone
     replaced by its salted hash) and are retained for the statutory books-of-account period.
     Access is super-admin only and audit-logged.
 
@@ -1701,7 +1704,11 @@ shares a transaction with the thing it guards.
   `promotional`, `whatsapp`, `photos`. Withdrawal is a new row; current state is a view over the
   latest row per purpose. A single flag cannot represent "booking confirmations yes, offers no,"
   which is exactly what the Act requires.
-- **Export:** a job assembles JSON + CSV into R2 and returns a 7-day signed URL.
+- **Export:** *(as built, 0091)* the console produces the customer's copy as one JSON document **by
+  request id** (`app_admin.access_request_export`) - never by name or number - and the request is
+  closed with how it reached the person (`complete_access_request`), which the customer reads under
+  *Your data*. The R2 + signed-URL job described originally is not built; the salon, as fiduciary,
+  sends the file.
 - **Deletion → anonymisation.** `app.anonymise_customer()` clears name and birthday, replaces the
   stored phone with its salted hash, detaches `auth_user_id`, hard-deletes photos from R2, and
   **retains** `wallet_transactions`, `payments` and `invoices` against the now-anonymous id. The
@@ -1770,6 +1777,14 @@ licensing question, not a design question. Second: never add a code path that de
   failures, OTP spend anomaly, code-lookup rate-limit spikes, RLS test failure in CI.
 - **Backups:** Supabase PITR; R2 versioning. A **documented, rehearsed restore procedure** — an
   untested backup is not a backup. Drill each release cycle.
+- **Restore drill (as built, M12):** `.github/workflows/restore-drill.yml` dumps the hosted database
+  (roles, schema, data), restores into an empty Supabase stack, **re-seeds the phone-hash pepper**
+  (Vault is encrypted per project, so a restore into a new project cannot read it - without the
+  same pepper no one can log in), verifies with `scripts/ops/restore-verify.mjs`, and runs every
+  gate against the copy. Prefer an in-place restore, which keeps the URL, keys and Vault key
+  (`docs/runbooks/restore.md`).
+- **Console errors** reach Sentry through `console/instrumentation.ts` (`onRequestError`, no SDK),
+  scrubbed of bodies, headers, query strings and any run of six digits.
 - **Runbooks** in `/docs/runbooks/`: wallet drift, stuck queue, Razorpay or Message Central
   outage, credential rotation, tenant restore, emergency suspend, **mistaken-binding correction**.
 

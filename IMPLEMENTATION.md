@@ -95,7 +95,7 @@
 | K8 | `/salons/:id/messaging` | WhatsApp template status, RCS agent status, send/ack rates **and cost per channel**, **OTP fallback count** | 8 |
 | K9 | `/salons/:id/qr` | QR pack — regenerate, download PDF | 2 |
 | K10 | `/salon/:id/billing` | Record offline setup fee · **activate** · subscription · dunning · *built 2026-09-29: setup fee with its amount (activation now refuses without paid/waived), plan + agreed price + billing start, offline payments (reference required, append-only, extend from the old due date), comp extensions (reason), the computed state and its dates, the notices as calls to make, and the plan features with overrides (K15 lives here)* | 11 |
-| K11 | `/salons/:id/support` | **Support mode** — time-boxed, reason, masked PII | 12 |
+| K11 | `/salons/:id/support` | **Support mode** — time-boxed, reason, masked PII · *built 2026-09-29 at `/salon/:id/support`: session with a reason and a time box (≤2 h), phones masked to four digits, "Show number" with its own reason, recent sessions listed* | 12 |
 | K12 | `/customers/binding` | **Unbind / transfer** — super-admin only · exact-number lookup with a reason (audited) · unbind offered only with no history · transfer needs the destination, a typed reason, the balance **as disclosed** (must match) and a tick that the customer was told · *built 2026-09-15* | 4 |
 | K13 | `/customers/wallet-correct` | **The only human path to a balance** | 7 |
 | K14 | `/metrics` | MRR, churn, activation, push:WhatsApp, time-to-first-bind · *built 2026-09-29 from `platform_metrics`: MRR counts paid-up salons only* | 11 |

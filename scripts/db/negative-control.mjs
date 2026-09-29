@@ -339,6 +339,47 @@ const GRACE_CANARY = `
 
 const GRACE_MUST_FAIL = [/grace is READ-ONLY in the database/, /nobody NEW joins a lapsed salon/];
 
+// A purge that anonymises the people but forgets their bindings: every
+// customer of a closed salon locked out of every other salon, forever.
+const OFFBOARDING_TEST = 'supabase/tests/privacy/offboarding_test.sql';
+const PURGE_CANARY = `
+  do $canary$
+  declare
+    v_def text;
+    v_new text;
+  begin
+    select pg_get_functiondef('app_admin.purge_salon(uuid, uuid, text, text)'::regprocedure)
+      into strict v_def;
+    v_new := replace(v_def,
+      'delete from public.customer_identities where salon_id = p_salon_id;',
+      'perform 1;');
+    if v_new = v_def then raise exception 'purge canary: the release moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+
+const PURGE_MUST_FAIL = [/every binding to the closed salon is released/, /BINDING EXCLUSIVITY/];
+
+// Support mode whose masked view forgot to ask for a live session - customer
+// data one console click away, with no reason and no time box.
+const SUPPORT_CANARY = `
+  do $canary$
+  declare
+    v_def text;
+    v_new text;
+  begin
+    select pg_get_functiondef('app_admin.support_customers(uuid, uuid, text)'::regprocedure)
+      into strict v_def;
+    v_new := replace(v_def, 'if v_session is null then', 'if false then');
+    if v_new = v_def then raise exception 'support canary: the session check moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+
+const SUPPORT_MUST_FAIL = [/not visible without a support session/, /when the time box ends/];
+
 
 class Rollback extends Error {
   constructor(lines) {
@@ -486,6 +527,18 @@ try {
       BILLING_TEST,
       GRACE_CANARY,
       GRACE_MUST_FAIL,
+    ),
+    await check(
+      "offboarding / a purge that keeps the closed salon's bindings",
+      OFFBOARDING_TEST,
+      PURGE_CANARY,
+      PURGE_MUST_FAIL,
+    ),
+    await check(
+      'support mode / a masked view that does not need a session',
+      OFFBOARDING_TEST,
+      SUPPORT_CANARY,
+      SUPPORT_MUST_FAIL,
     ),
   ];
 

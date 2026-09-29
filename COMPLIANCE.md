@@ -69,7 +69,7 @@ disagrees, the fix is small: add it as a fourth tick at binding.
 
 | Right | Status | Where |
 |---|---|---|
-| **Access** — a copy of their data | **Built (request)** / **Gap (fulfilment)** | `request_data_right('access')` raises a tracked request with a 30-day due date. The export job that produces the file is M8 |
+| **Access** — a copy of their data | **Built** | `request_data_right('access')` raises a tracked request with a 30-day due date; the console produces the copy by request id (`access_request_export`, 0091) and closes it with how it reached the person, which the customer sees. Gated in `data_rights_test` |
 | **Correction** | **Partial** | A customer can edit their own profile (0041 own-rows writes). No dedicated screen yet |
 | **Erasure** | **Built** | `app_admin.anonymise_customer` (0051): name, number, birthday and the login link go; the salted hash and every financial row stay. Gated |
 | **Grievance redressal** | **Built (channel)** / **Decision (who answers)** | `request_data_right('grievance')`. The salon must name a contact — see §6 |
@@ -223,7 +223,7 @@ one has a mechanism, the mechanism is named.
 | 1 | Who is the grievance contact per salon? | **The salon answers; Crayora escalates.** A named person plus at least one reachable channel, captured before activation | `salons.grievance_name/email/phone`, `app_admin.set_grievance_contact` (0053); `activate_salon` **refuses** without one; published pre-login by `resolve_join_code` (0055); console page at `/salon/[id]/privacy` |
 | 2 | Crayora's own contact, and a DPO? | **A named person, no DPO title.** We are not a Significant Data Fiduciary and inventing the title would claim a status we do not hold | Privacy policy, contact block |
 | 3 | A published privacy policy | **Written**: `join/public/privacy.html`, served at `join.craysalon.in/privacy` | Linked from `/`, `/s/<code>`, the in-app notice and the Play listing. Placeholders + lawyer review are the two open items — see `join/README.md` |
-| 4 | Retention of financial records | **8 years** from the end of the financial year, **to be confirmed with a CA**. Applied as the stated period now, so the promise and the behaviour match | Privacy policy; still to be enforced by a purge job (M12) |
+| 4 | Retention of financial records | **8 years** from the end of the financial year, **to be confirmed with a CA**. Applied as the stated period now, so the promise and the behaviour match | Privacy policy. The offboarding purge (0089) removes personal data and keeps these records, anonymised. Deleting them when the period ends is not built - no record is old enough yet |
 | 5 | Contracts | **Data-processing terms inside the salon agreement**, plus a published sub-processor list | Sub-processor table is in the privacy policy; the salon agreement is a lawyer's document |
 | 6 | Message Central's DLT position for promotional SMS | **No promotional SMS until Message Central confirms in writing** that its registration covers salon marketing content. Transactional/service SMS and the OTP are unaffected — those go under Message Central's own registration | New entry in `RULES.md` §2: promotional SMS is a capability that deliberately does not exist yet |
 | 7 | Sentry region, and file location | **Pin files to India/Asia-Pacific, keep Sentry where it is, and disclose both.** Crash reports are technical, not customer records; moving them would buy little and cost a working error pipeline | Privacy policy names both, and says plainly which two sub-processors are outside India. R2 bucket location is a deployment instruction, still open (work queue #7) |
@@ -247,7 +247,7 @@ WhatsApp are unaffected — and push is the preferred channel anyway (RULES 12).
 | 7 | R2 bucket pinned to India/APAC at creation | The sub-processor list is published now; the bucket location is a deployment instruction nobody has executed | Before first real salon |
 | 7b | Fill the privacy policy's placeholders, and have a lawyer read it | A published policy naming nobody is evidence the obligation was noticed and skipped | Before first real salon |
 | 7c | Hindi and Hinglish translations of the policy | The app ships three languages; the notice behind it must too | M13 |
-| 8 | Test a backup restore | An untested backup is a belief, not a safeguard | Before first real salon |
+| 8 | Test a backup restore | An untested backup is a belief, not a safeguard. **Built** (M12): `restore-drill.yml` restores into an empty stack, re-seeds the pepper, verifies and runs every gate. **First run owed** - needs `RESTORE_DRILL_DB_URL` and `RESTORE_DRILL_PEPPER` as repository secrets | Before first real salon |
 | 9 | Play Data Safety declaration + privacy policy URL | Blocks release | M13 |
 | 10 | Access-log retention aligned to 180 days in India | CERT-In | Before first real salon |
 

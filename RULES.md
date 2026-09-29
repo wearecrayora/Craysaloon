@@ -277,9 +277,14 @@ Function secrets and Vercel **server** env. Never in a browser bundle, never in 
 6.7 Admin accounts require MFA and never carry a `salon_id` claim.
 
 6.8 Support mode is time-boxed, reason-required, and reads through PII-masking views. Un-masking is
-a separate, separately-logged action.
+a separate, separately-logged action. *(Built in 0089: at most two hours, the phone masked to its
+last four digits, no customer data at all without a live session.)*
 
-6.9 The console can change a salon's **status**. It can never delete its data.
+6.9 The console can change a salon's **status**. It can never delete its data - with **one**
+exception, the offboarding purge (0089), which deletes *personal and operational* data only:
+purge due, the owner offered an export, customer credit settled, a super-admin, a reason and the
+name typed back. It never deletes a financial row. A purged salon's status is final. A manual
+grace or suspension is lifted only by `reactivate_salon` (0092): super-admin, reason, audited.
 
 6.10 The owner logs into the **same Android app** with the mobile number registered in the console.
 No owner self-signup.

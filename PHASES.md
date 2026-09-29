@@ -460,6 +460,32 @@ mode, runbooks.
 *Done when:* anonymise preserves ledger integrity **and** binding exclusivity · purge splits
 personal from financial · a restore drill has actually been performed · support mode is time-boxed
 and reason-required.
+*Built 2026-09-29 - three of four conditions hold; the restore drill is built and NOT yet
+performed* (0089-0092; `privacy/offboarding_test.sql`, 32 assertions + two canaries; 3 more in
+`data_rights_test`; console billing → Offboarding, `/salon/:id/support`, data-rights access
+export; `docs/runbooks/`, 11 runbooks). **Purge** anonymises every customer and staff member,
+releases bindings, deletes tokens, messages and the salon's credentials, and keeps every payment
+and ledger row - asserted: the balance still equals the ledger, the ledger is still append-only,
+the released phone binds to exactly one other salon, and the neighbouring salon is untouched. The
+"restricted archive" is built in place by closing every path to the rows rather than moving them
+(moving them would mean disabling the append-only triggers the purge must preserve). **Support
+mode** is time-boxed (≤2 h), reason-required, masks the phone to four digits, and un-masking is
+its own audited act. **Access requests** can now be fulfilled - before this, a customer could ask
+for a copy of their data and nobody could produce it. **A manually suspended salon** could never
+be brought back; `reactivate_salon` (0092) closes that.
+**The restore drill** is `.github/workflows/restore-drill.yml`: a Supabase-documented dump,
+restored into an empty stack, verified (`scripts/ops/restore-verify.mjs` - tables, RLS forced,
+money row-exact, balances = ledgers, the SAME phone hash) and then the full gate suite run against
+the copy. Building it found a trap worth the milestone on its own: **the phone-hash pepper lives in
+Vault, Vault is encrypted per project, and a restore into a new project cannot read it** - without
+re-seeding the same pepper, nobody could ever log in again. The drill rehearses the re-seed. It
+needs two repository secrets (`RESTORE_DRILL_DB_URL`, `RESTORE_DRILL_PEPPER`) and a first run;
+until then this condition is **owed**, not met.
+**Sentry** now covers the console's server errors too (`instrumentation.ts`, no SDK, scrubbed of
+any run of six digits - tested), beside the app's.
+**Still open:** Edge Functions report only OTP fallbacks to Sentry - dispatcher and webhook errors
+go to the function logs only · the shared `trace_id` across surfaces is not built · nomination (s.14) and the children's-details
+rule remain · the breach runbook is written, not rehearsed.
 
 ### Phase 5 — Ship *(M13)*
 

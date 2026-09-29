@@ -21,6 +21,14 @@ import {
   recordIntegrationTest,
   recordSetupFee,
   recordSubscriptionPayment,
+  recordExportOffered,
+  recordCreditSettlement,
+  purgeSalon,
+  startSupportSession,
+  endSupportSession,
+  supportUnmaskPhone,
+  completeAccessRequest,
+  reactivateSalon,
   extendSubscription,
   setBilling,
   setFeatureFlag,
@@ -954,6 +962,135 @@ export async function transferAction(_prev: BindingState, form: FormData): Promi
     return {
       ok: 'Transferred. The customer was signed out everywhere; their next login opens the new salon, starting fresh. Their old wallet and history stay with the old salon.',
     };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Offboarding (M12). The database enforces super-admin, purge-due, the export
+// offer and the credit settlement; these only turn its sentence into a message.
+// ---------------------------------------------------------------------------
+
+export async function exportOfferedAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const note = String(form.get('note') ?? '').trim();
+  if (!note) return { error: 'Say how the export was offered, and when.' };
+  try {
+    await recordExportOffered(admin.id, salonId, note);
+    revalidatePath(`/salon/${salonId}/billing`);
+    return { ok: 'Recorded.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function creditSettledAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const note = String(form.get('note') ?? '').trim();
+  if (!note) return { error: 'Say how the salon settled its customers’ credit.' };
+  try {
+    await recordCreditSettlement(admin.id, salonId, note);
+    revalidatePath(`/salon/${salonId}/billing`);
+    return { ok: 'Recorded. The balances stay in the books beside this note.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function purgeAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+  const typedName = String(form.get('typedName') ?? '');
+  if (!reason) return { error: 'A reason is required - it is the audit entry.' };
+  try {
+    const r = await purgeSalon(admin.id, salonId, reason, typedName);
+    revalidatePath(`/salon/${salonId}/billing`);
+    revalidatePath('/');
+    return r.already
+      ? { ok: 'This salon was already purged.' }
+      : {
+          ok:
+            `Purged. ${r.customers_anonymised ?? 0} customers anonymised, ` +
+            `${r.bindings_released ?? 0} bindings released, ${r.staff_closed ?? 0} staff accounts closed. ` +
+            'Every financial record was kept.',
+        };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Support mode (RULES 6.8)
+// ---------------------------------------------------------------------------
+
+export async function startSupportAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+  const minutes = Number(form.get('minutes') ?? 60);
+  if (!reason) return { error: 'A reason is required - what is the ticket?' };
+  try {
+    await startSupportSession(admin.id, salonId, reason, minutes);
+    revalidatePath(`/salon/${salonId}/support`);
+    return { ok: 'Support session started.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function endSupportAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const sessionId = String(form.get('sessionId') ?? '');
+  try {
+    await endSupportSession(admin.id, sessionId);
+    revalidatePath(`/salon/${salonId}/support`);
+    return { ok: 'Session ended.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function unmaskAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const customerId = String(form.get('customerId') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+  if (!reason) return { error: 'Un-masking needs its own reason.' };
+  try {
+    const phone = await supportUnmaskPhone(admin.id, customerId, reason);
+    return { ok: phone ?? 'This customer has no number on record (anonymised).' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function accessSentAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const requestId = String(form.get('requestId') ?? '');
+  const howSent = String(form.get('howSent') ?? '').trim();
+  if (!howSent) return { error: 'Say how the copy reached the customer.' };
+  try {
+    await completeAccessRequest(admin.id, requestId, howSent);
+    revalidatePath('/data-rights');
+    return { ok: 'Closed. The customer sees the outcome under Your data.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function reactivateAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+  if (!reason) return { error: 'A reason is required - why was the suspension lifted?' };
+  try {
+    await reactivateSalon(admin.id, salonId, reason);
+    revalidatePath('/');
+    return { ok: 'Salon reactivated.' };
   } catch (e) {
     return { error: message(e) };
   }

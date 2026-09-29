@@ -93,6 +93,12 @@ select is(
         -- Read-only and STABLE: the billing page and the platform numbers
         -- (0087). A STABLE function cannot write.
         'billing_overview', 'platform_metrics',
+        -- Read-only and STABLE: the owner's export, and support mode's masked
+        -- view and session list (0089). Starting a session is what audits.
+        'salon_export', 'support_customers', 'list_support_sessions',
+        -- Read-only and STABLE: a customer's copy of their data, by request
+        -- (0091). Closing the request is what audits.
+        'access_request_export',
         -- Infrastructure: it changes grants, not tenant data, and is called
         -- from migrations rather than from the console (0020).
         'close_privileges'

@@ -13,7 +13,7 @@
 --   * erasure means ANONYMISATION: the person goes, the money stays
 --   * the salted hash survives erasure, so one-phone-one-salon stays enforceable
 
-select plan(22);
+select plan(25);
 
 insert into auth.users (id) values
   ('dddddddd-cccc-4000-8000-00000000000f'),
@@ -198,6 +198,36 @@ select is(
 );
 
 reset role;
+
+-- ---------------------------------------------------------------------------
+-- Access: the copy can actually be produced, and the request closed (0091)
+-- ---------------------------------------------------------------------------
+
+create temp table copy as
+  select app_admin.access_request_export('dddddddd-cccc-4000-8000-00000000000f',
+           (select (r ->> 'request_id')::uuid from asked)) as j;
+
+select ok(
+  (select j -> 'you' ->> 'name' = 'Priya'
+      and jsonb_array_length(j -> 'consents') > 4  -- the whole ledger, withdrawals included
+      and (j -> 'wallet' ->> 'balance_paise')::bigint = 25000
+     from copy),
+  'the copy holds who they are, what they agreed to, and their money (s.11)');
+
+select throws_like(
+  $q$select app_admin.complete_access_request('dddddddd-cccc-4000-8000-00000000000f',
+       (select (r ->> 'request_id')::uuid from asked), ' ')$q$,
+  '%how the copy reached%',
+  'closing it needs to say how the copy reached the person');
+
+select app_admin.complete_access_request('dddddddd-cccc-4000-8000-00000000000f',
+  (select (r ->> 'request_id')::uuid from asked), 'emailed to the address they gave on 3 Jan');
+
+select is(
+  (select outcome from public.data_rights_requests
+    where id = (select (r ->> 'request_id')::uuid from asked)),
+  'A copy of your data was sent to you: emailed to the address they gave on 3 Jan',
+  'and the customer sees that outcome under Your data');
 
 -- ---------------------------------------------------------------------------
 -- Erasure: the person goes, the money stays

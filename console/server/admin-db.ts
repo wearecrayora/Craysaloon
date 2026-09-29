@@ -827,3 +827,158 @@ export async function findActivePlatformAdmin(authUserId: string) {
      limit 1`;
   return row ?? null;
 }
+
+// ---------------------------------------------------------------------------
+// Offboarding (M12, 0089). Super-admin only; the database refuses anyone else.
+// ---------------------------------------------------------------------------
+
+/** Everything the salon holds, as one JSON document for the owner. Read-only. */
+export async function getSalonExport(actorAdminId: string, salonId: string): Promise<unknown> {
+  const sql = client();
+  const [row] = await sql<{ r: unknown }[]>`
+    select app_admin.salon_export(${actorAdminId}::uuid, ${salonId}::uuid) as r`;
+  return row?.r ?? null;
+}
+
+export async function recordExportOffered(actorAdminId: string, salonId: string, note: string) {
+  const sql = client();
+  await sql`select app_admin.record_export_offered(${actorAdminId}::uuid, ${salonId}::uuid, ${note})`;
+}
+
+/** Records HOW the salon settled its customers' credit. The ledger is not touched (RULES 5.2). */
+export async function recordCreditSettlement(actorAdminId: string, salonId: string, note: string) {
+  const sql = client();
+  await sql`select app_admin.record_credit_settlement(${actorAdminId}::uuid, ${salonId}::uuid, ${note})`;
+}
+
+export type PurgeResult = {
+  ok: boolean;
+  already: boolean;
+  customers_anonymised?: number;
+  bindings_released?: number;
+  staff_closed?: number;
+};
+
+export async function purgeSalon(
+  actorAdminId: string,
+  salonId: string,
+  reason: string,
+  typedName: string,
+): Promise<PurgeResult> {
+  const sql = client();
+  const [row] = await sql<{ r: PurgeResult }[]>`
+    select app_admin.purge_salon(${actorAdminId}::uuid, ${salonId}::uuid, ${reason}, ${typedName}) as r`;
+  if (!row) throw new Error('purge_salon returned no row');
+  return row.r;
+}
+
+export type OffboardingFacts = {
+  export_offered_at: string | null;
+  export_offered_note: string | null;
+  credit_settled_at: string | null;
+  credit_settled_note: string | null;
+  purged_at: string | null;
+  outstanding_paise: number;
+};
+
+export async function getOffboardingFacts(salonId: string): Promise<OffboardingFacts | null> {
+  const sql = client();
+  const [row] = await sql<OffboardingFacts[]>`
+    select s.export_offered_at, s.export_offered_note, s.credit_settled_at, s.credit_settled_note,
+           s.purged_at,
+           (select coalesce(sum(w.balance_paise), 0)::int from public.wallet_accounts w
+             where w.salon_id = s.id) as outstanding_paise
+      from public.salons s where s.id = ${salonId}::uuid`;
+  return row ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// Support mode (M12, 0089, RULES 6.8)
+// ---------------------------------------------------------------------------
+
+export type SupportSession = {
+  id: string;
+  admin: string;
+  reason: string;
+  started_at: string;
+  ends_at: string;
+  ended_at: string | null;
+  live: boolean;
+  mine: boolean;
+};
+
+export async function listSupportSessions(actorAdminId: string, salonId: string): Promise<SupportSession[]> {
+  const sql = client();
+  const [row] = await sql<{ r: SupportSession[] }[]>`
+    select app_admin.list_support_sessions(${actorAdminId}::uuid, ${salonId}::uuid) as r`;
+  return row?.r ?? [];
+}
+
+export async function startSupportSession(
+  actorAdminId: string,
+  salonId: string,
+  reason: string,
+  minutes: number,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.start_support_session(${actorAdminId}::uuid, ${salonId}::uuid, ${reason},
+      ${minutes}::int)`;
+}
+
+export async function endSupportSession(actorAdminId: string, sessionId: string) {
+  const sql = client();
+  await sql`select app_admin.end_support_session(${actorAdminId}::uuid, ${sessionId}::uuid)`;
+}
+
+export type SupportCustomer = {
+  customer_id: string;
+  name: string | null;
+  phone_last4: string;
+  balance_paise: number;
+  last_visit_at: string | null;
+  anonymised: boolean;
+};
+
+/** Masked, and only inside a live session - the database refuses otherwise. */
+export async function supportCustomers(
+  actorAdminId: string,
+  salonId: string,
+  search: string | null,
+): Promise<SupportCustomer[]> {
+  const sql = client();
+  const [row] = await sql<{ r: SupportCustomer[] }[]>`
+    select app_admin.support_customers(${actorAdminId}::uuid, ${salonId}::uuid, ${search}) as r`;
+  return row?.r ?? [];
+}
+
+/** A separate act with its own reason, audited on its own (RULES 6.8). */
+export async function supportUnmaskPhone(actorAdminId: string, customerId: string, reason: string) {
+  const sql = client();
+  const [row] = await sql<{ r: string | null }[]>`
+    select app_admin.support_unmask_phone(${actorAdminId}::uuid, ${customerId}::uuid, ${reason}) as r`;
+  return row?.r ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// The right of access (0091): a customer's copy of their data, by REQUEST id.
+// ---------------------------------------------------------------------------
+
+export async function getAccessRequestExport(actorAdminId: string, requestId: string): Promise<unknown> {
+  const sql = client();
+  const [row] = await sql<{ r: unknown }[]>`
+    select app_admin.access_request_export(${actorAdminId}::uuid, ${requestId}::uuid) as r`;
+  return row?.r ?? null;
+}
+
+export async function completeAccessRequest(actorAdminId: string, requestId: string, howSent: string) {
+  const sql = client();
+  await sql`
+    select app_admin.complete_access_request(${actorAdminId}::uuid, ${requestId}::uuid, ${howSent})`;
+}
+
+/** Lifts a manual grace or suspension (0092). Super-admin; refused for purged or lapsed salons. */
+export async function reactivateSalon(actorAdminId: string, salonId: string, reason: string) {
+  const sql = client();
+  await sql`select app_admin.reactivate_salon(${actorAdminId}::uuid, ${salonId}::uuid, ${reason})`;
+}
