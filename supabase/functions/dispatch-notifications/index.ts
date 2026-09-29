@@ -26,19 +26,9 @@
 // state the console shows rather than a cost Crayora absorbs.
 
 import { admin, alert, json } from '../_shared/runtime.ts';
+import { type BatchRow, fcmMessage, type PushBrand } from '../_shared/push_message.ts';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-type BatchRow = {
-  delivery_id: string;
-  notification_id: string;
-  channel: 'push' | 'rcs' | 'whatsapp' | 'sms';
-  customer_id: string;
-  token: string | null;
-  platform: string | null;
-  body: string | null;
-  purpose: string;
-};
 
 /**
  * Message Central's per-message prices, in paise (ARCHITECTURE 12.2b).
@@ -89,8 +79,12 @@ Deno.serve(async (req) => {
   let sent = 0;
   let failed = 0;
 
+  // Once per batch, and only if there is a push in it. A brand we could not
+  // read still sends - the message matters more than its colour.
+  const brand = rows.some((r) => r.channel === 'push') ? await pushBrand(db, salonId) : null;
+
   for (const row of rows) {
-    const result = await send(db, salonId, row);
+    const result = await send(db, salonId, row, brand);
 
     await db.rpc('record_send', {
       p_delivery_id: row.delivery_id,
@@ -131,10 +125,18 @@ type SendResult = {
   deadToken?: boolean;
 };
 
+/** The salon's name, colour and logo for this batch's pushes (0093). */
+async function pushBrand(db: ReturnType<typeof admin>, salonId: string): Promise<PushBrand | null> {
+  const { data, error } = await db.rpc('salon_push_brand', { p_salon_id: salonId });
+  if (error || !data) return null;
+  return { name: data.name ?? null, color: data.color ?? null, logo: data.logo ?? null };
+}
+
 async function send(
   db: ReturnType<typeof admin>,
   salonId: string,
   row: BatchRow,
+  brand: PushBrand | null,
 ): Promise<SendResult> {
   if (!row.body) {
     // No template for this key, locale and channel. Recorded rather than
@@ -145,7 +147,7 @@ async function send(
 
   if (row.channel === 'push') {
     if (!row.token) return { ok: false, reason: 'no_token', deadToken: false };
-    return await sendPush(row);
+    return await sendPush(row, brand);
   }
 
   // SMS, WhatsApp and RCS all ride the SALON's own Message Central account.
@@ -172,7 +174,7 @@ async function send(
  * is the honest failure: a dispatcher that claimed success would leave a
  * customer waiting for a message nobody sent.
  */
-async function sendPush(row: BatchRow): Promise<SendResult> {
+async function sendPush(row: BatchRow, brand: PushBrand | null): Promise<SendResult> {
   const raw = Deno.env.get('FCM_SERVICE_ACCOUNT');
   if (!raw) return { ok: false, reason: 'push_not_configured' };
 
@@ -192,20 +194,7 @@ async function sendPush(row: BatchRow): Promise<SendResult> {
     {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: {
-          token: row.token,
-          notification: { body: row.body },
-          data: {
-            // The ack protocol's whole mechanism: the app calls
-            // ack_notification with this id the moment the message lands, in
-            // the foreground OR the background isolate.
-            delivery_id: row.delivery_id,
-            purpose: row.purpose,
-          },
-          android: { priority: 'high' },
-        },
-      }),
+      body: JSON.stringify({ message: fcmMessage(row, brand) }),
     },
   );
 

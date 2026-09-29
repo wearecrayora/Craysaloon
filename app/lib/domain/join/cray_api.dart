@@ -62,6 +62,16 @@ class GrievanceContact {
     );
     return contact.isReachable ? contact : null;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is GrievanceContact &&
+      other.name == name &&
+      other.email == email &&
+      other.phone == phone;
+
+  @override
+  int get hashCode => Object.hash(name, email, phone);
 }
 
 class OtpChallenge {
@@ -177,6 +187,11 @@ abstract interface class CrayApi {
     bool promotional = false,
     bool whatsapp = false,
   });
+
+  /// The signed-in caller's OWN salon, as currently published: name, branding
+  /// and privacy contact (0093). Takes no salon - the server reads it from the
+  /// token - so it cannot describe anyone else's. Null when bound to nothing.
+  Future<SalonSummary?> myBranding();
 
   /// The stored session, or null when nobody is signed in.
   AppSession? get session;

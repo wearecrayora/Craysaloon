@@ -15,6 +15,7 @@ import 'data/local/device_key.dart';
 import 'data/remote/supabase_cray_api.dart';
 import 'features/join/join_controller.dart';
 import 'features/notifications/background_ack.dart';
+import 'features/salon/branding_refresh.dart';
 import 'l10n/app_localizations.dart';
 
 /// Configuration arrives with `--dart-define`, never from a file in the repo.
@@ -116,6 +117,8 @@ class CraySalonApp extends ConsumerWidget {
       // The shell comes from app_role: the join flow when there is no salon, the
       // customer's salon when there is, the owner's shell for staff (ARCH 9.1).
       routerConfig: ref.watch(routerProvider),
+      // Republished branding reaches the phone on its next open (PRD 20).
+      builder: (context, child) => BrandingRefresh(child: child ?? const SizedBox.shrink()),
     );
   }
 }

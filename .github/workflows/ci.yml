@@ -56,6 +56,19 @@ jobs:
         working-directory: packages/design-tokens
         run: bun run check
 
+  edge-units:
+    name: Edge Function units
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      # The pure parts of the Edge Functions (what goes on the wire), tested
+      # without Deno or a network. Node 24 runs the TypeScript as-is.
+      - name: Test
+        run: node --test supabase/functions/_shared/*.test.ts
+
   app:
     name: Flutter app
     runs-on: ubuntu-latest

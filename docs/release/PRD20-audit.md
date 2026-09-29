@@ -52,7 +52,7 @@ Legend: ✅ proven by a gate · 🔧 gap - to build · 👤 needs a person to do
 |---|---|---|
 | A non-engineer provisions a salon in the console, no SQL | 👤 | Console built for it (M2). Record a non-engineer doing it on the live console |
 | Switching a salon on is a deliberate manual action | ✅ | `admin_plane_test` (activate_salon is the only door; setup fee required since 0087) |
-| **Branding published in the console reaches the app on next open** | 🔧 | **Not true today:** the app stores branding at join and never re-reads it. Build: re-read on open, wear the new version |
+| Branding published in the console reaches the app on next open | ✅ | Built 30 Sep 2026: `my_branding()` (0093) read on every open and every resume; `app/test/branding_refresh_test.dart` (6: worn and stored, resume, privacy contact, offline keeps the cache, nothing rewritten if unchanged, another salon's answer never worn); `leak_test` (my_branding names only the caller's salon) |
 | Contrast check blocks an unreadable palette at publish | ✅ | `write_scope_test` "nor publish branding that never passed the contrast gate"; design-tokens tests |
 
 ## Messaging
@@ -66,7 +66,7 @@ Legend: ✅ proven by a gate · 🔧 gap - to build · 👤 needs a person to do
 | First OTP from the salon's account; no salon context refused; hook rejects unsigned | ✅ / ➖ | `otp_test` "NO salon context is refused". **Hook ➖:** there is no Send SMS Hook (ADR-36); the claims hook is a database function, not an HTTP endpoint |
 | No code templates, brands or validates the OTP message | ✅ | By construction (VerifyNow owns it); lint gate |
 | Screen while waiting for the OTP is salon-branded | ✅ | U5 wears the brand (join flow test) |
-| **Every push carries the salon's name, logo and colour** | 🔧 | **Name only, in the body.** The FCM message has no title, no colour, no logo. Build: title = salon name, the salon's colour, its logo |
+| Every push carries the salon's name, logo and colour | ✅ / 👤 | Built 30 Sep 2026: title = salon name, the salon's primary on its own `cray_salon` channel, the logo as the notification image (Android and iOS); `salon_push_brand()` (0093, service_role only - `leak_test`); `_shared/push_message.test.ts` (5). **👤 The logo needs the console's logo upload**, not built yet: until a salon has an https logo the push carries name and colour only |
 | WhatsApp template per key and locale, matching variables | 👤 | Operator task in Message Central / Meta per salon, before that salon's WhatsApp rung goes live |
 | OTP rate-limited per phone, IP, device and per salon per day | ✅ | `start_join` limits (phone 5/h, caller 20/h, salon 500/day); `otp_test` |
 | Broken salon Message Central account falls back and alerts | ✅ | `otp_test` fallback assertions; Edge alert to Sentry |
@@ -84,7 +84,7 @@ Legend: ✅ proven by a gate · 🔧 gap - to build · 👤 needs a person to do
 
 ## Summary
 
-- ✅ proven: 33 · 🔧 to build: **3** (receipts and invoices, branding refresh, push branding) ·
+- ✅ proven: 35 · 🔧 to build: **1** (receipts and invoices; branding refresh and push branding built 30 Sep 2026) ·
   👤 once, by a person: 6 · ⚖️ CA: invoice format · ➖ two, with reasons
 - Build order: branding refresh and push branding first (small, customer-visible); invoices next
   (the largest, and the CA's answer shapes it).

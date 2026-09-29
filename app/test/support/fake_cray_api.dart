@@ -43,6 +43,19 @@ class FakeCrayApi implements CrayApi {
     return salon;
   }
 
+  /// What `my_branding` returns: the signed-in caller's own salon, as published
+  /// now. Null means bound to nothing (or not yet set by the test).
+  SalonSummary? mine;
+  CrayApiException? myBrandingError;
+  int myBrandingCalls = 0;
+
+  @override
+  Future<SalonSummary?> myBranding() async {
+    myBrandingCalls++;
+    if (myBrandingError != null) throw myBrandingError!;
+    return mine;
+  }
+
   @override
   Future<void> startJoin({
     required String code,

@@ -17,7 +17,7 @@
 -- test is running under a role that genuinely cannot bypass RLS, so removing
 -- the role switch fails loudly instead of silently.
 
-select plan(9);
+select plan(13);
 
 -- ---------------------------------------------------------------------------
 -- STRUCTURAL: every tenant table is protected
@@ -173,5 +173,31 @@ select is(
   'ZERO rows of salon B are reachable by an owner of salon A'
 );
 
+-- The app re-reads its branding on every open (0093). It takes no parameter, so
+-- the only salon it can ever describe is the one in the caller's token.
+select is(public.my_branding() ->> 'salon_id', 'aaaaaaaa-0000-4000-8000-000000000001',
+  'my_branding describes the caller''s own salon');
+
+select is(public.my_branding() ->> 'display_name', 'Salon A',
+  'my_branding never names salon B to an owner of salon A');
+
+-- Signed in, bound to nothing: no salon, so no branding - not someone else's.
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"00000000-0000-4000-8000-0000000000cc","app_role":"customer_unbound"}',
+  true
+);
+
+select is(public.my_branding(), null,
+  'a caller bound to no salon gets no branding at all');
+
 reset role;
+
+-- The dispatcher's read takes a salon id, so it must be closed to everyone a
+-- token can make you: granted to authenticated it would describe any salon.
+select ok(
+  not has_function_privilege('authenticated', 'public.salon_push_brand(uuid)', 'execute')
+  and not has_function_privilege('anon', 'public.salon_push_brand(uuid)', 'execute'),
+  'salon_push_brand is service_role only - no signed-in caller can name a salon to it'
+);
 select * from finish();

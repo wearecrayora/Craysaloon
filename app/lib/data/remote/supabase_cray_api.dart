@@ -85,6 +85,30 @@ class SupabaseCrayApi
   }
 
   @override
+  Future<SalonSummary?> myBranding() async {
+    try {
+      final row = _asMap(await _client.rpc<dynamic>('my_branding'));
+      if (row == null) return null;
+
+      final salonId = row['salon_id'] as String?;
+      final displayName = row['display_name'] as String?;
+      if (salonId == null || displayName == null) return null;
+
+      return SalonSummary(
+        salonId: salonId,
+        displayName: displayName,
+        brandingVersion: (row['version'] as num?)?.toInt() ?? 0,
+        branding: _asMap(row['tokens']) ?? const {},
+        grievance: GrievanceContact.fromJson(_asMap(row['grievance'])),
+      );
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  @override
   Future<void> startJoin({
     required String code,
     required String phone,
