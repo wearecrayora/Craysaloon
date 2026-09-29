@@ -537,6 +537,71 @@ export async function upsertAddOn(
   return row.upsert_add_on;
 }
 
+/**
+ * Which add-ons are offered with which service. create_booking REFUSES an
+ * add-on that is not linked to the service being booked, so until this is set
+ * an add-on can be created and never sold.
+ */
+export async function listServiceAddOns(salonId: string) {
+  const sql = client();
+  return sql<{ service_id: string; add_on_id: string }[]>`
+    select service_id, add_on_id from public.service_addons
+     where salon_id = ${salonId}::uuid`;
+}
+
+export async function setServiceAddOn(
+  actorAdminId: string,
+  salonId: string,
+  serviceId: string,
+  addOnId: string,
+  linked: boolean,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.set_service_add_on(
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${serviceId}::uuid, ${addOnId}::uuid, ${linked})`;
+}
+
+export type DataRightsRequest = {
+  request_id: string;
+  salon_name: string;
+  kind: 'access' | 'erasure' | 'grievance';
+  status: string;
+  requested_at: string;
+  due_at: string;
+  overdue: boolean;
+};
+
+/** Open requests, oldest deadline first. No customer identifiers - by design (0081). */
+export async function listDataRightsRequests(actorAdminId: string): Promise<DataRightsRequest[]> {
+  const sql = client();
+  return sql<DataRightsRequest[]>`
+    select request_id, salon_name, kind, status, requested_at, due_at, overdue
+      from app_admin.list_data_rights_requests(${actorAdminId}::uuid)`;
+}
+
+/** DPDP s.12(3). By REQUEST id: an erasure can only follow a request the customer made. */
+export async function carryOutErasure(actorAdminId: string, requestId: string, reason: string) {
+  const sql = client();
+  await sql`select app_admin.carry_out_erasure(${actorAdminId}::uuid, ${requestId}::uuid, ${reason})`;
+}
+
+/**
+ * Ledger caller 5 of five: the only human path to a balance. By PHONE, resolved
+ * in the database - the console is never handed a customer id (0081).
+ */
+export async function walletCorrectByPhone(
+  actorAdminId: string,
+  phone: string,
+  amountPaise: number,
+  reason: string,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.wallet_correct_by_phone(
+      ${actorAdminId}::uuid, ${phone}, ${amountPaise}::bigint, ${reason})`;
+}
+
 export async function upsertStaff(
   actorAdminId: string,
   salonId: string,

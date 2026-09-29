@@ -1,7 +1,15 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireAdmin } from '@/server/auth';
-import { getRules, getSalon, listAddOns, listServices, listStaff } from '@/server/admin-db';
+import {
+  getRules,
+  getSalon,
+  listAddOns,
+  listServiceAddOns,
+  listServices,
+  listStaff,
+} from '@/server/admin-db';
+import { AddOnLinks } from './addon-links';
 import { AddOns, RulesForm, Services, Staff } from './editors';
 
 export const dynamic = 'force-dynamic';
@@ -12,11 +20,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const salon = await getSalon(id);
   if (!salon) notFound();
 
-  const [services, addOns, staff, rules] = await Promise.all([
+  const [services, addOns, staff, rules, links] = await Promise.all([
     listServices(id),
     listAddOns(id),
     listStaff(id),
     getRules(id),
+    listServiceAddOns(id),
   ]);
 
   return (
@@ -42,6 +51,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
         <Services salonId={id} rows={services} />
         <AddOns salonId={id} rows={addOns} />
+        <AddOnLinks salonId={id} services={services} addOns={addOns} links={links} />
         <Staff salonId={id} rows={staff} />
         <RulesForm salonId={id} rules={rules} />
       </main>

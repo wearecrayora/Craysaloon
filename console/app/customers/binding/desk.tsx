@@ -6,6 +6,7 @@ import {
   transferAction,
   unbindAction,
   type BindingState,
+  walletCorrectAction,
 } from '@/app/actions';
 import { formatPaise } from '@/lib/money';
 
@@ -28,6 +29,7 @@ export function BindingDesk({
   const [found, lookup, looking] = useActionState(lookupBindingAction, empty);
   const [unbound, unbind, unbinding] = useActionState(unbindAction, empty);
   const [moved, transfer, transferring] = useActionState(transferAction, empty);
+  const [corrected, correct, correcting] = useActionState(walletCorrectAction, empty);
 
   // A completed action retires the lookup it acted on: the figures shown are
   // no longer true, and must not be acted on twice. A new lookup clears it.
@@ -39,6 +41,9 @@ export function BindingDesk({
   useEffect(() => {
     if (moved.ok) setDone(moved.ok);
   }, [moved]);
+  useEffect(() => {
+    if (corrected.ok) setDone(corrected.ok);
+  }, [corrected]);
 
   const r = done ? undefined : found.result;
   const number = found.phone ?? '';
@@ -244,6 +249,39 @@ export function BindingDesk({
                   No other salon can take a new customer today.
                 </span>
               )}
+            </div>
+          </form>
+
+          <form action={correct} className="card">
+            <input type="hidden" name="phone" value={number} />
+            <h2>Correct the balance</h2>
+            <p className="hint" style={{ marginTop: 0 }}>
+              The <strong>only</strong> way anyone can change a customer&rsquo;s balance by hand,
+              anywhere in the product - no owner, manager or stylist has one (RULES 5.2). Use it
+              for a genuine system error you have verified, never as a goodwill gesture: the salon
+              gives goodwill through its own offers. The ledger gets a new row with your name and
+              reason; nothing is edited, and a credit here is paid-kind and never expires.
+            </p>
+            <div className="row">
+              <div>
+                <label htmlFor="wc-direction">Direction</label>
+                <select id="wc-direction" name="direction" defaultValue="credit">
+                  <option value="credit">Add to the balance</option>
+                  <option value="debit">Take from the balance</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="wc-amount">Amount (₹)</label>
+                <input id="wc-amount" name="amount" inputMode="decimal" required />
+              </div>
+            </div>
+            <label htmlFor="wc-reason">What went wrong, and how you verified it</label>
+            <textarea id="wc-reason" name="reason" rows={3} required />
+            {corrected.error && <div className="error">{corrected.error}</div>}
+            <div className="actions">
+              <button disabled={correcting}>
+                {correcting ? 'Recording…' : 'Record the correction'}
+              </button>
             </div>
           </form>
         </>

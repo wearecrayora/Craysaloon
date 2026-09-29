@@ -86,6 +86,10 @@ select is(
         -- Read-only and STABLE: the balance a transfer would leave behind
         -- (0036). Called by lookup_binding and transfer_customer, which audit.
         'binding_balance',
+        -- Read-only and STABLE: the open data-rights queue, with no customer
+        -- identifiers in it (0081). A STABLE function cannot write, so listing
+        -- it here lets no mutation through - the list exists for exactly this.
+        'list_data_rights_requests',
         -- Infrastructure: it changes grants, not tenant data, and is called
         -- from migrations rather than from the console (0020).
         'close_privileges'

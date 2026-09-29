@@ -253,6 +253,20 @@ jobs:
       - name: Static-check every plpgsql function
         run: node scripts/db/plpgsql-check.mjs
 
+      # Four times in M7-M10 a function was correct, gated, and called by
+      # nothing that ships - reminders never sent, the wallet never spent,
+      # Automations A and C never run, and a Razorpay webhook that could never
+      # credit a wallet because it called app.* over PostgREST. Its own gate
+      # passed every time, because the gate called it directly. This asks the
+      # other question: is it reachable from anything that runs?
+      - name: Every function is reachable
+        run: node scripts/db/orphan-check.mjs
+
+      # ...and prove the walk still finds an orphan, so a green result above
+      # means something.
+      - name: Reachability check - negative control
+        run: node scripts/db/orphan-check.mjs --canary
+
       # The claims hook decides what every token carries, and a hook that errors
       # stops EVERY login on the project. Probed here rather than only by hand
       # before enabling it.

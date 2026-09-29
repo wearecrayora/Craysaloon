@@ -387,6 +387,31 @@ fixed palette; direct labels; table fallback).
 *Done when:* card totals match completed transactions exactly · reconciliation **alerts** on
 mismatch rather than healing · the cohort chart has a legend, direct labels, an `n`, and a table
 view · **there is no wallet-adjustment control anywhere**.
+*Done 2026-09-29* (0076-0082; `metrics/dashboard_test.sql`, 22 assertions + a canary; O6 in the
+app, 10 tests). All four conditions hold and are asserted: today's cards are computed from the
+visits themselves, so they equal the transactions by construction; `reconcile_day` records drift
+and **leaves the row wrong**, with one alert per salon-day however often it runs (the canary is the
+obvious "fix" of overwriting it, and it turns nine assertions red); the cohort view has a legend,
+direct labels, an n, tap-for-detail and a table; and no function an owner can execute posts to a
+ledger. "Today" is the salon's own day (`app.salon_day`) - every writer had bucketed by UTC, so
+midnight to 05:30 IST landed on yesterday. Cohort rates stay NULL until every member has had the
+window: a young cohort has no 60-day figure, and printing 0% would call people "lost" who have
+not had the chance to come back.
+
+**Every function in the database is now reachable from something that ships (119 of 119).**
+`scripts/db/orphan-check.mjs` computes reachability from real roots through the call graph, and it
+found the worst bug of the milestone on its first run: **`rzp-webhook` could never have credited a
+wallet**, because it called `app.*` functions over PostgREST - 0068's bug, which I had fixed for the
+dispatcher without sweeping for the same shape (0078). It then drove four more callers into
+existence: owner checkout in the day view (by booking, so it queues offline, with the cash split
+from the server and never guessed), add-on-to-service links in the console (without which
+`create_booking` refused every add-on - they could be created and never sold), the erasure queue
+(erasure could be requested and never carried out), and correction on the binding desk (ledger
+caller 5 had no screen). In CI, with a canary.
+
+**Still open:** customer bind *rate* needs durable join-attempt counting (join intents are deleted
+at login); the owner's daily summary push needs owner device registration; the owner cannot yet set
+bonus expiry in the app (O10), which RULES says is theirs.
 
 ### Phase 4 — Crayora runs the business *(M11–M12)*
 

@@ -44,6 +44,13 @@ const ALLOWED_ORPHANS = new Map([
   // write the caller in the same session as the function, or do not write it.
 ]);
 
+// --canary: inject a function nothing calls, and require the check to report
+// it. A gate that has only ever been seen passing is not known to be a gate;
+// this proves the reachability walk still finds an orphan, without creating
+// anything in the shared database.
+const CANARY = process.argv.includes('--canary');
+const CANARY_NAME = 'app.canary_unreachable_function';
+
 const SOURCE_DIRS = ['app/lib', 'console/app', 'console/server', 'console/lib', 'supabase/functions'];
 const SOURCE_EXT = /\.(dart|ts|tsx|js|mjs)$/;
 
@@ -79,6 +86,16 @@ try {
        -- pgTAP and extension functions live in public too; they are not ours.
        and not exists (select 1 from pg_depend d
                         where d.objid = p.oid and d.deptype = 'e')`;
+
+  if (CANARY) {
+    fns.push({
+      schema: 'app',
+      name: 'canary_unreachable_function',
+      src: 'select 1',
+      is_trigger: false,
+      has_trigger: false,
+    });
+  }
 
   const byName = new Map();
   for (const f of fns) {
@@ -179,6 +196,17 @@ try {
     .sort();
 
   console.log(`${names.length} functions, ${reachable.size} reachable from something that runs.\n`);
+
+  if (CANARY) {
+    const caught = orphans.includes(CANARY_NAME);
+    if (caught) {
+      console.log(`NEGATIVE CONTROL PASSED - the injected ${CANARY_NAME} was reported unreachable.`);
+    } else {
+      console.error(`NEGATIVE CONTROL FAILED - ${CANARY_NAME} was NOT reported. The walk is broken.`);
+    }
+    await sql.end({ timeout: 5 });
+    process.exit(caught ? 0 : 1);
+  }
 
   if (invisible.length > 0) {
     console.error('rpc() CALLS POSTGREST CANNOT SEE - these names exist only outside `public`:\n');

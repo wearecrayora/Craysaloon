@@ -25,6 +25,9 @@ import {
   setMessagingTrial,
   setSalonRules,
   setGrievanceContact,
+  setServiceAddOn,
+  carryOutErasure,
+  walletCorrectByPhone,
   setSalonStatus,
   upsertAddOn,
   upsertService,
@@ -704,6 +707,99 @@ export async function lookupBindingAction(
   try {
     const result = await lookupBinding(admin.id, p.data, reason);
     return { phone: p.data, result };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+/** Offer (or stop offering) an add-on with a service. */
+export async function setServiceAddOnAction(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const serviceId = String(form.get('serviceId') ?? '');
+  const addOnId = String(form.get('addOnId') ?? '');
+  const linked = form.get('linked') === 'true';
+
+  try {
+    await setServiceAddOn(admin.id, salonId, serviceId, addOnId, linked);
+    revalidatePath(`/salon/${salonId}/catalogue`);
+    return { ok: linked ? 'Offered with this service.' : 'No longer offered with this service.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+/**
+ * Carry out a customer's erasure request (DPDP s.12(3)). Crayora is the
+ * escalation when a salon has not answered; the salon is the Data Fiduciary.
+ */
+export async function carryOutErasureAction(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const requestId = String(form.get('requestId') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+
+  if (reason.length < 10) {
+    return { error: 'Write down why, in a sentence - it is the audit entry for this erasure.' };
+  }
+
+  try {
+    await carryOutErasure(admin.id, requestId, reason);
+    revalidatePath('/data-rights');
+    return {
+      ok: 'Erased. Name, number and birthday are gone; the financial records stay, anonymised. The request is closed with that outcome.',
+    };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+/**
+ * Ledger caller 5 - the ONLY human path to a customer's balance anywhere in the
+ * product. Super-admin only, reason required, audited twice over: once by the
+ * correction and once by how the customer was found.
+ */
+export async function walletCorrectAction(
+  _prev: BindingState,
+  form: FormData,
+): Promise<BindingState> {
+  const admin = await requireAdmin();
+  if (!admin.isSuper) return { error: SUPER_ONLY };
+
+  const number = String(form.get('phone') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+  const direction = String(form.get('direction') ?? '');
+  // parseRupees takes rupees as typed and returns PAISE. Named for what it
+  // holds, because a variable called `rupees` holding paise is a x100 bug
+  // waiting for the next person to touch this.
+  const paise = parseRupees(String(form.get('amount') ?? ''));
+
+  if (direction !== 'credit' && direction !== 'debit') {
+    return { error: 'Choose whether this adds to or takes from the balance.' };
+  }
+  if (paise === null || paise <= 0) {
+    return { error: 'Enter the correction in rupees, greater than zero.' };
+  }
+  if (reason.length < 20) {
+    return {
+      error:
+        'A correction moves a customer\'s money. Write what went wrong and how you verified it - at least a full sentence.',
+    };
+  }
+
+  try {
+    await walletCorrectByPhone(
+      admin.id,
+      number,
+      direction === 'credit' ? paise : -paise,
+      reason,
+    );
+    return { ok: 'Corrected. The ledger has a new row with your name and reason; nothing was edited.' };
   } catch (e) {
     return { error: message(e) };
   }
