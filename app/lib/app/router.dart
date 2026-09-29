@@ -14,9 +14,17 @@ import '../features/privacy/your_data_screen.dart';
 import '../features/referral/referral_screen.dart';
 import '../features/wallet/add_money_screen.dart';
 import '../features/wallet/wallet_screen.dart';
+import '../core/ui/glass.dart';
 import '../features/salon/salon_home.dart';
 import '../l10n/app_localizations.dart';
 import 'providers.dart';
+
+/// Every route is an explicit [MaterialPage], so the theme's page transitions
+/// run - and with them the glass chassis's mesh, which each page paints beneath
+/// its transparent scaffold (core/theme/brand_theme.dart). Left to itself,
+/// go_router may pick a non-Material page, and the mesh silently never paints.
+GoRouterPageBuilder _page(Widget child) =>
+    (context, state) => MaterialPage(key: state.pageKey, child: child);
 
 /// Routes, and the shell each role gets (`ARCHITECTURE.md` 9.1).
 ///
@@ -38,7 +46,9 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Nobody signed in, or signed in with no salon: the join flow, and
       // nothing else exists to navigate to.
-      if (session == null || role == 'customer_unbound' || session.salonId == null) {
+      if (session == null ||
+          role == 'customer_unbound' ||
+          session.salonId == null) {
         if (role == 'platform_admin') return '/console-only';
         return location == '/join' ? null : '/join';
       }
@@ -46,8 +56,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (session.isStaff) {
         // The owner's own routes only. '/' means "wherever this role starts".
         const staffRoutes = {
-          '/day', '/day/walk-in', '/attention', '/dashboard',
-          '/customers', '/catalogue/services', '/catalogue/addons', '/staff',
+          '/day',
+          '/day/walk-in',
+          '/attention',
+          '/dashboard',
+          '/customers',
+          '/catalogue/services',
+          '/catalogue/addons',
+          '/staff',
         };
         return staffRoutes.contains(location) ? null : '/day';
       }
@@ -56,37 +72,64 @@ final routerProvider = Provider<GoRouter>((ref) {
         // Two destinations, and the second is not optional: "Your data" is
         // where consent is withdrawn and erasure is asked for, and the Act
         // measures withdrawal against how easy consent was (s.6(4)).
-        const customerRoutes = {'/home', '/your-data', '/wallet', '/wallet/add', '/refer'};
+        const customerRoutes = {
+          '/home',
+          '/your-data',
+          '/wallet',
+          '/wallet/add',
+          '/refer',
+        };
         return customerRoutes.contains(location) ? null : '/home';
       }
 
       return '/join';
     },
     routes: [
-      GoRoute(path: '/', builder: (_, _) => const SizedBox.shrink()),
+      GoRoute(path: '/', pageBuilder: _page(const SizedBox.shrink())),
       GoRoute(
         path: '/join',
-        builder: (_, _) => const DeepLinkListener(child: JoinScreen()),
+        pageBuilder: _page(const DeepLinkListener(child: JoinScreen())),
       ),
-      GoRoute(path: '/home', builder: (_, _) => const SalonHome()),
-      GoRoute(path: '/your-data', builder: (_, _) => const YourDataScreen()),
-      GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
-      GoRoute(path: '/wallet/add', builder: (_, _) => const AddMoneyScreen()),
-      GoRoute(path: '/refer', builder: (_, _) => const ReferralScreen()),
-      GoRoute(path: '/console-only', builder: (_, _) => const _ConsoleOnly()),
+      GoRoute(path: '/home', pageBuilder: _page(const SalonHome())),
+      GoRoute(path: '/your-data', pageBuilder: _page(const YourDataScreen())),
+      GoRoute(path: '/wallet', pageBuilder: _page(const WalletScreen())),
+      GoRoute(path: '/wallet/add', pageBuilder: _page(const AddMoneyScreen())),
+      GoRoute(path: '/refer', pageBuilder: _page(const ReferralScreen())),
+      GoRoute(path: '/console-only', pageBuilder: _page(const _ConsoleOnly())),
 
       // The owner shell: one bar, the destinations an owner uses all day.
       ShellRoute(
+        // A plain builder, not a page: the shell must survive navigation
+        // between its tabs, or the day view is rebuilt - and refreshed twice at
+        // once - on every move. It paints its own mesh (see OwnerShell).
         builder: (context, state, child) => OwnerShell(child: child),
         routes: [
-          GoRoute(path: '/day', builder: (_, _) => const DayScreen()),
-          GoRoute(path: '/day/walk-in', builder: (_, _) => const WalkInScreen()),
-          GoRoute(path: '/attention', builder: (_, _) => const AttentionScreen()),
-          GoRoute(path: '/dashboard', builder: (_, _) => const DashboardScreen()),
-          GoRoute(path: '/customers', builder: (_, _) => const CustomersScreen()),
-          GoRoute(path: '/catalogue/services', builder: (_, _) => const ServicesScreen()),
-          GoRoute(path: '/catalogue/addons', builder: (_, _) => const AddOnsScreen()),
-          GoRoute(path: '/staff', builder: (_, _) => const StaffScreen()),
+          GoRoute(path: '/day', pageBuilder: _page(const DayScreen())),
+          GoRoute(
+            path: '/day/walk-in',
+            pageBuilder: _page(const WalkInScreen()),
+          ),
+          GoRoute(
+            path: '/attention',
+            pageBuilder: _page(const AttentionScreen()),
+          ),
+          GoRoute(
+            path: '/dashboard',
+            pageBuilder: _page(const DashboardScreen()),
+          ),
+          GoRoute(
+            path: '/customers',
+            pageBuilder: _page(const CustomersScreen()),
+          ),
+          GoRoute(
+            path: '/catalogue/services',
+            pageBuilder: _page(const ServicesScreen()),
+          ),
+          GoRoute(
+            path: '/catalogue/addons',
+            pageBuilder: _page(const AddOnsScreen()),
+          ),
+          GoRoute(path: '/staff', pageBuilder: _page(const StaffScreen())),
         ],
       ),
     ],
@@ -115,40 +158,44 @@ class OwnerShell extends StatelessWidget {
     final location = GoRouterState.of(context).matchedLocation;
     final index = _destinations.indexOf(location);
 
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: index < 0 ? 0 : index,
-        onDestinationSelected: (i) => context.go(_destinations[i]),
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.today_outlined),
-            selectedIcon: const Icon(Icons.today),
-            // The tab is the DAY. Mark-complete is the action on it, not its
-            // name - labelling the tab with a verb told the owner to press it.
-            label: l10n.dayTitle,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.people_outline),
-            selectedIcon: const Icon(Icons.people),
-            label: l10n.customersTitle,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.content_cut_outlined),
-            selectedIcon: const Icon(Icons.content_cut),
-            label: l10n.catalogueServices,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.add_circle_outline),
-            selectedIcon: const Icon(Icons.add_circle),
-            label: l10n.catalogueAddOns,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.badge_outlined),
-            selectedIcon: const Icon(Icons.badge),
-            label: l10n.staffTitle,
-          ),
-        ],
+    // The shell paints its own mesh: it is not a page, so the per-page mesh
+    // (core/theme/brand_theme.dart) never reaches the bar at the bottom.
+    return MeshBackground(
+      child: Scaffold(
+        body: child,
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: index < 0 ? 0 : index,
+          onDestinationSelected: (i) => context.go(_destinations[i]),
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.today_outlined),
+              selectedIcon: const Icon(Icons.today),
+              // The tab is the DAY. Mark-complete is the action on it, not its
+              // name - labelling the tab with a verb told the owner to press it.
+              label: l10n.dayTitle,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.people_outline),
+              selectedIcon: const Icon(Icons.people),
+              label: l10n.customersTitle,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.content_cut_outlined),
+              selectedIcon: const Icon(Icons.content_cut),
+              label: l10n.catalogueServices,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.add_circle_outline),
+              selectedIcon: const Icon(Icons.add_circle),
+              label: l10n.catalogueAddOns,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.badge_outlined),
+              selectedIcon: const Icon(Icons.badge),
+              label: l10n.staffTitle,
+            ),
+          ],
+        ),
       ),
     );
   }

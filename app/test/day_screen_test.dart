@@ -46,7 +46,9 @@ void main() {
     String status = 'in_progress',
     bool customerHasApp = true,
   }) {
-    final start = DateTime.now().add(const Duration(hours: 2));
+    // A fixed hour TODAY: 'now plus two hours' crosses midnight after 22:00.
+    final n = DateTime.now();
+    final start = DateTime(n.year, n.month, n.day, 12);
     return BookingRow(
       id: id,
       customerId: 'c1',

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{{const n=new URLSearchParams(location.search).get("theme");if(n==="light"||n==="dark"){document.documentElement.dataset.theme=n}}{if(new URLSearchParams(location.search).get("_omthumb")==="1"){const n=(f)=>{const g=f.focus;if(!g)return;f.focus=function(h){g.call(this,{...h,preventScroll:true})}};n(HTMLElement.prototype);n(SVGElement.prototype);if(typeof MathMLElement!=="undefined"){n(MathMLElement.prototype)}const d=(f)=>{f.removeAttribute("autofocus");f.inert=true;if(!(f instanceof HTMLElement))f.removeAttribute("tabindex")};const p=(f)=>{if(f.hasAttribute("autofocus"))d(f);for(const g of f.querySelectorAll("[autofocus]")){d(g)}};p(document.documentElement);new MutationObserver((f)=>{for(const g of f){for(const h of g.addedNodes){if(h.nodeType===1)p(h)}}}).observe(document,{childList:true,subtree:true})}}{const n=()=>{try{if(document.querySelector('meta[name="color-scheme"]'))return;const d=getComputedStyle(document.documentElement).getPropertyValue("color-scheme").trim();if(d&&d!=="normal")return;const p=(y)=>{if(!y)return null;const m=getComputedStyle(y).backgroundColor.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+%?))?\s*\)$/);if(!m)return null;const w=m[4]==null?1:parseFloat(m[4])/(m[4].endsWith("%")?100:1);if(w<0.99)return null;return[+m[1],+m[2],+m[3]]};const f=p(document.body)||p(document.documentElement);if(!f)return;const g=(y)=>{const m=y/255;return m<=0.04045?m/12.92:((m+0.055)/1.055)**2.4};const h=0.2126*g(f[0])+0.7152*g(f[1])+0.0722*g(f[2]);document.documentElement.style.setProperty("color-scheme",h<0.4?"dark":"light")}catch{}};if(document.readyState==="complete")n();else window.addEventListener("load",n)}var I=["https://claude.ai","https://preview.claude.ai","https://5f0bd573-2543-4d26-9b98-e594dd744d96.claudeusercontent.com"];var B=true;var K=false;var C=()=>{};if(K===true){try{const n=setTimeout.bind(window);const d=1e4;const p=15;const f=1e4;const g=120000;const h=200;const y=(o)=>{try{let r;if(typeof o==="string")r=o;else if(o instanceof URL)r=o.href;else if(typeof Request!=="undefined"&&o instanceof Request)r=o.url;else return null;if(!r)return null;const l=document.baseURI;const i=new URL(r,l);if(i.protocol!=="http:"&&i.protocol!=="https:")return null;if(i.origin!==new URL(l).origin)return null;return i.origin+i.pathname}catch{return null}};const m=new Map;const w=(o)=>{let r=m.get(o);if(!r){if(m.size>=h){const l=m.keys().next().value;if(l!==undefined)m.delete(l)}r={fails:[],until:0,cooldown:f,hard:false};m.set(o,r)}return r};const R=(o)=>{const r=m.get(o);return r!==undefined&&r.until>Date.now()};const O=(o,r)=>{const l=Date.now();const i=w(o);if(r)i.hard=true;if(i.until>l)return;i.fails.push(l);while(i.fails.length>0&&i.fails[0]<=l-d)i.fails.shift();if(i.fails.length>=p){i.until=l+i.cooldown;if(i.hard)i.cooldown=Math.min(i.cooldown*2,g);i.fails.length=0;try{n(()=>{try{S(true)}catch{}},i.until-l+100)}catch{}console.warn("[omelette] asset circuit breaker: pausing requests to "+o+" for "+Math.round((i.until-l)/1000)+"s after "+p+" failures in "+d/1000+"s")}};const e=(o)=>{m.delete(o)};const t=100;const a=new WeakMap;const u=new Set;let s=null;const S=(o)=>{for(const r of Array.from(u)){try{const l=a.get(r);if(l===undefined){u.delete(r);continue}if(o){const i=y(l);if(i!==null&&R(i))continue}a.delete(r);u.delete(r);if(s!==null)s.call(r,l)}catch{}}};C=()=>{try{m.clear();S(false)}catch{}};document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")C()});const _=window.fetch;if(typeof _==="function"){const o=function(...r){let l=null;try{l=y(r[0])}catch{}if(l!==null&&R(l)){let c;try{if(r[1]&&r[1].signal!==undefined){c=r[1].signal||undefined}else if(typeof Request!=="undefined"&&r[0]instanceof Request){c=r[0].signal||undefined}}catch{c=undefined}return new Promise((k,b)=>{const E=()=>{try{return c.reason!==undefined?c.reason:new DOMException("The operation was aborted.","AbortError")}catch{return new DOMException("The operation was aborted.","AbortError")}};try{if(c&&c.aborted){b(E());return}}catch{}let T=false;const j=()=>{if(T)return;T=true;b(E())};try{if(c)c.addEventListener("abort",j,{once:true})}catch{}n(()=>{if(T)return;T=true;try{if(c)c.removeEventListener("abort",j)}catch{}let L;try{L=new Response(null,{status:429,statusText:"Too Many Requests",headers:{"Retry-After":"10"}})}catch{L={ok:false,status:429}}k(L)},250)})}const i=_.apply(window,r);if(l!==null){const c=l;i.then((k)=>{try{if(k.ok)e(c);else if(k.status===401||k.status===403||k.status===404||k.status===429){O(c,k.status!==404)}}catch{}},()=>{})}return i};window.fetch=o}const v=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src");if(v!==undefined&&v.set!==undefined&&v.get!==undefined){const o=v.set;s=o;Object.defineProperty(HTMLImageElement.prototype,"src",{configurable:true,enumerable:v.enumerable,get:v.get,set(r){const l=`${r}`;try{const i=y(l);if(i!==null&&R(i)){a.set(this,l);if(u.size<t)u.add(this);return}}catch{}try{a.delete(this);u.delete(this)}catch{}o.call(this,l)}})}try{const o=HTMLImageElement.prototype.setAttribute;HTMLImageElement.prototype.setAttribute=function(r,l){if(arguments.length<2){o.apply(this,arguments);return}if(typeof r==="string"&&r.toLowerCase()==="src"){const i=`${l}`;try{const c=y(i);if(c!==null&&R(c)){a.set(this,i);if(u.size<t)u.add(this);return}a.delete(this);u.delete(this)}catch{}o.call(this,r,i);return}o.call(this,r,l)}}catch{}window.addEventListener("error",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)O(l,true)}}catch{}},true);window.addEventListener("load",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)e(l);const i=a.get(r);if(i!==undefined){let c=false;try{c=new URL(i,document.baseURI).href===new URL(r.currentSrc||r.src||"",document.baseURI).href}catch{c=false}if(c){a.delete(r);u.delete(r)}}}}catch{}},true)}catch{}}var J=30000;var G=3000;document.addEventListener("DOMContentLoaded",()=>{const n=window.Babel;const d="om-src-id";if(n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[d])){n.registerPlugin(d,({types:h})=>({visitor:{JSXOpeningElement(y,m){const w=y.node;if(w.name&&w.name.type==="JSXMemberExpression")return;for(let t=0;t<w.attributes.length;t++){const a=w.attributes[t];if(a.type==="JSXAttribute"&&a.name&&a.name.name==="data-om-id")return}const R=m.file&&m.file.opts&&m.file.opts.filename||"?";const O=w.loc&&w.loc.start;const e=`jsx:${R}:${w.start??0}:${O?O.line:0}:${O?O.column+1:0}`;w.attributes.push(h.jsxAttribute(h.jsxIdentifier("data-om-id"),h.stringLiteral(e)))}}}))}const p="om-text-extract";let f=false;if(B&&n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[p])){const h=window.React;if(h&&h.useSyncExternalStore&&h.createElement){f=true;const y={};const m=new Set;let w=0;window.__omTextO=y;window.__omTextSet=(e)=>{for(const t in e){const a=e[t];if(a==null)delete y[t];else y[t]=a}w++;m.forEach((t)=>t())};const R=(e)=>{m.add(e);return()=>m.delete(e)};const O=()=>w;window.__OmT=function e(t){h.useSyncExternalStore(R,O,O);return h.createElement("span",{"data-om-text":t.i,className:"__om-t"},t.i in y?y[t.i]:t.children)};n.registerPlugin(p,({types:e})=>{const t={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const a={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const u=(o,r)=>e.logicalExpression("??",e.memberExpression(e.logicalExpression("||",e.memberExpression(e.identifier("window"),e.identifier("__omTextO")),e.objectExpression([])),e.stringLiteral(o),true),r);const s=(o)=>o.file&&o.file.opts&&o.file.opts.filename||"?";const S=(o)=>o.file&&o.file.code||"";const _=(o,r)=>{const l=(c)=>c&&c.start!=null&&c.end!=null&&(c.type==="StringLiteral"||c.type==="TemplateLiteral"&&c.expressions.length===0)?[c.start,c.end]:null;const i=l(r);if(i)return i;if(r&&r.type==="Identifier"){const c=o.scope.getBinding(r.name);if(c&&c.constant&&c.path.node.type==="VariableDeclarator"){return l(c.path.node.init)}}return null};const v=(o,r,l)=>{const i=o.node;let c=false;const k=(E,T)=>{c=true;return e.jsxElement(e.jsxOpeningElement(e.jsxIdentifier("__OmT"),[e.jsxAttribute(e.jsxIdentifier("i"),e.stringLiteral(E))],false),e.jsxClosingElement(e.jsxIdentifier("__OmT")),[T],false)};const b=i.children.map((E)=>{if(E.type==="JSXText"){if(E.start==null||E.end==null)return E;const T=l.slice(E.start,E.end);const j=T.length-T.trimStart().length;const L=T.length-T.trimEnd().length;if(j+L>=T.length)return E;return k(`txt:${r}:${E.start+j}:${E.end-L}`,E)}if(E.type==="JSXExpressionContainer"){const T=_(o,E.expression);if(T)return k(`str:${r}:${T[0]}:${T[1]}`,E)}return E});if(c)i.children=b};return{visitor:{JSXOpeningElement(o,r){const l=o.node;const i=s(r);const c={};for(let k=0;k<l.attributes.length;k++){const b=l.attributes[k];if(b.type!=="JSXAttribute"||!b.name)continue;const E=b.name.name;if(!a[E])continue;if(!b.value||b.value.type!=="StringLiteral")continue;if(b.value.start==null||b.value.end==null)continue;const T=`txt:${i}:${b.value.start}:${b.value.end}`;c[E]=T;b.value=e.jsxExpressionContainer(u(T,e.stringLiteral(b.value.value)))}if(Object.keys(c).length){l.attributes.push(e.jsxAttribute(e.jsxIdentifier("data-om-text-attrs"),e.stringLiteral(JSON.stringify(c))))}},JSXElement(o,r){const l=o.node.openingElement;const i=l&&l.name&&l.name.name;if(i==="__OmT")return;if(typeof i==="string"&&t[i])return;v(o,s(r),S(r))},JSXFragment(o,r){v(o,s(r),S(r))}}}})}}const g=f?["transform-react-jsx-source",d,p]:["transform-react-jsx-source",d];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach((h,y)=>{const m=h.getAttribute("data-plugins")||"";const w=g.filter((R)=>m.indexOf(R)<0);if(w.length){h.setAttribute("data-plugins",m?`${m},${w.join(",")}`:w.join(","))}if(!h.hasAttribute("data-filename")){h.setAttribute("data-filename",h.getAttribute("src")||`inline-${y}`)}})});var A=window.parent;var U="not editable here — open the project in the Claude Design editor to save";var W=()=>Promise.resolve({persisted:false,noHost:true,reason:U});var H=W;var M="data/storage.json";var z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.match(/\/projects\/([^/]+)\/serve\//);if(d)return d[1];return n.hostname.split(".")[0]||""}catch{return location.hostname.split(".")[0]||""}};var Z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.indexOf("/serve/");if(d>=0)return n.origin+n.pathname.slice(0,d+"/serve/".length)+M}catch{}return"./"+M};var x=null;var N=()=>{if(!x){x=fetch(Z(),{cache:"no-store"}).then((n)=>{if(n.ok)return n.text();return n.status===404?"":null}).catch(()=>null).then((n)=>{if(n===null){x=null;return null}const d=new Map;if(!n)return d;let p;try{p=JSON.parse(n)}catch{console.warn("[omelette.storage] "+M+" is not valid JSON; treating the store as unreadable so a save cannot overwrite the "+"hand-edited bytes. Fix the JSON (or delete the file) to re-enable persistence.");x=null;return null}if(p===null||typeof p!=="object"||Array.isArray(p)){console.warn("[omelette.storage] "+M+" doesn't hold a JSON object; treating the store as unreadable so a save cannot "+"overwrite the hand-edited bytes. Make the top level a JSON object to re-enable persistence.");x=null;return null}const f=p;if("data"in f){const g=f.data;if(g===null||typeof g!=="object"||Array.isArray(g)){console.warn("[omelette.storage] "+M+' has a "data" field that is not a JSON object; treating the store as unreadable so a '+'save cannot overwrite the hand-edited bytes. Make "data" a JSON object to re-enable persistence.');x=null;return null}const h=f._meta;const y=h!==null&&typeof h==="object"?h.project:undefined;if(typeof y==="string"&&y!==""&&y!==z())return d;for(const m of Object.keys(g))d.set(m,g[m]);return d}for(const g of Object.keys(f)){if(g!=="_meta")d.set(g,f[g])}return d})}return x};var F=(n)=>H(M,JSON.stringify({_meta:{project:z(),version:1},data:Object.fromEntries(n)},null,2));var D=Promise.resolve();var $=(n)=>{const d=D.then(n);D=d.then(()=>{return},()=>{return});return d};var V=/sk-(?:ant-)?[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|xox[a-z]-[A-Za-z0-9][A-Za-z0-9-]{9,}|AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/;var Y=/password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|credential/i;var Q=(n,d,p)=>{if(V.test(d)||Y.test(n)&&typeof p==="string"&&p.length>=8){console.warn('[omelette.storage] the value for "'+n+'" looks like a credential. The storage file is a plaintext project file — visible to '+"everyone with project access and copied when the project is duplicated. Do not store secrets here.")}};var q={persisted:false,reason:"could not load the existing store — not overwriting it"};var X={persisted:false,reason:"stored value changed since a failed read — re-read this key before saving"};var P=new Set;var ee={get:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.get: key must be a string"))}return $(N).then((d)=>{if(d===null){P.add(n);return null}P.delete(n);if(!d.has(n))return null;const p=d.get(n);return p==null?null:JSON.parse(JSON.stringify(p))})},set:(n,d)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.set: key must be a string"))}let p;try{p=JSON.stringify(d)}catch(g){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable ("+String(g)+")"))}if(p===undefined){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable"))}Q(n,p,d);const f=JSON.parse(p);return $(()=>N().then((g)=>{if(g===null)return q;if(P.has(n)){if(g.has(n))return X;P.delete(n)}g.set(n,f);return F(g)}))},delete:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.delete: key must be a string"))}return $(()=>N().then((d)=>{if(d===null)return q;if(P.has(n)){if(d.has(n))return X;P.delete(n)}d.delete(n);return F(d)}))},keys:()=>$(N).then((n)=>n===null?[]:Array.from(n.keys()))};window.omelette={writeFile:(n,d)=>H(n,d).then((p)=>{if(!p.persisted&&!p.noHost){throw new Error(p.reason||"write failed")}}),storage:ee};if(A&&A!==window){const n=(e,t)=>{try{A.postMessage({__omelette_log:true,type:e,data:t},"*")}catch{}};["log","warn","error"].forEach((e)=>{const t=console[e];console[e]=(...a)=>{const u=a.map((s)=>{try{return typeof s==="object"?JSON.stringify(s):String(s)}catch{try{return String(s)}catch{return"[unstringifiable]"}}}).join(" ");n(e,u);t.apply(console,a)}});window.addEventListener("error",(e)=>{const t=e.target;if(t&&t!==window&&t.tagName){const a=t.src||t.href||"";n("resource_error",`${t.tagName} failed to load: ${a}`)}else{n("error",`${e.message||"Unknown error"} at ${e.filename||"?"}:${e.lineno||0}:${e.colno||0}`)}},true);window.addEventListener("unhandledrejection",(e)=>{const t=e.reason;const a=t instanceof Error?`${t.message} ${t.stack}`:String(t);n("error",`Unhandled rejection: ${a}`)});window.addEventListener("click",(e)=>{if(e.defaultPrevented||e.button!==0)return;if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const t=e.composedPath?e.composedPath():[];const a=["button","input","select","textarea","summary","label"];let u=null;for(const v of t){if(!(v instanceof Element))continue;if(v.localName==="a"){if(!(v instanceof HTMLAnchorElement))return;u=v;break}if(a.indexOf(v.localName)!==-1)return}if(!u)return;if(u.isContentEditable)return;const s=u.closest("[contenteditable]");if(s&&s.getAttribute("contenteditable")!=="false")return;const S=(u.getAttribute("target")||"_self").toLowerCase();if(S!=="_self"&&S!=="_top"&&S!=="_parent")return;let _;try{_=new URL(u.href)}catch{return}if(_.protocol!=="http:"&&_.protocol!=="https:")return;if(location.origin==="null")return;if(_.origin===location.origin)return;e.preventDefault();window.open(_.href,"_blank","noopener,noreferrer")});const d=()=>{try{A.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(window.ResizeObserver)new ResizeObserver(d).observe(document.documentElement);const p=()=>{d();if(!document.querySelector('script[type="text/babel"],script[type="text/jsx"]'))return;const e=()=>document.getElementById("root")||document.querySelector("body > div[id]");const t=e()?.firstElementChild??null;let a=0;const u=()=>{const s=e();if(s&&s.firstElementChild!==t||++a>30){d();return}setTimeout(u,100)};setTimeout(u,100)};if(document.readyState==="complete")p();else window.addEventListener("load",p);const f={};let g=0;const h=(e)=>new Promise((t,a)=>{if(!I.length){a(new Error("claude.complete: no parent origin"));return}const u=`c${++g}`;const s=()=>setTimeout(()=>{delete f[u];a(new Error(`claude.complete: no data for ${J/1000}s`))},J);const S=s();f[u]={resolve:t,reject:a,text:"",t:S,arm:s};try{for(const _ of I){A.postMessage({__om_api:true,id:u,body:e},_)}}catch(_){clearTimeout(S);delete f[u];a(_)}});const y=8;const m=async(e,t)=>{if(!Array.isArray(e.messages)){throw new Error("claude.complete: tools require a messages array")}const a=e.messages.slice();const u={...e,tools:e.tools.map((_)=>{if(_===null||typeof _!=="object")return _;const v={};for(const o of Object.keys(_)){if(typeof _[o]!=="function")v[o]=_[o]}return v})};const s=u.tool_choice;const S=s!=null&&(s.type==="any"||s.type==="tool")?{...u,tool_choice:s.disable_parallel_tool_use!==undefined?{type:"auto",disable_parallel_tool_use:s.disable_parallel_tool_use}:{type:"auto"}}:u;for(let _=0;_<y;_++){const v=await h({..._===0?u:S,messages:a});const o=v.message;const r=o&&Array.isArray(o.content)?o.content:null;const l=r?r.filter((c)=>c?.type==="tool_use"):[];if(o?.stop_reason!=="tool_use"||l.length===0){return v.text}const i=[];for(const c of l){const k=t.get(c.name);if(!k){i.push({type:"tool_result",tool_use_id:c.id,content:`no handler for tool "${c.name}"`,is_error:true});continue}try{const b=await k(c.input);const E=typeof b==="string"?b:O(b)??"";i.push({type:"tool_result",tool_use_id:c.id,content:E})}catch(b){i.push({type:"tool_result",tool_use_id:c.id,content:String(b?.message??b??"tool handler failed"),is_error:true})}}a.push({role:"assistant",content:r},{role:"user",content:i})}throw new Error(`claude.complete: exceeded ${y} tool turns`)};window.claude={complete(e){const t=e;if(t!==null&&typeof t==="object"&&Array.isArray(t.tools)&&t.tools.some((a)=>a!==null&&typeof a==="object"&&typeof a.run==="function")){const a=new Map;for(const u of t.tools){if(u!==null&&typeof u==="object"&&typeof u.run==="function"){a.set(String(u.name),u.run)}}return m(t,a)}return h(e).then((a)=>a.text)}};const w={};let R=0;H=(e,t)=>new Promise((a)=>{if(!I.length){a({persisted:false,noHost:true,reason:U});return}const u=`f${++R}`;const s=setTimeout(()=>{delete w[u];a({persisted:false,noHost:true,reason:U})},G);w[u]={settle:a,t:s};try{for(const S of I){A.postMessage({__om_file:true,id:u,op:"write",path:e,content:t},S)}}catch{clearTimeout(s);delete w[u];a({persisted:false,noHost:true,reason:U})}});const O=(e)=>{try{return JSON.stringify(e)}catch{return JSON.stringify(String(e))}};window.addEventListener("message",(e)=>{if(I.indexOf(e.origin)<0)return;if(e.source!==A)return;const t=e.data;if(!t)return;if(t.type==="omelette-preview-refresh"){if(typeof t.token!=="string"||!/^[0-9a-f.-]+(\.(rc|pr-[0-9]+))?(\.[0-9]+\.[0-9a-f]{16})?$/.test(t.token))return;const s=Math.max(1,Math.floor((t.expiresAt||0)-Date.now()/1000));document.cookie="__Host-omelette-preview="+t.token+"; Path=/; Secure; SameSite=None; Partitioned; Max-Age="+s;C();return}if(t.__om_file_r){const s=w[t.id];if(!s)return;clearTimeout(s.t);delete w[t.id];s.settle(t.ok?{persisted:true}:{persisted:false,reason:t.error||"write failed"});return}if(t.__om_api_r){const s=f[t.id];if(!s)return;if(t.error!=null){clearTimeout(s.t);delete f[t.id];s.reject(new Error(t.error));return}if(t.chunk!=null){clearTimeout(s.t);s.t=s.arm();s.text+=t.chunk;return}if(t.done){clearTimeout(s.t);delete f[t.id];s.resolve({text:t.text!=null?t.text:s.text,message:t.message});return}return}if(!t.__om_eval)return;const a=t;const u=(s)=>{e.source.postMessage({...s,__om_eval_r:1,id:a.id},e.origin)};try{const s=(0,eval)(a.code);if(s&&typeof s.then==="function"){s.then((S)=>u({ok:1,v:O(S)}),(S)=>u({ok:0,e:String(S)}))}else{u({ok:1,v:O(s)})}}catch(s){u({ok:0,e:String(s)})}})}})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:absolute;inset:0;min-height:0;display:flex;flex-direction:column;overflow:hidden;background:transparent;color:var(--text-primary)">
+
+<div style="min-height:56px;flex:none;padding:4px 4px 4px 4px;display:flex;align-items:center;gap:8px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-bottom:1px solid var(--divider)">
+  <sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}">
+    <button aria-label="Back" onClick="{{ back }}" style="width:48px;height:48px;flex:none;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">arrow_back</span></button>
+  </sc-if>
+  <sc-if value="{{ noBack }}" hint-placeholder-val="{{ true }}"><span style="width:8px;flex:none"></span></sc-if>
+  <sc-if value="{{ hasMark }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:var(--hw);font-size:13px;line-height:1">{{ brandMark }}</span></sc-if>
+  <sc-if value="{{ noMark }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">content_cut</span></span></sc-if>
+  <span style="flex:1;min-width:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h3);line-height:var(--lh-h3);color:var(--brand-ink)">{{ brandName }}</span>
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <button onClick="{{ toData }}" style="min-width:56px;min-height:48px;padding:4px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">shield</span><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.yourData }}</span></button>
+  </sc-if>
+</div>
+
+<sc-if value="{{ showOffline }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="flex:none;display:flex;align-items:flex-start;gap:8px;padding:8px 16px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-bottom:1px solid var(--divider)">
+    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:18px;width:18px;overflow:hidden;flex:none;color:var(--text-secondary)">cloud_off</span>
+    <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ offlineText }}</span>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px 24px;display:flex;flex-direction:column;gap:24px">
+    <sc-if value="{{ homeReady }}" hint-placeholder-val="{{ true }}">
+
+      <sc-if value="{{ showToday }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:none;display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.visitToday }}</span>
+            <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);font-variant-numeric:tabular-nums">{{ s.visitLine }}</span>
+          </div>
+          <div style="height:1px;background:var(--divider)"></div>
+          <sc-if value="{{ showCode }}" hint-placeholder-val="{{ true }}">
+            <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.showCode }}</span>
+            <div role="img" aria-label="{{ s.startCodeSr }}" style="display:flex;justify-content:space-between;padding:8px 8px 4px;font-family:var(--font-body);font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--text-primary);font-size:{{ codeSize }}">
+              <span aria-hidden="true">4</span><span aria-hidden="true">8</span><span aria-hidden="true">2</span><span aria-hidden="true">1</span>
+            </div>
+          </sc-if>
+          <sc-if value="{{ showInProg }}" hint-placeholder-val="{{ false }}">
+            <span style="display:flex;align-items:flex-start;gap:8px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--info)">content_cut</span>{{ s.inProgress }}</span>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showBill }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:none;display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+          <span style="display:flex;align-items:flex-start;gap:8px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:{{ billIconCol }}">{{ billIcon }}</span>{{ billTitle }}</span>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+            <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.billSvc }}</span>
+            <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-ml);line-height:var(--lh-ml);font-variant-numeric:tabular-nums">₹1,000</span>
+          </div>
+          <sc-if value="{{ hasBillNote }}" hint-placeholder-val="{{ false }}">
+            <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary)">{{ billNote }}</span>
+          </sc-if>
+          <sc-if value="{{ isCounter }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ openSheet }}" style="align-self:flex-start;min-height:48px;padding:12px 0;border:none;background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.payInApp }}</button>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <h1 style="flex:none;margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">{{ s.hiName }}</h1>
+
+      <sc-if value="{{ isNew }}" hint-placeholder-val="{{ false }}">
+        <p style="flex:none;margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);text-wrap:pretty">{{ s.newBody }}</p>
+      </sc-if>
+
+      <div style="flex:none;display:flex;flex-direction:column;gap:12px">
+        <sc-if value="{{ showDue }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+            <span style="display:flex;gap:8px;align-items:flex-start;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">event_repeat</span>{{ s.dueTitle }}</span>
+            <button onClick="{{ toBook }}" style="min-height:48px;padding:12px 16px;border:none;border-radius:var(--r);background:var(--primary-container);color:var(--on-primary-container);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.bookNow }}</button>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <span style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)"><span>{{ s.walletBal }}</span><sc-if value="{{ isOffline }}" hint-placeholder-val="{{ false }}"><span>{{ s.asOf }}</span></sc-if></span>
+            <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mxl);line-height:var(--lh-mxl);font-variant-numeric:tabular-nums">{{ balance }}</span>
+            <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.walletLine }}</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <button onClick="{{ toAdd }}" style="flex:1 1 120px;min-height:48px;padding:12px 16px;border:none;border-radius:var(--r);background:var(--primary-container);color:var(--on-primary-container);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.addMoney }}</button>
+            <button onClick="{{ toWallet }}" style="flex:1 1 120px;min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.viewWallet }}</button>
+          </div>
+        </div>
+
+        <sc-if value="{{ notNew }}" hint-placeholder-val="{{ true }}">
+          <button style="display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:12px 16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);cursor:pointer;text-align:left;color:var(--text-primary)">
+            <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">redeem</span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.refer }}</span><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.referSub }}</span></span>
+            <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-muted)">chevron_right</span>
+          </button>
+        </sc-if>
+
+        <sc-if value="{{ showOffer }}" hint-placeholder-val="{{ true }}">
+          <div style="position:relative;overflow:hidden;min-height:132px;display:flex;flex-direction:column;gap:8px;padding:16px;padding-right:132px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+            <span style="align-self:flex-start;display:inline-flex;padding:2px 8px;border-radius:var(--r-chip);background:var(--accent);color:var(--on-accent);font-family:var(--font-body);font-weight:500;font-size:var(--fs-micro);line-height:var(--lh-micro)">{{ s.offerTag }}</span>
+            <div style="position:absolute;top:0;right:0;bottom:0;width:120px"><image-slot id="c1-offer" shape="rect" src="https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=400&q=70" credit="Photo by Adam Winger on Unsplash" credit-href="https://unsplash.com/@awcreativeut" placeholder="Offer photo"></image-slot></div>
+            <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.offerTitle }}</span>
+            <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.offerBody }}</span>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ homeLoading }}" hint-placeholder-val="{{ false }}">
+      <div aria-busy="true" aria-label="Loading" style="flex:none;display:flex;flex-direction:column;gap:24px">
+        <span style="width:45%;height:30px;border-radius:6px;background:var(--surface-sunken)"></span>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r)"><span style="width:80%;height:18px;border-radius:4px;background:var(--surface-sunken)"></span><span style="width:100%;height:48px;border-radius:var(--r);background:var(--surface-sunken)"></span></div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r)"><span style="width:35%;height:14px;border-radius:4px;background:var(--surface-sunken)"></span><span style="width:50%;height:38px;border-radius:6px;background:var(--surface-sunken)"></span><span style="width:90%;height:14px;border-radius:4px;background:var(--surface-sunken)"></span><span style="width:100%;height:48px;border-radius:var(--r);background:var(--surface-sunken)"></span></div>
+          <span style="width:100%;height:56px;border-radius:var(--r);background:var(--surface-sunken)"></span>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ homeError }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px;padding-top:24px">
+        <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ s.homeErr }}</span>
+        <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.errBody }}</span>
+      </div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isWallet }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px 24px;display:flex;flex-direction:column;gap:24px">
+    <h1 style="flex:none;margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">{{ s.walletTitle }}</h1>
+    <sc-if value="{{ walletReady }}" hint-placeholder-val="{{ true }}">
+      <div style="flex:none;display:flex;flex-direction:column;gap:4px">
+        <span style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)"><span>{{ s.walletBal }}</span><sc-if value="{{ isOffline }}" hint-placeholder-val="{{ false }}"><span>{{ s.asOf }}</span></sc-if></span>
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mxl);line-height:var(--lh-mxl);font-variant-numeric:tabular-nums">{{ wBalance }}</span>
+        <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.walletLine }}</span>
+      </div>
+      <sc-if value="{{ walletHasCredit }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:none;display:flex;flex-direction:column;border-top:1px solid var(--divider)">
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--divider)">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.paidCredit }}</span><span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.paidCreditD }}</span></div>
+            <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;white-space:nowrap">₹1,000</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--divider)">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.bonusCredit }}</span><span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.bonusCreditD }}</span></div>
+            <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;white-space:nowrap">₹250</span>
+          </div>
+        </div>
+        <div style="flex:none;display:flex;flex-direction:column">
+          <h2 style="margin:0 0 4px;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ s.history }}</h2>
+          <sc-for list="{{ ledger }}" as="d" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--divider)">
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column">
+                <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ d.what }}</span>
+                <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ d.date }}</span>
+              </span>
+              <span style="display:flex;align-items:center;gap:4px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;white-space:nowrap"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;font-weight:400;color:{{ d.col }}">{{ d.icon }}</span>{{ d.amt }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ walletEmpty }}" hint-placeholder-val="{{ false }}">
+        <p style="flex:none;margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.walletEmptyText }}</p>
+      </sc-if>
+    </sc-if>
+    <sc-if value="{{ walletLoading }}" hint-placeholder-val="{{ false }}">
+      <div aria-busy="true" aria-label="Loading" style="flex:none;display:flex;flex-direction:column;gap:12px">
+        <span style="width:35%;height:14px;border-radius:4px;background:var(--surface-sunken)"></span>
+        <span style="width:50%;height:38px;border-radius:6px;background:var(--surface-sunken)"></span>
+        <span style="width:90%;height:14px;border-radius:4px;background:var(--surface-sunken)"></span>
+        <span style="width:100%;height:56px;border-radius:4px;background:var(--surface-sunken);margin-top:12px"></span>
+        <span style="width:100%;height:56px;border-radius:4px;background:var(--surface-sunken)"></span>
+        <span style="width:100%;height:56px;border-radius:4px;background:var(--surface-sunken)"></span>
+      </div>
+    </sc-if>
+    <sc-if value="{{ walletError }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+        <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ s.walletErr }}</span>
+        <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.errBody }}</span>
+      </div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isAdd }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px 24px;display:flex;flex-direction:column;gap:24px">
+    <h1 style="flex:none;margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">{{ s.addTitle }}</h1>
+
+    <sc-if value="{{ hasResult }}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="flex:none;display:flex;gap:12px;align-items:flex-start;padding:16px;border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border:{{ resBorder }}">
+        <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:{{ resCol }}">{{ resIcon }}</span>
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ resText }}</span>
+      </div>
+    </sc-if>
+
+    <div role="radiogroup" aria-label="{{ s.chooseAmt }}" style="flex:none;display:flex;flex-direction:column;gap:8px">
+      <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.chooseAmt }}</span>
+      <div style="display:grid;gap:8px;grid-template-columns:{{ amtCols }}">
+        <sc-for list="{{ amounts }}" as="a" hint-placeholder-count="4">
+          <button role="radio" aria-checked="{{ a.checked }}" onClick="{{ a.pick }}" style="min-height:56px;padding:12px;border-radius:var(--r);cursor:pointer;font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;transition:background 120ms cubic-bezier(0.2,0,0,1);background:{{ a.bg }};color:{{ a.fg }};border:{{ a.border }}">{{ a.label }}</button>
+        </sc-for>
+      </div>
+      <label for="other-amt" style="padding-top:8px;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.other }}</label>
+      <div style="min-height:48px;display:flex;align-items:stretch;border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);overflow:hidden;border:{{ otherBorder }}">
+        <span style="display:flex;align-items:center;padding:0 4px 0 16px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);color:var(--text-secondary)">₹</span>
+        <input id="other-amt" inputmode="numeric" value="{{ otherVal }}" onChange="{{ onOther }}" placeholder="" aria-describedby="other-msg" style="flex:1;min-width:0;border:none;outline:none;background:transparent;padding:12px 16px 12px 4px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;color:var(--text-primary)"></input>
+      </div>
+      <sc-if value="{{ showMin }}" hint-placeholder-val="{{ false }}">
+        <span id="other-msg" style="display:flex;gap:4px;align-items:flex-start;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;flex:none;color:var(--danger)">error</span>{{ s.c4Min }}</span>
+      </sc-if>
+    </div>
+
+    <div aria-live="polite" style="flex:none;display:flex;gap:8px;align-items:flex-start;min-height:22px">
+      <sc-if value="{{ offerLoading }}" hint-placeholder-val="{{ false }}"><span aria-label="{{ s.offerLoading }}" style="width:60%;height:22px;border-radius:4px;background:var(--surface-sunken)"></span></sc-if>
+      <sc-if value="{{ offerError }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:8px;align-items:flex-start;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--danger)">error</span>{{ s.offerErr }}</span></sc-if>
+      <sc-if value="{{ offerReady }}" hint-placeholder-val="{{ true }}"><span style="display:flex;gap:8px;align-items:flex-start;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:{{ bonusCol }}">{{ bonusIcon }}</span>{{ bonusLine }}</span></sc-if>
+    </div>
+
+    <div style="flex:none;display:flex;flex-direction:column;gap:8px;padding-top:16px;border-top:1px solid var(--divider)">
+      <h2 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.before }}</h2>
+      <ul style="margin:0;padding:0 0 0 20px;display:flex;flex-direction:column;gap:4px;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary);font-variant-numeric:tabular-nums">
+        <sc-for list="{{ beforeList }}" as="bl" hint-placeholder-count="5"><li>{{ bl }}</li></sc-for>
+      </ul>
+    </div>
+  </div>
+  <div style="flex:none;padding:12px 16px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider)">
+    <button onClick="{{ onPay }}" disabled="{{ payDisabled }}" aria-busy="{{ payBusyAttr }}" style="width:100%;min-height:56px;padding:16px 20px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;font-variant-numeric:tabular-nums;background:{{ payBg }};color:{{ payFg }};cursor:{{ payCursor }}">
+      <sc-if value="{{ payBusy }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">progress_activity</span></sc-if>
+      {{ payLabel }}
+    </button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ showSticky }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding:12px 16px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider)">
+    <button onClick="{{ stickyAction }}" disabled="{{ stickyDisabled }}" style="width:100%;min-height:56px;padding:16px 20px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;font-variant-numeric:tabular-nums;background:{{ stickyBg }};color:{{ stickyFg }}" style-active="opacity:0.88">{{ stickyLabel }}</button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+  <div style="flex:none;display:flex;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider);padding:8px 0 4px">
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+      <button aria-current="{{ n.current }}" onClick="{{ n.pick }}" style="flex:1;min-width:0;min-height:56px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:0 2px">
+        <span style="width:56px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:{{ n.pill }};color:{{ n.ic }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;font-variation-settings:{{ n.fill }}">{{ n.icon }}</span></span>
+        <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);text-align:center;font-weight:{{ n.fw }};color:{{ n.fg }}">{{ n.label }}</span>
+      </button>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ showPush }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="position:absolute;left:8px;right:8px;top:8px;display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-radius:16px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border:1px solid var(--glass-line);box-shadow:0 8px 24px rgba(28,27,25,0.18)">
+    <sc-if value="{{ hasMark }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width:24px;height:24px;flex:none;border-radius:6px;background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:var(--hw);font-size:10px;line-height:1">{{ brandMark }}</span></sc-if>
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+      <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ brandName }} · {{ s.now }}</span>
+      <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.billReady }}</span>
+      <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);font-variant-numeric:tabular-nums">{{ s.pushBody }}</span>
+    </div>
+  </div>
+</sc-if>
+
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:var(--overlay);transition:opacity 220ms cubic-bezier(0.2,0,0,1);opacity:{{ ovOp }};pointer-events:{{ ovPe }}"></div>
+<div role="dialog" aria-modal="true" aria-label="{{ sheetTitle }}" style="position:absolute;left:0;right:0;bottom:0;max-height:90%;overflow-y:auto;background:var(--glass-sheet);backdrop-filter:blur(30px) saturate(1.6);-webkit-backdrop-filter:blur(30px) saturate(1.6);box-shadow:0 -12px 40px rgba(90,30,45,0.18);border-top:1px solid var(--glass-line);border-radius:var(--r-sheet) var(--r-sheet) 0 0;padding:8px 16px 32px;display:flex;flex-direction:column;gap:12px;transform:{{ sheetT }};transition:{{ sheetTr }}">
+  <span style="flex:none;align-self:center;width:32px;height:4px;border-radius:2px;background:var(--border-strong)"></span>
+  <div style="flex:none;display:flex;align-items:flex-start;gap:8px">
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+      <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2);font-variant-numeric:tabular-nums">{{ sheetTitle }}</span>
+      <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);font-variant-numeric:tabular-nums">{{ sheetSub }}</span>
+    </div>
+    <button aria-label="Close" onClick="{{ closeSheet }}" style="width:48px;height:48px;margin:-8px -12px 0 0;border:none;background:transparent;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;color:var(--text-secondary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">close</span></button>
+  </div>
+  <sc-if value="{{ sheetHasMsg }}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="flex:none;display:flex;gap:8px;align-items:flex-start;padding:12px 16px;border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border:1px solid var(--border-strong)">
+      <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:{{ sheetMsgCol }}">{{ sheetMsgIcon }}</span>
+      <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ sheetMsg }}</span>
+    </div>
+  </sc-if>
+  <sc-for list="{{ payOpts }}" as="p" hint-placeholder-count="3">
+    <button onClick="{{ p.pick }}" style="flex:none;display:flex;align-items:center;gap:12px;width:100%;min-height:72px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);cursor:pointer;text-align:left;color:var(--text-primary)" style-hover="border-color:var(--border-strong)" style-active="border-color:var(--primary)">
+      <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">{{ p.icon }}</span>
+      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ p.title }}</span>
+        <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);font-variant-numeric:tabular-nums">{{ p.desc }}</span>
+      </span>
+      <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-muted)">chevron_right</span>
+    </button>
+  </sc-for>
+  <sc-if value="{{ sheetBusy }}" hint-placeholder-val="{{ false }}">
+    <div aria-busy="true" style="flex:none;display:flex;gap:8px;align-items:center;min-height:56px;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">progress_activity</span>{{ s.openingUpi }}</div>
+  </sc-if>
+  <sc-if value="{{ sheetHasClose }}" hint-placeholder-val="{{ false }}">
+    <button onClick="{{ closeSheet }}" style="flex:none;width:100%;min-height:56px;padding:16px 20px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.close }}</button>
+  </sc-if>
+</div>
+
+<sc-if value="{{ hasSnack }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="position:absolute;left:16px;right:16px;bottom:96px;display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:var(--r-chip);background:var(--surface-sunken);border:1px solid var(--border-strong);box-shadow:0 8px 24px rgba(28,27,25,0.16)">
+    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--success)">check_circle</span>
+    <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ snackText }}</span>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static STR = {
+    yourData: ['Your data', 'आपका डेटा', 'Aapka data'],
+    navHome: ['Home', 'होम', 'Home'], navBook: ['Book', 'बुक करें', 'Book'], navWallet: ['Wallet', 'वॉलेट', 'Wallet'], navMe: ['Me', 'मेरा खाता', 'Mera khaata'],
+    hiName: ['Hi Asha', 'नमस्ते आशा', 'Hi Asha'],
+    dueTitle: ['Your next haircut is due around 14 Oct', 'आपका अगला हेयरकट लगभग 14 अक्टूबर को होना है', 'Aapka agla haircut lagbhag 14 Oct ko due hai'],
+    bookNow: ['Book now', 'अभी बुक करें', 'Abhi book karein'],
+    walletBal: ['Wallet balance', 'वॉलेट बैलेंस', 'Wallet balance'],
+    walletLine: ['Usable only at {s}. Cannot be withdrawn as cash.', 'सिर्फ़ {s} में इस्तेमाल हो सकता है। इसे नकद में नहीं निकाला जा सकता।', 'Sirf {s} mein use ho sakta hai. Ise cash mein nikaala nahi ja sakta.'],
+    addMoney: ['Add money', 'पैसे जोड़ें', 'Paise add karein'],
+    viewWallet: ['View wallet', 'वॉलेट देखें', 'Wallet dekhein'],
+    refer: ['Refer & Earn', 'रेफ़र करें और कमाएँ', 'Refer karein aur kamaayein'],
+    referSub: ['Give ₹100, get ₹100', '₹100 दें, ₹100 पाएँ', '₹100 dein, ₹100 paayein'],
+    offerTag: ['Offer', 'ऑफ़र', 'Offer'],
+    offerTitle: ['Hair spa, ₹200 off on Tuesdays', 'मंगलवार को हेयर स्पा पर ₹200 की छूट', 'Tuesday ko hair spa par ₹200 off'],
+    offerBody: ['Until 31 Oct 2026. Book any Tuesday to get it.', '31 अक्टूबर 2026 तक। किसी भी मंगलवार को बुक करें।', '31 Oct 2026 tak. Kisi bhi Tuesday ko book karein.'],
+    newBody: ['Book your visits here and get a reminder when your next haircut is due. Keep a prepaid wallet at the salon and get a bonus when you top up.', 'यहाँ विज़िट बुक करें और अगले हेयरकट का समय होने पर रिमाइंडर पाएँ। सैलून में प्रीपेड वॉलेट रखें और टॉप-अप पर बोनस पाएँ।', 'Yahan visits book karein aur agle haircut ke time reminder paayein. Salon mein prepaid wallet rakhein aur top-up par bonus paayein.'],
+    bookFirst: ['Book your first visit', 'अपनी पहली विज़िट बुक करें', 'Apni pehli visit book karein'],
+    visitToday: ['Your visit today', 'आज आपकी विज़िट', 'Aaj aapki visit'],
+    visitLine: ['4:30 PM · Haircut + Beard trim · with Suresh', '4:30 PM · हेयरकट + दाढ़ी ट्रिम · सुरेश के साथ', '4:30 PM · Haircut + Beard trim · Suresh ke saath'],
+    showCode: ['Show this code to your stylist when you sit down.', 'बैठते समय यह कोड अपने स्टाइलिस्ट को दिखाएँ।', 'Baithte waqt yeh code apne stylist ko dikhayein.'],
+    startCodeSr: ['Your start code: 4 8 2 1', 'आपका शुरुआत कोड: 4 8 2 1', 'Aapka start code: 4 8 2 1'],
+    inProgress: ['Your service is in progress.', 'आपकी सर्विस चल रही है।', 'Aapki service chal rahi hai.'],
+    billReady: ['Your bill is ready', 'आपका बिल तैयार है', 'Aapka bill ready hai'],
+    billSvc: ['Haircut + Beard trim', 'हेयरकट + दाढ़ी ट्रिम', 'Haircut + Beard trim'],
+    billTitle: ['Your bill', 'आपका बिल', 'Aapka bill'],
+    payBill: ['Pay your bill', 'अपना बिल चुकाएँ', 'Apna bill pay karein'],
+    counterSaid: ['You said you will pay at the counter.', 'आपने काउंटर पर भुगतान चुना है।', 'Aapne counter par payment chuna hai.'],
+    payInApp: ['Pay in the app instead', 'इसके बजाय ऐप में भुगतान करें', 'Iske bajaay app mein pay karein'],
+    paidWallet: ['Paid from your wallet', 'वॉलेट से भुगतान हो गया', 'Wallet se pay ho gaya'],
+    upiPending: ['Waiting for the bank to confirm your UPI payment.', 'UPI भुगतान के लिए बैंक की पुष्टि का इंतज़ार है।', 'UPI payment ke liye bank ke confirm hone ka intezaar hai.'],
+    now: ['now', 'अभी', 'abhi'],
+    pushBody: ['Haircut + Beard trim · ₹1,000', 'हेयरकट + दाढ़ी ट्रिम · ₹1,000', 'Haircut + Beard trim · ₹1,000'],
+    payTitle: ['How would you like to pay?', 'भुगतान कैसे करना है?', 'Payment kaise karna hai?'],
+    toPay: ['To pay: ₹1,000', 'चुकाना है: ₹1,000', 'Pay karna hai: ₹1,000'],
+    optWallet: ['Wallet', 'वॉलेट', 'Wallet'],
+    optWalletD: ['Pay ₹1,000 from your balance of ₹1,250. That is ₹750 you paid in and ₹250 bonus.', '₹1,250 के बैलेंस में से ₹1,000 चुकाएँ। इसमें ₹750 आपके जमा किए हुए हैं और ₹250 बोनस है।', '₹1,250 ke balance se ₹1,000 pay karein. Ismein ₹750 aapka jama kiya hua hai aur ₹250 bonus.'],
+    optWalletShortD: ['Use all ₹550 in your wallet, then pay the other ₹450 by UPI or at the counter. That is ₹500 you paid in and ₹50 bonus.', 'वॉलेट के पूरे ₹550 इस्तेमाल करें, फिर बाकी ₹450 UPI से या काउंटर पर चुकाएँ। इसमें ₹500 आपके जमा किए हुए हैं और ₹50 बोनस है।', 'Wallet ke poore ₹550 use karein, phir baaki ₹450 UPI se ya counter par pay karein. Ismein ₹500 aapka jama kiya hua hai aur ₹50 bonus.'],
+    optUpi: ['UPI', 'UPI', 'UPI'],
+    optUpiD: ['Pay ₹{a} with any UPI app.', 'किसी भी UPI ऐप से ₹{a} चुकाएँ।', 'Kisi bhi UPI app se ₹{a} pay karein.'],
+    optCounter: ['At the counter', 'काउंटर पर', 'Counter par'],
+    optCounterD: ['Pay ₹{a} in cash or by card at reception.', 'रिसेप्शन पर नकद या कार्ड से ₹{a} चुकाएँ।', 'Reception par cash ya card se ₹{a} pay karein.'],
+    restTitle: ['₹450 left to pay', '₹450 चुकाना बाकी है', '₹450 pay karna baaki hai'],
+    restSub: ['Your wallet has been used. How would you like to pay the rest?', 'आपका वॉलेट इस्तेमाल हो गया। बाकी भुगतान कैसे करना है?', 'Aapka wallet use ho gaya. Baaki payment kaise karna hai?'],
+    snackWallet: ['Paid from your wallet.', 'आपके वॉलेट से भुगतान हो गया।', 'Aapke wallet se payment ho gaya.'],
+    upiSent: ['Payment sent. Your bill will show as paid once the bank confirms it.', 'भुगतान भेज दिया गया। बैंक की पुष्टि होते ही बिल चुकाया हुआ दिखेगा।', 'Payment bhej diya. Bank confirm karte hi bill paid dikhega.'],
+    counterSent: ['The counter knows. Your bill shows as paid once they take the money.', 'काउंटर को पता है। पैसे लेते ही बिल चुकाया हुआ दिखेगा।', 'Counter ko pata hai. Paise lete hi bill paid dikhega.'],
+    upiCancel: ['Payment cancelled. Nothing was charged.', 'भुगतान रद्द हो गया। कोई पैसा नहीं कटा।', 'Payment cancel ho gaya. Koi paisa nahi kata.'],
+    noConn: ['No connection. Check your internet and try again.', 'इंटरनेट नहीं है। इंटरनेट देखें और फिर से कोशिश करें।', 'Internet nahi hai. Internet check karke phir try karein.'],
+    sentTitle: ['Payment sent', 'भुगतान भेजा गया', 'Payment bhej diya'],
+    counterTitle: ['Paying at the counter', 'काउंटर पर भुगतान', 'Counter par payment'],
+    openingUpi: ['Opening your UPI app…', 'आपका UPI ऐप खुल रहा है…', 'Aapka UPI app khul raha hai…'],
+    close: ['Close', 'बंद करें', 'Band karein'],
+    homeErr: ["Couldn't load your home.", 'आपका होम लोड नहीं हो पाया।', 'Aapka home load nahi ho paaya.'],
+    errBody: ['Check your internet and try again.', 'इंटरनेट देखें और फिर से कोशिश करें।', 'Internet check karke phir try karein.'],
+    tryAgain: ['Try again', 'फिर कोशिश करें', 'Phir try karein'],
+    asOf: ['As of 10:42', '10:42 तक का', '10:42 tak ka'],
+    offHome: ['Offline · Showing your home as of 10:42', 'ऑफ़लाइन · 10:42 तक की जानकारी दिख रही है', 'Offline · 10:42 tak ki jaankaari dikh rahi hai'],
+    offWallet: ['Offline · Showing your wallet as of 10:42', 'ऑफ़लाइन · 10:42 तक का वॉलेट दिख रहा है', 'Offline · 10:42 tak ka wallet dikh raha hai'],
+    offAdd: ["Offline · You can pay once you're back online.", 'ऑफ़लाइन · इंटरनेट आने पर भुगतान कर सकते हैं।', 'Offline · Internet aane par pay kar sakte hain.'],
+    walletTitle: ['Wallet', 'वॉलेट', 'Wallet'],
+    paidCredit: ['Paid credit', 'जमा की गई रकम', 'Paid credit'],
+    paidCreditD: ['Money you pay never expires.', 'आपके जमा किए पैसे की कोई समय-सीमा नहीं है।', 'Aapke jama kiye paise kabhi expire nahi hote.'],
+    bonusCredit: ['Bonus credit', 'बोनस', 'Bonus credit'],
+    bonusCreditD: ['₹250 of bonus expires on 14 Nov 2026.', '₹250 बोनस 14 नवंबर 2026 को खत्म होगा।', '₹250 bonus 14 Nov 2026 ko expire hoga.'],
+    history: ['History', 'इतिहास', 'History'],
+    topup: ['Top-up', 'टॉप-अप', 'Top-up'], bonus: ['Bonus', 'बोनस', 'Bonus'], usedAt: ['Used at the salon', 'सैलून में इस्तेमाल', 'Salon mein use hua'], bonusExp: ['Bonus expired', 'बोनस खत्म हुआ', 'Bonus expire hua'],
+    bonusRefer: ['Bonus · Refer & Earn', 'बोनस · रेफ़र करें और कमाएँ', 'Bonus · Refer & Earn'], bonusBday: ['Bonus · Birthday', 'बोनस · जन्मदिन', 'Bonus · Birthday'],
+    walletErr: ["Couldn't load your wallet.", 'आपका वॉलेट लोड नहीं हो पाया।', 'Aapka wallet load nahi ho paaya.'],
+    walletEmptyText: ['No wallet activity yet. Add money and get a bonus on top.', 'वॉलेट में अभी कोई लेन-देन नहीं है। पैसे जोड़ें और ऊपर से बोनस पाएँ।', 'Wallet mein abhi koi len-den nahi hai. Paise add karein aur upar se bonus paayein.'],
+    addTitle: ['Add money', 'पैसे जोड़ें', 'Paise add karein'],
+    chooseAmt: ['Choose an amount', 'रकम चुनें', 'Amount chunein'],
+    other: ['Or type another amount', 'या दूसरी रकम लिखें', 'Ya doosra amount likhein'],
+    bonusYes: ['You get ₹{b} extra.', 'आपको ₹{b} ज़्यादा मिलेंगे।', 'Aapko ₹{b} extra milenge.'],
+    bonusNo: ['No bonus on this amount.', 'इस रकम पर बोनस नहीं है।', 'Is amount par bonus nahi hai.'],
+    offerLoading: ["Loading today's offer", 'आज का ऑफ़र लोड हो रहा है', 'Aaj ka offer load ho raha hai'],
+    offerErr: ["Couldn't load today's offer. Try again to see your bonus.", 'आज का ऑफ़र लोड नहीं हो पाया। बोनस देखने के लिए फिर कोशिश करें।', 'Aaj ka offer load nahi ho paaya. Bonus dekhne ke liye phir try karein.'],
+    before: ['Before you pay', 'भुगतान से पहले', 'Pay karne se pehle'],
+    bp1: ['You pay ₹{a}. You get ₹{t} in your wallet.', 'आप ₹{a} चुकाते हैं। आपके वॉलेट में ₹{t} आएँगे।', 'Aap ₹{a} pay karte hain. Aapke wallet mein ₹{t} aayenge.'],
+    bp2: ['The ₹{b} bonus expires on 28 Oct 2026.', '₹{b} बोनस 28 अक्टूबर 2026 को खत्म होगा।', '₹{b} bonus 28 Oct 2026 ko expire hoga.'],
+    bp3: ['Money you pay never expires.', 'आपके जमा किए पैसे की कोई समय-सीमा नहीं है।', 'Aapke jama kiye paise kabhi expire nahi hote.'],
+    bp5: ['A top-up cannot be refunded or taken out as cash.', 'टॉप-अप का पैसा वापस नहीं होता और नकद में नहीं निकाला जा सकता।', 'Top-up ka paisa wapas nahi hota aur cash mein nahi nikaala ja sakta.'],
+    pay: ['Pay ₹{a}', '₹{a} चुकाएँ', '₹{a} pay karein'],
+    backWallet: ['Back to wallet', 'वॉलेट पर वापस जाएँ', 'Wallet par wapas jaayein'],
+    c4Sent: ['Payment sent. Your credit appears as soon as the bank confirms it.', 'भुगतान भेज दिया गया। बैंक की पुष्टि होते ही रकम वॉलेट में दिखेगी।', 'Payment bhej diya. Bank confirm karte hi amount wallet mein dikhega.'],
+    c4Cancel: ['Payment cancelled. Nothing was charged.', 'भुगतान रद्द हो गया। कोई पैसा नहीं कटा।', 'Payment cancel ho gaya. Koi paisa nahi kata.'],
+    c4Fail: ['That payment did not go through. Nothing was charged.', 'यह भुगतान नहीं हो पाया। कोई पैसा नहीं कटा।', 'Yeh payment nahi ho paaya. Koi paisa nahi kata.'],
+    c4NotReady: ['This salon cannot take payments yet. Ask at the counter.', 'यह सैलून अभी भुगतान नहीं ले सकता। काउंटर पर पूछें।', 'Yeh salon abhi payment nahi le sakta. Counter par poochein.'],
+    c4Min: ['The smallest top-up here is ₹100.', 'यहाँ सबसे कम टॉप-अप ₹100 है।', 'Yahan sabse kam top-up ₹100 hai.'],
+  };
+
+  state = { sheet: false, step: 'choose', scen: 'full', bill: 'due', snack: null, push: false, amt: 1000, other: '', busy: false, result: null };
+
+  componentDidMount() { this.sync({}); }
+  componentDidUpdate(pp) { if (pp.screen !== this.props.screen || pp.variant !== this.props.variant) this.sync(pp); }
+  componentWillUnmount() { [this._a, this._b, this._c, this._d].forEach(clearTimeout); }
+  sync(pp) {
+    const { screen, variant } = this.props;
+    [this._a, this._b, this._c].forEach(clearTimeout);
+    if (screen === 'C14') {
+      const map = { full: ['choose', 'full'], short: ['choose', 'short'], zero: ['choose', 'zero'], rest: ['rest', 'short'], upiSent: ['upiSent', 'full'], counterSent: ['counterSent', 'full'], upiCancel: ['upiCancel', 'full'], noConn: ['noConn', 'full'] };
+      const [step, scen] = map[variant] || map.full;
+      this.setState({ sheet: true, step, scen, bill: 'due', push: false, snack: null });
+    } else if (screen === 'C1') {
+      const bill = variant === 'counter' ? 'counter' : 'due';
+      this.setState({ sheet: false, step: 'choose', scen: 'full', bill, snack: null, push: false });
+      if (variant === 'bill') {
+        this.setState({ push: true });
+        this._a = setTimeout(() => this.setState({ sheet: true }), 700);
+        this._b = setTimeout(() => this.setState({ push: false }), 3200);
+      }
+    } else if (screen === 'C3' || screen === 'C4') {
+      const res = screen === 'C4' ? (variant || 'sent') : null;
+      this.setState({ sheet: false, result: res, busy: false, amt: res === 'min' ? 0 : 1000, other: res === 'min' ? '50' : '' });
+    } else this.setState({ sheet: false });
+  }
+  snack(t) { clearTimeout(this._d); this.setState({ snack: t }); this._d = setTimeout(() => this.setState({ snack: null }), 4000); }
+  go(c, v) { this.props.go && this.props.go(c, v); }
+  fmt(n) { const neg = n < 0; let x = String(Math.abs(Math.round(n))); if (x.length > 3) { const last = x.slice(-3); let rest = x.slice(0, -3); rest = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ','); x = rest + ',' + last; } return (neg ? '−₹' : '₹') + x; }
+  num(n) { return this.fmt(n).replace('₹', '').replace('−', ''); }
+
+  renderVals() {
+    const P = this.props, S = this.state, C = this.constructor;
+    const screen = P.screen || 'C1', v = P.variant || '', st = P.st || 'content';
+    const li = { en: 0, hi: 1, hl: 2 }[P.lang] ?? 0, ts = Number(P.ts) || 1;
+    const name = P.brandName || 'Your salon';
+    const s = {}; for (const k in C.STR) s[k] = C.STR[k][li].split('{s}').join(name);
+    const R = (k, o) => { let t = s[k]; for (const x in o) t = t.split('{' + x + '}').join(o[x]); return t; };
+    const off = st === 'offline', err = st === 'error', load = st === 'loading', empty = st === 'empty';
+    const isHome = screen === 'C1' || screen === 'C14', isWallet = screen === 'C2', isAdd = screen === 'C3' || screen === 'C4';
+    const hv = screen === 'C14' ? 'bill' : (empty ? 'new' : (v || 'ordinary'));
+    const filled = (on) => ({ bg: on ? 'var(--primary)' : 'var(--surface-sunken)', fg: on ? 'var(--on-primary)' : 'var(--text-muted)' });
+
+    // home
+    const billShown = ['bill', 'counter'].includes(hv);
+    const bill = S.bill;
+    let billTitle = s.billReady, billIcon = 'receipt_long', billIconCol = 'var(--info)', billNote = '';
+    if (bill === 'counter') { billTitle = s.billTitle; billIcon = 'storefront'; billNote = s.counterSaid; }
+    if (bill === 'paidWallet') { billTitle = s.paidWallet; billIcon = 'check_circle'; billIconCol = 'var(--success)'; }
+    if (bill === 'upi') { billTitle = s.billTitle; billIcon = 'schedule'; billIconCol = 'var(--warning)'; billNote = s.upiPending; }
+    const balance = hv === 'new' ? '₹0' : bill === 'paidWallet' ? '₹250' : '₹1,250';
+
+    // sheet
+    const scen = S.scen, step = S.step;
+    const amtDue = step === 'rest' ? 450 : 1000;
+    const walletOpt = { icon: 'account_balance_wallet', title: s.optWallet, desc: scen === 'short' ? s.optWalletShortD : s.optWalletD, pick: () => this.pickWallet() };
+    const upiOpt = { icon: 'smartphone', title: s.optUpi, desc: R('optUpiD', { a: this.num(amtDue) }), pick: () => this.pickUpi() };
+    const ctrOpt = { icon: 'storefront', title: s.optCounter, desc: R('optCounterD', { a: this.num(amtDue) }), pick: () => this.pickCounter() };
+    const choosing = ['choose', 'upiCancel', 'noConn', 'rest'].includes(step) && !S.busy;
+    let payOpts = [];
+    if (choosing) payOpts = step === 'rest' ? [upiOpt, ctrOpt] : (scen === 'zero' ? [upiOpt, ctrOpt] : [walletOpt, upiOpt, ctrOpt]);
+    let sheetTitle = s.payTitle, sheetSub = s.toPay, sheetMsg = '', sheetMsgIcon = '', sheetMsgCol = '';
+    if (step === 'rest') { sheetTitle = s.restTitle; sheetSub = s.restSub; }
+    if (step === 'upiSent') { sheetTitle = s.sentTitle; sheetSub = s.toPay; sheetMsg = s.upiSent; sheetMsgIcon = 'schedule'; sheetMsgCol = 'var(--info)'; }
+    if (step === 'counterSent') { sheetTitle = s.counterTitle; sheetSub = s.toPay; sheetMsg = s.counterSent; sheetMsgIcon = 'storefront'; sheetMsgCol = 'var(--info)'; }
+    if (step === 'upiCancel') { sheetMsg = s.upiCancel; sheetMsgIcon = 'info'; sheetMsgCol = 'var(--info)'; }
+    if (step === 'noConn') { sheetMsg = s.noConn; sheetMsgIcon = 'wifi_off'; sheetMsgCol = 'var(--danger)'; }
+
+    // wallet
+    const L = [['bonusBday', '25 Sep 2026', 50], ['bonusRefer', '22 Sep 2026', 100], ['bonusRefer', '18 Sep 2026', 100], ['bonusExp', '11 Sep 2026', -100], ['bonus', '12 Aug 2026', 100], ['topup', '12 Aug 2026', 1000], ['usedAt', '30 Jul 2026', -550], ['bonus', '12 Jul 2026', 50], ['topup', '12 Jul 2026', 500]];
+    const ledger = L.map(([k, date, a]) => ({ what: s[k], date, amt: (a > 0 ? '+' : '') + this.fmt(a), icon: a > 0 ? 'add_circle' : k === 'bonusExp' ? 'schedule' : 'remove_circle', col: a > 0 ? 'var(--success)' : k === 'bonusExp' ? 'var(--warning)' : 'var(--text-secondary)' }));
+
+    // add money
+    const otherN = parseInt(S.other || '0', 10) || 0;
+    const amount = S.other ? otherN : S.amt;
+    const tooSmall = !!S.other && otherN < 100;
+    const bonusB = Math.floor(amount / 500) * 50;
+    const amounts = [500, 1000, 2000, 5000].map(a => { const on = !S.other && S.amt === a; return { label: this.fmt(a), checked: on ? 'true' : 'false', bg: on ? 'var(--primary)' : 'var(--surface-alt)', fg: on ? 'var(--on-primary)' : 'var(--text-primary)', border: on ? '2px solid var(--primary)' : '1px solid var(--border-strong)', pick: () => this.setState({ amt: a, other: '', result: null }) }; });
+    const beforeList = [R('bp1', { a: this.num(amount), t: this.num(amount + bonusB) })];
+    if (bonusB > 0) beforeList.push(R('bp2', { b: this.num(bonusB) }));
+    beforeList.push(s.bp3, s.walletLine, s.bp5);
+    const res = S.result;
+    const resMap = { sent: [s.c4Sent, 'schedule', 'var(--info)', '1px solid var(--border-strong)'], cancelled: [s.c4Cancel, 'info', 'var(--info)', '1px solid var(--border-strong)'], failed: [s.c4Fail, 'error', 'var(--danger)', '2px solid var(--danger)'], notready: [s.c4NotReady, 'storefront', 'var(--info)', '1px solid var(--border-strong)'] };
+    const rm = resMap[res];
+    const offerOk = !load && !err;
+    const payOk = offerOk && !off && amount >= 100 && !S.busy && res !== 'notready' && res !== 'sent';
+    const pb = filled(payOk || S.busy);
+    const payLabel = S.busy ? s.openingUpi : res === 'sent' ? s.backWallet : R('pay', { a: this.num(amount || 0) });
+
+    // sticky + nav
+    let showSticky = false, stickyLabel = '', stickyAction = () => {}, stickyOk = true;
+    if (isHome && err) { showSticky = true; stickyLabel = s.tryAgain; stickyAction = () => P.setSt && P.setSt('content'); }
+    else if (isHome && !load && hv === 'new') { showSticky = true; stickyLabel = s.bookFirst; stickyAction = () => this.go('C5'); }
+    else if (isHome && !load && hv === 'bill' && bill === 'due') { showSticky = true; stickyLabel = `${s.payBill} · ₹1,000`; stickyAction = () => this.setState({ sheet: true, step: scen === 'short' ? 'choose' : 'choose' }); stickyOk = !off; }
+    else if (isWallet && err) { showSticky = true; stickyLabel = s.tryAgain; stickyAction = () => P.setSt && P.setSt('content'); }
+    else if (isWallet && !load) { showSticky = true; stickyLabel = s.addMoney; stickyAction = () => this.go('C3'); stickyOk = !off; }
+    const sb = filled(stickyOk);
+    const navDefs = [['home', s.navHome, 'C1'], ['event', s.navBook, 'C5'], ['account_balance_wallet', s.navWallet, 'C2'], ['person', s.navMe, 'C12']];
+    const cur = isWallet ? 2 : 0;
+    const nav = navDefs.map(([icon, label, code], i) => { const on = i === cur; return { icon, label, current: on ? 'page' : 'false', pill: on ? 'var(--primary-container)' : 'transparent', ic: on ? 'var(--on-primary-container)' : 'var(--text-secondary)', fg: on ? 'var(--text-primary)' : 'var(--text-secondary)', fw: on ? 600 : 400, fill: on ? "'FILL' 1" : "'FILL' 0", pick: () => this.go(code) }; });
+
+    return {
+      s, brandName: name, brandMark: P.brandMark || '', hasMark: !!P.brandMark, noMark: !P.brandMark,
+      hasBack: isAdd, noBack: !isAdd, back: () => this.go('C2'), isHome, isWallet, isAdd,
+      toData: () => this.go('C13'), toBook: () => this.go('C5'), toAdd: () => this.go('C3'), toWallet: () => this.go('C2'),
+      showOffline: off, isOffline: off, offlineText: isHome ? s.offHome : isWallet ? s.offWallet : s.offAdd,
+      homeReady: !load && !err, homeLoading: load, homeError: err,
+      showToday: hv === 'today' || hv === 'inprogress', showCode: hv === 'today', showInProg: hv === 'inprogress',
+      codeSize: (ts > 1 ? 80 : 56) + 'px',
+      showBill: billShown, billTitle, billIcon, billIconCol, billNote, hasBillNote: !!billNote, isCounter: bill === 'counter',
+      openSheet: () => this.setState({ sheet: true, step: 'choose' }),
+      isNew: hv === 'new', notNew: hv !== 'new', showDue: hv === 'ordinary', showOffer: hv === 'ordinary', balance,
+      walletReady: !load && !err, walletLoading: load, walletError: err, walletHasCredit: !empty, walletEmpty: empty, wBalance: empty ? '₹0' : '₹1,250', ledger,
+      hasResult: !!rm, resText: rm ? rm[0] : '', resIcon: rm ? rm[1] : '', resCol: rm ? rm[2] : '', resBorder: rm ? rm[3] : 'none',
+      amounts, amtCols: ts > 1 ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))',
+      otherVal: S.other, onOther: (e) => this.setState({ other: String(e.target.value || '').replace(/\D/g, '').slice(0, 6), result: null }),
+      otherBorder: tooSmall ? '2px solid var(--danger)' : '1px solid var(--border-strong)', showMin: tooSmall,
+      offerLoading: load, offerError: err, offerReady: offerOk,
+      bonusLine: bonusB > 0 ? R('bonusYes', { b: this.num(bonusB) }) : s.bonusNo, bonusIcon: bonusB > 0 ? 'redeem' : 'info', bonusCol: bonusB > 0 ? 'var(--success)' : 'var(--text-secondary)',
+      beforeList,
+      onPay: () => { if (res === 'sent') return this.go('C2'); if (!payOk) return; this.setState({ busy: true }); this._c = setTimeout(() => this.setState({ busy: false, result: 'sent' }), 1100); },
+      payDisabled: !(payOk || res === 'sent'), payBusy: S.busy, payBusyAttr: S.busy ? 'true' : 'false',
+      payBg: res === 'sent' ? 'var(--primary)' : pb.bg, payFg: res === 'sent' ? 'var(--on-primary)' : pb.fg, payCursor: payOk || res === 'sent' ? 'pointer' : 'not-allowed', payLabel,
+      showSticky, stickyLabel, stickyAction, stickyDisabled: !stickyOk, stickyBg: sb.bg, stickyFg: sb.fg,
+      showNav: !isAdd, nav,
+      showPush: S.push,
+      ovOp: S.sheet ? 1 : 0, ovPe: S.sheet ? 'auto' : 'none',
+      sheetT: S.sheet ? 'translateY(0)' : 'translateY(105%)',
+      sheetTr: S.sheet ? 'transform 220ms cubic-bezier(0.2,0,0,1)' : 'transform 176ms cubic-bezier(0.3,0,1,1)',
+      closeSheet: () => this.setState({ sheet: false }),
+      sheetTitle, sheetSub, sheetHasMsg: !!sheetMsg, sheetMsg, sheetMsgIcon, sheetMsgCol, payOpts,
+      sheetBusy: S.busy && S.sheet, sheetHasClose: step === 'upiSent' || step === 'counterSent',
+      hasSnack: !!S.snack, snackText: S.snack || '',
+    };
+  }
+  pickWallet() {
+    if (this.props.st === 'offline') return this.setState({ step: 'noConn' });
+    if (this.state.scen === 'short') return this.setState({ step: 'rest' });
+    this.setState({ sheet: false, bill: 'paidWallet' });
+    this.snack(this.constructor.STR.snackWallet[{ en: 0, hi: 1, hl: 2 }[this.props.lang] ?? 0]);
+  }
+  pickUpi() {
+    if (this.props.st === 'offline') return this.setState({ step: 'noConn' });
+    this.setState({ busy: true });
+    this._c = setTimeout(() => this.setState({ busy: false, step: 'upiSent', bill: 'upi' }), 1100);
+  }
+  pickCounter() {
+    if (this.props.st === 'offline') return this.setState({ step: 'noConn' });
+    this.setState({ step: 'counterSent', bill: 'counter' });
+  }
+}
+</script>
+</body>
+</html>

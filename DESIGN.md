@@ -145,6 +145,30 @@ tinting every surface is how a white-label app becomes unreadable at a window se
 
 ---
 
+### 3.5 The glass chassis *(Claude Design, adopted 29 Sep 2026)*
+
+The app wears **frosted glass over a soft colour mesh**. Tokens in `core/theme/brand_tokens.dart`,
+theme in `core/theme/cray_glass.dart`, widgets in `core/ui/glass.dart`.
+
+- **The mesh** (`MeshBackground`) is the one place the brand colour reaches the background: a warm
+  base wash with three glows mixed from the salon's own primary and accent (primary 38%, accent
+  55%, primary 26% toward white in light mode; darker mixes in dark). It is a *background wash*,
+  not a surface: cards, sheets, fields and text surfaces stay neutral glass. Text that sits
+  directly on the mesh must clear 4.5:1 - asserted for every glow stop, light and dark
+  (`test/brand_tokens_test.dart`).
+- **Every page paints its own mesh**, beneath a transparent scaffold, through the page-transition
+  builder - a single mesh behind the Navigator would let two transparent pages show through each
+  other during a transition. So every route is an explicit `MaterialPage`; the owner shell, which
+  is not a page, paints its own.
+- **Glass** - `glassCard` (58% white), `glassBar` (50%), `glassSheet` (82%, because money is read
+  on it), a bright `glassLine` hairline and a soft brand-warm shadow. **Real backdrop blur only on
+  bars and sheets**: blur is expensive on the budget phones this runs on, and over the mesh a
+  translucent card already reads as glass. Long lists never blur.
+- Every `Card` is a glass card through the theme; `GlassPanel` for custom surfaces; `Pressable`
+  (0.97 scale, 120ms) and `Appear` (fade + 8dp rise, 220ms) are the micro-interactions, both off
+  under reduced motion.
+- Status and chart colours are untouched by any of this.
+
 ## 4. Layout
 
 ### 4.1 Grid and spacing
@@ -519,6 +543,14 @@ targets are larger than the marks. On mobile, tap-to-pin rather than hover.
 - **No decorative icon tile above every heading.** (§14)
 - Photos are the salon's own work, always consented (`RULES.md` §11.4), compressed client-side,
   and never stretched. No stock photography of models anywhere in the product.
+- **Decided 29 Sep 2026 - "rich, rules kept":** freely licensed photographs of salon *spaces and
+  tools* (no people) may be used on the join flow, onboarding and empty states, as a neutral
+  default. A salon's own uploaded photos replace them. Every image carries its licence and source
+  in `app/assets/images/CREDITS.md`; nothing without a licence that allows commercial use ships.
+  Images sit **under a neutral scrim**, never behind body text on the brand colour, and never
+  behind money. Motion may be richer - press feedback, sheet and card transitions, success
+  states - within §7: money never animates, mark-complete stays instant, reduced motion is
+  honoured, and skeletons still do not shimmer.
 - The salon logo appears **once per screen** — in the app bar. Not repeated in cards.
 
 ---
@@ -580,7 +612,8 @@ entry here, it is wrong.
 
 **Generic AI-design tells:**
 
-- Purple-to-blue gradients. Any decorative gradient, really.
+- Purple-to-blue gradients. Any decorative gradient, really - *except the salon-coloured mesh of
+  §3.5, which is the chassis, not decoration.*
 - Inter (or the system font) for absolutely everything.
 - Cards nested inside cards. Then a card inside that.
 - A rounded-square icon tile floating above every section heading.
@@ -593,6 +626,7 @@ entry here, it is wrong.
 **Specific to this product:**
 
 - **Tinting every surface with the brand colour.** It is how a white-label app becomes unreadable.
+  (The §3.5 mesh is a background wash under neutral glass, with its contrast asserted - not this.)
   Brand goes on buttons and accents; surfaces stay neutral (§3.4).
 - **Animating a money value.** (§7.3)
 - **A pre-checked add-on.** (`RULES.md` §2)

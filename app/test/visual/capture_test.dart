@@ -1,0 +1,287 @@
+// VISUAL CAPTURE - renders real screens, with real fonts and icons, to PNGs.
+//
+// Not a gate: it asserts nothing about pixels. It exists so the design can be
+// looked at without a phone (there is no emulator on the build machine). Runs
+// only when asked:
+//
+//   VISUAL_OUT=<dir> flutter test test/visual/capture_test.dart
+//
+// Wears the Claude Design project's Studio Nine (dusty rose, Poppins, 18dp),
+// resolved the way the console publishes it.
+@TestOn('vm')
+library;
+
+import 'dart:io';
+import 'dart:ui' as ui;
+
+import 'package:craysalon/app/providers.dart';
+import 'package:craysalon/data/local/branding_store.dart';
+import 'package:craysalon/data/local/cache_db.dart';
+import 'package:craysalon/data/local/outbox.dart';
+import 'package:craysalon/data/repositories/day_repository.dart';
+import 'package:craysalon/domain/join/cray_api.dart';
+import 'package:craysalon/domain/records/records.dart';
+import 'package:craysalon/features/join/join_controller.dart';
+import 'package:craysalon/features/salon/salon_home.dart';
+import 'package:craysalon/features/visit/visit_cards.dart';
+import 'package:craysalon/features/wallet/add_money_screen.dart';
+import 'package:craysalon/features/wallet/wallet_controller.dart';
+import 'package:craysalon/main.dart';
+import 'package:drift/native.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../outbox_test.dart' show FakeBookings;
+import '../salon_home_test.dart' show FakeNotifications, FakeShortcut;
+import '../support/fake_cray_api.dart';
+import '../visit_test.dart' show FakeVisitApi;
+import '../wallet_test.dart' show FakeSheet, FakeWalletApi;
+
+final _out = Platform.environment['VISUAL_OUT'];
+
+/// Studio Nine as the Claude Design project resolves it (29 Sep 2026).
+Map<String, Object?> designBranding() {
+  Map<String, Object?> set({
+    required String primary,
+    required String onPrimary,
+    required String container,
+    required String onContainer,
+    required String ink,
+    required String surface,
+    required String surfaceAlt,
+    required String sunken,
+    required String border,
+    required String borderStrong,
+    required String divider,
+    required String text,
+    required String text2,
+    required String muted,
+  }) =>
+      {
+        'color': {
+          'primary': primary,
+          'onPrimary': onPrimary,
+          'primaryContainer': container,
+          'onPrimaryContainer': onContainer,
+          'accent': '#E8B4A0',
+          'onAccent': '#1C1B19',
+          'brandInk': ink,
+          'surface': surface,
+          'surfaceAlt': surfaceAlt,
+          'surfaceSunken': sunken,
+          'border': border,
+          'borderStrong': borderStrong,
+          'divider': divider,
+          'textPrimary': text,
+          'textSecondary': text2,
+          'textMuted': muted,
+        },
+        'radius': {'base': 18, 'chip': 9, 'sheet': 27, 'pill': 999},
+        'typography': {
+          'heading': {'family': 'Poppins', 'weight': 500},
+          'body': {'family': 'Poppins', 'weight': 400},
+          'script': 'latin',
+          'lineHeightBonus': 0,
+        },
+      };
+
+  return {
+    'version': 7,
+    'displayName': 'Studio Nine Salon',
+    'brand': {
+      'light': {'primary': '#B84F5E', 'accent': '#E8B4A0'},
+      'dark': {'primary': '#F2A7B0', 'accent': '#E8B4A0'},
+    },
+    'resolved': {
+      'light': set(
+        primary: '#B84F5E', onPrimary: '#FDFCFA', container: '#F4DEDF',
+        onContainer: '#A74050', ink: '#B84F5E', surface: '#FBF6F5',
+        surfaceAlt: '#F3F2EE', sunken: '#ECEAE5', border: '#DEDCD6',
+        borderStrong: '#8F8D85', divider: '#EBDCDD', text: '#1C1B19',
+        text2: '#4A4843', muted: '#6E6B64',
+      ),
+      'dark': set(
+        primary: '#F2A7B0', onPrimary: '#1C1B19', container: '#403232',
+        onContainer: '#F2A7B0', ink: '#F2A7B0', surface: '#161614',
+        surfaceAlt: '#1F1E1B', sunken: '#0F0F0E', border: '#35342F',
+        borderStrong: '#7D7B73', divider: '#2A2927', text: '#EDEBE6',
+        text2: '#C4C1BA', muted: '#9A968E',
+      ),
+    },
+  };
+}
+
+Future<void> _loadFonts() async {
+  Future<void> load(String family, String path) async {
+    final f = File(path);
+    if (!f.existsSync()) return;
+    final loader = FontLoader(family)..addFont(Future.value(ByteData.sublistView(f.readAsBytesSync())));
+    await loader.load();
+  }
+
+  final poppins = Platform.environment['VISUAL_FONT'] ?? r'C:\Windows\Fonts\segoeui.ttf';
+  final poppinsBold = Platform.environment['VISUAL_FONT_BOLD'] ?? r'C:\Windows\Fonts\seguisb.ttf';
+  for (final family in ['Poppins', 'Noto Sans Devanagari', 'Roboto']) {
+    await load(family, poppins);
+    await load(family, poppinsBold);
+  }
+  await load(
+    'MaterialIcons',
+    r'C:\Users\JYOTIRANJAN\dev\flutter\bin\cache\dart-sdk\bin\resources\devtools\assets\fonts\MaterialIcons-Regular.otf',
+  );
+}
+
+Future<void> _save(WidgetTester tester, String name) async {
+  final boundary = tester.renderObject<RenderRepaintBoundary>(find.byKey(const Key('capture')));
+  final image = await tester.runAsync(() => boundary.toImage(pixelRatio: 2));
+  final bytes = await tester.runAsync(() => image!.toByteData(format: ui.ImageByteFormat.png));
+  File('$_out/$name.png').writeAsBytesSync(bytes!.buffer.asUint8List());
+}
+
+/// flutter_test draws every shadow as a solid black outline by default. The
+/// captures are for looking at, so real shadows for the whole test - restored
+/// before the body ends, as the framework requires.
+void capture(String description, Future<void> Function(WidgetTester) body) {
+  testWidgets(description, (tester) async {
+    debugDisableShadows = false;
+    try {
+      await body(tester);
+    } finally {
+      debugDisableShadows = true;
+    }
+  });
+}
+
+void main() {
+  if (_out == null) {
+    test('visual capture (set VISUAL_OUT to run)', () {}, skip: 'VISUAL_OUT not set');
+    return;
+  }
+
+  setUpAll(_loadFonts);
+
+  setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  void phone(WidgetTester tester) {
+    tester.view.physicalSize = const Size(800, 1740);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+  }
+
+  CachedBranding branding() => CachedBranding(
+        salonId: 'salon-a',
+        displayName: 'Studio Nine Salon',
+        version: 7,
+        document: designBranding(),
+      );
+
+  Future<void> customer(WidgetTester tester, FakeVisitApi visits, {ThemeMode? mode}) async {
+    phone(tester);
+    await tester.pumpWidget(
+      RepaintBoundary(
+        key: const Key('capture'),
+        child: ProviderScope(
+          overrides: [
+            crayApiProvider.overrideWithValue(FakeCrayApi()),
+            sessionProvider.overrideWithValue(
+              const AppSession(appRole: 'customer', salonId: 'salon-a'),
+            ),
+            initialBrandingProvider.overrideWithValue(branding()),
+            homeShortcutProvider.overrideWithValue(FakeShortcut(supported: false)),
+            salonNotificationsProvider.overrideWithValue(FakeNotifications()),
+            visitApiProvider.overrideWithValue(visits),
+            walletApiProvider.overrideWithValue(FakeWalletApi()),
+            paymentSheetProvider.overrideWithValue(FakeSheet()),
+          ],
+          child: mode == ThemeMode.dark
+              ? const MediaQuery(
+                  data: MediaQueryData(platformBrightness: Brightness.dark),
+                  child: CraySalonApp(),
+                )
+              : const CraySalonApp(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  capture('C1 home - a booking today, with the start code', (tester) async {
+    final v = FakeVisitApi()..today = [FakeVisitApi().visit(code: '4821')];
+    await customer(tester, v);
+    await _save(tester, 'c1_home_today');
+  });
+
+  capture('C14 pay sheet - opens by itself when the bill arrives', (tester) async {
+    final v = FakeVisitApi()..billList = [FakeVisitApi().bill(due: 100000)];
+    await customer(tester, v);
+    await _save(tester, 'c14_pay_sheet');
+    Navigator.of(tester.element(find.text('How would you like to pay?'))).pop();
+    await tester.pumpAndSettle();
+    await _save(tester, 'c1_home_bill');
+  });
+
+  capture('C1 home - dark', (tester) async {
+    final v = FakeVisitApi()..today = [FakeVisitApi().visit(code: '4821')];
+    await customer(tester, v, mode: ThemeMode.dark);
+    await _save(tester, 'c1_home_dark');
+  });
+
+  capture('O1 today - every row state', (tester) async {
+    phone(tester);
+    final cache = CacheDb(NativeDatabase.memory());
+    addTearDown(cache.close);
+    final remote = FakeBookings();
+    final now = DateTime.now();
+    BookingRow row(String id, String name, String status, int h,
+            {String? pay, bool app = true, bool counter = false}) =>
+        BookingRow(
+          id: id,
+          customerId: 'c-$id',
+          startsAt: DateTime(now.year, now.month, now.day, h, 30),
+          endsAt: DateTime(now.year, now.month, now.day, h + 1),
+          status: status,
+          totalPaise: 45000 + h * 5000,
+          customerName: name,
+          staffName: h.isEven ? 'Suresh' : 'Priya',
+          serviceNames: h.isEven ? 'Haircut + Beard trim' : 'Hair colour',
+          paymentStatus: pay,
+          customerHasApp: app,
+          counterRequested: counter,
+        );
+    remote.dayRows = [
+      row('1', 'Ravi Kumar', 'completed', 9, pay: 'paid'),
+      row('2', 'Meera', 'completed', 10, pay: 'unpaid', counter: true),
+      row('3', 'Asha Rao', 'in_progress', 11),
+      row('4', 'Nikhil', 'confirmed', 13, app: false),
+      row('5', 'Sana', 'confirmed', 15),
+    ];
+    final outbox = Outbox(cache);
+    await tester.pumpWidget(
+      RepaintBoundary(
+        key: const Key('capture'),
+        child: ProviderScope(
+          overrides: [
+            crayApiProvider.overrideWithValue(FakeCrayApi()),
+            sessionProvider.overrideWithValue(
+              const AppSession(appRole: 'owner', salonId: 'salon-a'),
+            ),
+            initialBrandingProvider.overrideWithValue(branding()),
+            cacheDbProvider.overrideWithValue(cache),
+            outboxProvider.overrideWithValue(outbox),
+            dayRepositoryProvider.overrideWithValue(
+              DayRepository(remote: remote, cache: cache, outbox: outbox, salonId: 'salon-a'),
+            ),
+          ],
+          child: const CraySalonApp(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _save(tester, 'o1_today');
+  });
+}

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{{const n=new URLSearchParams(location.search).get("theme");if(n==="light"||n==="dark"){document.documentElement.dataset.theme=n}}{if(new URLSearchParams(location.search).get("_omthumb")==="1"){const n=(f)=>{const g=f.focus;if(!g)return;f.focus=function(h){g.call(this,{...h,preventScroll:true})}};n(HTMLElement.prototype);n(SVGElement.prototype);if(typeof MathMLElement!=="undefined"){n(MathMLElement.prototype)}const d=(f)=>{f.removeAttribute("autofocus");f.inert=true;if(!(f instanceof HTMLElement))f.removeAttribute("tabindex")};const p=(f)=>{if(f.hasAttribute("autofocus"))d(f);for(const g of f.querySelectorAll("[autofocus]")){d(g)}};p(document.documentElement);new MutationObserver((f)=>{for(const g of f){for(const h of g.addedNodes){if(h.nodeType===1)p(h)}}}).observe(document,{childList:true,subtree:true})}}{const n=()=>{try{if(document.querySelector('meta[name="color-scheme"]'))return;const d=getComputedStyle(document.documentElement).getPropertyValue("color-scheme").trim();if(d&&d!=="normal")return;const p=(y)=>{if(!y)return null;const m=getComputedStyle(y).backgroundColor.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+%?))?\s*\)$/);if(!m)return null;const w=m[4]==null?1:parseFloat(m[4])/(m[4].endsWith("%")?100:1);if(w<0.99)return null;return[+m[1],+m[2],+m[3]]};const f=p(document.body)||p(document.documentElement);if(!f)return;const g=(y)=>{const m=y/255;return m<=0.04045?m/12.92:((m+0.055)/1.055)**2.4};const h=0.2126*g(f[0])+0.7152*g(f[1])+0.0722*g(f[2]);document.documentElement.style.setProperty("color-scheme",h<0.4?"dark":"light")}catch{}};if(document.readyState==="complete")n();else window.addEventListener("load",n)}var I=["https://claude.ai","https://preview.claude.ai","https://5f0bd573-2543-4d26-9b98-e594dd744d96.claudeusercontent.com"];var B=true;var K=false;var C=()=>{};if(K===true){try{const n=setTimeout.bind(window);const d=1e4;const p=15;const f=1e4;const g=120000;const h=200;const y=(o)=>{try{let r;if(typeof o==="string")r=o;else if(o instanceof URL)r=o.href;else if(typeof Request!=="undefined"&&o instanceof Request)r=o.url;else return null;if(!r)return null;const l=document.baseURI;const i=new URL(r,l);if(i.protocol!=="http:"&&i.protocol!=="https:")return null;if(i.origin!==new URL(l).origin)return null;return i.origin+i.pathname}catch{return null}};const m=new Map;const w=(o)=>{let r=m.get(o);if(!r){if(m.size>=h){const l=m.keys().next().value;if(l!==undefined)m.delete(l)}r={fails:[],until:0,cooldown:f,hard:false};m.set(o,r)}return r};const R=(o)=>{const r=m.get(o);return r!==undefined&&r.until>Date.now()};const O=(o,r)=>{const l=Date.now();const i=w(o);if(r)i.hard=true;if(i.until>l)return;i.fails.push(l);while(i.fails.length>0&&i.fails[0]<=l-d)i.fails.shift();if(i.fails.length>=p){i.until=l+i.cooldown;if(i.hard)i.cooldown=Math.min(i.cooldown*2,g);i.fails.length=0;try{n(()=>{try{S(true)}catch{}},i.until-l+100)}catch{}console.warn("[omelette] asset circuit breaker: pausing requests to "+o+" for "+Math.round((i.until-l)/1000)+"s after "+p+" failures in "+d/1000+"s")}};const e=(o)=>{m.delete(o)};const t=100;const a=new WeakMap;const u=new Set;let s=null;const S=(o)=>{for(const r of Array.from(u)){try{const l=a.get(r);if(l===undefined){u.delete(r);continue}if(o){const i=y(l);if(i!==null&&R(i))continue}a.delete(r);u.delete(r);if(s!==null)s.call(r,l)}catch{}}};C=()=>{try{m.clear();S(false)}catch{}};document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")C()});const _=window.fetch;if(typeof _==="function"){const o=function(...r){let l=null;try{l=y(r[0])}catch{}if(l!==null&&R(l)){let c;try{if(r[1]&&r[1].signal!==undefined){c=r[1].signal||undefined}else if(typeof Request!=="undefined"&&r[0]instanceof Request){c=r[0].signal||undefined}}catch{c=undefined}return new Promise((k,b)=>{const E=()=>{try{return c.reason!==undefined?c.reason:new DOMException("The operation was aborted.","AbortError")}catch{return new DOMException("The operation was aborted.","AbortError")}};try{if(c&&c.aborted){b(E());return}}catch{}let T=false;const j=()=>{if(T)return;T=true;b(E())};try{if(c)c.addEventListener("abort",j,{once:true})}catch{}n(()=>{if(T)return;T=true;try{if(c)c.removeEventListener("abort",j)}catch{}let L;try{L=new Response(null,{status:429,statusText:"Too Many Requests",headers:{"Retry-After":"10"}})}catch{L={ok:false,status:429}}k(L)},250)})}const i=_.apply(window,r);if(l!==null){const c=l;i.then((k)=>{try{if(k.ok)e(c);else if(k.status===401||k.status===403||k.status===404||k.status===429){O(c,k.status!==404)}}catch{}},()=>{})}return i};window.fetch=o}const v=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src");if(v!==undefined&&v.set!==undefined&&v.get!==undefined){const o=v.set;s=o;Object.defineProperty(HTMLImageElement.prototype,"src",{configurable:true,enumerable:v.enumerable,get:v.get,set(r){const l=`${r}`;try{const i=y(l);if(i!==null&&R(i)){a.set(this,l);if(u.size<t)u.add(this);return}}catch{}try{a.delete(this);u.delete(this)}catch{}o.call(this,l)}})}try{const o=HTMLImageElement.prototype.setAttribute;HTMLImageElement.prototype.setAttribute=function(r,l){if(arguments.length<2){o.apply(this,arguments);return}if(typeof r==="string"&&r.toLowerCase()==="src"){const i=`${l}`;try{const c=y(i);if(c!==null&&R(c)){a.set(this,i);if(u.size<t)u.add(this);return}a.delete(this);u.delete(this)}catch{}o.call(this,r,i);return}o.call(this,r,l)}}catch{}window.addEventListener("error",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)O(l,true)}}catch{}},true);window.addEventListener("load",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)e(l);const i=a.get(r);if(i!==undefined){let c=false;try{c=new URL(i,document.baseURI).href===new URL(r.currentSrc||r.src||"",document.baseURI).href}catch{c=false}if(c){a.delete(r);u.delete(r)}}}}catch{}},true)}catch{}}var J=30000;var G=3000;document.addEventListener("DOMContentLoaded",()=>{const n=window.Babel;const d="om-src-id";if(n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[d])){n.registerPlugin(d,({types:h})=>({visitor:{JSXOpeningElement(y,m){const w=y.node;if(w.name&&w.name.type==="JSXMemberExpression")return;for(let t=0;t<w.attributes.length;t++){const a=w.attributes[t];if(a.type==="JSXAttribute"&&a.name&&a.name.name==="data-om-id")return}const R=m.file&&m.file.opts&&m.file.opts.filename||"?";const O=w.loc&&w.loc.start;const e=`jsx:${R}:${w.start??0}:${O?O.line:0}:${O?O.column+1:0}`;w.attributes.push(h.jsxAttribute(h.jsxIdentifier("data-om-id"),h.stringLiteral(e)))}}}))}const p="om-text-extract";let f=false;if(B&&n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[p])){const h=window.React;if(h&&h.useSyncExternalStore&&h.createElement){f=true;const y={};const m=new Set;let w=0;window.__omTextO=y;window.__omTextSet=(e)=>{for(const t in e){const a=e[t];if(a==null)delete y[t];else y[t]=a}w++;m.forEach((t)=>t())};const R=(e)=>{m.add(e);return()=>m.delete(e)};const O=()=>w;window.__OmT=function e(t){h.useSyncExternalStore(R,O,O);return h.createElement("span",{"data-om-text":t.i,className:"__om-t"},t.i in y?y[t.i]:t.children)};n.registerPlugin(p,({types:e})=>{const t={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const a={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const u=(o,r)=>e.logicalExpression("??",e.memberExpression(e.logicalExpression("||",e.memberExpression(e.identifier("window"),e.identifier("__omTextO")),e.objectExpression([])),e.stringLiteral(o),true),r);const s=(o)=>o.file&&o.file.opts&&o.file.opts.filename||"?";const S=(o)=>o.file&&o.file.code||"";const _=(o,r)=>{const l=(c)=>c&&c.start!=null&&c.end!=null&&(c.type==="StringLiteral"||c.type==="TemplateLiteral"&&c.expressions.length===0)?[c.start,c.end]:null;const i=l(r);if(i)return i;if(r&&r.type==="Identifier"){const c=o.scope.getBinding(r.name);if(c&&c.constant&&c.path.node.type==="VariableDeclarator"){return l(c.path.node.init)}}return null};const v=(o,r,l)=>{const i=o.node;let c=false;const k=(E,T)=>{c=true;return e.jsxElement(e.jsxOpeningElement(e.jsxIdentifier("__OmT"),[e.jsxAttribute(e.jsxIdentifier("i"),e.stringLiteral(E))],false),e.jsxClosingElement(e.jsxIdentifier("__OmT")),[T],false)};const b=i.children.map((E)=>{if(E.type==="JSXText"){if(E.start==null||E.end==null)return E;const T=l.slice(E.start,E.end);const j=T.length-T.trimStart().length;const L=T.length-T.trimEnd().length;if(j+L>=T.length)return E;return k(`txt:${r}:${E.start+j}:${E.end-L}`,E)}if(E.type==="JSXExpressionContainer"){const T=_(o,E.expression);if(T)return k(`str:${r}:${T[0]}:${T[1]}`,E)}return E});if(c)i.children=b};return{visitor:{JSXOpeningElement(o,r){const l=o.node;const i=s(r);const c={};for(let k=0;k<l.attributes.length;k++){const b=l.attributes[k];if(b.type!=="JSXAttribute"||!b.name)continue;const E=b.name.name;if(!a[E])continue;if(!b.value||b.value.type!=="StringLiteral")continue;if(b.value.start==null||b.value.end==null)continue;const T=`txt:${i}:${b.value.start}:${b.value.end}`;c[E]=T;b.value=e.jsxExpressionContainer(u(T,e.stringLiteral(b.value.value)))}if(Object.keys(c).length){l.attributes.push(e.jsxAttribute(e.jsxIdentifier("data-om-text-attrs"),e.stringLiteral(JSON.stringify(c))))}},JSXElement(o,r){const l=o.node.openingElement;const i=l&&l.name&&l.name.name;if(i==="__OmT")return;if(typeof i==="string"&&t[i])return;v(o,s(r),S(r))},JSXFragment(o,r){v(o,s(r),S(r))}}}})}}const g=f?["transform-react-jsx-source",d,p]:["transform-react-jsx-source",d];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach((h,y)=>{const m=h.getAttribute("data-plugins")||"";const w=g.filter((R)=>m.indexOf(R)<0);if(w.length){h.setAttribute("data-plugins",m?`${m},${w.join(",")}`:w.join(","))}if(!h.hasAttribute("data-filename")){h.setAttribute("data-filename",h.getAttribute("src")||`inline-${y}`)}})});var A=window.parent;var U="not editable here — open the project in the Claude Design editor to save";var W=()=>Promise.resolve({persisted:false,noHost:true,reason:U});var H=W;var M="data/storage.json";var z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.match(/\/projects\/([^/]+)\/serve\//);if(d)return d[1];return n.hostname.split(".")[0]||""}catch{return location.hostname.split(".")[0]||""}};var Z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.indexOf("/serve/");if(d>=0)return n.origin+n.pathname.slice(0,d+"/serve/".length)+M}catch{}return"./"+M};var x=null;var N=()=>{if(!x){x=fetch(Z(),{cache:"no-store"}).then((n)=>{if(n.ok)return n.text();return n.status===404?"":null}).catch(()=>null).then((n)=>{if(n===null){x=null;return null}const d=new Map;if(!n)return d;let p;try{p=JSON.parse(n)}catch{console.warn("[omelette.storage] "+M+" is not valid JSON; treating the store as unreadable so a save cannot overwrite the "+"hand-edited bytes. Fix the JSON (or delete the file) to re-enable persistence.");x=null;return null}if(p===null||typeof p!=="object"||Array.isArray(p)){console.warn("[omelette.storage] "+M+" doesn't hold a JSON object; treating the store as unreadable so a save cannot "+"overwrite the hand-edited bytes. Make the top level a JSON object to re-enable persistence.");x=null;return null}const f=p;if("data"in f){const g=f.data;if(g===null||typeof g!=="object"||Array.isArray(g)){console.warn("[omelette.storage] "+M+' has a "data" field that is not a JSON object; treating the store as unreadable so a '+'save cannot overwrite the hand-edited bytes. Make "data" a JSON object to re-enable persistence.');x=null;return null}const h=f._meta;const y=h!==null&&typeof h==="object"?h.project:undefined;if(typeof y==="string"&&y!==""&&y!==z())return d;for(const m of Object.keys(g))d.set(m,g[m]);return d}for(const g of Object.keys(f)){if(g!=="_meta")d.set(g,f[g])}return d})}return x};var F=(n)=>H(M,JSON.stringify({_meta:{project:z(),version:1},data:Object.fromEntries(n)},null,2));var D=Promise.resolve();var $=(n)=>{const d=D.then(n);D=d.then(()=>{return},()=>{return});return d};var V=/sk-(?:ant-)?[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|xox[a-z]-[A-Za-z0-9][A-Za-z0-9-]{9,}|AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/;var Y=/password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|credential/i;var Q=(n,d,p)=>{if(V.test(d)||Y.test(n)&&typeof p==="string"&&p.length>=8){console.warn('[omelette.storage] the value for "'+n+'" looks like a credential. The storage file is a plaintext project file — visible to '+"everyone with project access and copied when the project is duplicated. Do not store secrets here.")}};var q={persisted:false,reason:"could not load the existing store — not overwriting it"};var X={persisted:false,reason:"stored value changed since a failed read — re-read this key before saving"};var P=new Set;var ee={get:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.get: key must be a string"))}return $(N).then((d)=>{if(d===null){P.add(n);return null}P.delete(n);if(!d.has(n))return null;const p=d.get(n);return p==null?null:JSON.parse(JSON.stringify(p))})},set:(n,d)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.set: key must be a string"))}let p;try{p=JSON.stringify(d)}catch(g){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable ("+String(g)+")"))}if(p===undefined){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable"))}Q(n,p,d);const f=JSON.parse(p);return $(()=>N().then((g)=>{if(g===null)return q;if(P.has(n)){if(g.has(n))return X;P.delete(n)}g.set(n,f);return F(g)}))},delete:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.delete: key must be a string"))}return $(()=>N().then((d)=>{if(d===null)return q;if(P.has(n)){if(d.has(n))return X;P.delete(n)}d.delete(n);return F(d)}))},keys:()=>$(N).then((n)=>n===null?[]:Array.from(n.keys()))};window.omelette={writeFile:(n,d)=>H(n,d).then((p)=>{if(!p.persisted&&!p.noHost){throw new Error(p.reason||"write failed")}}),storage:ee};if(A&&A!==window){const n=(e,t)=>{try{A.postMessage({__omelette_log:true,type:e,data:t},"*")}catch{}};["log","warn","error"].forEach((e)=>{const t=console[e];console[e]=(...a)=>{const u=a.map((s)=>{try{return typeof s==="object"?JSON.stringify(s):String(s)}catch{try{return String(s)}catch{return"[unstringifiable]"}}}).join(" ");n(e,u);t.apply(console,a)}});window.addEventListener("error",(e)=>{const t=e.target;if(t&&t!==window&&t.tagName){const a=t.src||t.href||"";n("resource_error",`${t.tagName} failed to load: ${a}`)}else{n("error",`${e.message||"Unknown error"} at ${e.filename||"?"}:${e.lineno||0}:${e.colno||0}`)}},true);window.addEventListener("unhandledrejection",(e)=>{const t=e.reason;const a=t instanceof Error?`${t.message} ${t.stack}`:String(t);n("error",`Unhandled rejection: ${a}`)});window.addEventListener("click",(e)=>{if(e.defaultPrevented||e.button!==0)return;if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const t=e.composedPath?e.composedPath():[];const a=["button","input","select","textarea","summary","label"];let u=null;for(const v of t){if(!(v instanceof Element))continue;if(v.localName==="a"){if(!(v instanceof HTMLAnchorElement))return;u=v;break}if(a.indexOf(v.localName)!==-1)return}if(!u)return;if(u.isContentEditable)return;const s=u.closest("[contenteditable]");if(s&&s.getAttribute("contenteditable")!=="false")return;const S=(u.getAttribute("target")||"_self").toLowerCase();if(S!=="_self"&&S!=="_top"&&S!=="_parent")return;let _;try{_=new URL(u.href)}catch{return}if(_.protocol!=="http:"&&_.protocol!=="https:")return;if(location.origin==="null")return;if(_.origin===location.origin)return;e.preventDefault();window.open(_.href,"_blank","noopener,noreferrer")});const d=()=>{try{A.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(window.ResizeObserver)new ResizeObserver(d).observe(document.documentElement);const p=()=>{d();if(!document.querySelector('script[type="text/babel"],script[type="text/jsx"]'))return;const e=()=>document.getElementById("root")||document.querySelector("body > div[id]");const t=e()?.firstElementChild??null;let a=0;const u=()=>{const s=e();if(s&&s.firstElementChild!==t||++a>30){d();return}setTimeout(u,100)};setTimeout(u,100)};if(document.readyState==="complete")p();else window.addEventListener("load",p);const f={};let g=0;const h=(e)=>new Promise((t,a)=>{if(!I.length){a(new Error("claude.complete: no parent origin"));return}const u=`c${++g}`;const s=()=>setTimeout(()=>{delete f[u];a(new Error(`claude.complete: no data for ${J/1000}s`))},J);const S=s();f[u]={resolve:t,reject:a,text:"",t:S,arm:s};try{for(const _ of I){A.postMessage({__om_api:true,id:u,body:e},_)}}catch(_){clearTimeout(S);delete f[u];a(_)}});const y=8;const m=async(e,t)=>{if(!Array.isArray(e.messages)){throw new Error("claude.complete: tools require a messages array")}const a=e.messages.slice();const u={...e,tools:e.tools.map((_)=>{if(_===null||typeof _!=="object")return _;const v={};for(const o of Object.keys(_)){if(typeof _[o]!=="function")v[o]=_[o]}return v})};const s=u.tool_choice;const S=s!=null&&(s.type==="any"||s.type==="tool")?{...u,tool_choice:s.disable_parallel_tool_use!==undefined?{type:"auto",disable_parallel_tool_use:s.disable_parallel_tool_use}:{type:"auto"}}:u;for(let _=0;_<y;_++){const v=await h({..._===0?u:S,messages:a});const o=v.message;const r=o&&Array.isArray(o.content)?o.content:null;const l=r?r.filter((c)=>c?.type==="tool_use"):[];if(o?.stop_reason!=="tool_use"||l.length===0){return v.text}const i=[];for(const c of l){const k=t.get(c.name);if(!k){i.push({type:"tool_result",tool_use_id:c.id,content:`no handler for tool "${c.name}"`,is_error:true});continue}try{const b=await k(c.input);const E=typeof b==="string"?b:O(b)??"";i.push({type:"tool_result",tool_use_id:c.id,content:E})}catch(b){i.push({type:"tool_result",tool_use_id:c.id,content:String(b?.message??b??"tool handler failed"),is_error:true})}}a.push({role:"assistant",content:r},{role:"user",content:i})}throw new Error(`claude.complete: exceeded ${y} tool turns`)};window.claude={complete(e){const t=e;if(t!==null&&typeof t==="object"&&Array.isArray(t.tools)&&t.tools.some((a)=>a!==null&&typeof a==="object"&&typeof a.run==="function")){const a=new Map;for(const u of t.tools){if(u!==null&&typeof u==="object"&&typeof u.run==="function"){a.set(String(u.name),u.run)}}return m(t,a)}return h(e).then((a)=>a.text)}};const w={};let R=0;H=(e,t)=>new Promise((a)=>{if(!I.length){a({persisted:false,noHost:true,reason:U});return}const u=`f${++R}`;const s=setTimeout(()=>{delete w[u];a({persisted:false,noHost:true,reason:U})},G);w[u]={settle:a,t:s};try{for(const S of I){A.postMessage({__om_file:true,id:u,op:"write",path:e,content:t},S)}}catch{clearTimeout(s);delete w[u];a({persisted:false,noHost:true,reason:U})}});const O=(e)=>{try{return JSON.stringify(e)}catch{return JSON.stringify(String(e))}};window.addEventListener("message",(e)=>{if(I.indexOf(e.origin)<0)return;if(e.source!==A)return;const t=e.data;if(!t)return;if(t.type==="omelette-preview-refresh"){if(typeof t.token!=="string"||!/^[0-9a-f.-]+(\.(rc|pr-[0-9]+))?(\.[0-9]+\.[0-9a-f]{16})?$/.test(t.token))return;const s=Math.max(1,Math.floor((t.expiresAt||0)-Date.now()/1000));document.cookie="__Host-omelette-preview="+t.token+"; Path=/; Secure; SameSite=None; Partitioned; Max-Age="+s;C();return}if(t.__om_file_r){const s=w[t.id];if(!s)return;clearTimeout(s.t);delete w[t.id];s.settle(t.ok?{persisted:true}:{persisted:false,reason:t.error||"write failed"});return}if(t.__om_api_r){const s=f[t.id];if(!s)return;if(t.error!=null){clearTimeout(s.t);delete f[t.id];s.reject(new Error(t.error));return}if(t.chunk!=null){clearTimeout(s.t);s.t=s.arm();s.text+=t.chunk;return}if(t.done){clearTimeout(s.t);delete f[t.id];s.resolve({text:t.text!=null?t.text:s.text,message:t.message});return}return}if(!t.__om_eval)return;const a=t;const u=(s)=>{e.source.postMessage({...s,__om_eval_r:1,id:a.id},e.origin)};try{const s=(0,eval)(a.code);if(s&&typeof s.then==="function"){s.then((S)=>u({ok:1,v:O(S)}),(S)=>u({ok:0,e:String(S)}))}else{u({ok:1,v:O(s)})}}catch(s){u({ok:0,e:String(s)})}})}})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:absolute;inset:0;min-height:0;display:flex;flex-direction:column;overflow:hidden;background:transparent;color:var(--text-primary)">
+
+<div style="flex:none;display:flex;flex-direction:column;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-bottom:1px solid var(--divider)">
+  <div style="min-height:56px;padding:4px;display:flex;align-items:center;gap:8px">
+    <sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}">
+      <button aria-label="Back" onClick="{{ toToday }}" style="width:48px;height:48px;flex:none;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">arrow_back</span></button>
+    </sc-if>
+    <sc-if value="{{ noBack }}" hint-placeholder-val="{{ true }}"><span style="width:8px;flex:none"></span></sc-if>
+    <sc-if value="{{ hasMark }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:var(--hw);font-size:13px;line-height:1">{{ brandMark }}</span></sc-if>
+    <sc-if value="{{ noMark }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">content_cut</span></span></sc-if>
+    <span style="flex:1;min-width:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h3);line-height:var(--lh-h3);color:var(--brand-ink)">{{ brandName }}</span>
+    <sc-if value="{{ isO1 }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ toAttn }}" aria-label="{{ attnAria }}" style="position:relative;min-width:56px;min-height:48px;padding:4px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">notification_important</span><sc-if value="{{ hasAttn }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="position:absolute;top:0;right:8px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--danger);color:var(--on-danger);font-family:var(--font-body);font-weight:600;font-size:11px;line-height:20px;text-align:center;font-variant-numeric:tabular-nums">{{ attnCount }}</span></sc-if><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.attnShort }}</span></button>
+      <button onClick="{{ toWalkIn }}" style="min-width:56px;min-height:48px;padding:4px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">add</span><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.walkIn }}</span></button>
+    </sc-if>
+  </div>
+  <sc-if value="{{ isO1 }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;align-items:center;gap:4px;padding:0 4px 4px">
+      <button aria-label="{{ s.prevDay }}" onClick="{{ prevDay }}" style="width:48px;height:48px;flex:none;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">chevron_left</span></button>
+      <span aria-live="polite" style="flex:1;text-align:center;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums">{{ dateLabel }}</span>
+      <button aria-label="{{ s.nextDay }}" onClick="{{ nextDay }}" style="width:48px;height:48px;flex:none;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">chevron_right</span></button>
+    </div>
+  </sc-if>
+</div>
+
+<sc-if value="{{ showOffline }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="flex:none;display:flex;align-items:flex-start;gap:8px;padding:8px 16px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-bottom:1px solid var(--divider)">
+    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:18px;width:18px;overflow:hidden;flex:none;color:var(--text-secondary)">cloud_off</span>
+    <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ offlineText }}</span>
+  </div>
+</sc-if>
+
+<div style="flex:1;min-height:0;overflow-y:auto;padding:0 16px 24px;display:flex;flex-direction:column">
+
+  <sc-if value="{{ isO1 }}" hint-placeholder-val="{{ true }}">
+    <sc-if value="{{ o1Rows }}" hint-placeholder-val="{{ true }}">
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="5">
+        <div style="flex:none;display:flex;flex-direction:column;gap:12px;padding:16px 0;border-bottom:1px solid var(--divider)">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="flex:none;min-width:64px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums">{{ r.time }}</span>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+              <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ r.name }}</span>
+              <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ r.svc }}</span>
+              <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ r.who }}</span>
+            </div>
+            <span style="flex:none;font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums">{{ r.price }}</span>
+          </div>
+          <sc-if value="{{ r.hasStatus }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center">
+              <span style="display:flex;gap:4px;align-items:flex-start;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;flex:none;margin-top:1px;color:{{ r.statusCol }}">{{ r.statusIcon }}</span>{{ r.status }}</span>
+              <sc-if value="{{ r.pending }}" hint-placeholder-val="{{ false }}">
+                <span style="display:flex;gap:4px;align-items:center;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:16px;line-height:1;width:16px;overflow:hidden">cloud_upload</span>{{ s.waitSync }}</span>
+              </sc-if>
+            </div>
+          </sc-if>
+          <sc-if value="{{ r.isBooked }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:8px">
+              <button onClick="{{ r.start }}" style="flex:1;min-height:56px;padding:16px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-active="opacity:0.88"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">play_arrow</span>{{ s.start }}</button>
+              <button aria-label="{{ s.cancelBooking }}" onClick="{{ r.cancel }}" style="width:56px;min-height:56px;flex:none;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">close</span></button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ r.isProg }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ r.complete }}" style="width:100%;min-height:56px;padding:16px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-active="opacity:0.88"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">check</span>{{ s.markComplete }}</button>
+          </sc-if>
+          <sc-if value="{{ r.needsPay }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ r.pay }}" style="width:100%;min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.takePayment }}</button>
+          </sc-if>
+        </div>
+      </sc-for>
+    </sc-if>
+    <sc-if value="{{ o1Empty }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px;padding-top:32px">
+        <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ emptyTitle }}</span>
+        <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.emptyBody }}</span>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{ isO2 }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:none;display:flex;flex-direction:column;gap:24px;padding-top:16px">
+      <h1 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">{{ s.addWalkIn }}</h1>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label for="wk-find" style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.customer }}</label>
+        <input id="wk-find" value="{{ findVal }}" onChange="{{ onFind }}" placeholder="{{ s.findPh }}" style="min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary);outline-color:var(--brand-ink)"></input>
+        <sc-for list="{{ matches }}" as="m" hint-placeholder-count="0">
+          <button role="radio" aria-checked="{{ m.checked }}" onClick="{{ m.pick }}" style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 12px;border-radius:var(--r);cursor:pointer;text-align:left;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);color:var(--text-primary);border:{{ m.border }}">
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ m.name }}</span><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary);font-variant-numeric:tabular-nums">{{ m.phone }}</span></span>
+            <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;color:var(--brand-ink)">{{ m.tick }}</span>
+          </button>
+        </sc-for>
+        <span style="padding-top:8px;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.orNew }}</span>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label for="wk-name" style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.nameK }}</label>
+          <input id="wk-name" value="{{ newName }}" onChange="{{ onNewName }}" style="min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary);outline-color:var(--brand-ink)"></input>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label for="wk-phone" style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.phoneOpt }}</label>
+          <div style="min-height:48px;display:flex;align-items:stretch;border:1px solid var(--border-strong);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);overflow:hidden">
+            <span style="display:flex;align-items:center;padding:0 12px;border-right:1px solid var(--glass-line);font-family:var(--font-body);font-size:var(--fs-body);color:var(--text-secondary)">+91</span>
+            <input id="wk-phone" type="tel" inputmode="numeric" value="{{ newPhone }}" onChange="{{ onNewPhone }}" style="flex:1;min-width:0;border:none;outline:none;background:transparent;padding:12px;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums;color:var(--text-primary)"></input>
+          </div>
+        </div>
+      </div>
+      <div role="radiogroup" aria-label="{{ s.service }}" style="display:flex;flex-direction:column">
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);padding-bottom:4px">{{ s.service }}</span>
+        <sc-for list="{{ wkSvcs }}" as="x" hint-placeholder-count="4">
+          <button role="radio" aria-checked="{{ x.checked }}" onClick="{{ x.pick }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 0;border:none;border-bottom:1px solid var(--divider);background:transparent;cursor:pointer;text-align:left;color:var(--text-primary)">
+            <span style="width:24px;height:24px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;border:{{ x.ring }}"><span style="width:12px;height:12px;border-radius:6px;background:{{ x.dot }}"></span></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ x.name }}</span><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ x.dur }}</span></span>
+            <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums">{{ x.price }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column">
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);padding-bottom:4px">{{ s.addons }}</span>
+        <sc-for list="{{ wkAddons }}" as="a" hint-placeholder-count="2">
+          <button role="checkbox" aria-checked="{{ a.checked }}" onClick="{{ a.toggle }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:4px 0;border:none;border-bottom:1px solid var(--divider);background:transparent;cursor:pointer;text-align:left;color:var(--text-primary)">
+            <span style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;margin-left:-12px"><span style="width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:{{ a.boxBg }};border:{{ a.boxBorder }};color:var(--on-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;font-weight:600">{{ a.tick }}</span></span></span>
+            <span style="flex:1;min-width:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ a.name }}</span>
+            <span style="display:flex;flex-direction:column;align-items:flex-end"><span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums">{{ a.price }}</span><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ a.mins }}</span></span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.stylist }}</span>
+        <div role="radiogroup" style="display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ wkStylists }}" as="c" hint-placeholder-count="3">
+            <button role="radio" aria-checked="{{ c.checked }}" onClick="{{ c.pick }}" style="min-height:48px;padding:8px 16px;border-radius:var(--r-chip);cursor:pointer;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;background:{{ c.bg }};color:{{ c.fg }};border:{{ c.border }}">{{ c.name }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.nextFree }}</span>
+        <div role="radiogroup" style="display:grid;gap:8px;grid-template-columns:{{ timeCols }}">
+          <sc-for list="{{ wkTimes }}" as="t" hint-placeholder-count="4">
+            <button role="radio" aria-checked="{{ t.checked }}" onClick="{{ t.pick }}" style="min-height:48px;padding:8px;border-radius:var(--r-chip);cursor:pointer;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums;background:{{ t.bg }};color:{{ t.fg }};border:{{ t.border }}">{{ t.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isO3 }}" hint-placeholder-val="{{ false }}">
+    <h1 style="flex:none;margin:16px 0 8px;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">{{ s.needsAttn }}</h1>
+    <sc-if value="{{ o3Has }}" hint-placeholder-val="{{ true }}">
+      <sc-for list="{{ attn }}" as="a" hint-placeholder-count="2">
+        <div style="flex:none;display:flex;flex-direction:column;gap:12px;padding:16px 0;border-bottom:1px solid var(--divider)">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:{{ a.col }}">{{ a.icon }}</span>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+              <span style="font-family:var(--font-body);font-weight:500;font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ a.kind }}</span>
+              <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums">{{ a.what }}</span>
+              <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ a.why }}</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;padding-left:36px">
+            <button onClick="{{ a.retry }}" style="flex:1 1 120px;min-height:48px;padding:12px 16px;border:none;border-radius:var(--r);background:var(--primary-container);color:var(--on-primary-container);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.tryAgain }}</button>
+            <button onClick="{{ a.discard }}" style="flex:1 1 120px;min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--text-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.discard }}</button>
+          </div>
+        </div>
+      </sc-for>
+    </sc-if>
+    <sc-if value="{{ o3Empty }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:none;display:flex;gap:8px;align-items:flex-start;padding-top:8px"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--success)">check_circle</span><span style="display:flex;flex-direction:column"><span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.nothingAttn }}</span><span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.nothingAttnBody }}</span></span></div>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+    <div aria-busy="true" aria-label="Loading" style="flex:none;display:flex;flex-direction:column;gap:0">
+      <sc-for list="{{ skel }}" as="k" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;gap:12px;padding:16px 0;border-bottom:1px solid var(--divider)">
+          <div style="display:flex;gap:12px"><span style="width:56px;height:20px;border-radius:4px;background:var(--surface-sunken)"></span><span style="flex:1;display:flex;flex-direction:column;gap:6px"><span style="width:60%;height:18px;border-radius:4px;background:var(--surface-sunken)"></span><span style="width:80%;height:16px;border-radius:4px;background:var(--surface-sunken)"></span></span><span style="width:48px;height:20px;border-radius:4px;background:var(--surface-sunken)"></span></div>
+          <span style="width:100%;height:56px;border-radius:var(--r);background:var(--surface-sunken)"></span>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:none;display:flex;flex-direction:column;gap:8px;padding-top:32px">
+      <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ errTitle }}</span>
+      <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.errBody }}</span>
+    </div>
+  </sc-if>
+</div>
+
+<sc-if value="{{ showFooter }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding:12px 16px;display:flex;flex-direction:column;gap:8px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider)">
+    <sc-if value="{{ footNote }}" hint-placeholder-val="{{ false }}">
+      <span style="display:flex;gap:8px;align-items:flex-start;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;flex:none;color:var(--text-secondary)">cloud_off</span>{{ s.willBook }}</span>
+    </sc-if>
+    <button onClick="{{ footAction }}" disabled="{{ footDisabled }}" style="width:100%;min-height:56px;padding:16px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;background:{{ footBg }};color:{{ footFg }}" style-active="opacity:0.88">{{ footLabel }}</button>
+  </div>
+</sc-if>
+
+<div style="flex:none;display:flex;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider);padding:8px 0 4px">
+  <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+    <button aria-current="{{ n.current }}" onClick="{{ n.pick }}" style="flex:1;min-width:0;min-height:56px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:0 2px">
+      <span style="width:56px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:{{ n.pill }};color:{{ n.ic }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;font-variation-settings:{{ n.fill }}">{{ n.icon }}</span></span>
+      <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);text-align:center;font-weight:{{ n.fw }};color:{{ n.fg }}">{{ n.label }}</span>
+    </button>
+  </sc-for>
+</div>
+
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:var(--overlay);transition:opacity 220ms cubic-bezier(0.2,0,0,1);opacity:{{ ovOp }};pointer-events:{{ ovPe }}"></div>
+<div role="dialog" aria-modal="true" aria-label="{{ sheetTitle }}" style="position:absolute;left:0;right:0;bottom:0;max-height:92%;overflow-y:auto;background:var(--glass-sheet);backdrop-filter:blur(30px) saturate(1.6);-webkit-backdrop-filter:blur(30px) saturate(1.6);box-shadow:0 -12px 40px rgba(90,30,45,0.18);border-top:1px solid var(--glass-line);border-radius:var(--r-sheet) var(--r-sheet) 0 0;padding:8px 16px 32px;display:flex;flex-direction:column;gap:12px;transform:{{ sheetT }};transition:{{ sheetTr }}">
+  <span style="flex:none;align-self:center;width:32px;height:4px;border-radius:2px;background:var(--border-strong)"></span>
+  <div style="flex:none;display:flex;align-items:flex-start;gap:8px">
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+      <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2);font-variant-numeric:tabular-nums">{{ sheetTitle }}</span>
+      <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);font-variant-numeric:tabular-nums">{{ sheetSub }}</span>
+    </div>
+    <button aria-label="Close" onClick="{{ closeSheet }}" style="width:48px;height:48px;margin:-8px -12px 0 0;border:none;background:transparent;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;color:var(--text-secondary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">close</span></button>
+  </div>
+
+  <sc-if value="{{ shStart }}" hint-placeholder-val="{{ false }}">
+    <sc-if value="{{ codeField }}" hint-placeholder-val="{{ true }}">
+      <label for="start-code" style="flex:none;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.askCode }}</label>
+      <div style="flex:none;position:relative;display:flex;gap:12px">
+        <sc-for list="{{ codeBoxes }}" as="d" hint-placeholder-count="4">
+          <span aria-hidden="true" style="flex:1;min-height:72px;display:flex;align-items:center;justify-content:center;border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font-family:var(--font-body);font-weight:600;font-size:var(--fs-mxl);line-height:var(--lh-mxl);font-variant-numeric:tabular-nums;border:{{ d.border }}">{{ d.v }}</span>
+        </sc-for>
+        <input id="start-code" type="text" inputmode="numeric" maxlength="4" autocomplete="off" value="{{ codeVal }}" onChange="{{ onCode }}" disabled="{{ codeLocked }}" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:none;font-size:16px"></input>
+      </div>
+    </sc-if>
+    <sc-if value="{{ startHasMsg }}" hint-placeholder-val="{{ false }}">
+      <span role="status" style="flex:none;display:flex;gap:8px;align-items:flex-start;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:{{ startMsgCol }}">{{ startMsgIcon }}</span>{{ startMsg }}</span>
+    </sc-if>
+    <sc-if value="{{ codeField }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ startWithCode }}" disabled="{{ startCodeDisabled }}" style="flex:none;width:100%;min-height:56px;padding:16px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;background:{{ scBg }};color:{{ scFg }};cursor:{{ scCursor }}">{{ s.startWithCode }}</button>
+    </sc-if>
+    <sc-if value="{{ canWithout }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ startWithout }}" style="flex:none;width:100%;min-height:56px;padding:16px;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;background:{{ swBg }};color:{{ swFg }};border:{{ swBorder }}">{{ s.startWithout }}</button>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{ shPay }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:none;display:flex;flex-direction:column;border-top:1px solid var(--divider)">
+      <sc-for list="{{ split }}" as="x" hint-placeholder-count="2">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--divider)">
+          <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ x.k }}</span>
+          <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums">{{ x.v }}</span>
+        </div>
+      </sc-for>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding:12px 0">
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.collect }}</span>
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-ml);line-height:var(--lh-ml);font-variant-numeric:tabular-nums">{{ collectStr }}</span>
+      </div>
+    </div>
+    <sc-if value="{{ payOffline }}" hint-placeholder-val="{{ false }}">
+      <span role="status" style="flex:none;display:flex;gap:8px;align-items:flex-start;padding:12px 16px;border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border:1px solid var(--border-strong);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">cloud_off</span>{{ s.payOff }}</span>
+    </sc-if>
+    <sc-if value="{{ hasWalletOpt }}" hint-placeholder-val="{{ false }}">
+      <button role="checkbox" aria-checked="{{ useWalletAttr }}" onClick="{{ toggleWallet }}" style="flex:none;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:4px 0;border:none;background:transparent;cursor:pointer;text-align:left;color:var(--text-primary)">
+        <span style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;margin-left:-12px"><span style="width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:{{ wBoxBg }};border:{{ wBoxBorder }};color:var(--on-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;font-weight:600">{{ wTick }}</span></span></span>
+        <span style="flex:1;min-width:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums">{{ walletOptLabel }}</span>
+      </button>
+    </sc-if>
+    <sc-if value="{{ needsMethod }}" hint-placeholder-val="{{ true }}">
+      <span style="flex:none;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.restBy }}</span>
+      <div role="radiogroup" style="flex:none;display:grid;gap:8px;grid-template-columns:{{ methodCols }}">
+        <sc-for list="{{ methods }}" as="m" hint-placeholder-count="3">
+          <button role="radio" aria-checked="{{ m.checked }}" onClick="{{ m.pick }}" style="min-height:56px;padding:8px;border-radius:var(--r);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);background:{{ m.bg }};color:{{ m.fg }};border:{{ m.border }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">{{ m.icon }}</span>{{ m.label }}</button>
+        </sc-for>
+      </div>
+    </sc-if>
+    <button onClick="{{ recordPay }}" disabled="{{ recordDisabled }}" style="flex:none;width:100%;min-height:56px;padding:16px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;background:{{ rpBg }};color:{{ rpFg }};cursor:{{ rpCursor }}">{{ s.record }}</button>
+  </sc-if>
+
+  <sc-if value="{{ shCancel }}" hint-placeholder-val="{{ false }}">
+    <p style="flex:none;margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.cancelBody }}</p>
+    <button onClick="{{ doCancel }}" style="flex:none;width:100%;min-height:48px;padding:12px 16px;border:1px solid var(--danger);border-radius:var(--r);background:transparent;color:var(--text-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;color:var(--danger)">event_busy</span>{{ s.yesCancel }}</button>
+    <button onClick="{{ closeSheet }}" style="flex:none;width:100%;min-height:56px;padding:16px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.keepBooking }}</button>
+  </sc-if>
+</div>
+
+<sc-if value="{{ hasSnack }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="position:absolute;left:16px;right:16px;bottom:96px;display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:var(--r-chip);background:var(--surface-sunken);border:1px solid var(--border-strong);box-shadow:0 8px 24px rgba(28,27,25,0.16)">
+    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:{{ snackCol }}">{{ snackIcon }}</span>
+    <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ snackText }}</span>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static STR = {
+    attnShort: ['Attention', 'ध्यान दें', 'Dhyaan dein'], walkIn: ['Walk-in', 'वॉक-इन', 'Walk-in'],
+    prevDay: ['Previous day', 'पिछला दिन', 'Pichhla din'], nextDay: ['Next day', 'अगला दिन', 'Agla din'],
+    today: ['Today', 'आज', 'Aaj'],
+    dow: ['Sun Mon Tue Wed Thu Fri Sat', 'रवि सोम मंगल बुध गुरु शुक्र शनि', 'Sun Mon Tue Wed Thu Fri Sat'],
+    mon: ['Sep Oct', 'सितंबर अक्टूबर', 'Sep Oct'],
+    start: ['Start', 'शुरू करें', 'Start karein'], cancelBooking: ['Cancel booking', 'बुकिंग रद्द करें', 'Booking cancel karein'],
+    markComplete: ['Mark complete', 'पूरा हुआ', 'Complete karein'], takePayment: ['Take payment', 'भुगतान लें', 'Payment lein'],
+    inProgress: ['In progress', 'चल रहा है', 'Chal raha hai'], done: ['Done', 'पूरा', 'Done'], paid: ['Paid', 'चुकाया', 'Paid'], partPaid: ['Part paid', 'कुछ चुकाया', 'Part paid'],
+    atCounter: ['Paying at the counter', 'काउंटर पर चुकाएँगे', 'Counter par pay karenge'], waitSync: ['Waiting to sync', 'सिंक होना बाकी', 'Sync baaki'],
+    walkInCustomer: ['Walk-in customer', 'वॉक-इन ग्राहक', 'Walk-in customer'],
+    withX: ['with {x}', '{x} के साथ', '{x} ke saath'], noApp: ['No app', 'ऐप नहीं', 'App nahi'],
+    haircut: ['Haircut', 'हेयरकट', 'Haircut'], beard: ['Beard trim', 'दाढ़ी ट्रिम', 'Beard trim'], massage: ['Head massage', 'सिर की मालिश', 'Head massage'], global: ['Global colour', 'पूरे बालों में कलर', 'Global colour'], facial: ['Facial', 'फ़ेशियल', 'Facial'], wash: ['Hair wash', 'बाल धुलाई', 'Hair wash'],
+    emptyToday: ['Nothing booked today.', 'आज कुछ बुक नहीं है।', 'Aaj kuch book nahi hai.'], emptyDay: ['Nothing booked on {d}.', '{d} को कुछ बुक नहीं है।', '{d} ko kuch book nahi hai.'],
+    emptyBody: ['Walk-ins you add show up here.', 'आपके जोड़े गए वॉक-इन यहाँ दिखेंगे।', 'Aapke add kiye walk-ins yahan dikhenge.'],
+    addWalkInBtn: ['Add a walk-in', 'वॉक-इन जोड़ें', 'Walk-in add karein'],
+    errToday: ["Couldn't load today's bookings.", 'आज की बुकिंग लोड नहीं हो पाईं।', 'Aaj ki bookings load nahi ho paayin.'], errBody: ['Check your internet and try again.', 'इंटरनेट देखें और फिर से कोशिश करें।', 'Internet check karke phir try karein.'],
+    tryAgain: ['Try again', 'फिर कोशिश करें', 'Phir try karein'], discard: ['Discard', 'हटाएँ', 'Hatayein'],
+    offline1: ['Offline · {n} waiting to sync', 'ऑफ़लाइन · {n} सिंक होना बाकी', 'Offline · {n} sync hona baaki'], change1: ['1 change', '1 बदलाव', '1 change'], changeN: ['{k} changes', '{k} बदलाव', '{k} changes'],
+    startTitle: ['Start', 'शुरू करें', 'Start karein'],
+    askCode: ['Ask the customer for the 4-digit code in their app.', 'ग्राहक से उनके ऐप का 4 अंकों का कोड पूछें।', 'Customer se unke app ka 4-digit code poochein.'],
+    startWithCode: ['Start with this code', 'इस कोड से शुरू करें', 'Is code se start karein'], startWithout: ['Start without the code', 'बिना कोड के शुरू करें', 'Bina code ke start karein'],
+    wrong: ['That is not their code. {k} tries left.', 'यह उनका कोड नहीं है। {k} कोशिशें बाकी हैं।', 'Yeh unka code nahi hai. {k} tries baaki hain.'],
+    wrong1: ['That is not their code. 1 try left.', 'यह उनका कोड नहीं है। 1 कोशिश बाकी है।', 'Yeh unka code nahi hai. 1 try baaki hai.'],
+    locked: ['Too many wrong tries, so this code is locked. Start without it - the owner will see why.', 'बहुत बार गलत कोड डला, इसलिए यह कोड लॉक हो गया। बिना कोड के शुरू करें - मालिक को वजह दिखेगी।', 'Bahut baar galat code dala, isliye yeh code lock ho gaya. Bina code ke start karein - owner ko wajah dikhegi.'],
+    startOff: ['No connection, so the code cannot be checked. You can start without it - the owner will see why.', 'इंटरनेट नहीं है, इसलिए कोड जाँचा नहीं जा सकता। बिना कोड के शुरू कर सकते हैं - मालिक को वजह दिखेगी।', 'Internet nahi hai, isliye code check nahi ho sakta. Bina code ke start kar sakte hain - owner ko wajah dikhegi.'],
+    startNoApp: ['This customer does not have the app, so there is no code. Start without one - the owner will see it was started this way.', 'इस ग्राहक के पास ऐप नहीं है, इसलिए कोई कोड नहीं है। बिना कोड के शुरू करें - मालिक को दिखेगा कि ऐसे शुरू हुआ।', 'Is customer ke paas app nahi hai, isliye koi code nahi hai. Bina code ke start karein - owner ko dikhega ki aise start hua.'],
+    started: ['Started · {x}', 'शुरू हुआ · {x}', 'Start hua · {x}'],
+    payTitle: ['Take payment · {x} · {a}', 'भुगतान लें · {x} · {a}', 'Payment lein · {x} · {a}'],
+    serverSplit: ['Worked out by the server', 'सर्वर ने हिसाब लगाया', 'Server ne hisaab lagaaya'],
+    alreadyApp: ['Already paid in the app', 'ऐप में पहले ही चुकाया', 'App mein pehle hi pay kiya'], fromWallet: ['From wallet', 'वॉलेट से', 'Wallet se'], collect: ['Collect', 'लेना है', 'Lena hai'],
+    useWallet: ['Use wallet balance ({a} available)', 'वॉलेट बैलेंस इस्तेमाल करें ({a} उपलब्ध)', 'Wallet balance use karein ({a} available)'],
+    restBy: ['The rest by', 'बाकी रकम', 'Baaki amount'], cash: ['Cash', 'नकद', 'Cash'], upi: ['UPI', 'UPI', 'UPI'], card: ['Card', 'कार्ड', 'Card'],
+    record: ['Record payment', 'भुगतान दर्ज करें', 'Payment record karein'],
+    payOff: ['No connection, so the wallet balance cannot be checked. Collect the full amount, or wait until you are online to use the wallet.', 'इंटरनेट नहीं है, इसलिए वॉलेट बैलेंस जाँचा नहीं जा सकता। पूरी रकम लें, या वॉलेट के लिए इंटरनेट आने तक रुकें।', 'Internet nahi hai, isliye wallet balance check nahi ho sakta. Poora amount lein, ya wallet ke liye internet aane tak rukein.'],
+    recordedOff: ['Payment recorded. It will show as paid once it reaches the server.', 'भुगतान दर्ज हो गया। सर्वर तक पहुँचते ही चुकाया हुआ दिखेगा।', 'Payment record ho gaya. Server tak pahunchte hi paid dikhega.'],
+    recorded: ['Payment recorded · {x}', 'भुगतान दर्ज · {x}', 'Payment record · {x}'],
+    cancelTitle: ['Cancel this booking?', 'यह बुकिंग रद्द करनी है?', 'Yeh booking cancel karni hai?'],
+    cancelBody: ['The customer gets a message that their booking is cancelled. This cannot be undone here.', 'ग्राहक को मैसेज जाएगा कि बुकिंग रद्द हो गई। इसे यहाँ से वापस नहीं किया जा सकता।', 'Customer ko message jaayega ki booking cancel ho gayi. Ise yahan se wapas nahi kiya ja sakta.'],
+    yesCancel: ['Yes, cancel booking', 'हाँ, बुकिंग रद्द करें', 'Haan, booking cancel karein'], keepBooking: ['Keep booking', 'बुकिंग रखें', 'Booking rakhein'],
+    cancelledSnack: ['Booking cancelled · {x}', 'बुकिंग रद्द · {x}', 'Booking cancel · {x}'],
+    addWalkIn: ['Add walk-in', 'वॉक-इन जोड़ें', 'Walk-in add karein'], customer: ['Customer', 'ग्राहक', 'Customer'],
+    findPh: ['Name, or the whole phone number', 'नाम, या पूरा फ़ोन नंबर', 'Naam, ya poora phone number'],
+    orNew: ['Or add a new customer', 'या नया ग्राहक जोड़ें', 'Ya naya customer add karein'], nameK: ['Name', 'नाम', 'Naam'], phoneOpt: ['Phone (optional)', 'फ़ोन (ज़रूरी नहीं)', 'Phone (zaroori nahi)'],
+    service: ['Service', 'सर्विस', 'Service'], addons: ['Add-ons', 'ऐड-ऑन', 'Add-ons'], stylist: ['Stylist', 'स्टाइलिस्ट', 'Stylist'], anyone: ['Anyone', 'कोई भी', 'Koi bhi'],
+    nextFree: ['Next free times', 'अगले खाली समय', 'Agle khaali time'], now: ['Now', 'अभी', 'Abhi'],
+    min: ['{m} min', '{m} मिनट', '{m} min'], plusMin: ['+{m} min', '+{m} मिनट', '+{m} min'],
+    bookWalkIn: ['Book walk-in', 'वॉक-इन बुक करें', 'Walk-in book karein'], willBook: ['Will book when you are online.', 'इंटरनेट आने पर बुक होगा।', 'Internet aane par book hoga.'],
+    walkBooked: ['Walk-in booked · {x}', 'वॉक-इन बुक · {x}', 'Walk-in book · {x}'],
+    needsAttn: ['Needs attention', 'ध्यान दें', 'Dhyaan dein'],
+    kWarn: ['The server refused this', 'सर्वर ने यह नहीं लिया', 'Server ne yeh nahi liya'], kDanger: ['Needs a decision', 'फ़ैसला करना होगा', 'Faisla karna hoga'],
+    a1What: ['Mark complete · Sunita · 9:30 AM', 'पूरा हुआ · सुनीता · 9:30 AM', 'Mark complete · Sunita · 9:30 AM'], a1Why: ['That appointment was already finished or cancelled.', 'यह अपॉइंटमेंट पहले ही पूरा या रद्द हो चुका था।', 'Yeh appointment pehle hi complete ya cancel ho chuka tha.'],
+    a2What: ['Take payment · Vikram · ₹450', 'भुगतान लें · विक्रम · ₹450', 'Payment lein · Vikram · ₹450'], a2Why: ['This booking was cancelled from another phone, so the payment was not recorded.', 'यह बुकिंग किसी दूसरे फ़ोन से रद्द हुई थी, इसलिए भुगतान दर्ज नहीं हुआ।', 'Yeh booking kisi doosre phone se cancel hui thi, isliye payment record nahi hua.'],
+    nothingAttn: ['Nothing needs attention.', 'किसी चीज़ पर ध्यान देने की ज़रूरत नहीं।', 'Kisi cheez par dhyaan dene ki zaroorat nahi.'], nothingAttnBody: ['Anything the server refuses shows up here, with the reason.', 'सर्वर जो भी नहीं लेगा, वह वजह के साथ यहाँ दिखेगा।', 'Server jo bhi nahi lega, woh wajah ke saath yahan dikhega.'],
+    retried: ['Sent again.', 'फिर से भेजा गया।', 'Phir se bheja.'], errAttn: ["Couldn't load this list.", 'यह सूची लोड नहीं हो पाई।', 'Yeh list load nahi ho paayi.'],
+    navToday: ['Today', 'आज', 'Aaj'], navCustomers: ['Customers', 'ग्राहक', 'Customers'], navDash: ['Dashboard', 'डैशबोर्ड', 'Dashboard'], navMore: ['More', 'और', 'Aur'],
+  };
+  static ROWS = () => [
+    { id: 'a', time: '10:00', name: 'Ravi K.', svc: ['haircut'], who: 'Suresh', price: 600, st: 'paid', app: true, paidApp: 0, wallet: 0 },
+    { id: 'b', time: '10:30', name: 'Meena S.', svc: ['haircut', 'beard'], who: 'Priya', price: 1000, st: 'part', app: true, paidApp: 550, wallet: 300 },
+    { id: 'c', time: '11:15', name: null, svc: ['beard'], who: 'Suresh', price: 300, st: 'done', app: false, paidApp: 0, wallet: 0, pending: true },
+    { id: 'd', time: '12:00', name: 'Karan P.', svc: ['haircut', 'massage'], who: 'Priya', price: 750, st: 'counter', app: true, paidApp: 0, wallet: 200 },
+    { id: 'e', time: '13:30', name: 'Rohit V.', svc: ['global'], who: 'Priya', price: 2500, st: 'prog', app: true, paidApp: 0, wallet: 0 },
+    { id: 'f', time: '16:30', name: 'Asha Rao', svc: ['haircut', 'beard'], who: 'Suresh', price: 1000, st: 'booked', app: true, paidApp: 0, wallet: 1250 },
+    { id: 'g', time: '18:00', name: 'Nikhil J.', svc: ['haircut'], who: 'Suresh', price: 600, st: 'booked', app: false, paidApp: 0, wallet: 0 },
+  ];
+
+  state = { rows: Component.ROWS(), day: 0, sheet: null, target: null, code: '', tries: 3, forceMsg: null, useWallet: false, method: null, snack: null, attn: ['a1', 'a2'], find: '', pick: null, newName: '', newPhone: '', wkSvc: null, wkAddons: {}, wkSty: 0, wkTime: null };
+
+  componentDidMount() { this.sync(); }
+  componentDidUpdate(pp) { if (pp.screen !== this.props.screen || pp.variant !== this.props.variant) this.sync(); }
+  componentWillUnmount() { clearTimeout(this._s); }
+  sync() {
+    const { screen, variant } = this.props;
+    const p = { sheet: null, code: '', tries: 3, forceMsg: null, useWallet: false, method: null };
+    if (screen === 'O1') {
+      const v = variant || 'day';
+      if (['start', 'wrong', 'locked', 'startOffline'].includes(v)) { p.sheet = 'start'; p.target = 'f'; if (v === 'wrong') { p.code = ''; p.tries = 2; p.forceMsg = 'wrong'; } if (v === 'locked') { p.tries = 0; } if (v === 'startOffline') p.forceMsg = 'offline'; }
+      if (v === 'noapp') { p.sheet = 'start'; p.target = 'g'; }
+      if (['pay', 'payOffline'].includes(v)) { p.sheet = 'pay'; p.target = 'b'; if (v === 'payOffline') p.forceMsg = 'offline'; }
+      if (v === 'payWallet') { p.sheet = 'pay'; p.target = 'd'; }
+    }
+    if (screen === 'O2') Object.assign(p, { find: '', pick: null, newName: '', newPhone: '', wkSvc: null, wkAddons: {}, wkSty: 0, wkTime: null });
+    this.setState(p);
+  }
+  go(c, v) { this.props.go && this.props.go(c, v); }
+  snack(text, icon, col) { clearTimeout(this._s); this.setState({ snack: { text, icon: icon || 'check_circle', col: col || 'var(--success)' } }); this._s = setTimeout(() => this.setState({ snack: null }), 4000); }
+  fmt(n) { let x = String(Math.abs(n)); if (x.length > 3) { const last = x.slice(-3); x = x.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',' + last; } return (n < 0 ? '−₹' : '₹') + x; }
+  t12(hm) { const [h, m] = hm.split(':').map(Number); return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`; }
+  upd(id, patch) { this.setState(x => ({ rows: x.rows.map(r => (r.id === id ? { ...r, ...patch } : r)) })); }
+
+  renderVals() {
+    const P = this.props, S = this.state, C = this.constructor;
+    const screen = P.screen || 'O1', v = P.variant || 'day', st = P.st || 'content';
+    const li = { en: 0, hi: 1, hl: 2 }[P.lang] ?? 0, ts = Number(P.ts) || 1;
+    const name = P.brandName || 'Your salon';
+    const s = {}; for (const k in C.STR) s[k] = C.STR[k][li].split('{s}').join(name);
+    const R = (k, o) => { let t = s[k]; for (const x in o) t = t.split('{' + x + '}').join(o[x]); return t; };
+    const off = st === 'offline', err = st === 'error', load = st === 'loading', empty = st === 'empty';
+    const filled = (on) => ({ bg: on ? 'var(--primary)' : 'var(--surface-sunken)', fg: on ? 'var(--on-primary)' : 'var(--text-muted)', cursor: on ? 'pointer' : 'not-allowed' });
+    const dows = s.dow.split(' '), mons = s.mon.split(' ');
+    const d = new Date(2026, 8, 29 + S.day);
+    const dStr = `${dows[d.getDay()]} ${d.getDate()} ${mons[d.getMonth() === 8 ? 0 : 1]}`;
+    const dateLabel = S.day === 0 ? `${s.today} · ${dStr}` : dStr;
+
+    const rowsData = (S.day === 0 && !empty) ? S.rows.filter(r => r.st !== 'cancelled') : [];
+    const nm = (r) => r.name || s.walkInCustomer;
+    const rows = rowsData.map(r => {
+      const due = r.price - r.paidApp;
+      let status = '', statusIcon = '', statusCol = '';
+      if (r.st === 'prog') { status = s.inProgress; statusIcon = 'content_cut'; statusCol = 'var(--info)'; }
+      if (r.st === 'done') { status = s.done; statusIcon = 'check_circle'; statusCol = 'var(--success)'; }
+      if (r.st === 'counter') { status = `${s.done} · ${s.atCounter}`; statusIcon = 'check_circle'; statusCol = 'var(--success)'; }
+      if (r.st === 'paid') { status = `${s.done} · ${s.paid}`; statusIcon = 'check_circle'; statusCol = 'var(--success)'; }
+      if (r.st === 'part') { status = `${s.done} · ${s.partPaid}`; statusIcon = 'check_circle'; statusCol = 'var(--success)'; }
+      return {
+        time: this.t12(r.time), name: nm(r), svc: r.svc.map(k => s[k]).join(' + '), who: R('withX', { x: r.who }) + (r.app ? '' : ' · ' + s.noApp), price: this.fmt(r.price),
+        hasStatus: !!status, status, statusIcon, statusCol, pending: !!r.pending,
+        isBooked: r.st === 'booked', isProg: r.st === 'prog', needsPay: ['done', 'counter', 'part'].includes(r.st),
+        start: () => this.setState({ sheet: 'start', target: r.id, code: '', tries: 3, forceMsg: null }),
+        cancel: () => this.setState({ sheet: 'cancel', target: r.id }),
+        complete: () => this.upd(r.id, { st: 'done', pending: off || r.pending }),
+        pay: () => this.setState({ sheet: 'pay', target: r.id, useWallet: false, method: null, forceMsg: null }),
+      };
+    });
+    const pendingCount = S.rows.filter(r => r.pending).length;
+    const offlineText = R('offline1', { n: pendingCount === 1 ? s.change1 : R('changeN', { k: pendingCount }) });
+
+    // start sheet
+    const T = S.rows.find(r => r.id === S.target) || S.rows[5];
+    const noApp = !T.app;
+    const isOff = off || S.forceMsg === 'offline';
+    const lockedNow = S.tries <= 0;
+    const codeField = !noApp && !isOff && !lockedNow;
+    let startMsg = '', startMsgIcon = '', startMsgCol = '';
+    if (noApp) { startMsg = s.startNoApp; startMsgIcon = 'phone_disabled'; startMsgCol = 'var(--info)'; }
+    else if (isOff) { startMsg = s.startOff; startMsgIcon = 'cloud_off'; startMsgCol = 'var(--text-secondary)'; }
+    else if (lockedNow) { startMsg = s.locked; startMsgIcon = 'lock'; startMsgCol = 'var(--warning)'; }
+    else if (S.forceMsg === 'wrong') { startMsg = S.tries === 1 ? s.wrong1 : R('wrong', { k: S.tries }); startMsgIcon = 'error'; startMsgCol = 'var(--danger)'; }
+    const codeBoxes = [0, 1, 2, 3].map(i => ({ v: S.code[i] || '', border: S.forceMsg === 'wrong' ? '2px solid var(--danger)' : i === Math.min(S.code.length, 3) ? '2px solid var(--brand-ink)' : '1px solid var(--border-strong)' }));
+    const scOk = S.code.length === 4;
+    const scb = filled(scOk);
+    const doStart = (how) => { this.upd(T.id, { st: 'prog', pending: off, startedHow: how }); this.setState({ sheet: null }); this.snack(R('started', { x: nm(T) })); };
+    const withoutPrimary = noApp || isOff || lockedNow;
+
+    // pay sheet
+    const payOffline = off || S.forceMsg === 'offline';
+    const due = T.price - T.paidApp;
+    const walletUse = !payOffline && S.useWallet ? Math.min(T.wallet, due) : 0;
+    const collect = due - walletUse;
+    const split = [{ k: s.alreadyApp, v: this.fmt(T.paidApp) }, { k: s.fromWallet, v: this.fmt(walletUse) }];
+    const methods = [['cash', s.cash, 'payments'], ['upi', s.upi, 'qr_code_2'], ['card', s.card, 'credit_card']].map(([k, label, icon]) => { const on = S.method === k; return { label, icon, checked: on ? 'true' : 'false', bg: on ? 'var(--primary)' : 'var(--surface-alt)', fg: on ? 'var(--on-primary)' : 'var(--text-primary)', border: on ? '2px solid var(--primary)' : '1px solid var(--border-strong)', pick: () => this.setState({ method: k }) }; });
+    const needsMethod = collect > 0;
+    const rpOk = !needsMethod || !!S.method;
+    const rpb = filled(rpOk);
+    const recordPay = () => { if (!rpOk) return; this.upd(T.id, { st: 'paid', pending: payOffline }); this.setState({ sheet: null }); if (payOffline) this.snack(s.recordedOff, 'cloud_upload', 'var(--text-secondary)'); else this.snack(R('recorded', { x: nm(T) })); };
+
+    // walk-in
+    const SV = [['haircut', 45, 600], ['beard', 20, 300], ['wash', 30, 400], ['facial', 60, 1500]];
+    const AD = [['massage', 150, 15], ['wash', 100, 10]];
+    const people = [['Asha Rao', '98765 04821'], ['Ashok M.', '98450 11223'], ['Meena S.', '99001 45678']];
+    const q = S.find.trim().toLowerCase();
+    const matches = q.length >= 2 ? people.filter(([n2, ph]) => n2.toLowerCase().includes(q) || ph.replace(/\s/g, '') === q.replace(/\s/g, '')).map(([n2, ph]) => { const on = S.pick === n2; return { name: n2, phone: '+91 ' + ph.slice(0, 2) + 'xxx x' + ph.slice(-4), checked: on ? 'true' : 'false', tick: on ? 'check_circle' : '', border: on ? '2px solid var(--primary)' : '1px solid var(--border)', pick: () => this.setState({ pick: on ? null : n2 }) }; }) : [];
+    const wkSvcs = SV.map(([k, m, p]) => { const on = S.wkSvc === k; return { name: s[k], dur: R('min', { m }), price: this.fmt(p), checked: on ? 'true' : 'false', ring: on ? '2px solid var(--primary)' : '2px solid var(--border-strong)', dot: on ? 'var(--primary)' : 'transparent', pick: () => this.setState({ wkSvc: k }) }; });
+    const wkAddons = AD.filter(a => a[0] !== S.wkSvc).map(([k, p, m]) => { const on = !!S.wkAddons[k]; return { name: s[k], price: '+' + this.fmt(p), mins: R('plusMin', { m }), checked: on ? 'true' : 'false', tick: on ? 'check' : '', boxBg: on ? 'var(--primary)' : 'transparent', boxBorder: on ? '2px solid var(--primary)' : '2px solid var(--border-strong)', toggle: () => this.setState(x => ({ wkAddons: { ...x.wkAddons, [k]: !x.wkAddons[k] } })) }; });
+    const wkStylists = [s.anyone, 'Suresh', 'Priya'].map((n2, i) => { const on = S.wkSty === i; return { name: n2, checked: on ? 'true' : 'false', bg: on ? 'var(--primary)' : 'var(--surface-alt)', fg: on ? 'var(--on-primary)' : 'var(--text-primary)', border: on ? '1px solid var(--primary)' : '1px solid var(--border-strong)', pick: () => this.setState({ wkSty: i }) }; });
+    const wkTimes = [['now', `${s.now} · 10:45 AM`], ['11:30', '11:30 AM'], ['14:30', '2:30 PM'], ['15:00', '3:00 PM']].map(([k, label]) => { const on = S.wkTime === k; return { label, checked: on ? 'true' : 'false', bg: on ? 'var(--primary)' : 'var(--surface-alt)', fg: on ? 'var(--on-primary)' : 'var(--text-primary)', border: on ? '1px solid var(--primary)' : '1px solid var(--border-strong)', pick: () => this.setState({ wkTime: k }) }; });
+    const wkOk = (S.pick || S.newName.trim()) && S.wkSvc && S.wkTime;
+    const bookWalk = () => {
+      if (!wkOk) return;
+      const custName = S.pick || S.newName.trim();
+      const time = S.wkTime === 'now' ? '10:45' : S.wkTime;
+      const row = { id: 'w' + Date.now(), time, name: custName, svc: [S.wkSvc, ...Object.keys(S.wkAddons).filter(k => S.wkAddons[k])], who: ['Suresh', 'Suresh', 'Priya'][S.wkSty], price: SV.find(x => x[0] === S.wkSvc)[2] + AD.filter(a => S.wkAddons[a[0]]).reduce((t, a) => t + a[1], 0), st: 'booked', app: !!S.pick, paidApp: 0, wallet: 0, pending: off };
+      this.setState(x => ({ rows: [...x.rows, row].sort((a, b) => (a.time < b.time ? -1 : 1)) }));
+      this.snack(R('walkBooked', { x: custName }), off ? 'cloud_upload' : 'check_circle', off ? 'var(--text-secondary)' : 'var(--success)');
+      this.go('O1');
+    };
+
+    // attention
+    const A = { a1: { icon: 'warning', col: 'var(--warning)', kind: s.kWarn, what: s.a1What, why: s.a1Why }, a2: { icon: 'report', col: 'var(--danger)', kind: s.kDanger, what: s.a2What, why: s.a2Why } };
+    const attnIds = empty ? [] : S.attn;
+    const attn = attnIds.map(id => ({ ...A[id], retry: () => { this.setState(x => ({ attn: x.attn.filter(y => y !== id) })); this.snack(s.retried); }, discard: () => this.setState(x => ({ attn: x.attn.filter(y => y !== id) })) }));
+
+    // footer
+    let showFooter = false, footLabel = '', footAction = () => {}, footOk = true, footNote = false;
+    if (err) { showFooter = true; footLabel = s.tryAgain; footAction = () => P.setSt && P.setSt('content'); }
+    else if (screen === 'O1' && !load && rows.length === 0) { showFooter = true; footLabel = s.addWalkInBtn; footAction = () => this.go('O2'); }
+    else if (screen === 'O2' && !load) { showFooter = true; footLabel = s.bookWalkIn; footOk = !!wkOk; footAction = bookWalk; footNote = off; }
+    const fb = filled(footOk);
+    const sheet = S.sheet;
+    const nav = [['today', s.navToday, 'O1'], ['group', s.navCustomers, 'O4'], ['monitoring', s.navDash, 'O6'], ['more_horiz', s.navMore, 'OM']].map(([icon, label, code], i) => { const on = i === 0; return { icon, label, current: on ? 'page' : 'false', pill: on ? 'var(--primary-container)' : 'transparent', ic: on ? 'var(--on-primary-container)' : 'var(--text-secondary)', fg: on ? 'var(--text-primary)' : 'var(--text-secondary)', fw: on ? 600 : 400, fill: on ? "'FILL' 1" : "'FILL' 0", pick: () => this.go(code) }; });
+
+    return {
+      s, brandName: name, brandMark: P.brandMark || '', hasMark: !!P.brandMark, noMark: !P.brandMark,
+      isO1: screen === 'O1', isO2: screen === 'O2', isO3: screen === 'O3', hasBack: screen !== 'O1', noBack: screen === 'O1',
+      toToday: () => this.go('O1'), toAttn: () => this.go('O3'), toWalkIn: () => this.go('O2'),
+      hasAttn: S.attn.length > 0, attnCount: S.attn.length, attnAria: `${s.needsAttn}: ${S.attn.length}`,
+      dateLabel, prevDay: () => this.setState({ day: Math.max(-7, S.day - 1) }), nextDay: () => this.setState({ day: Math.min(14, S.day + 1) }),
+      showOffline: off, offlineText,
+      o1Rows: !load && !err && rows.length > 0, o1Empty: !load && !err && rows.length === 0, rows,
+      emptyTitle: S.day === 0 ? s.emptyToday : R('emptyDay', { d: dStr }),
+      loading: load, error: err, errTitle: screen === 'O3' ? s.errAttn : s.errToday, skel: [1, 2, 3, 4],
+      findVal: S.find, onFind: (e) => this.setState({ find: e.target.value }), matches,
+      newName: S.newName, onNewName: (e) => this.setState({ newName: e.target.value, pick: null }),
+      newPhone: S.newPhone, onNewPhone: (e) => this.setState({ newPhone: String(e.target.value).replace(/\D/g, '').slice(0, 10) }),
+      wkSvcs, wkAddons, wkStylists, wkTimes, timeCols: ts > 1 ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))',
+      o3Has: !load && !err && attn.length > 0, o3Empty: !load && !err && attn.length === 0, attn,
+      showFooter, footLabel, footAction, footDisabled: !footOk, footBg: fb.bg, footFg: fb.fg, footNote,
+      nav,
+      ovOp: sheet ? 1 : 0, ovPe: sheet ? 'auto' : 'none', sheetT: sheet ? 'translateY(0)' : 'translateY(105%)',
+      sheetTr: sheet ? 'transform 220ms cubic-bezier(0.2,0,0,1)' : 'transform 176ms cubic-bezier(0.3,0,1,1)',
+      closeSheet: () => this.setState({ sheet: null }),
+      sheetTitle: sheet === 'start' ? s.startTitle : sheet === 'pay' ? R('payTitle', { x: nm(T), a: this.fmt(T.price) }) : sheet === 'cancel' ? s.cancelTitle : '',
+      sheetSub: sheet === 'start' || sheet === 'cancel' ? `${nm(T)} · ${this.t12(T.time)} · ${T.svc.map(k => s[k]).join(' + ')}` : sheet === 'pay' ? s.serverSplit : '',
+      shStart: sheet === 'start', shPay: sheet === 'pay', shCancel: sheet === 'cancel',
+      codeField, codeBoxes, codeVal: S.code, codeLocked: lockedNow,
+      onCode: (e) => this.setState({ code: String(e.target.value || '').replace(/\D/g, '').slice(0, 4), forceMsg: S.forceMsg === 'wrong' ? null : S.forceMsg }),
+      startHasMsg: !!startMsg, startMsg, startMsgIcon, startMsgCol,
+      startCodeDisabled: !scOk, scBg: scb.bg, scFg: scb.fg, scCursor: scb.cursor,
+      startWithCode: () => { if (!scOk) return; if (S.code === '4821' || T.id !== 'f') doStart('code'); else { const t = S.tries - 1; this.setState({ tries: t, code: '', forceMsg: t > 0 ? 'wrong' : null }); } },
+      canWithout: withoutPrimary, startWithout: () => doStart(noApp ? 'noapp' : isOff ? 'offline' : 'locked'),
+      swBg: 'var(--primary)', swFg: 'var(--on-primary)', swBorder: 'none',
+      split, collectStr: this.fmt(collect), payOffline,
+      hasWalletOpt: !payOffline && T.wallet > 0 && due > 0, useWalletAttr: S.useWallet ? 'true' : 'false', toggleWallet: () => this.setState({ useWallet: !S.useWallet, method: null }),
+      wBoxBg: S.useWallet ? 'var(--primary)' : 'transparent', wBoxBorder: S.useWallet ? '2px solid var(--primary)' : '2px solid var(--border-strong)', wTick: S.useWallet ? 'check' : '',
+      walletOptLabel: R('useWallet', { a: this.fmt(T.wallet) }),
+      needsMethod, methods, methodCols: ts > 1 ? 'minmax(0,1fr)' : 'repeat(3,minmax(0,1fr))',
+      recordPay, recordDisabled: !rpOk, rpBg: rpb.bg, rpFg: rpb.fg, rpCursor: rpb.cursor,
+      doCancel: () => { this.upd(T.id, { st: 'cancelled' }); this.setState({ sheet: null }); this.snack(R('cancelledSnack', { x: nm(T) }), 'event_busy', 'var(--text-secondary)'); },
+      hasSnack: !!S.snack, snackText: S.snack ? S.snack.text : '', snackIcon: S.snack ? S.snack.icon : '', snackCol: S.snack ? S.snack.col : '',
+    };
+  }
+}
+</script>
+</body>
+</html>

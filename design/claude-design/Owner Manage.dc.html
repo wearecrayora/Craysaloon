@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{{const n=new URLSearchParams(location.search).get("theme");if(n==="light"||n==="dark"){document.documentElement.dataset.theme=n}}{if(new URLSearchParams(location.search).get("_omthumb")==="1"){const n=(f)=>{const g=f.focus;if(!g)return;f.focus=function(h){g.call(this,{...h,preventScroll:true})}};n(HTMLElement.prototype);n(SVGElement.prototype);if(typeof MathMLElement!=="undefined"){n(MathMLElement.prototype)}const d=(f)=>{f.removeAttribute("autofocus");f.inert=true;if(!(f instanceof HTMLElement))f.removeAttribute("tabindex")};const p=(f)=>{if(f.hasAttribute("autofocus"))d(f);for(const g of f.querySelectorAll("[autofocus]")){d(g)}};p(document.documentElement);new MutationObserver((f)=>{for(const g of f){for(const h of g.addedNodes){if(h.nodeType===1)p(h)}}}).observe(document,{childList:true,subtree:true})}}{const n=()=>{try{if(document.querySelector('meta[name="color-scheme"]'))return;const d=getComputedStyle(document.documentElement).getPropertyValue("color-scheme").trim();if(d&&d!=="normal")return;const p=(y)=>{if(!y)return null;const m=getComputedStyle(y).backgroundColor.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+%?))?\s*\)$/);if(!m)return null;const w=m[4]==null?1:parseFloat(m[4])/(m[4].endsWith("%")?100:1);if(w<0.99)return null;return[+m[1],+m[2],+m[3]]};const f=p(document.body)||p(document.documentElement);if(!f)return;const g=(y)=>{const m=y/255;return m<=0.04045?m/12.92:((m+0.055)/1.055)**2.4};const h=0.2126*g(f[0])+0.7152*g(f[1])+0.0722*g(f[2]);document.documentElement.style.setProperty("color-scheme",h<0.4?"dark":"light")}catch{}};if(document.readyState==="complete")n();else window.addEventListener("load",n)}var I=["https://claude.ai","https://preview.claude.ai","https://5f0bd573-2543-4d26-9b98-e594dd744d96.claudeusercontent.com"];var B=true;var K=false;var C=()=>{};if(K===true){try{const n=setTimeout.bind(window);const d=1e4;const p=15;const f=1e4;const g=120000;const h=200;const y=(o)=>{try{let r;if(typeof o==="string")r=o;else if(o instanceof URL)r=o.href;else if(typeof Request!=="undefined"&&o instanceof Request)r=o.url;else return null;if(!r)return null;const l=document.baseURI;const i=new URL(r,l);if(i.protocol!=="http:"&&i.protocol!=="https:")return null;if(i.origin!==new URL(l).origin)return null;return i.origin+i.pathname}catch{return null}};const m=new Map;const w=(o)=>{let r=m.get(o);if(!r){if(m.size>=h){const l=m.keys().next().value;if(l!==undefined)m.delete(l)}r={fails:[],until:0,cooldown:f,hard:false};m.set(o,r)}return r};const R=(o)=>{const r=m.get(o);return r!==undefined&&r.until>Date.now()};const O=(o,r)=>{const l=Date.now();const i=w(o);if(r)i.hard=true;if(i.until>l)return;i.fails.push(l);while(i.fails.length>0&&i.fails[0]<=l-d)i.fails.shift();if(i.fails.length>=p){i.until=l+i.cooldown;if(i.hard)i.cooldown=Math.min(i.cooldown*2,g);i.fails.length=0;try{n(()=>{try{S(true)}catch{}},i.until-l+100)}catch{}console.warn("[omelette] asset circuit breaker: pausing requests to "+o+" for "+Math.round((i.until-l)/1000)+"s after "+p+" failures in "+d/1000+"s")}};const e=(o)=>{m.delete(o)};const t=100;const a=new WeakMap;const u=new Set;let s=null;const S=(o)=>{for(const r of Array.from(u)){try{const l=a.get(r);if(l===undefined){u.delete(r);continue}if(o){const i=y(l);if(i!==null&&R(i))continue}a.delete(r);u.delete(r);if(s!==null)s.call(r,l)}catch{}}};C=()=>{try{m.clear();S(false)}catch{}};document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")C()});const _=window.fetch;if(typeof _==="function"){const o=function(...r){let l=null;try{l=y(r[0])}catch{}if(l!==null&&R(l)){let c;try{if(r[1]&&r[1].signal!==undefined){c=r[1].signal||undefined}else if(typeof Request!=="undefined"&&r[0]instanceof Request){c=r[0].signal||undefined}}catch{c=undefined}return new Promise((k,b)=>{const E=()=>{try{return c.reason!==undefined?c.reason:new DOMException("The operation was aborted.","AbortError")}catch{return new DOMException("The operation was aborted.","AbortError")}};try{if(c&&c.aborted){b(E());return}}catch{}let T=false;const j=()=>{if(T)return;T=true;b(E())};try{if(c)c.addEventListener("abort",j,{once:true})}catch{}n(()=>{if(T)return;T=true;try{if(c)c.removeEventListener("abort",j)}catch{}let L;try{L=new Response(null,{status:429,statusText:"Too Many Requests",headers:{"Retry-After":"10"}})}catch{L={ok:false,status:429}}k(L)},250)})}const i=_.apply(window,r);if(l!==null){const c=l;i.then((k)=>{try{if(k.ok)e(c);else if(k.status===401||k.status===403||k.status===404||k.status===429){O(c,k.status!==404)}}catch{}},()=>{})}return i};window.fetch=o}const v=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src");if(v!==undefined&&v.set!==undefined&&v.get!==undefined){const o=v.set;s=o;Object.defineProperty(HTMLImageElement.prototype,"src",{configurable:true,enumerable:v.enumerable,get:v.get,set(r){const l=`${r}`;try{const i=y(l);if(i!==null&&R(i)){a.set(this,l);if(u.size<t)u.add(this);return}}catch{}try{a.delete(this);u.delete(this)}catch{}o.call(this,l)}})}try{const o=HTMLImageElement.prototype.setAttribute;HTMLImageElement.prototype.setAttribute=function(r,l){if(arguments.length<2){o.apply(this,arguments);return}if(typeof r==="string"&&r.toLowerCase()==="src"){const i=`${l}`;try{const c=y(i);if(c!==null&&R(c)){a.set(this,i);if(u.size<t)u.add(this);return}a.delete(this);u.delete(this)}catch{}o.call(this,r,i);return}o.call(this,r,l)}}catch{}window.addEventListener("error",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)O(l,true)}}catch{}},true);window.addEventListener("load",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)e(l);const i=a.get(r);if(i!==undefined){let c=false;try{c=new URL(i,document.baseURI).href===new URL(r.currentSrc||r.src||"",document.baseURI).href}catch{c=false}if(c){a.delete(r);u.delete(r)}}}}catch{}},true)}catch{}}var J=30000;var G=3000;document.addEventListener("DOMContentLoaded",()=>{const n=window.Babel;const d="om-src-id";if(n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[d])){n.registerPlugin(d,({types:h})=>({visitor:{JSXOpeningElement(y,m){const w=y.node;if(w.name&&w.name.type==="JSXMemberExpression")return;for(let t=0;t<w.attributes.length;t++){const a=w.attributes[t];if(a.type==="JSXAttribute"&&a.name&&a.name.name==="data-om-id")return}const R=m.file&&m.file.opts&&m.file.opts.filename||"?";const O=w.loc&&w.loc.start;const e=`jsx:${R}:${w.start??0}:${O?O.line:0}:${O?O.column+1:0}`;w.attributes.push(h.jsxAttribute(h.jsxIdentifier("data-om-id"),h.stringLiteral(e)))}}}))}const p="om-text-extract";let f=false;if(B&&n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[p])){const h=window.React;if(h&&h.useSyncExternalStore&&h.createElement){f=true;const y={};const m=new Set;let w=0;window.__omTextO=y;window.__omTextSet=(e)=>{for(const t in e){const a=e[t];if(a==null)delete y[t];else y[t]=a}w++;m.forEach((t)=>t())};const R=(e)=>{m.add(e);return()=>m.delete(e)};const O=()=>w;window.__OmT=function e(t){h.useSyncExternalStore(R,O,O);return h.createElement("span",{"data-om-text":t.i,className:"__om-t"},t.i in y?y[t.i]:t.children)};n.registerPlugin(p,({types:e})=>{const t={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const a={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const u=(o,r)=>e.logicalExpression("??",e.memberExpression(e.logicalExpression("||",e.memberExpression(e.identifier("window"),e.identifier("__omTextO")),e.objectExpression([])),e.stringLiteral(o),true),r);const s=(o)=>o.file&&o.file.opts&&o.file.opts.filename||"?";const S=(o)=>o.file&&o.file.code||"";const _=(o,r)=>{const l=(c)=>c&&c.start!=null&&c.end!=null&&(c.type==="StringLiteral"||c.type==="TemplateLiteral"&&c.expressions.length===0)?[c.start,c.end]:null;const i=l(r);if(i)return i;if(r&&r.type==="Identifier"){const c=o.scope.getBinding(r.name);if(c&&c.constant&&c.path.node.type==="VariableDeclarator"){return l(c.path.node.init)}}return null};const v=(o,r,l)=>{const i=o.node;let c=false;const k=(E,T)=>{c=true;return e.jsxElement(e.jsxOpeningElement(e.jsxIdentifier("__OmT"),[e.jsxAttribute(e.jsxIdentifier("i"),e.stringLiteral(E))],false),e.jsxClosingElement(e.jsxIdentifier("__OmT")),[T],false)};const b=i.children.map((E)=>{if(E.type==="JSXText"){if(E.start==null||E.end==null)return E;const T=l.slice(E.start,E.end);const j=T.length-T.trimStart().length;const L=T.length-T.trimEnd().length;if(j+L>=T.length)return E;return k(`txt:${r}:${E.start+j}:${E.end-L}`,E)}if(E.type==="JSXExpressionContainer"){const T=_(o,E.expression);if(T)return k(`str:${r}:${T[0]}:${T[1]}`,E)}return E});if(c)i.children=b};return{visitor:{JSXOpeningElement(o,r){const l=o.node;const i=s(r);const c={};for(let k=0;k<l.attributes.length;k++){const b=l.attributes[k];if(b.type!=="JSXAttribute"||!b.name)continue;const E=b.name.name;if(!a[E])continue;if(!b.value||b.value.type!=="StringLiteral")continue;if(b.value.start==null||b.value.end==null)continue;const T=`txt:${i}:${b.value.start}:${b.value.end}`;c[E]=T;b.value=e.jsxExpressionContainer(u(T,e.stringLiteral(b.value.value)))}if(Object.keys(c).length){l.attributes.push(e.jsxAttribute(e.jsxIdentifier("data-om-text-attrs"),e.stringLiteral(JSON.stringify(c))))}},JSXElement(o,r){const l=o.node.openingElement;const i=l&&l.name&&l.name.name;if(i==="__OmT")return;if(typeof i==="string"&&t[i])return;v(o,s(r),S(r))},JSXFragment(o,r){v(o,s(r),S(r))}}}})}}const g=f?["transform-react-jsx-source",d,p]:["transform-react-jsx-source",d];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach((h,y)=>{const m=h.getAttribute("data-plugins")||"";const w=g.filter((R)=>m.indexOf(R)<0);if(w.length){h.setAttribute("data-plugins",m?`${m},${w.join(",")}`:w.join(","))}if(!h.hasAttribute("data-filename")){h.setAttribute("data-filename",h.getAttribute("src")||`inline-${y}`)}})});var A=window.parent;var U="not editable here — open the project in the Claude Design editor to save";var W=()=>Promise.resolve({persisted:false,noHost:true,reason:U});var H=W;var M="data/storage.json";var z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.match(/\/projects\/([^/]+)\/serve\//);if(d)return d[1];return n.hostname.split(".")[0]||""}catch{return location.hostname.split(".")[0]||""}};var Z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.indexOf("/serve/");if(d>=0)return n.origin+n.pathname.slice(0,d+"/serve/".length)+M}catch{}return"./"+M};var x=null;var N=()=>{if(!x){x=fetch(Z(),{cache:"no-store"}).then((n)=>{if(n.ok)return n.text();return n.status===404?"":null}).catch(()=>null).then((n)=>{if(n===null){x=null;return null}const d=new Map;if(!n)return d;let p;try{p=JSON.parse(n)}catch{console.warn("[omelette.storage] "+M+" is not valid JSON; treating the store as unreadable so a save cannot overwrite the "+"hand-edited bytes. Fix the JSON (or delete the file) to re-enable persistence.");x=null;return null}if(p===null||typeof p!=="object"||Array.isArray(p)){console.warn("[omelette.storage] "+M+" doesn't hold a JSON object; treating the store as unreadable so a save cannot "+"overwrite the hand-edited bytes. Make the top level a JSON object to re-enable persistence.");x=null;return null}const f=p;if("data"in f){const g=f.data;if(g===null||typeof g!=="object"||Array.isArray(g)){console.warn("[omelette.storage] "+M+' has a "data" field that is not a JSON object; treating the store as unreadable so a '+'save cannot overwrite the hand-edited bytes. Make "data" a JSON object to re-enable persistence.');x=null;return null}const h=f._meta;const y=h!==null&&typeof h==="object"?h.project:undefined;if(typeof y==="string"&&y!==""&&y!==z())return d;for(const m of Object.keys(g))d.set(m,g[m]);return d}for(const g of Object.keys(f)){if(g!=="_meta")d.set(g,f[g])}return d})}return x};var F=(n)=>H(M,JSON.stringify({_meta:{project:z(),version:1},data:Object.fromEntries(n)},null,2));var D=Promise.resolve();var $=(n)=>{const d=D.then(n);D=d.then(()=>{return},()=>{return});return d};var V=/sk-(?:ant-)?[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|xox[a-z]-[A-Za-z0-9][A-Za-z0-9-]{9,}|AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/;var Y=/password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|credential/i;var Q=(n,d,p)=>{if(V.test(d)||Y.test(n)&&typeof p==="string"&&p.length>=8){console.warn('[omelette.storage] the value for "'+n+'" looks like a credential. The storage file is a plaintext project file — visible to '+"everyone with project access and copied when the project is duplicated. Do not store secrets here.")}};var q={persisted:false,reason:"could not load the existing store — not overwriting it"};var X={persisted:false,reason:"stored value changed since a failed read — re-read this key before saving"};var P=new Set;var ee={get:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.get: key must be a string"))}return $(N).then((d)=>{if(d===null){P.add(n);return null}P.delete(n);if(!d.has(n))return null;const p=d.get(n);return p==null?null:JSON.parse(JSON.stringify(p))})},set:(n,d)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.set: key must be a string"))}let p;try{p=JSON.stringify(d)}catch(g){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable ("+String(g)+")"))}if(p===undefined){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable"))}Q(n,p,d);const f=JSON.parse(p);return $(()=>N().then((g)=>{if(g===null)return q;if(P.has(n)){if(g.has(n))return X;P.delete(n)}g.set(n,f);return F(g)}))},delete:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.delete: key must be a string"))}return $(()=>N().then((d)=>{if(d===null)return q;if(P.has(n)){if(d.has(n))return X;P.delete(n)}d.delete(n);return F(d)}))},keys:()=>$(N).then((n)=>n===null?[]:Array.from(n.keys()))};window.omelette={writeFile:(n,d)=>H(n,d).then((p)=>{if(!p.persisted&&!p.noHost){throw new Error(p.reason||"write failed")}}),storage:ee};if(A&&A!==window){const n=(e,t)=>{try{A.postMessage({__omelette_log:true,type:e,data:t},"*")}catch{}};["log","warn","error"].forEach((e)=>{const t=console[e];console[e]=(...a)=>{const u=a.map((s)=>{try{return typeof s==="object"?JSON.stringify(s):String(s)}catch{try{return String(s)}catch{return"[unstringifiable]"}}}).join(" ");n(e,u);t.apply(console,a)}});window.addEventListener("error",(e)=>{const t=e.target;if(t&&t!==window&&t.tagName){const a=t.src||t.href||"";n("resource_error",`${t.tagName} failed to load: ${a}`)}else{n("error",`${e.message||"Unknown error"} at ${e.filename||"?"}:${e.lineno||0}:${e.colno||0}`)}},true);window.addEventListener("unhandledrejection",(e)=>{const t=e.reason;const a=t instanceof Error?`${t.message} ${t.stack}`:String(t);n("error",`Unhandled rejection: ${a}`)});window.addEventListener("click",(e)=>{if(e.defaultPrevented||e.button!==0)return;if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const t=e.composedPath?e.composedPath():[];const a=["button","input","select","textarea","summary","label"];let u=null;for(const v of t){if(!(v instanceof Element))continue;if(v.localName==="a"){if(!(v instanceof HTMLAnchorElement))return;u=v;break}if(a.indexOf(v.localName)!==-1)return}if(!u)return;if(u.isContentEditable)return;const s=u.closest("[contenteditable]");if(s&&s.getAttribute("contenteditable")!=="false")return;const S=(u.getAttribute("target")||"_self").toLowerCase();if(S!=="_self"&&S!=="_top"&&S!=="_parent")return;let _;try{_=new URL(u.href)}catch{return}if(_.protocol!=="http:"&&_.protocol!=="https:")return;if(location.origin==="null")return;if(_.origin===location.origin)return;e.preventDefault();window.open(_.href,"_blank","noopener,noreferrer")});const d=()=>{try{A.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(window.ResizeObserver)new ResizeObserver(d).observe(document.documentElement);const p=()=>{d();if(!document.querySelector('script[type="text/babel"],script[type="text/jsx"]'))return;const e=()=>document.getElementById("root")||document.querySelector("body > div[id]");const t=e()?.firstElementChild??null;let a=0;const u=()=>{const s=e();if(s&&s.firstElementChild!==t||++a>30){d();return}setTimeout(u,100)};setTimeout(u,100)};if(document.readyState==="complete")p();else window.addEventListener("load",p);const f={};let g=0;const h=(e)=>new Promise((t,a)=>{if(!I.length){a(new Error("claude.complete: no parent origin"));return}const u=`c${++g}`;const s=()=>setTimeout(()=>{delete f[u];a(new Error(`claude.complete: no data for ${J/1000}s`))},J);const S=s();f[u]={resolve:t,reject:a,text:"",t:S,arm:s};try{for(const _ of I){A.postMessage({__om_api:true,id:u,body:e},_)}}catch(_){clearTimeout(S);delete f[u];a(_)}});const y=8;const m=async(e,t)=>{if(!Array.isArray(e.messages)){throw new Error("claude.complete: tools require a messages array")}const a=e.messages.slice();const u={...e,tools:e.tools.map((_)=>{if(_===null||typeof _!=="object")return _;const v={};for(const o of Object.keys(_)){if(typeof _[o]!=="function")v[o]=_[o]}return v})};const s=u.tool_choice;const S=s!=null&&(s.type==="any"||s.type==="tool")?{...u,tool_choice:s.disable_parallel_tool_use!==undefined?{type:"auto",disable_parallel_tool_use:s.disable_parallel_tool_use}:{type:"auto"}}:u;for(let _=0;_<y;_++){const v=await h({..._===0?u:S,messages:a});const o=v.message;const r=o&&Array.isArray(o.content)?o.content:null;const l=r?r.filter((c)=>c?.type==="tool_use"):[];if(o?.stop_reason!=="tool_use"||l.length===0){return v.text}const i=[];for(const c of l){const k=t.get(c.name);if(!k){i.push({type:"tool_result",tool_use_id:c.id,content:`no handler for tool "${c.name}"`,is_error:true});continue}try{const b=await k(c.input);const E=typeof b==="string"?b:O(b)??"";i.push({type:"tool_result",tool_use_id:c.id,content:E})}catch(b){i.push({type:"tool_result",tool_use_id:c.id,content:String(b?.message??b??"tool handler failed"),is_error:true})}}a.push({role:"assistant",content:r},{role:"user",content:i})}throw new Error(`claude.complete: exceeded ${y} tool turns`)};window.claude={complete(e){const t=e;if(t!==null&&typeof t==="object"&&Array.isArray(t.tools)&&t.tools.some((a)=>a!==null&&typeof a==="object"&&typeof a.run==="function")){const a=new Map;for(const u of t.tools){if(u!==null&&typeof u==="object"&&typeof u.run==="function"){a.set(String(u.name),u.run)}}return m(t,a)}return h(e).then((a)=>a.text)}};const w={};let R=0;H=(e,t)=>new Promise((a)=>{if(!I.length){a({persisted:false,noHost:true,reason:U});return}const u=`f${++R}`;const s=setTimeout(()=>{delete w[u];a({persisted:false,noHost:true,reason:U})},G);w[u]={settle:a,t:s};try{for(const S of I){A.postMessage({__om_file:true,id:u,op:"write",path:e,content:t},S)}}catch{clearTimeout(s);delete w[u];a({persisted:false,noHost:true,reason:U})}});const O=(e)=>{try{return JSON.stringify(e)}catch{return JSON.stringify(String(e))}};window.addEventListener("message",(e)=>{if(I.indexOf(e.origin)<0)return;if(e.source!==A)return;const t=e.data;if(!t)return;if(t.type==="omelette-preview-refresh"){if(typeof t.token!=="string"||!/^[0-9a-f.-]+(\.(rc|pr-[0-9]+))?(\.[0-9]+\.[0-9a-f]{16})?$/.test(t.token))return;const s=Math.max(1,Math.floor((t.expiresAt||0)-Date.now()/1000));document.cookie="__Host-omelette-preview="+t.token+"; Path=/; Secure; SameSite=None; Partitioned; Max-Age="+s;C();return}if(t.__om_file_r){const s=w[t.id];if(!s)return;clearTimeout(s.t);delete w[t.id];s.settle(t.ok?{persisted:true}:{persisted:false,reason:t.error||"write failed"});return}if(t.__om_api_r){const s=f[t.id];if(!s)return;if(t.error!=null){clearTimeout(s.t);delete f[t.id];s.reject(new Error(t.error));return}if(t.chunk!=null){clearTimeout(s.t);s.t=s.arm();s.text+=t.chunk;return}if(t.done){clearTimeout(s.t);delete f[t.id];s.resolve({text:t.text!=null?t.text:s.text,message:t.message});return}return}if(!t.__om_eval)return;const a=t;const u=(s)=>{e.source.postMessage({...s,__om_eval_r:1,id:a.id},e.origin)};try{const s=(0,eval)(a.code);if(s&&typeof s.then==="function"){s.then((S)=>u({ok:1,v:O(S)}),(S)=>u({ok:0,e:String(S)}))}else{u({ok:1,v:O(s)})}}catch(s){u({ok:0,e:String(s)})}})}})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:absolute;inset:0;min-height:0;display:flex;flex-direction:column;overflow:hidden;background:transparent;color:var(--text-primary)">
+
+<div style="min-height:56px;flex:none;padding:4px;display:flex;align-items:center;gap:8px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-bottom:1px solid var(--divider)">
+  <sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}">
+    <button aria-label="Back" onClick="{{ back }}" style="width:48px;height:48px;flex:none;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">arrow_back</span></button>
+  </sc-if>
+  <sc-if value="{{ noBack }}" hint-placeholder-val="{{ true }}"><span style="width:8px;flex:none"></span></sc-if>
+  <sc-if value="{{ hasMark }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:var(--hw);font-size:13px;line-height:1">{{ brandMark }}</span></sc-if>
+  <sc-if value="{{ noMark }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">content_cut</span></span></sc-if>
+  <span style="flex:1;min-width:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h3);line-height:var(--lh-h3);color:var(--brand-ink)">{{ brandName }}</span>
+</div>
+
+<sc-if value="{{ showOffline }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="flex:none;display:flex;align-items:flex-start;gap:8px;padding:8px 16px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-bottom:1px solid var(--divider)">
+    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:18px;width:18px;overflow:hidden;flex:none;color:var(--text-secondary)">cloud_off</span>
+    <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ offlineText }}</span>
+  </div>
+</sc-if>
+
+<div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px 24px;display:flex;flex-direction:column;gap:24px">
+  <h1 style="flex:none;margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">{{ title }}</h1>
+
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+    <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="3">
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+        <sc-if value="{{ b.hasHead }}" hint-placeholder-val="{{ false }}">
+          <h2 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ b.head }}</h2>
+        </sc-if>
+        <sc-if value="{{ b.hasText }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);text-wrap:pretty">{{ b.text }}</p>
+        </sc-if>
+
+        <sc-if value="{{ b.isSearch }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height:48px;display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid var(--border-strong);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+            <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;color:var(--text-secondary)">search</span>
+            <input aria-label="{{ b.ph }}" value="{{ b.val }}" onChange="{{ b.onChange }}" placeholder="{{ b.ph }}" style="flex:1;min-width:0;border:none;outline:none;background:transparent;padding:12px 0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary)"></input>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ b.isChips }}" hint-placeholder-val="{{ false }}">
+          <div role="radiogroup" style="display:flex;flex-wrap:wrap;gap:8px">
+            <sc-for list="{{ b.chips }}" as="c" hint-placeholder-count="3">
+              <button role="radio" aria-checked="{{ c.checked }}" onClick="{{ c.pick }}" style="min-height:48px;padding:8px 16px;border-radius:var(--r-chip);cursor:pointer;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;background:{{ c.bg }};color:{{ c.fg }};border:{{ c.border }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ b.isStats }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;gap:12px;grid-template-columns:{{ tileCols }}">
+            <sc-for list="{{ b.tiles }}" as="t" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:4px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);min-width:0">
+                <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ t.label }}</span>
+                <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-ml);line-height:var(--lh-ml);font-variant-numeric:tabular-nums">{{ t.value }}</span>
+                <sc-if value="{{ t.hasNote }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:flex-start;gap:2px;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:16px;line-height:18px;width:16px;overflow:hidden;flex:none;color:{{ t.noteCol }}">{{ t.noteIcon }}</span>{{ t.note }}</span></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ b.isBars }}" hint-placeholder-val="{{ false }}">
+          <div role="img" aria-label="{{ b.aria }}" style="display:flex;align-items:flex-end;gap:6px;height:160px;padding-top:8px;border-bottom:1px solid var(--glass-line)">
+            <sc-for list="{{ b.bars }}" as="r" hint-placeholder-count="7">
+              <div style="flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px">
+                <span style="font-family:var(--font-body);font-size:10px;line-height:12px;color:var(--text-secondary);font-variant-numeric:tabular-nums;white-space:nowrap">{{ r.v }}</span>
+                <span style="width:100%;max-width:32px;border-radius:4px 4px 0 0;background:var(--series-1);height:{{ r.h }}"></span>
+              </div>
+            </sc-for>
+          </div>
+          <div aria-hidden="true" style="display:flex;gap:6px">
+            <sc-for list="{{ b.bars }}" as="r" hint-placeholder-count="7">
+              <span style="flex:1;min-width:0;text-align:center;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ r.l }}</span>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ b.isRows }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;border-top:1px solid var(--divider)">
+            <sc-for list="{{ b.rows }}" as="r" hint-placeholder-count="4">
+              <button onClick="{{ r.pick }}" disabled="{{ r.static }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 0;border:none;border-bottom:1px solid var(--divider);background:transparent;text-align:left;color:var(--text-primary);cursor:{{ r.cursor }}">
+                <sc-if value="{{ r.hasIcon }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">{{ r.icon }}</span></sc-if>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column">
+                  <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ r.title }}</span>
+                  <sc-if value="{{ r.hasSub }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary);font-variant-numeric:tabular-nums">{{ r.sub }}</span></sc-if>
+                  <sc-if value="{{ r.hasChip }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;margin-top:4px;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:var(--r-chip);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border:1px solid var(--glass-line);font-family:var(--font-body);font-weight:500;font-size:var(--fs-micro);line-height:var(--lh-micro)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:14px;line-height:1;width:14px;overflow:hidden;color:{{ r.chipCol }}">{{ r.chipIcon }}</span>{{ r.chip }}</span></sc-if>
+                </span>
+                <sc-if value="{{ r.hasRight }}" hint-placeholder-val="{{ true }}">
+                  <span style="display:flex;flex-direction:column;align-items:flex-end;max-width:45%">
+                    <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;text-align:right">{{ r.right }}</span>
+                    <sc-if value="{{ r.hasRightSub }}" hint-placeholder-val="{{ false }}"><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary);text-align:right">{{ r.rightSub }}</span></sc-if>
+                  </span>
+                </sc-if>
+                <sc-if value="{{ r.chevron }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-muted)">chevron_right</span></sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ b.isToggles }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;border-top:1px solid var(--divider)">
+            <sc-for list="{{ b.toggles }}" as="t" hint-placeholder-count="3">
+              <button role="switch" aria-checked="{{ t.checked }}" onClick="{{ t.toggle }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:8px 0;border:none;border-bottom:1px solid var(--divider);background:transparent;cursor:pointer;text-align:left;color:var(--text-primary)">
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column">
+                  <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ t.label }}</span>
+                  <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary);font-variant-numeric:tabular-nums">{{ t.sub }}</span>
+                </span>
+                <span style="width:52px;height:32px;flex:none;border-radius:16px;position:relative;transition:background 120ms cubic-bezier(0.2,0,0,1);background:{{ t.track }};border:{{ t.trackBorder }}">
+                  <span style="position:absolute;top:50%;border-radius:12px;transform:translateY(-50%);transition:left 120ms cubic-bezier(0.2,0,0,1);width:{{ t.knob }};height:{{ t.knob }};left:{{ t.left }};background:{{ t.knobBg }}"></span>
+                </span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ b.isFields }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;border-top:1px solid var(--divider)">
+            <sc-for list="{{ b.fields }}" as="f" hint-placeholder-count="3">
+              <div style="display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--divider)">
+                <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ f.k }}</span>
+                <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);text-align:right;font-variant-numeric:tabular-nums;max-width:100%;word-break:break-word">{{ f.v }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ b.isNotice }}" hint-placeholder-val="{{ false }}">
+          <div role="status" style="display:flex;gap:8px;align-items:flex-start;padding:12px 16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+            <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:{{ b.noticeCol }}">{{ b.noticeIcon }}</span>
+            <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ b.notice }}</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ b.isButton }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ b.onClick }}" style="align-self:flex-start;min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ b.label }}</button>
+        </sc-if>
+      </div>
+    </sc-for>
+  </sc-if>
+
+  <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+    <div aria-busy="true" aria-label="Loading" style="flex:none;display:flex;flex-direction:column;gap:12px">
+      <span style="width:100%;height:48px;border-radius:var(--r);background:var(--surface-sunken)"></span>
+      <span style="width:100%;height:56px;border-radius:4px;background:var(--surface-sunken)"></span>
+      <span style="width:100%;height:56px;border-radius:4px;background:var(--surface-sunken)"></span>
+      <span style="width:100%;height:56px;border-radius:4px;background:var(--surface-sunken)"></span>
+      <span style="width:100%;height:56px;border-radius:4px;background:var(--surface-sunken)"></span>
+    </div>
+  </sc-if>
+  <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+      <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ errTitle }}</span>
+      <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ errBody }}</span>
+    </div>
+  </sc-if>
+</div>
+
+<sc-if value="{{ showFooter }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding:12px 16px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider)">
+    <button onClick="{{ footAction }}" disabled="{{ footDisabled }}" style="width:100%;min-height:56px;padding:16px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;background:{{ footBg }};color:{{ footFg }}" style-active="opacity:0.88">{{ footLabel }}</button>
+  </div>
+</sc-if>
+
+<div style="flex:none;display:flex;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider);padding:8px 0 4px">
+  <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+    <button aria-current="{{ n.current }}" onClick="{{ n.pick }}" style="flex:1;min-width:0;min-height:56px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:0 2px">
+      <span style="width:56px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:{{ n.pill }};color:{{ n.ic }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;font-variation-settings:{{ n.fill }}">{{ n.icon }}</span></span>
+      <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);text-align:center;font-weight:{{ n.fw }};color:{{ n.fg }}">{{ n.label }}</span>
+    </button>
+  </sc-for>
+</div>
+
+<sc-if value="{{ hasSnack }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="position:absolute;left:16px;right:16px;bottom:96px;display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:var(--r-chip);background:var(--surface-sunken);border:1px solid var(--border-strong);box-shadow:0 8px 24px rgba(28,27,25,0.16)">
+    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--success)">check_circle</span>
+    <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ snackText }}</span>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { q: '', filter: 'all', period: 7, bookable: { haircut: true, wash: true, kids: true, beardtrim: true, beardcolour: true, global: true, highlights: false, cleanup: true, facial: true }, rules: { code: true, reminders: true, bday: true }, snack: null };
+  componentWillUnmount() { clearTimeout(this._s); }
+  go(c) { this.props.go && this.props.go(c); }
+  snack(t) { clearTimeout(this._s); this.setState({ snack: t }); this._s = setTimeout(() => this.setState({ snack: null }), 3000); }
+  fmt(n) { let x = String(Math.abs(n)); if (x.length > 3) { const last = x.slice(-3); x = x.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',' + last; } return (n < 0 ? '−₹' : '₹') + x; }
+
+  renderVals() {
+    const P = this.props, S = this.state;
+    const screen = P.screen || 'O4', st = P.st || 'content', ts = Number(P.ts) || 1;
+    const li = { en: 0, hi: 1, hl: 2 }[P.lang] ?? 0;
+    const T = (en, hi, hl) => [en, hi, hl ?? en][li];
+    const name = P.brandName || 'Your salon';
+    const off = st === 'offline', err = st === 'error', load = st === 'loading', empty = st === 'empty';
+    const B = {
+      head: (head) => ({ hasHead: true, head }), text: (text) => ({ hasText: true, text }),
+      rows: (rows, head) => ({ isRows: true, hasHead: !!head, head: head || '', rows: rows.map(r => ({ hasIcon: !!r.icon, icon: r.icon || '', title: r.title, hasSub: !!r.sub, sub: r.sub || '', hasChip: !!r.chip, chip: r.chip || '', chipIcon: r.chipIcon || '', chipCol: r.chipCol || '', hasRight: !!r.right, right: r.right || '', hasRightSub: !!r.rightSub, rightSub: r.rightSub || '', chevron: !!r.pick, pick: r.pick || (() => {}), static: !r.pick, cursor: r.pick ? 'pointer' : 'default' })) }),
+      fields: (fields, head) => ({ isFields: true, hasHead: !!head, head: head || '', fields }),
+      toggles: (items, head) => ({ isToggles: true, hasHead: !!head, head: head || '', toggles: items.map(t => ({ label: t.label, sub: t.on ? T('On', 'चालू') + (t.sub ? ' · ' + t.sub : '') : T('Off', 'बंद') + (t.sub ? ' · ' + t.sub : ''), checked: t.on ? 'true' : 'false', track: t.on ? 'var(--primary)' : 'var(--surface-sunken)', trackBorder: t.on ? '2px solid var(--primary)' : '2px solid var(--border-strong)', knob: t.on ? '24px' : '16px', left: t.on ? '22px' : '6px', knobBg: t.on ? 'var(--on-primary)' : 'var(--border-strong)', toggle: t.toggle })) }),
+      chips: (opts, cur, set) => ({ isChips: true, chips: opts.map(([k, label]) => { const on = cur === k; return { label, checked: on ? 'true' : 'false', bg: on ? 'var(--primary)' : 'var(--surface-alt)', fg: on ? 'var(--on-primary)' : 'var(--text-primary)', border: on ? '1px solid var(--primary)' : '1px solid var(--border-strong)', pick: () => set(k) }; }) }),
+      stats: (tiles) => ({ isStats: true, tiles: tiles.map(t => ({ ...t, hasNote: !!t.note })) }),
+      notice: (notice, icon, col) => ({ isNotice: true, notice, noticeIcon: icon || 'info', noticeCol: col || 'var(--info)' }),
+      button: (label, onClick) => ({ isButton: true, label, onClick }),
+    };
+    const say = (t) => () => this.snack(t);
+    const min = (m) => T(`${m} min`, `${m} मिनट`);
+    let title = '', blocks = [], foot = null, back = null, errTitle = T("Couldn't load this page.", 'यह पेज लोड नहीं हो पाया।', 'Yeh page load nahi ho paaya.');
+
+    if (screen === 'O4') {
+      title = T('Customers', 'ग्राहक');
+      const all = [['Asha Rao', '12 Sep', 1250, true, true], ['Ravi K.', 'Today', 0, true, false], ['Meena S.', 'Today', 300, true, false], ['Karan P.', 'Today', 200, true, false], ['Nikhil J.', '2 Aug', 0, false, true], ['Sunita D.', '28 Jul', 450, true, true], ['Vikram B.', '15 Sep', 0, true, false], ['Divya R.', '3 Sep', 100, true, false]];
+      const q = S.q.trim().toLowerCase();
+      const list = empty ? [] : all.filter(c => (!q || c[0].toLowerCase().includes(q)) && (S.filter === 'all' || (S.filter === 'due' && c[4]) || (S.filter === 'wallet' && c[2] > 0) || (S.filter === 'noapp' && !c[3])));
+      blocks.push({ isSearch: true, ph: T('Search by name', 'नाम से खोजें', 'Naam se khojein'), val: S.q, onChange: (e) => this.setState({ q: e.target.value }) });
+      blocks.push(B.chips([['all', T('All', 'सभी', 'Sab')], ['due', T('Due for a visit', 'विज़िट का समय', 'Visit due')], ['wallet', T('Has wallet', 'वॉलेट वाले', 'Wallet wale')], ['noapp', T('No app', 'ऐप नहीं', 'App nahi')]], S.filter, (k) => this.setState({ filter: k })));
+      if (list.length) blocks.push(B.rows(list.map(c => ({ title: c[0], sub: T(`Last visit ${c[1]}`, `पिछली विज़िट ${c[1]}`, `Pichhli visit ${c[1]}`), right: c[2] ? this.fmt(c[2]) : '', rightSub: c[2] ? T('wallet', 'वॉलेट') : '', chip: c[4] ? T('Due for a visit', 'विज़िट का समय', 'Visit due') : !c[3] ? T('No app', 'ऐप नहीं', 'App nahi') : '', chipIcon: c[4] ? 'event_repeat' : 'phone_disabled', chipCol: c[4] ? 'var(--warning)' : 'var(--text-secondary)', pick: c[0] === 'Asha Rao' ? () => this.go('O5') : undefined }))));
+      else blocks.push(B.text(empty ? T('No customers yet. Customers who join with your QR code or walk in show up here.', 'अभी कोई ग्राहक नहीं। QR कोड से जुड़ने वाले या वॉक-इन ग्राहक यहाँ दिखेंगे।', 'Abhi koi customer nahi. QR code se judne wale ya walk-in customers yahan dikhenge.') : T('No customers match.', 'कोई ग्राहक मेल नहीं खाया।', 'Koi customer match nahi hua.')));
+      errTitle = T("Couldn't load your customers.", 'ग्राहक लोड नहीं हो पाए।', 'Customers load nahi ho paaye.');
+    }
+    if (screen === 'O5') {
+      title = 'Asha Rao'; back = 'O4';
+      blocks.push(B.fields([{ k: T('Phone', 'फ़ोन'), v: '+91 98xxx x4821' }, { k: T('Joined', 'जुड़े'), v: '12 Jul 2026' }, { k: T('Visits', 'विज़िट'), v: '4' }, { k: T('Usual stylist', 'आमतौर पर स्टाइलिस्ट', 'Usual stylist'), v: 'Suresh' }]));
+      blocks.push(B.stats([{ label: T('Paid credit', 'जमा रकम', 'Paid credit'), value: '₹1,000' }, { label: T('Bonus credit', 'बोनस'), value: '₹250', note: T('Expires 14 Nov', '14 नवंबर को खत्म', '14 Nov ko expire'), noteIcon: 'schedule', noteCol: 'var(--warning)' }]));
+      blocks.push(B.notice(T('Wallet corrections are made by Crayora support, so every change has a record.', 'वॉलेट में सुधार Crayora सपोर्ट करता है, ताकि हर बदलाव का रिकॉर्ड रहे।', 'Wallet correction Crayora support karta hai, taaki har badlaav ka record rahe.'), 'info', 'var(--info)'));
+      blocks.push(B.fields([{ k: T('Reminders', 'रिमाइंडर'), v: T('Said yes', 'हाँ कहा', 'Haan kaha') }, { k: T('Offers', 'ऑफ़र'), v: T('Said no', 'ना कहा', 'Na kaha') }], T('What she agreed to', 'उन्होंने क्या चुना', 'Unhone kya chuna')));
+      blocks.push(B.rows([['12 Sep', T('Haircut', 'हेयरकट'), 600, T('Wallet', 'वॉलेट')], ['14 Aug', T('Haircut + Beard trim', 'हेयरकट + दाढ़ी ट्रिम'), 1000, 'UPI'], ['18 Jul', T('Haircut', 'हेयरकट'), 600, T('Wallet + counter', 'वॉलेट + काउंटर')]].map(([d, sv, a, how]) => ({ title: sv, sub: `${d} 2026 · Suresh`, right: this.fmt(a), rightSub: how })), T('Visits', 'विज़िट')));
+      foot = [T('Add a walk-in for Asha', 'आशा का वॉक-इन जोड़ें', 'Asha ka walk-in add karein'), () => this.go('O2')];
+    }
+    if (screen === 'O6') {
+      title = T('Dashboard', 'डैशबोर्ड');
+      const p = S.period;
+      const k = p === 1 ? 1 : p === 7 ? 7 : 30;
+      const rev = empty ? 0 : { 1: 12450, 7: 78200, 30: 312600 }[k];
+      blocks.push(B.chips([[1, T('Today', 'आज', 'Aaj')], [7, T('7 days', '7 दिन', '7 din')], [30, T('30 days', '30 दिन', '30 din')]], p, (x) => this.setState({ period: x })));
+      const vs = { 1: T('18% more than last Tue', 'पिछले मंगलवार से 18% ज़्यादा', 'Pichhle Tue se 18% zyaada'), 7: T('6% more than the week before', 'पिछले हफ़्ते से 6% ज़्यादा', 'Pichhle hafte se 6% zyaada'), 30: T('3% less than the month before', 'पिछले महीने से 3% कम', 'Pichhle mahine se 3% kam') }[k];
+      blocks.push(B.stats([
+        { label: T('Revenue', 'कमाई', 'Kamaai'), value: this.fmt(rev), note: empty ? '' : vs, noteIcon: k === 30 ? 'arrow_downward' : 'arrow_upward', noteCol: k === 30 ? 'var(--text-secondary)' : 'var(--success)' },
+        { label: T('Visits', 'विज़िट'), value: empty ? '0' : String({ 1: 23, 7: 131, 30: 540 }[k]) },
+        { label: T('New customers', 'नए ग्राहक', 'Naye customers'), value: empty ? '0' : String({ 1: 2, 7: 14, 30: 61 }[k]) },
+        { label: T('Wallet top-ups', 'वॉलेट टॉप-अप'), value: this.fmt(empty ? 0 : { 1: 3000, 7: 21500, 30: 88000 }[k]) },
+      ]));
+      if (!empty && k === 7) {
+        const days = [['Wed', 9800], ['Thu', 10400], ['Fri', 12900], ['Sat', 17600], ['Sun', 15100], ['Mon', 0], ['Tue', 12400]];
+        const dh = T('Wed Thu Fri Sat Sun Mon Tue', 'बुध गुरु शुक्र शनि रवि सोम मंगल').split(' ');
+        const max = 17600;
+        blocks.push({ ...B.head(T('Revenue by day', 'दिन के हिसाब से कमाई', 'Din ke hisaab se kamaai')), isBars: true, aria: days.map(d => `${d[0]} ${this.fmt(d[1])}`).join(', '), bars: days.map((d, i) => ({ l: dh[i], v: d[1] ? (d[1] / 1000).toFixed(1) + 'k' : T('Closed', 'बंद'), h: Math.max(2, Math.round((d[1] / max) * 120)) + 'px' })) });
+      }
+      if (!empty) {
+        blocks.push(B.rows([[T('Haircut', 'हेयरकट'), 64, 38400], [T('Beard trim', 'दाढ़ी ट्रिम'), 41, 12300], [T('Global colour', 'पूरे बालों में कलर'), 6, 15000], [T('Facial', 'फ़ेशियल'), 8, 12000]].map(([n, c, a]) => ({ title: n, sub: T(`${c} times`, `${c} बार`, `${c} baar`), right: this.fmt(Math.round(a * k / 7)) })), T('Top services', 'सबसे ज़्यादा सर्विस', 'Top services')));
+        blocks.push(B.rows([['Suresh', 72, 41200], ['Priya', 59, 37000]].map(([n, c, a]) => ({ title: n, sub: T(`${c} visits`, `${c} विज़िट`), right: this.fmt(Math.round(a * k / 7)) })), T('By stylist', 'स्टाइलिस्ट के हिसाब से', 'Stylist ke hisaab se')));
+      } else blocks.push(B.text(T('Numbers show here after your first paid visit.', 'पहली पेड विज़िट के बाद यहाँ आँकड़े दिखेंगे।', 'Pehli paid visit ke baad yahan numbers dikhenge.')));
+      errTitle = T("Couldn't load the dashboard.", 'डैशबोर्ड लोड नहीं हो पाया।', 'Dashboard load nahi ho paaya.');
+    }
+    if (screen === 'O7') {
+      title = T('Services', 'सर्विस'); back = 'OM';
+      const cats = [[T('Hair', 'बाल'), [['haircut', T('Haircut', 'हेयरकट'), 45, 600], ['wash', T('Hair wash and blow-dry', 'बाल धुलाई और ब्लो-ड्राई'), 30, 400], ['kids', T("Kids' haircut", 'बच्चों का हेयरकट'), 30, 350]]], [T('Beard', 'दाढ़ी'), [['beardtrim', T('Beard trim', 'दाढ़ी ट्रिम'), 20, 300], ['beardcolour', T('Beard shape and colour', 'दाढ़ी शेप और कलर'), 40, 650]]], [T('Colour', 'कलर'), [['global', T('Global colour', 'पूरे बालों में कलर'), 90, 2500], ['highlights', T('Highlights', 'हाइलाइट्स'), 120, 3800]]], [T('Skin', 'त्वचा'), [['cleanup', T('Clean-up', 'क्लीन-अप'), 45, 900], ['facial', T('Facial', 'फ़ेशियल'), 60, 1500]]]];
+      if (empty) blocks.push(B.text(T('No services yet. Add your first service so customers can book.', 'अभी कोई सर्विस नहीं। पहली सर्विस जोड़ें ताकि ग्राहक बुक कर सकें।', 'Abhi koi service nahi. Pehli service add karein taaki customers book kar sakein.')));
+      else {
+        blocks.push(B.text(T('Switch a service off to hide it from booking. Past visits keep their price.', 'बुकिंग से छिपाने के लिए सर्विस बंद करें। पुरानी विज़िट की कीमत वैसी ही रहती है।', 'Booking se chhipaane ke liye service off karein. Purani visits ki price waisi hi rehti hai.')));
+        cats.forEach(([cn, items]) => blocks.push(B.toggles(items.map(([k, n, m, p]) => ({ label: n, sub: `${min(m)} · ${this.fmt(p)}`, on: S.bookable[k], toggle: () => this.setState(x => ({ bookable: { ...x.bookable, [k]: !x.bookable[k] } })) })), cn)));
+      }
+      foot = [T('Add a service', 'सर्विस जोड़ें', 'Service add karein'), say(T('Service editor opens here.', 'सर्विस जोड़ने का फ़ॉर्म यहाँ खुलेगा।', 'Service form yahan khulega.'))];
+    }
+    if (screen === 'O8') {
+      title = T('Add-ons', 'ऐड-ऑन'); back = 'OM';
+      blocks.push(B.text(T('Customers see these after picking a service. They always start unticked.', 'सर्विस चुनने के बाद ग्राहक इन्हें देखते हैं। ये हमेशा बिना टिक के शुरू होते हैं।', 'Service chunne ke baad customers inhe dekhte hain. Yeh hamesha bina tick ke shuru hote hain.')));
+      if (!empty) blocks.push(B.rows([[T('Head massage', 'सिर की मालिश'), 150, 15, T('Hair, Beard', 'बाल, दाढ़ी')], [T('Hair wash', 'बाल धुलाई'), 100, 10, T('Hair, Beard', 'बाल, दाढ़ी')], [T('Hair serum', 'हेयर सीरम'), 200, 5, T('Hair', 'बाल')], [T('Beard trim', 'दाढ़ी ट्रिम'), 250, 20, T('Hair', 'बाल')]].map(([n, p, m, w]) => ({ title: n, sub: T(`With: ${w}`, `इनके साथ: ${w}`, `Inke saath: ${w}`), right: '+' + this.fmt(p), rightSub: '+' + min(m), pick: say(T('Add-on editor opens here.', 'ऐड-ऑन बदलने का फ़ॉर्म यहाँ खुलेगा।', 'Add-on form yahan khulega.')) }))));
+      else blocks.push(B.text(T('No add-ons yet.', 'अभी कोई ऐड-ऑन नहीं।', 'Abhi koi add-on nahi.')));
+      foot = [T('Add an add-on', 'ऐड-ऑन जोड़ें', 'Add-on add karein'), say(T('Add-on editor opens here.', 'ऐड-ऑन बदलने का फ़ॉर्म यहाँ खुलेगा।', 'Add-on form yahan khulega.'))];
+    }
+    if (screen === 'O9') {
+      title = T('Team', 'टीम'); back = 'OM';
+      const sty = T('Stylist', 'स्टाइलिस्ट'), rec = T('Reception', 'रिसेप्शन');
+      blocks.push(B.rows([['Suresh', sty, T('Uses the app', 'ऐप इस्तेमाल करते हैं', 'App use karte hain'), 'check_circle', 'var(--success)'], ['Priya', sty, T('Uses the app', 'ऐप इस्तेमाल करते हैं', 'App use karte hain'), 'check_circle', 'var(--success)'], ['Deepa', rec, T('Invite sent, not joined', 'न्योता भेजा, अभी नहीं जुड़ीं', 'Invite bheja, abhi nahi judi'), 'schedule', 'var(--warning)']].slice(0, empty ? 0 : 3).map(([n, role, chip, ic, col]) => ({ icon: 'person', title: n, sub: role, chip, chipIcon: ic, chipCol: col, pick: say(T('Team member details open here.', 'टीम सदस्य की जानकारी यहाँ खुलेगी।', 'Team member ki details yahan khulengi.')) }))));
+      if (empty) blocks.push(B.text(T('Only you so far. Invite your stylists so they can see their own schedule.', 'अभी सिर्फ़ आप हैं। स्टाइलिस्ट को बुलाएँ ताकि वे अपना शेड्यूल देख सकें।', 'Abhi sirf aap hain. Stylists ko invite karein taaki woh apna schedule dekh sakein.')));
+      blocks.push(B.text(T('Stylists see only their own bookings and earnings. Reception sees Today and can take payments.', 'स्टाइलिस्ट सिर्फ़ अपनी बुकिंग और कमाई देखते हैं। रिसेप्शन "आज" देखता है और भुगतान ले सकता है।', 'Stylists sirf apni booking aur kamaai dekhte hain. Reception "Aaj" dekhta hai aur payment le sakta hai.')));
+      foot = [T('Invite someone', 'किसी को बुलाएँ', 'Kisi ko invite karein'), say(T('Invite form opens here.', 'न्योता भेजने का फ़ॉर्म यहाँ खुलेगा।', 'Invite form yahan khulega.'))];
+    }
+    if (screen === 'O10') {
+      title = T('Rules', 'नियम'); back = 'OM';
+      blocks.push(B.toggles([
+        { label: T('Ask for the start code', 'शुरुआत का कोड माँगें', 'Start code maangein'), sub: T('Skips are shown to you', 'छोड़े गए कोड आपको दिखेंगे', 'Skip kiye code aapko dikhenge'), on: S.rules.code, toggle: () => this.setState(x => ({ rules: { ...x.rules, code: !x.rules.code } })) },
+        { label: T('Remind customers when a service is due', 'सर्विस का समय होने पर ग्राहकों को याद दिलाएँ', 'Service due hone par customers ko yaad dilayein'), sub: T('Only those who said yes', 'सिर्फ़ जिन्होंने हाँ कहा', 'Sirf jinhone haan kaha'), on: S.rules.reminders, toggle: () => this.setState(x => ({ rules: { ...x.rules, reminders: !x.rules.reminders } })) },
+        { label: T('Birthday bonus', 'जन्मदिन बोनस'), sub: '₹50', on: S.rules.bday, toggle: () => this.setState(x => ({ rules: { ...x.rules, bday: !x.rules.bday } })) },
+      ], T('Bookings', 'बुकिंग')));
+      blocks.push(B.fields([{ k: T('Free cancellation until', 'मुफ़्त रद्द करने की सीमा', 'Free cancel kab tak'), v: T('2 hours before', '2 घंटे पहले तक', '2 ghante pehle tak') }, { k: T('Smallest top-up', 'सबसे कम टॉप-अप', 'Sabse kam top-up'), v: '₹100' }, { k: T('Bonus', 'बोनस'), v: T('₹50 for every ₹500', 'हर ₹500 पर ₹50', 'Har ₹500 par ₹50') }, { k: T('Bonus lasts', 'बोनस की अवधि', 'Bonus kitne din'), v: T('30 days', '30 दिन', '30 din') }, { k: T('Refer & Earn', 'रेफ़र करें और कमाएँ', 'Refer karein aur kamaayein'), v: T('₹100 each, after the first paid visit', 'पहली पेड विज़िट के बाद दोनों को ₹100', 'Pehli paid visit ke baad dono ko ₹100') }], T('Wallet', 'वॉलेट')));
+      blocks.push(B.text(T('Paid credit never expires. Changes apply to new top-ups only.', 'जमा की गई रकम कभी खत्म नहीं होती। बदलाव सिर्फ़ नए टॉप-अप पर लागू होते हैं।', 'Jama ki gayi rakam kabhi expire nahi hoti. Badlaav sirf naye top-up par lagte hain.')));
+      blocks.push(B.button(T('Change wallet rules', 'वॉलेट के नियम बदलें', 'Wallet rules badlein'), say(T('Wallet rules editor opens here.', 'वॉलेट नियम बदलने का फ़ॉर्म यहाँ खुलेगा।', 'Wallet rules form yahan khulega.'))));
+    }
+    if (screen === 'O11') {
+      title = T('Hours and holidays', 'समय और छुट्टियाँ', 'Time aur chhuttiyan'); back = 'OM';
+      const dn = T('Monday Tuesday Wednesday Thursday Friday Saturday Sunday', 'सोमवार मंगलवार बुधवार गुरुवार शुक्रवार शनिवार रविवार').split(' ');
+      const hrs = ['closed', '10:00 AM – 8:00 PM', '10:00 AM – 8:00 PM', '10:00 AM – 8:00 PM', '10:00 AM – 8:00 PM', '9:00 AM – 9:00 PM', '9:00 AM – 7:00 PM'];
+      blocks.push(B.rows(dn.map((d, i) => ({ title: d, right: hrs[i] === 'closed' ? T('Closed', 'बंद') : hrs[i], pick: say(T('Hours editor opens here.', 'समय बदलने का फ़ॉर्म यहाँ खुलेगा।', 'Time form yahan khulega.')) })), T('Weekly hours', 'हफ़्ते का समय', 'Hafte ka time')));
+      const hol = empty ? [] : [['Fri 2 Oct 2026', T('Gandhi Jayanti', 'गांधी जयंती')], ['Tue 20 Oct 2026', T('Dussehra', 'दशहरा')], ['Sun 8 Nov – Mon 9 Nov 2026', T('Diwali', 'दिवाली')]];
+      if (hol.length) blocks.push(B.rows(hol.map(([d, n]) => ({ icon: 'event_busy', title: n, sub: d })), T('Holidays', 'छुट्टियाँ', 'Chhuttiyan')));
+      else blocks.push({ ...B.head(T('Holidays', 'छुट्टियाँ', 'Chhuttiyan')), ...B.text(T('No holidays added. Customers cannot book on days you add here.', 'कोई छुट्टी नहीं जोड़ी। यहाँ जोड़े गए दिनों पर ग्राहक बुक नहीं कर पाएँगे।', 'Koi chhutti add nahi ki. Yahan add kiye dinon par customers book nahi kar paayenge.')) });
+      foot = [T('Add a holiday', 'छुट्टी जोड़ें', 'Chhutti add karein'), say(T('Holiday form opens here.', 'छुट्टी जोड़ने का फ़ॉर्म यहाँ खुलेगा।', 'Holiday form yahan khulega.'))];
+    }
+    if (screen === 'O12') {
+      title = T('Billing', 'बिलिंग'); back = 'OM';
+      blocks.push(B.fields([{ k: T('Plan', 'प्लान'), v: T('Salon · 3 staff', 'सैलून · 3 स्टाफ़', 'Salon · 3 staff') }, { k: T('Status', 'स्थिति'), v: T('Active', 'चालू') }, { k: T('Next bill', 'अगला बिल', 'Agla bill'), v: '1 Nov 2026 · ₹1,499' }, { k: T('Paid by', 'भुगतान का तरीका', 'Payment ka tareeka'), v: 'UPI AutoPay' }]));
+      blocks.push(B.text(T('Crayora bills you monthly. Customer payments go to your own account, not to Crayora.', 'Crayora आपसे हर महीने बिल लेता है। ग्राहकों का भुगतान सीधे आपके खाते में जाता है, Crayora में नहीं।', 'Crayora aapse har mahine bill leta hai. Customers ka payment seedha aapke account mein jaata hai, Crayora mein nahi.')));
+      if (!empty) blocks.push(B.rows([['1 Oct 2026', 1499], ['1 Sep 2026', 1499], ['1 Aug 2026', 999]].map(([d, a]) => ({ icon: 'receipt_long', title: d, sub: T('Paid', 'चुकाया'), right: this.fmt(a), pick: say(T('Invoice PDF opens here.', 'बिल की PDF यहाँ खुलेगी।', 'Invoice PDF yahan khulegi.')) })), T('Invoices', 'बिल')));
+    }
+    if (screen === 'O13') {
+      title = T('Salon profile', 'सैलून प्रोफ़ाइल'); back = 'OM';
+      blocks.push(B.fields([{ k: T('Name', 'नाम'), v: name }, { k: T('Area', 'इलाका', 'Area'), v: P.area || '—' }, { k: T('Phone', 'फ़ोन'), v: '080 4123 4567' }, { k: T('Privacy contact', 'प्राइवेसी संपर्क'), v: P.privacy || T('Not added', 'नहीं जोड़ा') }]));
+      if (!P.privacy) blocks.push(B.notice(T('Add a privacy contact. Customers see it on their phone-number screen and in Your data.', 'प्राइवेसी संपर्क जोड़ें। ग्राहक इसे फ़ोन नंबर वाली स्क्रीन और "आपका डेटा" में देखते हैं।', 'Privacy contact add karein. Customers ise phone number wali screen aur "Aapka data" mein dekhte hain.'), 'warning', 'var(--warning)'));
+      blocks.push(B.button(T('Edit profile', 'प्रोफ़ाइल बदलें', 'Profile badlein'), say(T('Profile editor opens here.', 'प्रोफ़ाइल बदलने का फ़ॉर्म यहाँ खुलेगा।', 'Profile form yahan khulega.'))));
+      blocks.push(B.text(T('Your logo, colours and fonts are set with Crayora. Ask your Crayora contact to change them.', 'आपका लोगो, रंग और फ़ॉन्ट Crayora के साथ तय होते हैं। बदलने के लिए अपने Crayora संपर्क से कहें।', 'Aapka logo, rang aur font Crayora ke saath tay hote hain. Badalne ke liye apne Crayora contact se kahein.')));
+    }
+    if (screen === 'OM') {
+      title = T('More', 'और', 'Aur');
+      blocks.push(B.rows([['content_cut', T('Services', 'सर्विस'), 'O7'], ['add_circle', T('Add-ons', 'ऐड-ऑन'), 'O8'], ['badge', T('Team', 'टीम'), 'O9'], ['rule', T('Rules', 'नियम'), 'O10'], ['schedule', T('Hours and holidays', 'समय और छुट्टियाँ', 'Time aur chhuttiyan'), 'O11'], ['receipt_long', T('Billing', 'बिलिंग'), 'O12'], ['storefront', T('Salon profile', 'सैलून प्रोफ़ाइल'), 'O13']].map(([icon, t, c]) => ({ icon, title: t, pick: () => this.go(c) }))));
+      blocks.push(B.rows([{ icon: 'translate', title: T('Language', 'भाषा', 'Bhaasha'), sub: ['English', 'हिन्दी', 'Hinglish'][li], pick: () => P.cycleLang && P.cycleLang() }, { icon: 'logout', title: T('Log out', 'लॉग आउट'), pick: say(T('Logged out (prototype).', 'लॉग आउट (प्रोटोटाइप)।', 'Log out (prototype).')) }]));
+    }
+
+    const staff = screen[0] === 'S';
+    if (screen === 'S1') {
+      title = T('My schedule', 'मेरा शेड्यूल', 'Mera schedule');
+      blocks.push(B.text(T('Today · Tue 29 Sep · Suresh', 'आज · मंगल 29 सितंबर · सुरेश', 'Aaj · Tue 29 Sep · Suresh')));
+      const done = S.sDone || {};
+      const list = empty ? [] : [['10:00 AM', 'Ravi K.', T('Haircut', 'हेयरकट'), 'done'], ['11:15 AM', T('Walk-in customer', 'वॉक-इन ग्राहक'), T('Beard trim', 'दाढ़ी ट्रिम'), 'done'], ['4:30 PM', 'Asha Rao', T('Haircut + Beard trim', 'हेयरकट + दाढ़ी ट्रिम'), done.asha || 'booked'], ['6:00 PM', 'Nikhil J.', T('Haircut', 'हेयरकट'), 'booked']];
+      const lab = { done: [T('Done', 'पूरा'), 'check_circle', 'var(--success)'], prog: [T('In progress', 'चल रहा है', 'Chal raha hai'), 'content_cut', 'var(--info)'], booked: [T('Booked', 'बुक है'), 'event_available', 'var(--text-secondary)'] };
+      if (list.length) blocks.push(B.rows(list.map(([t, n, sv, stt]) => ({ title: `${t} · ${n}`, sub: sv, chip: lab[stt][0], chipIcon: lab[stt][1], chipCol: lab[stt][2], pick: n === 'Asha Rao' ? () => this.go('S2') : undefined }))));
+      else blocks.push(B.text(T('Nothing booked for you today.', 'आज आपके लिए कुछ बुक नहीं है।', 'Aaj aapke liye kuch book nahi hai.')));
+      blocks.push(B.text(T('You see only your own bookings. Prices and customer phone numbers are not shown.', 'आपको सिर्फ़ अपनी बुकिंग दिखती हैं। कीमत और ग्राहकों के फ़ोन नंबर नहीं दिखते।', 'Aapko sirf apni bookings dikhti hain. Price aur customers ke phone number nahi dikhte.')));
+    }
+    if (screen === 'S2') {
+      title = 'Asha Rao'; back = 'S1';
+      const stt = (S.sDone || {}).asha || 'booked';
+      blocks.push(B.fields([{ k: T('Time', 'समय', 'Time'), v: '4:30 PM · 60 min' }, { k: T('Service', 'सर्विस'), v: T('Haircut + Beard trim', 'हेयरकट + दाढ़ी ट्रिम') }, { k: T('Notes', 'नोट'), v: T('Short on the sides', 'साइड से छोटे', 'Side se chhote') }, { k: T('Status', 'स्थिति'), v: stt === 'prog' ? T('In progress', 'चल रहा है', 'Chal raha hai') : stt === 'done' ? T('Done', 'पूरा') : T('Booked', 'बुक है') }]));
+      if (stt === 'booked') blocks.push(B.text(T('Ask Asha for the 4-digit code in her app when she sits down.', 'बैठते समय आशा से उनके ऐप का 4 अंकों का कोड पूछें।', 'Baithte waqt Asha se unke app ka 4-digit code poochein.')));
+      if (stt === 'booked') foot = [T('Start', 'शुरू करें', 'Start karein'), () => { this.setState(x => ({ sDone: { ...(x.sDone || {}), asha: 'prog' } })); this.snack(T('Started · code 4821 matched', 'शुरू हुआ · कोड 4821 मेल खाया', 'Start hua · code 4821 match hua')); }];
+      if (stt === 'prog') foot = [T('Mark complete', 'पूरा हुआ', 'Complete karein'), () => { this.setState(x => ({ sDone: { ...(x.sDone || {}), asha: 'done' } })); this.snack(T('Marked complete. Reception takes the payment.', 'पूरा हुआ। भुगतान रिसेप्शन लेगा।', 'Complete hua. Payment reception lega.')); }];
+    }
+    if (screen === 'S3') {
+      title = T('My earnings', 'मेरी कमाई', 'Meri kamaai');
+      blocks.push(B.chips([[1, T('Today', 'आज', 'Aaj')], [7, T('7 days', '7 दिन', '7 din')], [30, T('30 days', '30 दिन', '30 din')]], S.period, (x) => this.setState({ period: x })));
+      const k = S.period;
+      blocks.push(B.stats([{ label: T('Services done', 'पूरी की गई सर्विस', 'Services done'), value: empty ? '0' : String({ 1: 6, 7: 38, 30: 151 }[k]) }, { label: T('Your share', 'आपका हिस्सा', 'Aapka hissa'), value: this.fmt(empty ? 0 : { 1: 1680, 7: 10350, 30: 41200 }[k]), note: T('30% of service price', 'सर्विस कीमत का 30%', 'Service price ka 30%'), noteIcon: 'info', noteCol: 'var(--info)' }]));
+      if (!empty) blocks.push(B.rows([['Sat 26 Sep', 9, 2460], ['Fri 25 Sep', 7, 1890], ['Thu 24 Sep', 6, 1620], ['Wed 23 Sep', 5, 1350]].map(([d, c, a]) => ({ title: d, sub: T(`${c} services`, `${c} सर्विस`), right: this.fmt(a) })), T('By day', 'दिन के हिसाब से', 'Din ke hisaab se')));
+      blocks.push(B.text(T('Paid out by the salon. Ask the owner about your payout day.', 'भुगतान सैलून करता है। भुगतान के दिन के बारे में मालिक से पूछें।', 'Payout salon karta hai. Payout ke din ke baare mein owner se poochein.')));
+    }
+    const navCur = staff ? (screen === 'S3' ? 1 : 0) : ['O4', 'O5'].includes(screen) ? 1 : screen === 'O6' ? 2 : 3;
+    const nav = staff ? [['event', T('My schedule', 'मेरा शेड्यूल', 'Mera schedule'), 'S1'], ['payments', T('My earnings', 'मेरी कमाई', 'Meri kamaai'), 'S3']].map(([icon, label, code], i) => { const on = i === navCur; return { icon, label, current: on ? 'page' : 'false', pill: on ? 'var(--primary-container)' : 'transparent', ic: on ? 'var(--on-primary-container)' : 'var(--text-secondary)', fg: on ? 'var(--text-primary)' : 'var(--text-secondary)', fw: on ? 600 : 400, fill: on ? "'FILL' 1" : "'FILL' 0", pick: () => this.go(code) }; }) : [['today', T('Today', 'आज', 'Aaj'), 'O1'], ['group', T('Customers', 'ग्राहक'), 'O4'], ['monitoring', T('Dashboard', 'डैशबोर्ड'), 'O6'], ['more_horiz', T('More', 'और', 'Aur'), 'OM']].map(([icon, label, code], i) => { const on = i === navCur; return { icon, label, current: on ? 'page' : 'false', pill: on ? 'var(--primary-container)' : 'transparent', ic: on ? 'var(--on-primary-container)' : 'var(--text-secondary)', fg: on ? 'var(--text-primary)' : 'var(--text-secondary)', fw: on ? 600 : 400, fill: on ? "'FILL' 1" : "'FILL' 0", pick: () => this.go(code) }; });
+    const showFooter = err || (!!foot && !load);
+    const footOk = err || !off;
+
+    return {
+      brandName: name, brandMark: P.brandMark || '', hasMark: !!P.brandMark, noMark: !P.brandMark,
+      hasBack: !!back, noBack: !back, back: () => this.go(back),
+      showOffline: off, offlineText: T("Offline · Showing what was saved at 10:42. Changes wait until you're back online.", 'ऑफ़लाइन · 10:42 तक की जानकारी। बदलाव इंटरनेट आने पर होंगे।', 'Offline · 10:42 tak ki jaankaari. Badlaav internet aane par honge.'),
+      title, ready: !load && !err, loading: load, error: err, errTitle, errBody: T('Check your internet and try again.', 'इंटरनेट देखें और फिर से कोशिश करें।', 'Internet check karke phir try karein.'),
+      blocks: blocks.map(b => ({ hasHead: false, head: '', hasText: false, text: '', isSearch: false, isChips: false, isStats: false, isBars: false, isRows: false, isToggles: false, isFields: false, isNotice: false, isButton: false, ...b })),
+      tileCols: ts > 1 ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))',
+      showFooter, footLabel: err ? T('Try again', 'फिर कोशिश करें', 'Phir try karein') : foot ? foot[0] : '', footAction: err ? () => P.setSt && P.setSt('content') : foot ? foot[1] : () => {},
+      footDisabled: !footOk, footBg: footOk ? 'var(--primary)' : 'var(--surface-sunken)', footFg: footOk ? 'var(--on-primary)' : 'var(--text-muted)',
+      nav, hasSnack: !!S.snack, snackText: S.snack || '',
+    };
+  }
+}
+</script>
+</body>
+</html>

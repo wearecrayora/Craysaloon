@@ -105,6 +105,45 @@ class BrandTokens {
 
   bool get isDevanagari => script == 'devanagari';
 
+  // ---------------------------------------------------------------------------
+  // The glass chassis (Claude Design, 29 Sep 2026; DESIGN.md 3.5).
+  //
+  // Frosted cards, bars and sheets over a soft colour mesh made from the
+  // salon's OWN primary and accent. The translucent whites and darks are part
+  // of the fixed chassis, like the surface ramp - only the mesh tint follows the
+  // brand, and it is mixed far enough toward the base that text on it still
+  // clears 4.5:1 (checked in test/glass_contrast_test.dart).
+  // ---------------------------------------------------------------------------
+
+  bool get _isLight => brightness == Brightness.light;
+
+  /// A card: translucent enough for the mesh to show, opaque enough to read on.
+  Color get glassCard => _isLight ? const Color(0x94FFFFFF) : const Color(0x8C2C1E24);
+
+  /// App bar and bottom navigation, drawn over a blur.
+  Color get glassBar => _isLight ? const Color(0x80FFFFFF) : const Color(0x801E1418);
+
+  /// Bottom sheets: the most opaque glass, because money is read on them.
+  Color get glassSheet => _isLight ? const Color(0xD1FFFAFA) : const Color(0xDB22161C);
+
+  /// The bright hairline that makes glass read as glass.
+  Color get glassLine => _isLight ? const Color(0xC7FFFFFF) : const Color(0x1FFFFFFF);
+
+  /// Soft, brand-warm shadow under glass.
+  Color get glassShadow => _isLight ? const Color(0x14783C46) : const Color(0x59000000);
+
+  /// The mesh's base wash, top to bottom.
+  Color get meshTop => _isLight ? const Color(0xFFFCF4F3) : const Color(0xFF1A1216);
+  Color get meshBottom => _isLight ? const Color(0xFFF8E9E9) : const Color(0xFF120C0F);
+
+  Color get _meshMixBase => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF140E11);
+
+  /// The brand's two glows in the mesh, mixed toward the base (the design's
+  /// `color-mix` values): primary top-left and bottom, accent top-right.
+  Color get meshPrimaryGlow => Color.lerp(_meshMixBase, primary, _isLight ? 0.38 : 0.34)!;
+  Color get meshAccentGlow => Color.lerp(_meshMixBase, accent, _isLight ? 0.55 : 0.22)!;
+  Color get meshPrimaryLow => Color.lerp(_meshMixBase, primary, _isLight ? 0.26 : 0.22)!;
+
   /// Reads the published document. Returns null if it carries no resolved set
   /// for [brightness] - the caller then renders the neutral default rather than
   /// a half-themed screen.

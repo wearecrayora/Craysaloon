@@ -37,7 +37,10 @@ void main() {
   tearDown(() => cache.close());
 
   BookingRow completed({String? paymentStatus}) {
-    final start = DateTime.now().subtract(const Duration(hours: 1));
+    // A fixed hour TODAY: 'now minus an hour' crossed midnight after 00:00, put
+    // the booking in yesterday and made the day refresh insert it twice.
+    final n = DateTime.now();
+    final start = DateTime(n.year, n.month, n.day, 10);
     return BookingRow(
       id: 'b1',
       customerId: 'c1',

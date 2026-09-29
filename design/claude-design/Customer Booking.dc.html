@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{{const n=new URLSearchParams(location.search).get("theme");if(n==="light"||n==="dark"){document.documentElement.dataset.theme=n}}{if(new URLSearchParams(location.search).get("_omthumb")==="1"){const n=(f)=>{const g=f.focus;if(!g)return;f.focus=function(h){g.call(this,{...h,preventScroll:true})}};n(HTMLElement.prototype);n(SVGElement.prototype);if(typeof MathMLElement!=="undefined"){n(MathMLElement.prototype)}const d=(f)=>{f.removeAttribute("autofocus");f.inert=true;if(!(f instanceof HTMLElement))f.removeAttribute("tabindex")};const p=(f)=>{if(f.hasAttribute("autofocus"))d(f);for(const g of f.querySelectorAll("[autofocus]")){d(g)}};p(document.documentElement);new MutationObserver((f)=>{for(const g of f){for(const h of g.addedNodes){if(h.nodeType===1)p(h)}}}).observe(document,{childList:true,subtree:true})}}{const n=()=>{try{if(document.querySelector('meta[name="color-scheme"]'))return;const d=getComputedStyle(document.documentElement).getPropertyValue("color-scheme").trim();if(d&&d!=="normal")return;const p=(y)=>{if(!y)return null;const m=getComputedStyle(y).backgroundColor.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+%?))?\s*\)$/);if(!m)return null;const w=m[4]==null?1:parseFloat(m[4])/(m[4].endsWith("%")?100:1);if(w<0.99)return null;return[+m[1],+m[2],+m[3]]};const f=p(document.body)||p(document.documentElement);if(!f)return;const g=(y)=>{const m=y/255;return m<=0.04045?m/12.92:((m+0.055)/1.055)**2.4};const h=0.2126*g(f[0])+0.7152*g(f[1])+0.0722*g(f[2]);document.documentElement.style.setProperty("color-scheme",h<0.4?"dark":"light")}catch{}};if(document.readyState==="complete")n();else window.addEventListener("load",n)}var I=["https://claude.ai","https://preview.claude.ai","https://5f0bd573-2543-4d26-9b98-e594dd744d96.claudeusercontent.com"];var B=true;var K=false;var C=()=>{};if(K===true){try{const n=setTimeout.bind(window);const d=1e4;const p=15;const f=1e4;const g=120000;const h=200;const y=(o)=>{try{let r;if(typeof o==="string")r=o;else if(o instanceof URL)r=o.href;else if(typeof Request!=="undefined"&&o instanceof Request)r=o.url;else return null;if(!r)return null;const l=document.baseURI;const i=new URL(r,l);if(i.protocol!=="http:"&&i.protocol!=="https:")return null;if(i.origin!==new URL(l).origin)return null;return i.origin+i.pathname}catch{return null}};const m=new Map;const w=(o)=>{let r=m.get(o);if(!r){if(m.size>=h){const l=m.keys().next().value;if(l!==undefined)m.delete(l)}r={fails:[],until:0,cooldown:f,hard:false};m.set(o,r)}return r};const R=(o)=>{const r=m.get(o);return r!==undefined&&r.until>Date.now()};const O=(o,r)=>{const l=Date.now();const i=w(o);if(r)i.hard=true;if(i.until>l)return;i.fails.push(l);while(i.fails.length>0&&i.fails[0]<=l-d)i.fails.shift();if(i.fails.length>=p){i.until=l+i.cooldown;if(i.hard)i.cooldown=Math.min(i.cooldown*2,g);i.fails.length=0;try{n(()=>{try{S(true)}catch{}},i.until-l+100)}catch{}console.warn("[omelette] asset circuit breaker: pausing requests to "+o+" for "+Math.round((i.until-l)/1000)+"s after "+p+" failures in "+d/1000+"s")}};const e=(o)=>{m.delete(o)};const t=100;const a=new WeakMap;const u=new Set;let s=null;const S=(o)=>{for(const r of Array.from(u)){try{const l=a.get(r);if(l===undefined){u.delete(r);continue}if(o){const i=y(l);if(i!==null&&R(i))continue}a.delete(r);u.delete(r);if(s!==null)s.call(r,l)}catch{}}};C=()=>{try{m.clear();S(false)}catch{}};document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")C()});const _=window.fetch;if(typeof _==="function"){const o=function(...r){let l=null;try{l=y(r[0])}catch{}if(l!==null&&R(l)){let c;try{if(r[1]&&r[1].signal!==undefined){c=r[1].signal||undefined}else if(typeof Request!=="undefined"&&r[0]instanceof Request){c=r[0].signal||undefined}}catch{c=undefined}return new Promise((k,b)=>{const E=()=>{try{return c.reason!==undefined?c.reason:new DOMException("The operation was aborted.","AbortError")}catch{return new DOMException("The operation was aborted.","AbortError")}};try{if(c&&c.aborted){b(E());return}}catch{}let T=false;const j=()=>{if(T)return;T=true;b(E())};try{if(c)c.addEventListener("abort",j,{once:true})}catch{}n(()=>{if(T)return;T=true;try{if(c)c.removeEventListener("abort",j)}catch{}let L;try{L=new Response(null,{status:429,statusText:"Too Many Requests",headers:{"Retry-After":"10"}})}catch{L={ok:false,status:429}}k(L)},250)})}const i=_.apply(window,r);if(l!==null){const c=l;i.then((k)=>{try{if(k.ok)e(c);else if(k.status===401||k.status===403||k.status===404||k.status===429){O(c,k.status!==404)}}catch{}},()=>{})}return i};window.fetch=o}const v=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src");if(v!==undefined&&v.set!==undefined&&v.get!==undefined){const o=v.set;s=o;Object.defineProperty(HTMLImageElement.prototype,"src",{configurable:true,enumerable:v.enumerable,get:v.get,set(r){const l=`${r}`;try{const i=y(l);if(i!==null&&R(i)){a.set(this,l);if(u.size<t)u.add(this);return}}catch{}try{a.delete(this);u.delete(this)}catch{}o.call(this,l)}})}try{const o=HTMLImageElement.prototype.setAttribute;HTMLImageElement.prototype.setAttribute=function(r,l){if(arguments.length<2){o.apply(this,arguments);return}if(typeof r==="string"&&r.toLowerCase()==="src"){const i=`${l}`;try{const c=y(i);if(c!==null&&R(c)){a.set(this,i);if(u.size<t)u.add(this);return}a.delete(this);u.delete(this)}catch{}o.call(this,r,i);return}o.call(this,r,l)}}catch{}window.addEventListener("error",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)O(l,true)}}catch{}},true);window.addEventListener("load",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)e(l);const i=a.get(r);if(i!==undefined){let c=false;try{c=new URL(i,document.baseURI).href===new URL(r.currentSrc||r.src||"",document.baseURI).href}catch{c=false}if(c){a.delete(r);u.delete(r)}}}}catch{}},true)}catch{}}var J=30000;var G=3000;document.addEventListener("DOMContentLoaded",()=>{const n=window.Babel;const d="om-src-id";if(n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[d])){n.registerPlugin(d,({types:h})=>({visitor:{JSXOpeningElement(y,m){const w=y.node;if(w.name&&w.name.type==="JSXMemberExpression")return;for(let t=0;t<w.attributes.length;t++){const a=w.attributes[t];if(a.type==="JSXAttribute"&&a.name&&a.name.name==="data-om-id")return}const R=m.file&&m.file.opts&&m.file.opts.filename||"?";const O=w.loc&&w.loc.start;const e=`jsx:${R}:${w.start??0}:${O?O.line:0}:${O?O.column+1:0}`;w.attributes.push(h.jsxAttribute(h.jsxIdentifier("data-om-id"),h.stringLiteral(e)))}}}))}const p="om-text-extract";let f=false;if(B&&n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[p])){const h=window.React;if(h&&h.useSyncExternalStore&&h.createElement){f=true;const y={};const m=new Set;let w=0;window.__omTextO=y;window.__omTextSet=(e)=>{for(const t in e){const a=e[t];if(a==null)delete y[t];else y[t]=a}w++;m.forEach((t)=>t())};const R=(e)=>{m.add(e);return()=>m.delete(e)};const O=()=>w;window.__OmT=function e(t){h.useSyncExternalStore(R,O,O);return h.createElement("span",{"data-om-text":t.i,className:"__om-t"},t.i in y?y[t.i]:t.children)};n.registerPlugin(p,({types:e})=>{const t={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const a={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const u=(o,r)=>e.logicalExpression("??",e.memberExpression(e.logicalExpression("||",e.memberExpression(e.identifier("window"),e.identifier("__omTextO")),e.objectExpression([])),e.stringLiteral(o),true),r);const s=(o)=>o.file&&o.file.opts&&o.file.opts.filename||"?";const S=(o)=>o.file&&o.file.code||"";const _=(o,r)=>{const l=(c)=>c&&c.start!=null&&c.end!=null&&(c.type==="StringLiteral"||c.type==="TemplateLiteral"&&c.expressions.length===0)?[c.start,c.end]:null;const i=l(r);if(i)return i;if(r&&r.type==="Identifier"){const c=o.scope.getBinding(r.name);if(c&&c.constant&&c.path.node.type==="VariableDeclarator"){return l(c.path.node.init)}}return null};const v=(o,r,l)=>{const i=o.node;let c=false;const k=(E,T)=>{c=true;return e.jsxElement(e.jsxOpeningElement(e.jsxIdentifier("__OmT"),[e.jsxAttribute(e.jsxIdentifier("i"),e.stringLiteral(E))],false),e.jsxClosingElement(e.jsxIdentifier("__OmT")),[T],false)};const b=i.children.map((E)=>{if(E.type==="JSXText"){if(E.start==null||E.end==null)return E;const T=l.slice(E.start,E.end);const j=T.length-T.trimStart().length;const L=T.length-T.trimEnd().length;if(j+L>=T.length)return E;return k(`txt:${r}:${E.start+j}:${E.end-L}`,E)}if(E.type==="JSXExpressionContainer"){const T=_(o,E.expression);if(T)return k(`str:${r}:${T[0]}:${T[1]}`,E)}return E});if(c)i.children=b};return{visitor:{JSXOpeningElement(o,r){const l=o.node;const i=s(r);const c={};for(let k=0;k<l.attributes.length;k++){const b=l.attributes[k];if(b.type!=="JSXAttribute"||!b.name)continue;const E=b.name.name;if(!a[E])continue;if(!b.value||b.value.type!=="StringLiteral")continue;if(b.value.start==null||b.value.end==null)continue;const T=`txt:${i}:${b.value.start}:${b.value.end}`;c[E]=T;b.value=e.jsxExpressionContainer(u(T,e.stringLiteral(b.value.value)))}if(Object.keys(c).length){l.attributes.push(e.jsxAttribute(e.jsxIdentifier("data-om-text-attrs"),e.stringLiteral(JSON.stringify(c))))}},JSXElement(o,r){const l=o.node.openingElement;const i=l&&l.name&&l.name.name;if(i==="__OmT")return;if(typeof i==="string"&&t[i])return;v(o,s(r),S(r))},JSXFragment(o,r){v(o,s(r),S(r))}}}})}}const g=f?["transform-react-jsx-source",d,p]:["transform-react-jsx-source",d];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach((h,y)=>{const m=h.getAttribute("data-plugins")||"";const w=g.filter((R)=>m.indexOf(R)<0);if(w.length){h.setAttribute("data-plugins",m?`${m},${w.join(",")}`:w.join(","))}if(!h.hasAttribute("data-filename")){h.setAttribute("data-filename",h.getAttribute("src")||`inline-${y}`)}})});var A=window.parent;var U="not editable here — open the project in the Claude Design editor to save";var W=()=>Promise.resolve({persisted:false,noHost:true,reason:U});var H=W;var M="data/storage.json";var z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.match(/\/projects\/([^/]+)\/serve\//);if(d)return d[1];return n.hostname.split(".")[0]||""}catch{return location.hostname.split(".")[0]||""}};var Z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.indexOf("/serve/");if(d>=0)return n.origin+n.pathname.slice(0,d+"/serve/".length)+M}catch{}return"./"+M};var x=null;var N=()=>{if(!x){x=fetch(Z(),{cache:"no-store"}).then((n)=>{if(n.ok)return n.text();return n.status===404?"":null}).catch(()=>null).then((n)=>{if(n===null){x=null;return null}const d=new Map;if(!n)return d;let p;try{p=JSON.parse(n)}catch{console.warn("[omelette.storage] "+M+" is not valid JSON; treating the store as unreadable so a save cannot overwrite the "+"hand-edited bytes. Fix the JSON (or delete the file) to re-enable persistence.");x=null;return null}if(p===null||typeof p!=="object"||Array.isArray(p)){console.warn("[omelette.storage] "+M+" doesn't hold a JSON object; treating the store as unreadable so a save cannot "+"overwrite the hand-edited bytes. Make the top level a JSON object to re-enable persistence.");x=null;return null}const f=p;if("data"in f){const g=f.data;if(g===null||typeof g!=="object"||Array.isArray(g)){console.warn("[omelette.storage] "+M+' has a "data" field that is not a JSON object; treating the store as unreadable so a '+'save cannot overwrite the hand-edited bytes. Make "data" a JSON object to re-enable persistence.');x=null;return null}const h=f._meta;const y=h!==null&&typeof h==="object"?h.project:undefined;if(typeof y==="string"&&y!==""&&y!==z())return d;for(const m of Object.keys(g))d.set(m,g[m]);return d}for(const g of Object.keys(f)){if(g!=="_meta")d.set(g,f[g])}return d})}return x};var F=(n)=>H(M,JSON.stringify({_meta:{project:z(),version:1},data:Object.fromEntries(n)},null,2));var D=Promise.resolve();var $=(n)=>{const d=D.then(n);D=d.then(()=>{return},()=>{return});return d};var V=/sk-(?:ant-)?[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|xox[a-z]-[A-Za-z0-9][A-Za-z0-9-]{9,}|AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/;var Y=/password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|credential/i;var Q=(n,d,p)=>{if(V.test(d)||Y.test(n)&&typeof p==="string"&&p.length>=8){console.warn('[omelette.storage] the value for "'+n+'" looks like a credential. The storage file is a plaintext project file — visible to '+"everyone with project access and copied when the project is duplicated. Do not store secrets here.")}};var q={persisted:false,reason:"could not load the existing store — not overwriting it"};var X={persisted:false,reason:"stored value changed since a failed read — re-read this key before saving"};var P=new Set;var ee={get:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.get: key must be a string"))}return $(N).then((d)=>{if(d===null){P.add(n);return null}P.delete(n);if(!d.has(n))return null;const p=d.get(n);return p==null?null:JSON.parse(JSON.stringify(p))})},set:(n,d)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.set: key must be a string"))}let p;try{p=JSON.stringify(d)}catch(g){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable ("+String(g)+")"))}if(p===undefined){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable"))}Q(n,p,d);const f=JSON.parse(p);return $(()=>N().then((g)=>{if(g===null)return q;if(P.has(n)){if(g.has(n))return X;P.delete(n)}g.set(n,f);return F(g)}))},delete:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.delete: key must be a string"))}return $(()=>N().then((d)=>{if(d===null)return q;if(P.has(n)){if(d.has(n))return X;P.delete(n)}d.delete(n);return F(d)}))},keys:()=>$(N).then((n)=>n===null?[]:Array.from(n.keys()))};window.omelette={writeFile:(n,d)=>H(n,d).then((p)=>{if(!p.persisted&&!p.noHost){throw new Error(p.reason||"write failed")}}),storage:ee};if(A&&A!==window){const n=(e,t)=>{try{A.postMessage({__omelette_log:true,type:e,data:t},"*")}catch{}};["log","warn","error"].forEach((e)=>{const t=console[e];console[e]=(...a)=>{const u=a.map((s)=>{try{return typeof s==="object"?JSON.stringify(s):String(s)}catch{try{return String(s)}catch{return"[unstringifiable]"}}}).join(" ");n(e,u);t.apply(console,a)}});window.addEventListener("error",(e)=>{const t=e.target;if(t&&t!==window&&t.tagName){const a=t.src||t.href||"";n("resource_error",`${t.tagName} failed to load: ${a}`)}else{n("error",`${e.message||"Unknown error"} at ${e.filename||"?"}:${e.lineno||0}:${e.colno||0}`)}},true);window.addEventListener("unhandledrejection",(e)=>{const t=e.reason;const a=t instanceof Error?`${t.message} ${t.stack}`:String(t);n("error",`Unhandled rejection: ${a}`)});window.addEventListener("click",(e)=>{if(e.defaultPrevented||e.button!==0)return;if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const t=e.composedPath?e.composedPath():[];const a=["button","input","select","textarea","summary","label"];let u=null;for(const v of t){if(!(v instanceof Element))continue;if(v.localName==="a"){if(!(v instanceof HTMLAnchorElement))return;u=v;break}if(a.indexOf(v.localName)!==-1)return}if(!u)return;if(u.isContentEditable)return;const s=u.closest("[contenteditable]");if(s&&s.getAttribute("contenteditable")!=="false")return;const S=(u.getAttribute("target")||"_self").toLowerCase();if(S!=="_self"&&S!=="_top"&&S!=="_parent")return;let _;try{_=new URL(u.href)}catch{return}if(_.protocol!=="http:"&&_.protocol!=="https:")return;if(location.origin==="null")return;if(_.origin===location.origin)return;e.preventDefault();window.open(_.href,"_blank","noopener,noreferrer")});const d=()=>{try{A.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(window.ResizeObserver)new ResizeObserver(d).observe(document.documentElement);const p=()=>{d();if(!document.querySelector('script[type="text/babel"],script[type="text/jsx"]'))return;const e=()=>document.getElementById("root")||document.querySelector("body > div[id]");const t=e()?.firstElementChild??null;let a=0;const u=()=>{const s=e();if(s&&s.firstElementChild!==t||++a>30){d();return}setTimeout(u,100)};setTimeout(u,100)};if(document.readyState==="complete")p();else window.addEventListener("load",p);const f={};let g=0;const h=(e)=>new Promise((t,a)=>{if(!I.length){a(new Error("claude.complete: no parent origin"));return}const u=`c${++g}`;const s=()=>setTimeout(()=>{delete f[u];a(new Error(`claude.complete: no data for ${J/1000}s`))},J);const S=s();f[u]={resolve:t,reject:a,text:"",t:S,arm:s};try{for(const _ of I){A.postMessage({__om_api:true,id:u,body:e},_)}}catch(_){clearTimeout(S);delete f[u];a(_)}});const y=8;const m=async(e,t)=>{if(!Array.isArray(e.messages)){throw new Error("claude.complete: tools require a messages array")}const a=e.messages.slice();const u={...e,tools:e.tools.map((_)=>{if(_===null||typeof _!=="object")return _;const v={};for(const o of Object.keys(_)){if(typeof _[o]!=="function")v[o]=_[o]}return v})};const s=u.tool_choice;const S=s!=null&&(s.type==="any"||s.type==="tool")?{...u,tool_choice:s.disable_parallel_tool_use!==undefined?{type:"auto",disable_parallel_tool_use:s.disable_parallel_tool_use}:{type:"auto"}}:u;for(let _=0;_<y;_++){const v=await h({..._===0?u:S,messages:a});const o=v.message;const r=o&&Array.isArray(o.content)?o.content:null;const l=r?r.filter((c)=>c?.type==="tool_use"):[];if(o?.stop_reason!=="tool_use"||l.length===0){return v.text}const i=[];for(const c of l){const k=t.get(c.name);if(!k){i.push({type:"tool_result",tool_use_id:c.id,content:`no handler for tool "${c.name}"`,is_error:true});continue}try{const b=await k(c.input);const E=typeof b==="string"?b:O(b)??"";i.push({type:"tool_result",tool_use_id:c.id,content:E})}catch(b){i.push({type:"tool_result",tool_use_id:c.id,content:String(b?.message??b??"tool handler failed"),is_error:true})}}a.push({role:"assistant",content:r},{role:"user",content:i})}throw new Error(`claude.complete: exceeded ${y} tool turns`)};window.claude={complete(e){const t=e;if(t!==null&&typeof t==="object"&&Array.isArray(t.tools)&&t.tools.some((a)=>a!==null&&typeof a==="object"&&typeof a.run==="function")){const a=new Map;for(const u of t.tools){if(u!==null&&typeof u==="object"&&typeof u.run==="function"){a.set(String(u.name),u.run)}}return m(t,a)}return h(e).then((a)=>a.text)}};const w={};let R=0;H=(e,t)=>new Promise((a)=>{if(!I.length){a({persisted:false,noHost:true,reason:U});return}const u=`f${++R}`;const s=setTimeout(()=>{delete w[u];a({persisted:false,noHost:true,reason:U})},G);w[u]={settle:a,t:s};try{for(const S of I){A.postMessage({__om_file:true,id:u,op:"write",path:e,content:t},S)}}catch{clearTimeout(s);delete w[u];a({persisted:false,noHost:true,reason:U})}});const O=(e)=>{try{return JSON.stringify(e)}catch{return JSON.stringify(String(e))}};window.addEventListener("message",(e)=>{if(I.indexOf(e.origin)<0)return;if(e.source!==A)return;const t=e.data;if(!t)return;if(t.type==="omelette-preview-refresh"){if(typeof t.token!=="string"||!/^[0-9a-f.-]+(\.(rc|pr-[0-9]+))?(\.[0-9]+\.[0-9a-f]{16})?$/.test(t.token))return;const s=Math.max(1,Math.floor((t.expiresAt||0)-Date.now()/1000));document.cookie="__Host-omelette-preview="+t.token+"; Path=/; Secure; SameSite=None; Partitioned; Max-Age="+s;C();return}if(t.__om_file_r){const s=w[t.id];if(!s)return;clearTimeout(s.t);delete w[t.id];s.settle(t.ok?{persisted:true}:{persisted:false,reason:t.error||"write failed"});return}if(t.__om_api_r){const s=f[t.id];if(!s)return;if(t.error!=null){clearTimeout(s.t);delete f[t.id];s.reject(new Error(t.error));return}if(t.chunk!=null){clearTimeout(s.t);s.t=s.arm();s.text+=t.chunk;return}if(t.done){clearTimeout(s.t);delete f[t.id];s.resolve({text:t.text!=null?t.text:s.text,message:t.message});return}return}if(!t.__om_eval)return;const a=t;const u=(s)=>{e.source.postMessage({...s,__om_eval_r:1,id:a.id},e.origin)};try{const s=(0,eval)(a.code);if(s&&typeof s.then==="function"){s.then((S)=>u({ok:1,v:O(S)}),(S)=>u({ok:0,e:String(S)}))}else{u({ok:1,v:O(s)})}}catch(s){u({ok:0,e:String(s)})}})}})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:absolute;inset:0;min-height:0;display:flex;flex-direction:column;overflow:hidden;background:transparent;color:var(--text-primary)">
+
+<div style="min-height:56px;flex:none;padding:4px;display:flex;align-items:center;gap:8px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-bottom:1px solid var(--divider)">
+  <sc-if value="{{ hasBack }}" hint-placeholder-val="{{ true }}">
+    <button aria-label="Back" onClick="{{ back }}" style="width:48px;height:48px;flex:none;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">arrow_back</span></button>
+  </sc-if>
+  <sc-if value="{{ noBack }}" hint-placeholder-val="{{ false }}"><span style="width:8px;flex:none"></span></sc-if>
+  <sc-if value="{{ hasMark }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:var(--hw);font-size:13px;line-height:1">{{ brandMark }}</span></sc-if>
+  <sc-if value="{{ noMark }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">content_cut</span></span></sc-if>
+  <span style="flex:1;min-width:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h3);line-height:var(--lh-h3);color:var(--brand-ink)">{{ brandName }}</span>
+</div>
+
+<sc-if value="{{ showOffline }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="flex:none;display:flex;align-items:flex-start;gap:8px;padding:8px 16px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-bottom:1px solid var(--divider)">
+    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:18px;width:18px;overflow:hidden;flex:none;color:var(--text-secondary)">cloud_off</span>
+    <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ offlineText }}</span>
+  </div>
+</sc-if>
+
+<div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px 24px;display:flex;flex-direction:column;gap:24px">
+  <sc-if value="{{ hasStep }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:none;display:flex;flex-direction:column;gap:4px">
+      <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ stepText }}</span>
+      <h1 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">{{ title }}</h1>
+    </div>
+  </sc-if>
+  <sc-if value="{{ noStep }}" hint-placeholder-val="{{ false }}">
+    <h1 style="flex:none;margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">{{ title }}</h1>
+  </sc-if>
+
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+
+    <sc-if value="{{ isC5 }}" hint-placeholder-val="{{ true }}">
+      <sc-if value="{{ c5Empty }}" hint-placeholder-val="{{ false }}">
+        <p style="flex:none;margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.c5Empty }}</p>
+      </sc-if>
+      <sc-for list="{{ cats }}" as="cat" hint-placeholder-count="4">
+        <div role="radiogroup" aria-label="{{ cat.name }}" style="flex:none;display:flex;flex-direction:column">
+          <h2 style="margin:0 0 4px;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ cat.name }}</h2>
+          <sc-for list="{{ cat.items }}" as="it" hint-placeholder-count="2">
+            <button role="radio" aria-checked="{{ it.checked }}" onClick="{{ it.pick }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:8px 0;border:none;border-bottom:1px solid var(--divider);background:transparent;cursor:pointer;text-align:left;color:var(--text-primary)">
+              <span style="width:24px;height:24px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;border:{{ it.ring }}"><span style="width:12px;height:12px;border-radius:6px;background:{{ it.dot }}"></span></span>
+              <span style="width:56px;height:56px;flex:none;border-radius:14px;overflow:hidden"><image-slot id="svc-{{ it.key }}" shape="rounded" radius="14" src="{{ it.img }}" credit="{{ it.credit }}" credit-href="{{ it.creditHref }}" placeholder="Photo" style="width:56px;height:56px"></image-slot></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column">
+                <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ it.name }}</span>
+                <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ it.dur }}</span>
+              </span>
+              <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;white-space:nowrap">{{ it.price }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-for>
+    </sc-if>
+
+    <sc-if value="{{ isC6 }}" hint-placeholder-val="{{ false }}">
+      <p style="flex:none;margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ forService }}</p>
+      <sc-if value="{{ c6Empty }}" hint-placeholder-val="{{ false }}">
+        <p style="flex:none;margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.c6Empty }}</p>
+      </sc-if>
+      <div style="flex:none;display:flex;flex-direction:column">
+        <sc-for list="{{ addonRows }}" as="a" hint-placeholder-count="4">
+          <button role="checkbox" aria-checked="{{ a.checked }}" onClick="{{ a.toggle }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:8px 0;border:none;border-bottom:1px solid var(--divider);background:transparent;cursor:pointer;text-align:left;color:var(--text-primary)">
+            <span style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;margin-left:-12px">
+              <span style="width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:{{ a.boxBg }};border:{{ a.boxBorder }};color:var(--on-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;font-weight:600">{{ a.tick }}</span></span>
+            </span>
+            <span style="flex:1;min-width:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ a.name }}</span>
+            <span style="display:flex;flex-direction:column;align-items:flex-end">
+              <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;white-space:nowrap">{{ a.price }}</span>
+              <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary);white-space:nowrap">{{ a.mins }}</span>
+            </span>
+          </button>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isC7 }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.stylist }}</span>
+        <div role="radiogroup" style="display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ stylistChips }}" as="c" hint-placeholder-count="3">
+            <button role="radio" aria-checked="{{ c.checked }}" onClick="{{ c.pick }}" style="min-height:48px;padding:8px 16px;display:flex;align-items:center;gap:4px;border-radius:var(--r-chip);cursor:pointer;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;background:{{ c.bg }};color:{{ c.fg }};border:{{ c.border }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:1;overflow:hidden;width:{{ c.iw }}">check</span>{{ c.name }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.date }}</span>
+        <div role="radiogroup" style="display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:0 16px 4px">
+          <sc-for list="{{ days }}" as="d" hint-placeholder-count="7">
+            <button role="radio" aria-checked="{{ d.checked }}" aria-label="{{ d.aria }}" onClick="{{ d.pick }}" style="flex:none;min-width:56px;min-height:64px;padding:8px;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;cursor:pointer;background:{{ d.bg }};color:{{ d.fg }};border:{{ d.border }}">
+              <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption)">{{ d.dow }}</span>
+              <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3);font-variant-numeric:tabular-nums">{{ d.num }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ dayLabel }}</span>
+        <sc-if value="{{ showFit }}" hint-placeholder-val="{{ false }}">
+          <span style="display:flex;gap:8px;align-items:flex-start;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;flex:none;color:var(--info)">schedule</span>{{ fitText }}</span>
+        </sc-if>
+        <sc-if value="{{ hasSlots }}" hint-placeholder-val="{{ true }}">
+          <div role="radiogroup" style="display:grid;gap:8px;grid-template-columns:{{ slotCols }}">
+            <sc-for list="{{ slots }}" as="t" hint-placeholder-count="9">
+              <button role="radio" aria-checked="{{ t.checked }}" onClick="{{ t.pick }}" style="min-height:48px;padding:8px;border-radius:var(--r-chip);cursor:pointer;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums;background:{{ t.bg }};color:{{ t.fg }};border:{{ t.border }}">{{ t.label }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noSlots }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+            <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.noTimes }}</span>
+            <button onClick="{{ nextDay }}" style="align-self:flex-start;min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.nextDayBtn }}</button>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isC8 }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ slotTaken }}" hint-placeholder-val="{{ false }}">
+        <div role="alert" style="flex:none;display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border:2px solid var(--danger)">
+          <span style="display:flex;gap:8px;align-items:flex-start;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--danger)">event_busy</span>{{ s.taken }}</span>
+          <button onClick="{{ toC7 }}" style="align-self:flex-start;min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.pickAnother }}</button>
+        </div>
+      </sc-if>
+      <div style="flex:none;display:flex;flex-direction:column;border-top:1px solid var(--divider)">
+        <sc-for list="{{ summary }}" as="r" hint-placeholder-count="5">
+          <div style="display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--divider)">
+            <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ r.k }}</span>
+            <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);text-align:right;font-variant-numeric:tabular-nums;max-width:100%">{{ r.v }}</span>
+          </div>
+        </sc-for>
+        <div style="display:flex;gap:12px;align-items:baseline;justify-content:space-between;flex-wrap:wrap;padding:16px 0">
+          <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.total }}</span>
+          <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-ml);line-height:var(--lh-ml);font-variant-numeric:tabular-nums">{{ totalStr }}</span>
+        </div>
+      </div>
+      <div style="flex:none;display:flex;flex-direction:column;gap:4px">
+        <h2 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.policyHead }}</h2>
+        <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.policy }}</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isC9 }}" hint-placeholder-val="{{ false }}">
+      <span style="flex:none;align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:var(--r-chip);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border:1px solid var(--glass-line);font-family:var(--font-body);font-weight:500;font-size:var(--fs-micro);line-height:var(--lh-micro)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:16px;line-height:1;width:16px;overflow:hidden;color:{{ statusCol }}">{{ statusIcon }}</span>{{ statusLabel }}</span>
+      <div style="flex:none;display:flex;flex-direction:column;border-top:1px solid var(--divider)">
+        <sc-for list="{{ detail }}" as="r" hint-placeholder-count="5">
+          <div style="display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--divider)">
+            <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ r.k }}</span>
+            <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);text-align:right;font-variant-numeric:tabular-nums">{{ r.v }}</span>
+          </div>
+        </sc-for>
+        <div style="display:flex;gap:12px;align-items:baseline;justify-content:space-between;flex-wrap:wrap;padding:16px 0">
+          <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.total }}</span>
+          <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-ml);line-height:var(--lh-ml);font-variant-numeric:tabular-nums">₹750</span>
+        </div>
+      </div>
+      <sc-if value="{{ canCancel }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ openCancel }}" style="flex:none;align-self:flex-start;min-height:48px;padding:12px 0;border:none;background:transparent;display:flex;align-items:center;gap:8px;color:var(--text-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;color:var(--danger);text-decoration:none">event_busy</span>{{ s.cancelBooking }}</button>
+      </sc-if>
+    </sc-if>
+
+    <sc-if value="{{ isC10 }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ c10Empty }}" hint-placeholder-val="{{ false }}">
+        <p style="flex:none;margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.c10Empty }}</p>
+      </sc-if>
+      <div style="flex:none;display:flex;flex-direction:column">
+        <sc-for list="{{ visits }}" as="v" hint-placeholder-count="4">
+          <div style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--divider)">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+              <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ v.date }}</span>
+              <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ v.svc }}</span>
+              <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ v.who }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;max-width:45%">
+              <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;white-space:nowrap">{{ v.amt }}</span>
+              <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary);text-align:right">{{ v.how }}</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isC11 }}" hint-placeholder-val="{{ false }}">
+      <p style="flex:none;margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary);text-wrap:pretty">{{ s.referCond }}</p>
+      <div style="flex:none;display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+        <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.yourCode }}</span>
+        <span aria-label="ASHA 4821" style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mxl);line-height:var(--lh-mxl);letter-spacing:0.12em;font-variant-numeric:tabular-nums;word-break:break-all">ASHA4821</span>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button onClick="{{ copyCode }}" style="flex:1 1 120px;min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">content_copy</span>{{ s.copy }}</button>
+          <button onClick="{{ openShare }}" style="flex:1 1 120px;min-height:48px;padding:12px 16px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">share</span>{{ s.share }}</button>
+        </div>
+      </div>
+      <sc-if value="{{ hasFriends }}" hint-placeholder-val="{{ true }}">
+        <p style="flex:none;margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.referStatus }}</p>
+        <div style="flex:none;display:flex;flex-direction:column">
+          <h2 style="margin:0 0 4px;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ s.friends }}</h2>
+          <sc-for list="{{ friends }}" as="f" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--divider)">
+              <span style="flex:1;min-width:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ f.name }}</span>
+              <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:var(--r-chip);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border:1px solid var(--glass-line);font-family:var(--font-body);font-weight:500;font-size:var(--fs-micro);line-height:var(--lh-micro)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:16px;line-height:1;width:16px;overflow:hidden;color:{{ f.col }}">{{ f.icon }}</span>{{ f.label }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noFriends }}" hint-placeholder-val="{{ false }}">
+        <p style="flex:none;margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.noFriends }}</p>
+      </sc-if>
+    </sc-if>
+
+    <sc-if value="{{ isC12 }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:none;display:flex;flex-direction:column;border-top:1px solid var(--divider)">
+        <div style="display:flex;flex-direction:column;padding:12px 0;border-bottom:1px solid var(--divider)">
+          <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.nameK }}</span>
+          <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">Asha Rao</span>
+        </div>
+        <div style="display:flex;flex-direction:column;padding:12px 0;border-bottom:1px solid var(--divider)">
+          <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.phoneK }}</span>
+          <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums">+91 98xxx x4821</span>
+        </div>
+      </div>
+      <div style="flex:none;display:flex;flex-direction:column">
+        <sc-for list="{{ meRows }}" as="m" hint-placeholder-count="5">
+          <button onClick="{{ m.pick }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 0;border:none;border-bottom:1px solid var(--divider);background:transparent;cursor:pointer;text-align:left;color:var(--text-primary)">
+            <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">{{ m.icon }}</span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column">
+              <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ m.label }}</span>
+              <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ m.sub }}</span>
+            </span>
+            <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-muted)">chevron_right</span>
+          </button>
+        </sc-for>
+      </div>
+      <span style="flex:none;margin-top:24px;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-muted)">App by Crayora</span>
+    </sc-if>
+
+    <sc-if value="{{ isC13 }}" hint-placeholder-val="{{ false }}">
+      <p style="flex:none;margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.dataIntro }}</p>
+      <div style="flex:none;display:flex;flex-direction:column">
+        <h2 style="margin:0 0 4px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.msgHead }}</h2>
+        <sc-for list="{{ toggles }}" as="t" hint-placeholder-count="2">
+          <button role="switch" aria-checked="{{ t.checked }}" onClick="{{ t.toggle }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:8px 0;border:none;border-bottom:1px solid var(--divider);background:transparent;cursor:pointer;text-align:left;color:var(--text-primary)">
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column">
+              <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ t.label }}</span>
+              <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ t.state }}</span>
+            </span>
+            <span style="width:52px;height:32px;flex:none;border-radius:16px;position:relative;transition:background 120ms cubic-bezier(0.2,0,0,1);background:{{ t.track }};border:{{ t.trackBorder }}">
+              <span style="position:absolute;top:50%;width:{{ t.knob }};height:{{ t.knob }};border-radius:12px;transform:translateY(-50%);transition:left 120ms cubic-bezier(0.2,0,0,1);left:{{ t.left }};background:{{ t.knobBg }}"></span>
+            </span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+        <h2 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.copyHead }}</h2>
+        <sc-if value="{{ notRequested }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.copyBody }}</p>
+          <button onClick="{{ requestCopy }}" disabled="{{ offlineFlag }}" style="align-self:flex-start;min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.getCopy }}</button>
+        </sc-if>
+        <sc-if value="{{ requested }}" hint-placeholder-val="{{ false }}">
+          <div role="status" style="display:flex;gap:8px;align-items:flex-start;padding:12px 16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+            <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--info)">schedule</span>
+            <span style="display:flex;flex-direction:column"><span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.readyBy }}</span><span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.requestedOn }}</span></span>
+          </div>
+        </sc-if>
+      </div>
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+        <h2 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.eraseHead }}</h2>
+        <sc-if value="{{ notErased }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.eraseKept }}</p>
+          <button onClick="{{ openErase }}" disabled="{{ offlineFlag }}" style="align-self:flex-start;min-height:48px;padding:12px 16px;border:1px solid var(--danger);border-radius:var(--r);background:transparent;color:var(--text-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;color:var(--danger)">delete</span>{{ s.eraseBtn }}</button>
+        </sc-if>
+        <sc-if value="{{ erased }}" hint-placeholder-val="{{ false }}">
+          <div role="status" style="display:flex;gap:8px;align-items:flex-start;padding:12px 16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+            <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--info)">schedule</span>
+            <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.eraseDone }}</span>
+          </div>
+        </sc-if>
+      </div>
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+        <h2 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.contactHead }}</h2>
+        <sc-if value="{{ hasContact }}" hint-placeholder-val="{{ true }}">
+          <a href="{{ mailto }}" style="min-height:48px;display:flex;align-items:center;gap:12px;color:var(--brand-ink);font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);word-break:break-all"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">mail</span>{{ privacy }}</a>
+          <a href="tel:+918041234567" style="min-height:48px;display:flex;align-items:center;gap:12px;color:var(--brand-ink);font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">call</span>080 4123 4567</a>
+        </sc-if>
+        <sc-if value="{{ noContact }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.noContact }}</p>
+        </sc-if>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+    <div aria-busy="true" aria-label="Loading" style="flex:none;display:flex;flex-direction:column;gap:12px">
+      <span style="width:40%;height:24px;border-radius:6px;background:var(--surface-sunken)"></span>
+      <span style="width:100%;height:64px;border-radius:4px;background:var(--surface-sunken)"></span>
+      <span style="width:100%;height:64px;border-radius:4px;background:var(--surface-sunken)"></span>
+      <span style="width:100%;height:64px;border-radius:4px;background:var(--surface-sunken)"></span>
+      <span style="width:40%;height:24px;border-radius:6px;background:var(--surface-sunken);margin-top:12px"></span>
+      <span style="width:100%;height:64px;border-radius:4px;background:var(--surface-sunken)"></span>
+    </div>
+  </sc-if>
+  <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+      <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ errTitle }}</span>
+      <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.errBody }}</span>
+    </div>
+  </sc-if>
+</div>
+
+<sc-if value="{{ showFooter }}" hint-placeholder-val="{{ true }}">
+  <div style="flex:none;padding:12px 16px;display:flex;flex-direction:column;gap:8px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider)">
+    <sc-if value="{{ showTotals }}" hint-placeholder-val="{{ false }}">
+      <div aria-live="polite" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+        <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.total }}</span>
+        <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums">{{ totalLine }}</span>
+      </div>
+    </sc-if>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <sc-if value="{{ hasSecondary }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ secondaryAction }}" style="flex:1 1 120px;min-height:56px;padding:16px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ secondaryLabel }}</button>
+      </sc-if>
+      <button onClick="{{ primaryAction }}" disabled="{{ primaryDisabled }}" aria-busy="{{ busyAttr }}" style="flex:1 1 120px;min-height:56px;padding:16px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;background:{{ primaryBg }};color:{{ primaryFg }};cursor:{{ primaryCursor }}">
+        <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">progress_activity</span></sc-if>
+        {{ primaryLabel }}
+      </button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+  <div style="flex:none;display:flex;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider);padding:8px 0 4px">
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+      <button aria-current="{{ n.current }}" onClick="{{ n.pick }}" style="flex:1;min-width:0;min-height:56px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:0 2px">
+        <span style="width:56px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:{{ n.pill }};color:{{ n.ic }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;font-variation-settings:{{ n.fill }}">{{ n.icon }}</span></span>
+        <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);text-align:center;font-weight:{{ n.fw }};color:{{ n.fg }}">{{ n.label }}</span>
+      </button>
+    </sc-for>
+  </div>
+</sc-if>
+
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:var(--overlay);transition:opacity 220ms cubic-bezier(0.2,0,0,1);opacity:{{ ovOp }};pointer-events:{{ ovPe }}"></div>
+<div role="dialog" aria-modal="true" aria-label="{{ sheetTitle }}" style="position:absolute;left:0;right:0;bottom:0;max-height:90%;overflow-y:auto;background:var(--glass-sheet);backdrop-filter:blur(30px) saturate(1.6);-webkit-backdrop-filter:blur(30px) saturate(1.6);box-shadow:0 -12px 40px rgba(90,30,45,0.18);border-top:1px solid var(--glass-line);border-radius:var(--r-sheet) var(--r-sheet) 0 0;padding:8px 16px 32px;display:flex;flex-direction:column;gap:12px;transform:{{ sheetT }};transition:{{ sheetTr }}">
+  <span style="flex:none;align-self:center;width:32px;height:4px;border-radius:2px;background:var(--border-strong)"></span>
+  <div style="flex:none;display:flex;align-items:flex-start;gap:8px">
+    <span style="flex:1;min-width:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ sheetTitle }}</span>
+    <button aria-label="Close" onClick="{{ closeSheet }}" style="width:48px;height:48px;margin:-8px -12px 0 0;border:none;background:transparent;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;color:var(--text-secondary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">close</span></button>
+  </div>
+
+  <sc-if value="{{ sheetCancel }}" hint-placeholder-val="{{ false }}">
+    <p style="flex:none;margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums">{{ s.cancelWhat }}</p>
+    <p style="flex:none;margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.policy }}</p>
+    <button onClick="{{ doCancel }}" style="flex:none;width:100%;min-height:48px;padding:12px 16px;border:1px solid var(--danger);border-radius:var(--r);background:transparent;color:var(--text-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;color:var(--danger)">event_busy</span>{{ s.yesCancel }}</button>
+    <button onClick="{{ closeSheet }}" style="flex:none;width:100%;min-height:56px;padding:16px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.keepBooking }}</button>
+  </sc-if>
+
+  <sc-if value="{{ sheetErase }}" hint-placeholder-val="{{ false }}">
+    <p style="flex:none;margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.eraseKept }}</p>
+    <label for="erase-in" style="flex:none;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.typeErase }}</label>
+    <input id="erase-in" value="{{ eraseVal }}" onChange="{{ onErase }}" autocomplete="off" autocapitalize="characters" spellcheck="false" style="flex:none;min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);letter-spacing:0.1em;color:var(--text-primary);outline-color:var(--brand-ink)"></input>
+    <button onClick="{{ doErase }}" disabled="{{ eraseDisabled }}" style="flex:none;width:100%;min-height:48px;padding:12px 16px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;background:{{ eraseBg }};color:{{ eraseFg }};cursor:{{ eraseCursor }}">{{ s.eraseBtn }}</button>
+    <button onClick="{{ closeSheet }}" style="flex:none;width:100%;min-height:56px;padding:16px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.keepData }}</button>
+  </sc-if>
+
+  <sc-if value="{{ sheetLang }}" hint-placeholder-val="{{ false }}">
+    <div role="radiogroup" style="flex:none;display:flex;flex-direction:column">
+      <sc-for list="{{ langs }}" as="l" hint-placeholder-count="3">
+        <button role="radio" aria-checked="{{ l.checked }}" onClick="{{ l.pick }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 0;border:none;border-bottom:1px solid var(--divider);background:transparent;cursor:pointer;text-align:left;color:var(--text-primary)">
+          <span style="width:24px;height:24px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;border:{{ l.ring }}"><span style="width:12px;height:12px;border-radius:6px;background:{{ l.dot }}"></span></span>
+          <span style="flex:1;font-family:'Noto Sans','Noto Sans Devanagari',sans-serif;font-size:var(--fs-body);line-height:var(--lh-body)">{{ l.label }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ sheetShare }}" hint-placeholder-val="{{ false }}">
+    <span style="flex:none;font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">Android share sheet (system UI)</span>
+    <sc-for list="{{ shareApps }}" as="a" hint-placeholder-count="4">
+      <button onClick="{{ closeSheet }}" style="flex:none;display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 0;border:none;border-bottom:1px solid var(--divider);background:transparent;cursor:pointer;text-align:left;color:var(--text-primary);font-family:system-ui,sans-serif;font-size:15px">
+        <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">{{ a.icon }}</span>{{ a.label }}
+      </button>
+    </sc-for>
+  </sc-if>
+</div>
+
+<sc-if value="{{ hasSnack }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="position:absolute;left:16px;right:16px;bottom:96px;display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:var(--r-chip);background:var(--surface-sunken);border:1px solid var(--border-strong);box-shadow:0 8px 24px rgba(28,27,25,0.16)">
+    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--success)">check_circle</span>
+    <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ snackText }}</span>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static SERVICES = [
+    ['hair', 'haircut', 45, 600], ['hair', 'wash', 30, 400], ['hair', 'kids', 30, 350],
+    ['beard', 'beardtrim', 20, 300], ['beard', 'beardcolour', 40, 650],
+    ['colour', 'global', 90, 2500], ['colour', 'highlights', 120, 3800],
+    ['skin', 'cleanup', 45, 900], ['skin', 'facial', 60, 1500],
+  ];
+  static ADDONS = [['massage', 150, 15], ['hairwash', 100, 10], ['serum', 200, 5], ['beardadd', 250, 20]];
+  static STR = {
+    hair: ['Hair', 'बाल', 'Hair'], beard: ['Beard', 'दाढ़ी', 'Beard'], colour: ['Colour', 'कलर', 'Colour'], skin: ['Skin', 'त्वचा', 'Skin'],
+    haircut: ['Haircut', 'हेयरकट', 'Haircut'], wash: ['Hair wash and blow-dry', 'बाल धुलाई और ब्लो-ड्राई', 'Hair wash aur blow-dry'], kids: ["Kids' haircut", 'बच्चों का हेयरकट', 'Bachchon ka haircut'],
+    beardtrim: ['Beard trim', 'दाढ़ी ट्रिम', 'Beard trim'], beardcolour: ['Beard shape and colour', 'दाढ़ी शेप और कलर', 'Beard shape aur colour'],
+    global: ['Global colour', 'पूरे बालों में कलर', 'Global colour'], highlights: ['Highlights', 'हाइलाइट्स', 'Highlights'],
+    cleanup: ['Clean-up', 'क्लीन-अप', 'Clean-up'], facial: ['Facial', 'फ़ेशियल', 'Facial'],
+    massage: ['Head massage', 'सिर की मालिश', 'Head massage'], hairwash: ['Hair wash', 'बाल धुलाई', 'Hair wash'], serum: ['Hair serum', 'हेयर सीरम', 'Hair serum'], beardadd: ['Beard trim', 'दाढ़ी ट्रिम', 'Beard trim'],
+    min: ['{m} min', '{m} मिनट', '{m} min'], plusMin: ['+{m} min', '+{m} मिनट', '+{m} min'],
+    step: ['Step {n} of 4', 'चरण {n} / 4', 'Step {n} / 4'],
+    t5: ['Choose a service', 'सर्विस चुनें', 'Service chunein'], t6: ['Add anything?', 'कुछ और जोड़ना है?', 'Kuch aur add karna hai?'], t7: ['Stylist and time', 'स्टाइलिस्ट और समय', 'Stylist aur time'], t8: ['Review your booking', 'अपनी बुकिंग देखें', 'Apni booking dekhein'],
+    t9: ['Your booking', 'आपकी बुकिंग', 'Aapki booking'], t10: ['Visit history', 'विज़िट का इतिहास', 'Visit history'], t11: ['Give ₹100, get ₹100', '₹100 दें, ₹100 पाएँ', '₹100 dein, ₹100 paayein'], t12: ['Me', 'मेरा खाता', 'Mera khaata'], t13: ['Your data', 'आपका डेटा', 'Aapka data'],
+    c5Empty: ['No services are open for booking yet. Ask at the counter.', 'अभी बुकिंग के लिए कोई सर्विस नहीं है। काउंटर पर पूछें।', 'Abhi booking ke liye koi service nahi hai. Counter par poochein.'],
+    forService: ['For your {x}.', 'आपके {x} के साथ।', 'Aapke {x} ke saath.'],
+    c6Empty: ['There are no add-ons for this service. Continue to pick a time.', 'इस सर्विस के साथ कोई ऐड-ऑन नहीं है। समय चुनने के लिए आगे बढ़ें।', 'Is service ke saath koi add-on nahi hai. Time chunne ke liye aage badhein.'],
+    skip: ['Skip', 'छोड़ें', 'Skip karein'], continue: ['Continue', 'आगे बढ़ें', 'Aage badhein'],
+    stylist: ['Stylist', 'स्टाइलिस्ट', 'Stylist'], anyone: ['Anyone', 'कोई भी', 'Koi bhi'], suresh: ['Suresh', 'सुरेश', 'Suresh'], priya: ['Priya', 'प्रिया', 'Priya'],
+    date: ['Date', 'तारीख', 'Date'],
+    fit: ['Times shown fit {m} minutes.', 'दिखाए गए समय {m} मिनट के हिसाब से हैं।', 'Dikhaaye gaye time {m} minute ke hisaab se hain.'],
+    noTimes: ['No free times on this day. Try another day.', 'इस दिन कोई समय खाली नहीं है। कोई दूसरा दिन चुनें।', 'Is din koi time khaali nahi hai. Koi doosra din chunein.'],
+    nextDayBtn: ['Show the next day', 'अगला दिन दिखाएँ', 'Agla din dikhayein'],
+    k_service: ['Service', 'सर्विस', 'Service'], k_addons: ['Add-ons', 'ऐड-ऑन', 'Add-ons'], k_stylist: ['Stylist', 'स्टाइलिस्ट', 'Stylist'], k_when: ['Date and time', 'तारीख और समय', 'Date aur time'], k_len: ['Takes about', 'लगभग समय', 'Lagbhag time'], k_status: ['Status', 'स्थिति', 'Status'],
+    none: ['None', 'कोई नहीं', 'Koi nahi'],
+    total: ['Total', 'कुल', 'Total'],
+    policyHead: ['If your plans change', 'अगर प्लान बदल जाए', 'Agar plan badal jaaye'],
+    policy: ['You can cancel or change this booking for free up to 2 hours before your time. Closer than that, call the salon.', 'अपने समय से 2 घंटे पहले तक यह बुकिंग मुफ़्त में रद्द करें या बदलें। उससे कम समय बचा हो तो सैलून को फ़ोन करें।', 'Apne time se 2 ghante pehle tak yeh booking free mein cancel ya change karein. Usse kam time bacha ho to salon ko call karein.'],
+    confirm: ['Confirm booking', 'बुकिंग पक्की करें', 'Booking confirm karein'], confirming: ['Booking…', 'बुक हो रहा है…', 'Book ho raha hai…'],
+    taken: ['This slot was just taken. Pick another?', 'यह समय अभी-अभी किसी ने ले लिया। दूसरा चुनें?', 'Yeh time abhi-abhi kisi ne le liya. Doosra chunein?'],
+    pickAnother: ['Pick another time', 'दूसरा समय चुनें', 'Doosra time chunein'],
+    booked: ['Booked', 'बुक है', 'Booked'], cancelled: ['Cancelled', 'रद्द', 'Cancelled'],
+    reschedule: ['Reschedule', 'समय बदलें', 'Reschedule karein'], cancelBooking: ['Cancel booking', 'बुकिंग रद्द करें', 'Booking cancel karein'], bookAgain: ['Book again', 'फिर से बुक करें', 'Phir se book karein'],
+    cancelTitle: ['Cancel this booking?', 'यह बुकिंग रद्द करनी है?', 'Yeh booking cancel karni hai?'],
+    cancelWhat: ['Thu 1 Oct · 4:30 PM · Haircut + Head massage · with Suresh', 'गुरु 1 अक्टूबर · 4:30 PM · हेयरकट + सिर की मालिश · सुरेश के साथ', 'Thu 1 Oct · 4:30 PM · Haircut + Head massage · Suresh ke saath'],
+    yesCancel: ['Yes, cancel booking', 'हाँ, बुकिंग रद्द करें', 'Haan, booking cancel karein'], keepBooking: ['Keep booking', 'बुकिंग रखें', 'Booking rakhein'],
+    cancelledSnack: ['Booking cancelled. Nothing was charged.', 'बुकिंग रद्द हो गई। कोई पैसा नहीं लगा।', 'Booking cancel ho gayi. Koi paisa nahi laga.'],
+    bookedSnack: ['Booked. See you on Thu 1 Oct at 4:30 PM.', 'बुक हो गया। गुरुवार 1 अक्टूबर, 4:30 PM पर मिलते हैं।', 'Book ho gaya. Thu 1 Oct, 4:30 PM par milte hain.'],
+    c10Empty: ['No visits yet. Your visits show here after your first one.', 'अभी कोई विज़िट नहीं। पहली विज़िट के बाद यहाँ दिखेंगी।', 'Abhi koi visit nahi. Pehli visit ke baad yahan dikhengi.'],
+    bookVisit: ['Book a visit', 'विज़िट बुक करें', 'Visit book karein'],
+    byWallet: ['Wallet', 'वॉलेट', 'Wallet'], byUpi: ['UPI', 'UPI', 'UPI'], byCounter: ['At the counter', 'काउंटर पर', 'Counter par'], byMix: ['Wallet ₹550 + counter ₹50', 'वॉलेट ₹550 + काउंटर ₹50', 'Wallet ₹550 + counter ₹50'],
+    withX: ['with {x}', '{x} के साथ', '{x} ke saath'],
+    referCond: ['Share your code. When your friend joins {s} and finishes their first paid visit, you both get credit in your wallets.', 'अपना कोड शेयर करें। जब आपका दोस्त {s} से जुड़े और अपनी पहली पेड विज़िट पूरी करे, तब आप दोनों के वॉलेट में क्रेडिट आएगा।', 'Apna code share karein. Jab aapka dost {s} se jude aur apni pehli paid visit poori kare, tab aap dono ke wallet mein credit aayega.'],
+    yourCode: ['Your code', 'आपका कोड', 'Aapka code'], copy: ['Copy', 'कॉपी करें', 'Copy karein'], share: ['Share', 'शेयर करें', 'Share karein'],
+    copied: ['Code copied.', 'कोड कॉपी हो गया।', 'Code copy ho gaya.'],
+    referStatus: ['1 friend has joined and not visited yet · 3 earned', '1 दोस्त जुड़ा है, अभी विज़िट नहीं की · 3 से कमाया', '1 dost juda hai, abhi visit nahi ki · 3 se kamaaya'],
+    friends: ['Friends', 'दोस्त', 'Dost'],
+    joined: ['Joined', 'जुड़ गए', 'Join kiya'], visited: ['Visited', 'विज़िट की', 'Visit kiya'], rewarded: ['Rewarded', 'इनाम मिला', 'Reward mila'],
+    noFriends: ['No friends have joined yet. Share your code to start.', 'अभी कोई दोस्त नहीं जुड़ा। शुरू करने के लिए अपना कोड शेयर करें।', 'Abhi koi dost nahi juda. Shuru karne ke liye apna code share karein.'],
+    nameK: ['Name', 'नाम', 'Naam'], phoneK: ['Phone', 'फ़ोन', 'Phone'],
+    language: ['Language', 'भाषा', 'Bhaasha'], notifications: ['Notifications', 'सूचनाएँ', 'Notifications'], notifSub: ['Choose reminders and offers', 'रिमाइंडर और ऑफ़र चुनें', 'Reminders aur offers chunein'],
+    history: ['Visit history', 'विज़िट का इतिहास', 'Visit history'], historySub: ['What you had and how you paid', 'क्या करवाया और कैसे चुकाया', 'Kya karwaaya aur kaise pay kiya'],
+    yourData: ['Your data', 'आपका डेटा', 'Aapka data'], yourDataSub: ['Copy, erase, and who to ask', 'कॉपी, मिटाना, और किससे पूछें', 'Copy, erase, aur kisse poochein'],
+    help: ['Help', 'मदद', 'Help'], helpSub: ['Call {s}: 080 4123 4567', '{s} को फ़ोन करें: 080 4123 4567', '{s} ko call karein: 080 4123 4567'],
+    dataIntro: ['{s} uses your data to run your bookings and visits. Here is what you control.', '{s} आपकी बुकिंग और विज़िट के लिए आपका डेटा इस्तेमाल करता है। ये चीज़ें आपके हाथ में हैं।', '{s} aapki booking aur visits ke liye aapka data use karta hai. Yeh cheezein aapke haath mein hain.'],
+    msgHead: ['Messages you chose', 'आपके चुने हुए मैसेज', 'Aapke chune hue messages'],
+    reminders: ['Reminders when a service is due', 'सर्विस का समय होने पर रिमाइंडर', 'Service due hone par reminders'], offers: ['Offers from {s}', '{s} के ऑफ़र', '{s} ke offers'],
+    on: ['On', 'चालू', 'On'], off: ['Off', 'बंद', 'Off'],
+    copyHead: ['Get a copy of your data', 'अपने डेटा की कॉपी पाएँ', 'Apne data ki copy paayein'],
+    copyBody: ['We prepare a file with your details, visits and wallet records.', 'हम आपकी जानकारी, विज़िट और वॉलेट रिकॉर्ड की एक फ़ाइल तैयार करेंगे।', 'Hum aapki details, visits aur wallet records ki file taiyaar karenge.'],
+    getCopy: ['Get a copy of my data', 'मेरे डेटा की कॉपी चाहिए', 'Mere data ki copy chahiye'],
+    readyBy: ['Ready by 12 Oct', '12 अक्टूबर तक तैयार', '12 Oct tak ready'], requestedOn: ['You asked on 29 Sep. We will send it to this app.', 'आपने 29 सितंबर को माँगी। यह इसी ऐप में भेजी जाएगी।', 'Aapne 29 Sep ko maangi. Yeh isi app mein bheji jaayegi.'],
+    eraseHead: ['Erase my data', 'मेरा डेटा मिटाएँ', 'Mera data mitaayein'],
+    eraseKept: ['Your name and number are removed. Your bills and wallet records are kept, without your name, for as long as the law requires.', 'आपका नाम और नंबर हटा दिए जाते हैं। आपके बिल और वॉलेट रिकॉर्ड, बिना आपके नाम के, तब तक रखे जाते हैं जब तक कानून कहता है।', 'Aapka naam aur number hata diye jaate hain. Aapke bill aur wallet records, bina aapke naam ke, tab tak rakhe jaate hain jab tak kaanoon kehta hai.'],
+    eraseBtn: ['Erase my data', 'मेरा डेटा मिटाएँ', 'Mera data mitaayein'],
+    eraseTitle: ['Erase your data?', 'अपना डेटा मिटाना है?', 'Apna data mitaana hai?'],
+    typeErase: ['Type ERASE to confirm', 'पक्का करने के लिए ERASE लिखें', 'Confirm karne ke liye ERASE likhein'],
+    keepData: ['Keep my data', 'मेरा डेटा रहने दें', 'Mera data rehne dein'],
+    eraseDone: ['Your erase request is in. It will be done by 12 Oct, and this app will log you out.', 'मिटाने का अनुरोध मिल गया। यह 12 अक्टूबर तक हो जाएगा, और यह ऐप लॉग आउट हो जाएगा।', 'Mitaane ki request mil gayi. Yeh 12 Oct tak ho jaayega, aur yeh app log out ho jaayega.'],
+    contactHead: ['Privacy questions', 'प्राइवेसी से जुड़े सवाल', 'Privacy ke sawaal'],
+    noContact: ["{s} hasn't added a privacy contact yet. Ask at the counter.", '{s} ने अभी प्राइवेसी संपर्क नहीं जोड़ा है। काउंटर पर पूछें।', '{s} ne abhi privacy contact nahi joda hai. Counter par poochein.'],
+    langTitle: ['Language', 'भाषा', 'Bhaasha'], shareTitle: ['Share your code', 'अपना कोड शेयर करें', 'Apna code share karein'],
+    errBody: ['Check your internet and try again.', 'इंटरनेट देखें और फिर से कोशिश करें।', 'Internet check karke phir try karein.'],
+    tryAgain: ['Try again', 'फिर कोशिश करें', 'Phir try karein'],
+    errLoad: ["Couldn't load this page.", 'यह पेज लोड नहीं हो पाया।', 'Yeh page load nahi ho paaya.'],
+    errServices: ["Couldn't load the services.", 'सर्विस लोड नहीं हो पाईं।', 'Services load nahi ho paayin.'],
+    errTimes: ["Couldn't load free times.", 'खाली समय लोड नहीं हो पाए।', 'Khaali time load nahi ho paaye.'],
+    offBook: ["Offline · You can look around. Booking waits until you're back online.", 'ऑफ़लाइन · आप देख सकते हैं। बुकिंग इंटरनेट आने पर होगी।', 'Offline · Aap dekh sakte hain. Booking internet aane par hogi.'],
+    offView: ['Offline · Showing what was saved at 10:42', 'ऑफ़लाइन · 10:42 तक की जानकारी दिख रही है', 'Offline · 10:42 tak ki jaankaari dikh rahi hai'],
+    offData: ["Offline · Changes here wait until you're back online.", 'ऑफ़लाइन · यहाँ के बदलाव इंटरनेट आने पर होंगे।', 'Offline · Yahan ke badlaav internet aane par honge.'],
+    navHome: ['Home', 'होम', 'Home'], navBook: ['Book', 'बुक करें', 'Book'], navWallet: ['Wallet', 'वॉलेट', 'Wallet'], navMe: ['Me', 'मेरा खाता', 'Mera khaata'],
+    dow: ['Sun Mon Tue Wed Thu Fri Sat', 'रवि सोम मंगल बुध गुरु शुक्र शनि', 'Sun Mon Tue Wed Thu Fri Sat'],
+    mon: ['Sep Oct', 'सितंबर अक्टूबर', 'Sep Oct'],
+  };
+
+  state = { svc: 'haircut', addons: {}, stylist: 1, day: 2, time: '16:30', sheet: null, snack: null, busy: false, bookStatus: 'booked', toggles: { reminders: true, offers: false }, requested: false, erased: false, eraseText: '', fresh: {} };
+
+  componentDidUpdate(pp) {
+    if (pp.screen !== this.props.screen || pp.variant !== this.props.variant) {
+      const p = { sheet: null, busy: false };
+      if (this.props.screen === 'C5' && pp.screen !== 'C5' && !this._inFlow) { p.svc = null; p.addons = {}; p.time = null; }
+      if (this.props.screen === 'C6' && !this._inFlow) p.addons = {};
+      if (this.props.screen === 'C9') p.bookStatus = this.props.variant === 'cancelled' ? 'cancelled' : 'booked';
+      if (this.props.screen === 'C13') { p.requested = this.props.variant === 'requested'; p.erased = false; }
+      this._inFlow = false;
+      this.setState(p);
+    }
+  }
+  componentDidMount() {
+    if (this.props.screen === 'C5') this.setState({ svc: null, addons: {}, time: null });
+    if (this.props.screen === 'C9') this.setState({ bookStatus: this.props.variant === 'cancelled' ? 'cancelled' : 'booked' });
+    if (this.props.screen === 'C13') this.setState({ requested: this.props.variant === 'requested' });
+  }
+  componentWillUnmount() { clearTimeout(this._t); clearTimeout(this._s); }
+  go(c, v) { this._inFlow = true; this.props.go && this.props.go(c, v); }
+  snack(t) { clearTimeout(this._s); this.setState({ snack: t }); this._s = setTimeout(() => this.setState({ snack: null }), 4000); }
+  fmt(n) { let x = String(Math.abs(n)); if (x.length > 3) { const last = x.slice(-3); x = x.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',' + last; } return '₹' + x; }
+  t12(hm) { const [h, m] = hm.split(':').map(Number); const hh = ((h + 11) % 12) + 1; return `${hh}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`; }
+
+  renderVals() {
+    const P = this.props, S = this.state, C = this.constructor;
+    const screen = P.screen || 'C5', v = P.variant || '', st = P.st || 'content';
+    const li = { en: 0, hi: 1, hl: 2 }[P.lang] ?? 0, ts = Number(P.ts) || 1;
+    const name = P.brandName || 'Your salon';
+    const s = {}; for (const k in C.STR) s[k] = C.STR[k][li].split('{s}').join(name);
+    const R = (k, o) => { let t = s[k]; for (const x in o) t = t.split('{' + x + '}').join(o[x]); return t; };
+    const off = st === 'offline', err = st === 'error', load = st === 'loading', empty = st === 'empty';
+    const n = Number(screen.slice(1));
+    const filled = (on) => ({ bg: on ? 'var(--primary)' : 'var(--surface-sunken)', fg: on ? 'var(--on-primary)' : 'var(--text-muted)', cursor: on ? 'pointer' : 'not-allowed' });
+    const radio = (on) => ({ ring: on ? '2px solid var(--primary)' : '2px solid var(--border-strong)', dot: on ? 'var(--primary)' : 'transparent' });
+
+    const svc = C.SERVICES.find(x => x[1] === (S.svc || 'haircut'));
+    const addonList = C.ADDONS.filter(a => svc[0] === 'hair' || svc[0] === 'beard' ? (a[0] !== 'beardadd' || svc[0] === 'hair') : false);
+    const chosen = addonList.filter(a => S.addons[a[0]]);
+    const dur = svc[2] + chosen.reduce((t, a) => t + a[2], 0);
+    const total = svc[3] + chosen.reduce((t, a) => t + a[1], 0);
+
+    // services
+    const cats = empty ? [] : ['hair', 'beard', 'colour', 'skin'].map(c => ({ name: s[c], items: C.SERVICES.filter(x => x[0] === c).map(x => { const on = S.svc === x[1]; const r = radio(on); const ph = {"haircut":["https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?auto=format&fit=crop&w=200&q=70","Photo by Lindsay Cash on Unsplash","https://unsplash.com/@lindsayrc81"],"wash":["https://images.unsplash.com/photo-1675034743339-0b0747047727?auto=format&fit=crop&w=200&q=70","Photo by Vinicius \"amnx\" Amano on Unsplash","https://unsplash.com/@viniciusamano"],"kids":["https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&w=200&q=70","Photo by Baylee Gramling on Unsplash","https://unsplash.com/@bayleejadegramling"],"beardtrim":["https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=200&q=70","Photo by Greg Trowman on Unsplash","https://unsplash.com/@gregtrow"],"beardcolour":["https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?auto=format&fit=crop&w=200&q=70","Photo by Benyamin Bohlouli on Unsplash","https://unsplash.com/@benyamin_bohlouli"],"global":["https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=200&q=70","Photo by Adam Winger on Unsplash","https://unsplash.com/@awcreativeut"],"highlights":["https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=200&q=70","Photo by Adam Winger on Unsplash","https://unsplash.com/@awcreativeut"],"cleanup":["https://images.unsplash.com/photo-1637777269327-c4d5c7944d7b?auto=format&fit=crop&w=200&q=70","Photo by Giorgio Trovato on Unsplash","https://unsplash.com/@giorgiotrovato"],"facial":["https://images.unsplash.com/photo-1731514771613-991a02407132?auto=format&fit=crop&w=200&q=70","Photo by kimia kazemi on Unsplash","https://unsplash.com/@kimick"]}[x[1]] || ['', '', ''];
+          return { key: x[1], img: ph[0], credit: ph[1], creditHref: ph[2], name: s[x[1]], dur: R('min', { m: x[2] }), price: this.fmt(x[3]), checked: on ? 'true' : 'false', ...r, pick: () => this.setState({ svc: x[1], addons: {} }) }; }) }));
+    const addonRows = (empty ? [] : addonList).map(a => { const on = !!S.addons[a[0]]; return { name: s[a[0]], price: '+' + this.fmt(a[1]), mins: R('plusMin', { m: a[2] }), checked: on ? 'true' : 'false', tick: on ? 'check' : '', boxBg: on ? 'var(--primary)' : 'transparent', boxBorder: on ? '2px solid var(--primary)' : '2px solid var(--border-strong)', toggle: () => this.setState(x => ({ addons: { ...x.addons, [a[0]]: !x.addons[a[0]] } })) }; });
+
+    // days & slots (today = Tue 29 Sep 2026, now 10:42)
+    const dows = s.dow.split(' '), mons = s.mon.split(' ');
+    const days = [];
+    for (let i = 0; i < 14; i++) { const d = new Date(2026, 8, 29 + i); days.push({ i, dow: dows[d.getDay()], num: d.getDate(), mon: mons[d.getMonth() === 8 ? 0 : 1], wd: d.getDay() }); }
+    const dayObj = days[S.day];
+    const slotsFor = (i, sty) => {
+      if (days[i].wd === 1) return [];
+      const all = []; for (let h = 10; h < 20; h++) for (const m of [0, 30]) all.push(h * 60 + m);
+      const taken = new Set(all.filter((t, k) => ((i * 7 + k * 3 + sty * 5) % 5 === 0)));
+      return all.filter(t => { if (i === 0 && t < 11 * 60) return false; if (t + dur > 20 * 60) return false; for (let x = t; x < t + dur; x += 30) if (taken.has(x)) return false; return true; });
+    };
+    const avail = empty ? [] : slotsFor(S.day, S.stylist);
+    const hm = (t) => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
+    const slots = avail.map(t => { const k = hm(t); const on = S.time === k; return { label: this.t12(k), checked: on ? 'true' : 'false', bg: on ? 'var(--primary)' : 'var(--surface-alt)', fg: on ? 'var(--on-primary)' : 'var(--text-primary)', border: on ? '1px solid var(--primary)' : '1px solid var(--border-strong)', pick: () => this.setState({ time: k }) }; });
+    const dayChips = days.map(d => { const on = d.i === S.day; return { dow: d.dow, num: d.num, aria: `${d.dow} ${d.num} ${d.mon}`, checked: on ? 'true' : 'false', bg: on ? 'var(--primary)' : 'var(--surface-alt)', fg: on ? 'var(--on-primary)' : 'var(--text-primary)', border: on ? '1px solid var(--primary)' : '1px solid var(--border)', pick: () => this.setState({ day: d.i, time: null }) }; });
+    const sty = [s.anyone, s.suresh, s.priya];
+    const stylistChips = sty.map((nm, i) => { const on = S.stylist === i; return { name: nm, checked: on ? 'true' : 'false', bg: on ? 'var(--primary)' : 'var(--surface-alt)', fg: on ? 'var(--on-primary)' : 'var(--text-primary)', border: on ? '1px solid var(--primary)' : '1px solid var(--border-strong)', iw: on ? '18px' : '0px', pick: () => this.setState({ stylist: i, time: null }) }; });
+
+    const whenStr = `${dayObj.dow} ${dayObj.num} ${dayObj.mon} · ${S.time ? this.t12(S.time) : '—'}`;
+    const svcLine = [s[svc[1]], ...chosen.map(a => s[a[0]])].join(' + ');
+    const summary = [{ k: s.k_service, v: s[svc[1]] }, { k: s.k_addons, v: chosen.length ? chosen.map(a => `${s[a[0]]} +${this.fmt(a[1])}`).join(', ') : s.none }, { k: s.k_stylist, v: sty[S.stylist] }, { k: s.k_when, v: whenStr }, { k: s.k_len, v: R('min', { m: dur }) }];
+    const detail = [{ k: s.k_when, v: li === 1 ? 'गुरु 1 अक्टूबर · 4:30 PM' : 'Thu 1 Oct · 4:30 PM' }, { k: s.k_service, v: `${s.haircut} + ${s.massage}` }, { k: s.k_stylist, v: s.suresh }, { k: s.k_len, v: R('min', { m: 60 }) }];
+
+    const visits = empty ? [] : [['12 Sep 2026', s.haircut, s.suresh, 600, s.byWallet], ['14 Aug 2026', `${s.haircut} + ${s.beardtrim}`, s.priya, 1000, s.byUpi], ['18 Jul 2026', s.haircut, s.suresh, 600, s.byMix], ['20 Jun 2026', s.cleanup, s.priya, 900, s.byCounter]].map(([date, svcN, who, a, how]) => ({ date, svc: svcN, who: R('withX', { x: who }), amt: this.fmt(a), how }));
+    const chip = { joined: [s.joined, 'schedule', 'var(--warning)'], visited: [s.visited, 'event_available', 'var(--info)'], rewarded: [s.rewarded, 'check_circle', 'var(--success)'] };
+    const friends = empty ? [] : [['Ravi K.', 'joined'], ['Meena S.', 'rewarded'], ['Karan P.', 'rewarded'], ['Divya R.', 'rewarded']].map(([nm, k]) => ({ name: nm, label: chip[k][0], icon: chip[k][1], col: chip[k][2] }));
+    const langName = ['English', 'हिन्दी', 'Hinglish'][li];
+    const meRows = [['translate', s.language, langName, () => this.setState({ sheet: 'lang' })], ['notifications', s.notifications, s.notifSub, () => this.go('C13')], ['history', s.history, s.historySub, () => this.go('C10')], ['shield', s.yourData, s.yourDataSub, () => this.go('C13')], ['help', s.help, s.helpSub, () => {}]].map(([icon, label, sub, pick]) => ({ icon, label, sub, pick }));
+    const toggles = [['reminders', s.reminders], ['offers', s.offers]].map(([k, label]) => { const on = S.toggles[k]; return { label, state: on ? s.on : s.off, checked: on ? 'true' : 'false', track: on ? 'var(--primary)' : 'var(--surface-sunken)', trackBorder: on ? '2px solid var(--primary)' : '2px solid var(--border-strong)', knob: on ? '24px' : '16px', left: on ? '22px' : '6px', knobBg: on ? 'var(--on-primary)' : 'var(--border-strong)', toggle: () => this.setState(x => ({ toggles: { ...x.toggles, [k]: !x.toggles[k] } })) }; });
+    const langs = [['en', 'English'], ['hi', 'हिन्दी'], ['hl', 'Hinglish']].map(([k, label]) => { const on = P.lang === k; return { label, checked: on ? 'true' : 'false', ...radio(on), pick: () => { P.setLang && P.setLang(k); this.setState({ sheet: null }); } }; });
+
+    // footer
+    let showFooter = false, primaryLabel = '', primaryAction = () => {}, primaryOk = true, hasSecondary = false, secondaryLabel = '', secondaryAction = () => {}, showTotals = false;
+    const ready = !load && !err;
+    if (err) { showFooter = true; primaryLabel = s.tryAgain; primaryAction = () => P.setSt && P.setSt('content'); }
+    else if (screen === 'C5' && !load) { showFooter = true; primaryLabel = s.continue; primaryOk = !!S.svc && !empty; primaryAction = () => primaryOk && this.go('C6'); }
+    else if (screen === 'C6' && !load) { showFooter = true; showTotals = true; primaryLabel = s.continue; primaryAction = () => this.go('C7'); hasSecondary = true; secondaryLabel = s.skip; secondaryAction = () => { this.setState({ addons: {} }); this.go('C7'); }; }
+    else if (screen === 'C7' && !load) { showFooter = true; showTotals = true; primaryLabel = s.continue; primaryOk = !!S.time && avail.some(t => hm(t) === S.time); primaryAction = () => primaryOk && this.go('C8', 'ok'); }
+    else if (screen === 'C8' && !load) { showFooter = true; primaryLabel = S.busy ? s.confirming : s.confirm; primaryOk = !off && !S.busy && v !== 'taken'; primaryAction = () => { if (!primaryOk) return; this.setState({ busy: true }); this._t = setTimeout(() => { this.setState({ busy: false }); this.snack(s.bookedSnack); this.go('C9', 'booked'); }, 900); }; }
+    else if (screen === 'C9' && !load) { showFooter = true; if (S.bookStatus === 'cancelled') { primaryLabel = s.bookAgain; primaryAction = () => this.go('C5'); } else { primaryLabel = s.reschedule; primaryOk = !off; primaryAction = () => this.go('C7'); } }
+    else if (screen === 'C10' && empty) { showFooter = true; primaryLabel = s.bookVisit; primaryAction = () => this.go('C5'); }
+    const pb = filled(primaryOk || S.busy);
+    const titles = { 5: s.t5, 6: s.t6, 7: s.t7, 8: s.t8, 9: s.t9, 10: s.t10, 11: s.t11, 12: s.t12, 13: s.t13 };
+    const errTitle = n === 5 ? s.errServices : n === 7 ? s.errTimes : s.errLoad;
+    const offlineText = [5, 6, 7, 8].includes(n) ? s.offBook : n === 13 ? s.offData : s.offView;
+    const navCur = n === 12 ? 3 : 1;
+    const nav = [['home', s.navHome, 'C1'], ['event', s.navBook, 'C5'], ['account_balance_wallet', s.navWallet, 'C2'], ['person', s.navMe, 'C12']].map(([icon, label, code], i) => { const on = i === navCur; return { icon, label, current: on ? 'page' : 'false', pill: on ? 'var(--primary-container)' : 'transparent', ic: on ? 'var(--on-primary-container)' : 'var(--text-secondary)', fg: on ? 'var(--text-primary)' : 'var(--text-secondary)', fw: on ? 600 : 400, fill: on ? "'FILL' 1" : "'FILL' 0", pick: () => this.go(code) }; });
+    const backMap = { 6: 'C5', 7: 'C6', 8: 'C7', 9: 'C1', 10: 'C12', 11: 'C1', 13: 'C12' };
+    const sheet = S.sheet;
+    const sheetTitle = sheet === 'cancel' ? s.cancelTitle : sheet === 'erase' ? s.eraseTitle : sheet === 'lang' ? s.langTitle : sheet === 'share' ? s.shareTitle : '';
+    const eraseOk = S.eraseText.trim().toUpperCase() === 'ERASE';
+    const eb = eraseOk ? { bg: 'var(--danger)', fg: 'var(--on-danger)', cursor: 'pointer' } : { bg: 'var(--surface-sunken)', fg: 'var(--text-muted)', cursor: 'not-allowed' };
+    const statusMap = S.bookStatus === 'cancelled' ? [s.cancelled, 'cancel', 'var(--text-secondary)'] : [s.booked, 'event_available', 'var(--success)'];
+
+    return {
+      s, brandName: name, brandMark: P.brandMark || '', hasMark: !!P.brandMark, noMark: !P.brandMark,
+      hasBack: n !== 5 && n !== 12, noBack: n === 5 || n === 12, back: () => this.go(backMap[n] || 'C1'),
+      showOffline: off, offlineText, offlineFlag: off,
+      hasStep: n >= 5 && n <= 8, noStep: n > 8, stepText: R('step', { n: n - 4 }), title: titles[n] || '',
+      ready, loading: load, error: err, errTitle,
+      isC5: n === 5, isC6: n === 6, isC7: n === 7, isC8: n === 8, isC9: n === 9, isC10: n === 10, isC11: n === 11, isC12: n === 12, isC13: n === 13,
+      c5Empty: empty, cats, forService: R('forService', { x: s[svc[1]] }), c6Empty: empty || addonList.length === 0, addonRows,
+      stylistChips, days: dayChips, dayLabel: `${dayObj.dow} ${dayObj.num} ${dayObj.mon}`,
+      showFit: dur !== svc[2], fitText: R('fit', { m: dur }), hasSlots: slots.length > 0, noSlots: slots.length === 0, slots,
+      slotCols: ts > 1 ? 'repeat(2,minmax(0,1fr))' : 'repeat(3,minmax(0,1fr))',
+      nextDay: () => this.setState({ day: Math.min(13, S.day + 1), time: null }),
+      slotTaken: v === 'taken', toC7: () => this.go('C7'), summary, totalStr: this.fmt(total),
+      totalLine: `${this.fmt(total)} · ${R('min', { m: dur })}`,
+      statusLabel: statusMap[0], statusIcon: statusMap[1], statusCol: statusMap[2], detail, canCancel: S.bookStatus !== 'cancelled' && !off,
+      openCancel: () => this.setState({ sheet: 'cancel' }),
+      doCancel: () => { this.setState({ sheet: null, bookStatus: 'cancelled' }); this.snack(s.cancelledSnack); },
+      c10Empty: empty, visits,
+      copyCode: () => { try { navigator.clipboard && navigator.clipboard.writeText('ASHA4821'); } catch (e) {} this.snack(s.copied); },
+      openShare: () => this.setState({ sheet: 'share' }), hasFriends: !empty, noFriends: empty, friends,
+      shareApps: [{ icon: 'chat', label: 'WhatsApp' }, { icon: 'sms', label: 'Messages' }, { icon: 'mail', label: 'Gmail' }, { icon: 'content_copy', label: 'Copy' }],
+      meRows, toggles,
+      notRequested: !S.requested, requested: S.requested, requestCopy: () => this.setState({ requested: true }),
+      notErased: !S.erased, erased: S.erased, openErase: () => this.setState({ sheet: 'erase', eraseText: '' }),
+      eraseVal: S.eraseText, onErase: (e) => this.setState({ eraseText: String(e.target.value || '').toUpperCase().slice(0, 10) }),
+      eraseDisabled: !eraseOk, eraseBg: eb.bg, eraseFg: eb.fg, eraseCursor: eb.cursor,
+      doErase: () => { if (eraseOk) this.setState({ sheet: null, erased: true }); },
+      hasContact: v !== 'nocontact' && !!P.privacy, noContact: v === 'nocontact' || !P.privacy, privacy: P.privacy || '', mailto: 'mailto:' + (P.privacy || ''),
+      langs,
+      showFooter, showTotals, hasSecondary, secondaryLabel, secondaryAction, primaryLabel, primaryAction,
+      primaryDisabled: !primaryOk, primaryBg: pb.bg, primaryFg: pb.fg, primaryCursor: S.busy ? 'wait' : pb.cursor, busy: S.busy && n === 8, busyAttr: S.busy ? 'true' : 'false',
+      showNav: n === 5 || n === 12, nav,
+      ovOp: sheet ? 1 : 0, ovPe: sheet ? 'auto' : 'none', sheetT: sheet ? 'translateY(0)' : 'translateY(105%)',
+      sheetTr: sheet ? 'transform 220ms cubic-bezier(0.2,0,0,1)' : 'transform 176ms cubic-bezier(0.3,0,1,1)',
+      closeSheet: () => this.setState({ sheet: null }), sheetTitle,
+      sheetCancel: sheet === 'cancel', sheetErase: sheet === 'erase', sheetLang: sheet === 'lang', sheetShare: sheet === 'share',
+      hasSnack: !!S.snack, snackText: S.snack || '',
+    };
+  }
+}
+</script>
+</body>
+</html>

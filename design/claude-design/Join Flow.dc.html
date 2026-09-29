@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{{const n=new URLSearchParams(location.search).get("theme");if(n==="light"||n==="dark"){document.documentElement.dataset.theme=n}}{if(new URLSearchParams(location.search).get("_omthumb")==="1"){const n=(f)=>{const g=f.focus;if(!g)return;f.focus=function(h){g.call(this,{...h,preventScroll:true})}};n(HTMLElement.prototype);n(SVGElement.prototype);if(typeof MathMLElement!=="undefined"){n(MathMLElement.prototype)}const d=(f)=>{f.removeAttribute("autofocus");f.inert=true;if(!(f instanceof HTMLElement))f.removeAttribute("tabindex")};const p=(f)=>{if(f.hasAttribute("autofocus"))d(f);for(const g of f.querySelectorAll("[autofocus]")){d(g)}};p(document.documentElement);new MutationObserver((f)=>{for(const g of f){for(const h of g.addedNodes){if(h.nodeType===1)p(h)}}}).observe(document,{childList:true,subtree:true})}}{const n=()=>{try{if(document.querySelector('meta[name="color-scheme"]'))return;const d=getComputedStyle(document.documentElement).getPropertyValue("color-scheme").trim();if(d&&d!=="normal")return;const p=(y)=>{if(!y)return null;const m=getComputedStyle(y).backgroundColor.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+%?))?\s*\)$/);if(!m)return null;const w=m[4]==null?1:parseFloat(m[4])/(m[4].endsWith("%")?100:1);if(w<0.99)return null;return[+m[1],+m[2],+m[3]]};const f=p(document.body)||p(document.documentElement);if(!f)return;const g=(y)=>{const m=y/255;return m<=0.04045?m/12.92:((m+0.055)/1.055)**2.4};const h=0.2126*g(f[0])+0.7152*g(f[1])+0.0722*g(f[2]);document.documentElement.style.setProperty("color-scheme",h<0.4?"dark":"light")}catch{}};if(document.readyState==="complete")n();else window.addEventListener("load",n)}var I=["https://claude.ai","https://preview.claude.ai","https://5f0bd573-2543-4d26-9b98-e594dd744d96.claudeusercontent.com"];var B=true;var K=false;var C=()=>{};if(K===true){try{const n=setTimeout.bind(window);const d=1e4;const p=15;const f=1e4;const g=120000;const h=200;const y=(o)=>{try{let r;if(typeof o==="string")r=o;else if(o instanceof URL)r=o.href;else if(typeof Request!=="undefined"&&o instanceof Request)r=o.url;else return null;if(!r)return null;const l=document.baseURI;const i=new URL(r,l);if(i.protocol!=="http:"&&i.protocol!=="https:")return null;if(i.origin!==new URL(l).origin)return null;return i.origin+i.pathname}catch{return null}};const m=new Map;const w=(o)=>{let r=m.get(o);if(!r){if(m.size>=h){const l=m.keys().next().value;if(l!==undefined)m.delete(l)}r={fails:[],until:0,cooldown:f,hard:false};m.set(o,r)}return r};const R=(o)=>{const r=m.get(o);return r!==undefined&&r.until>Date.now()};const O=(o,r)=>{const l=Date.now();const i=w(o);if(r)i.hard=true;if(i.until>l)return;i.fails.push(l);while(i.fails.length>0&&i.fails[0]<=l-d)i.fails.shift();if(i.fails.length>=p){i.until=l+i.cooldown;if(i.hard)i.cooldown=Math.min(i.cooldown*2,g);i.fails.length=0;try{n(()=>{try{S(true)}catch{}},i.until-l+100)}catch{}console.warn("[omelette] asset circuit breaker: pausing requests to "+o+" for "+Math.round((i.until-l)/1000)+"s after "+p+" failures in "+d/1000+"s")}};const e=(o)=>{m.delete(o)};const t=100;const a=new WeakMap;const u=new Set;let s=null;const S=(o)=>{for(const r of Array.from(u)){try{const l=a.get(r);if(l===undefined){u.delete(r);continue}if(o){const i=y(l);if(i!==null&&R(i))continue}a.delete(r);u.delete(r);if(s!==null)s.call(r,l)}catch{}}};C=()=>{try{m.clear();S(false)}catch{}};document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")C()});const _=window.fetch;if(typeof _==="function"){const o=function(...r){let l=null;try{l=y(r[0])}catch{}if(l!==null&&R(l)){let c;try{if(r[1]&&r[1].signal!==undefined){c=r[1].signal||undefined}else if(typeof Request!=="undefined"&&r[0]instanceof Request){c=r[0].signal||undefined}}catch{c=undefined}return new Promise((k,b)=>{const E=()=>{try{return c.reason!==undefined?c.reason:new DOMException("The operation was aborted.","AbortError")}catch{return new DOMException("The operation was aborted.","AbortError")}};try{if(c&&c.aborted){b(E());return}}catch{}let T=false;const j=()=>{if(T)return;T=true;b(E())};try{if(c)c.addEventListener("abort",j,{once:true})}catch{}n(()=>{if(T)return;T=true;try{if(c)c.removeEventListener("abort",j)}catch{}let L;try{L=new Response(null,{status:429,statusText:"Too Many Requests",headers:{"Retry-After":"10"}})}catch{L={ok:false,status:429}}k(L)},250)})}const i=_.apply(window,r);if(l!==null){const c=l;i.then((k)=>{try{if(k.ok)e(c);else if(k.status===401||k.status===403||k.status===404||k.status===429){O(c,k.status!==404)}}catch{}},()=>{})}return i};window.fetch=o}const v=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src");if(v!==undefined&&v.set!==undefined&&v.get!==undefined){const o=v.set;s=o;Object.defineProperty(HTMLImageElement.prototype,"src",{configurable:true,enumerable:v.enumerable,get:v.get,set(r){const l=`${r}`;try{const i=y(l);if(i!==null&&R(i)){a.set(this,l);if(u.size<t)u.add(this);return}}catch{}try{a.delete(this);u.delete(this)}catch{}o.call(this,l)}})}try{const o=HTMLImageElement.prototype.setAttribute;HTMLImageElement.prototype.setAttribute=function(r,l){if(arguments.length<2){o.apply(this,arguments);return}if(typeof r==="string"&&r.toLowerCase()==="src"){const i=`${l}`;try{const c=y(i);if(c!==null&&R(c)){a.set(this,i);if(u.size<t)u.add(this);return}a.delete(this);u.delete(this)}catch{}o.call(this,r,i);return}o.call(this,r,l)}}catch{}window.addEventListener("error",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)O(l,true)}}catch{}},true);window.addEventListener("load",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)e(l);const i=a.get(r);if(i!==undefined){let c=false;try{c=new URL(i,document.baseURI).href===new URL(r.currentSrc||r.src||"",document.baseURI).href}catch{c=false}if(c){a.delete(r);u.delete(r)}}}}catch{}},true)}catch{}}var J=30000;var G=3000;document.addEventListener("DOMContentLoaded",()=>{const n=window.Babel;const d="om-src-id";if(n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[d])){n.registerPlugin(d,({types:h})=>({visitor:{JSXOpeningElement(y,m){const w=y.node;if(w.name&&w.name.type==="JSXMemberExpression")return;for(let t=0;t<w.attributes.length;t++){const a=w.attributes[t];if(a.type==="JSXAttribute"&&a.name&&a.name.name==="data-om-id")return}const R=m.file&&m.file.opts&&m.file.opts.filename||"?";const O=w.loc&&w.loc.start;const e=`jsx:${R}:${w.start??0}:${O?O.line:0}:${O?O.column+1:0}`;w.attributes.push(h.jsxAttribute(h.jsxIdentifier("data-om-id"),h.stringLiteral(e)))}}}))}const p="om-text-extract";let f=false;if(B&&n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[p])){const h=window.React;if(h&&h.useSyncExternalStore&&h.createElement){f=true;const y={};const m=new Set;let w=0;window.__omTextO=y;window.__omTextSet=(e)=>{for(const t in e){const a=e[t];if(a==null)delete y[t];else y[t]=a}w++;m.forEach((t)=>t())};const R=(e)=>{m.add(e);return()=>m.delete(e)};const O=()=>w;window.__OmT=function e(t){h.useSyncExternalStore(R,O,O);return h.createElement("span",{"data-om-text":t.i,className:"__om-t"},t.i in y?y[t.i]:t.children)};n.registerPlugin(p,({types:e})=>{const t={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const a={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const u=(o,r)=>e.logicalExpression("??",e.memberExpression(e.logicalExpression("||",e.memberExpression(e.identifier("window"),e.identifier("__omTextO")),e.objectExpression([])),e.stringLiteral(o),true),r);const s=(o)=>o.file&&o.file.opts&&o.file.opts.filename||"?";const S=(o)=>o.file&&o.file.code||"";const _=(o,r)=>{const l=(c)=>c&&c.start!=null&&c.end!=null&&(c.type==="StringLiteral"||c.type==="TemplateLiteral"&&c.expressions.length===0)?[c.start,c.end]:null;const i=l(r);if(i)return i;if(r&&r.type==="Identifier"){const c=o.scope.getBinding(r.name);if(c&&c.constant&&c.path.node.type==="VariableDeclarator"){return l(c.path.node.init)}}return null};const v=(o,r,l)=>{const i=o.node;let c=false;const k=(E,T)=>{c=true;return e.jsxElement(e.jsxOpeningElement(e.jsxIdentifier("__OmT"),[e.jsxAttribute(e.jsxIdentifier("i"),e.stringLiteral(E))],false),e.jsxClosingElement(e.jsxIdentifier("__OmT")),[T],false)};const b=i.children.map((E)=>{if(E.type==="JSXText"){if(E.start==null||E.end==null)return E;const T=l.slice(E.start,E.end);const j=T.length-T.trimStart().length;const L=T.length-T.trimEnd().length;if(j+L>=T.length)return E;return k(`txt:${r}:${E.start+j}:${E.end-L}`,E)}if(E.type==="JSXExpressionContainer"){const T=_(o,E.expression);if(T)return k(`str:${r}:${T[0]}:${T[1]}`,E)}return E});if(c)i.children=b};return{visitor:{JSXOpeningElement(o,r){const l=o.node;const i=s(r);const c={};for(let k=0;k<l.attributes.length;k++){const b=l.attributes[k];if(b.type!=="JSXAttribute"||!b.name)continue;const E=b.name.name;if(!a[E])continue;if(!b.value||b.value.type!=="StringLiteral")continue;if(b.value.start==null||b.value.end==null)continue;const T=`txt:${i}:${b.value.start}:${b.value.end}`;c[E]=T;b.value=e.jsxExpressionContainer(u(T,e.stringLiteral(b.value.value)))}if(Object.keys(c).length){l.attributes.push(e.jsxAttribute(e.jsxIdentifier("data-om-text-attrs"),e.stringLiteral(JSON.stringify(c))))}},JSXElement(o,r){const l=o.node.openingElement;const i=l&&l.name&&l.name.name;if(i==="__OmT")return;if(typeof i==="string"&&t[i])return;v(o,s(r),S(r))},JSXFragment(o,r){v(o,s(r),S(r))}}}})}}const g=f?["transform-react-jsx-source",d,p]:["transform-react-jsx-source",d];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach((h,y)=>{const m=h.getAttribute("data-plugins")||"";const w=g.filter((R)=>m.indexOf(R)<0);if(w.length){h.setAttribute("data-plugins",m?`${m},${w.join(",")}`:w.join(","))}if(!h.hasAttribute("data-filename")){h.setAttribute("data-filename",h.getAttribute("src")||`inline-${y}`)}})});var A=window.parent;var U="not editable here — open the project in the Claude Design editor to save";var W=()=>Promise.resolve({persisted:false,noHost:true,reason:U});var H=W;var M="data/storage.json";var z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.match(/\/projects\/([^/]+)\/serve\//);if(d)return d[1];return n.hostname.split(".")[0]||""}catch{return location.hostname.split(".")[0]||""}};var Z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.indexOf("/serve/");if(d>=0)return n.origin+n.pathname.slice(0,d+"/serve/".length)+M}catch{}return"./"+M};var x=null;var N=()=>{if(!x){x=fetch(Z(),{cache:"no-store"}).then((n)=>{if(n.ok)return n.text();return n.status===404?"":null}).catch(()=>null).then((n)=>{if(n===null){x=null;return null}const d=new Map;if(!n)return d;let p;try{p=JSON.parse(n)}catch{console.warn("[omelette.storage] "+M+" is not valid JSON; treating the store as unreadable so a save cannot overwrite the "+"hand-edited bytes. Fix the JSON (or delete the file) to re-enable persistence.");x=null;return null}if(p===null||typeof p!=="object"||Array.isArray(p)){console.warn("[omelette.storage] "+M+" doesn't hold a JSON object; treating the store as unreadable so a save cannot "+"overwrite the hand-edited bytes. Make the top level a JSON object to re-enable persistence.");x=null;return null}const f=p;if("data"in f){const g=f.data;if(g===null||typeof g!=="object"||Array.isArray(g)){console.warn("[omelette.storage] "+M+' has a "data" field that is not a JSON object; treating the store as unreadable so a '+'save cannot overwrite the hand-edited bytes. Make "data" a JSON object to re-enable persistence.');x=null;return null}const h=f._meta;const y=h!==null&&typeof h==="object"?h.project:undefined;if(typeof y==="string"&&y!==""&&y!==z())return d;for(const m of Object.keys(g))d.set(m,g[m]);return d}for(const g of Object.keys(f)){if(g!=="_meta")d.set(g,f[g])}return d})}return x};var F=(n)=>H(M,JSON.stringify({_meta:{project:z(),version:1},data:Object.fromEntries(n)},null,2));var D=Promise.resolve();var $=(n)=>{const d=D.then(n);D=d.then(()=>{return},()=>{return});return d};var V=/sk-(?:ant-)?[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|xox[a-z]-[A-Za-z0-9][A-Za-z0-9-]{9,}|AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/;var Y=/password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|credential/i;var Q=(n,d,p)=>{if(V.test(d)||Y.test(n)&&typeof p==="string"&&p.length>=8){console.warn('[omelette.storage] the value for "'+n+'" looks like a credential. The storage file is a plaintext project file — visible to '+"everyone with project access and copied when the project is duplicated. Do not store secrets here.")}};var q={persisted:false,reason:"could not load the existing store — not overwriting it"};var X={persisted:false,reason:"stored value changed since a failed read — re-read this key before saving"};var P=new Set;var ee={get:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.get: key must be a string"))}return $(N).then((d)=>{if(d===null){P.add(n);return null}P.delete(n);if(!d.has(n))return null;const p=d.get(n);return p==null?null:JSON.parse(JSON.stringify(p))})},set:(n,d)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.set: key must be a string"))}let p;try{p=JSON.stringify(d)}catch(g){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable ("+String(g)+")"))}if(p===undefined){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable"))}Q(n,p,d);const f=JSON.parse(p);return $(()=>N().then((g)=>{if(g===null)return q;if(P.has(n)){if(g.has(n))return X;P.delete(n)}g.set(n,f);return F(g)}))},delete:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.delete: key must be a string"))}return $(()=>N().then((d)=>{if(d===null)return q;if(P.has(n)){if(d.has(n))return X;P.delete(n)}d.delete(n);return F(d)}))},keys:()=>$(N).then((n)=>n===null?[]:Array.from(n.keys()))};window.omelette={writeFile:(n,d)=>H(n,d).then((p)=>{if(!p.persisted&&!p.noHost){throw new Error(p.reason||"write failed")}}),storage:ee};if(A&&A!==window){const n=(e,t)=>{try{A.postMessage({__omelette_log:true,type:e,data:t},"*")}catch{}};["log","warn","error"].forEach((e)=>{const t=console[e];console[e]=(...a)=>{const u=a.map((s)=>{try{return typeof s==="object"?JSON.stringify(s):String(s)}catch{try{return String(s)}catch{return"[unstringifiable]"}}}).join(" ");n(e,u);t.apply(console,a)}});window.addEventListener("error",(e)=>{const t=e.target;if(t&&t!==window&&t.tagName){const a=t.src||t.href||"";n("resource_error",`${t.tagName} failed to load: ${a}`)}else{n("error",`${e.message||"Unknown error"} at ${e.filename||"?"}:${e.lineno||0}:${e.colno||0}`)}},true);window.addEventListener("unhandledrejection",(e)=>{const t=e.reason;const a=t instanceof Error?`${t.message} ${t.stack}`:String(t);n("error",`Unhandled rejection: ${a}`)});window.addEventListener("click",(e)=>{if(e.defaultPrevented||e.button!==0)return;if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const t=e.composedPath?e.composedPath():[];const a=["button","input","select","textarea","summary","label"];let u=null;for(const v of t){if(!(v instanceof Element))continue;if(v.localName==="a"){if(!(v instanceof HTMLAnchorElement))return;u=v;break}if(a.indexOf(v.localName)!==-1)return}if(!u)return;if(u.isContentEditable)return;const s=u.closest("[contenteditable]");if(s&&s.getAttribute("contenteditable")!=="false")return;const S=(u.getAttribute("target")||"_self").toLowerCase();if(S!=="_self"&&S!=="_top"&&S!=="_parent")return;let _;try{_=new URL(u.href)}catch{return}if(_.protocol!=="http:"&&_.protocol!=="https:")return;if(location.origin==="null")return;if(_.origin===location.origin)return;e.preventDefault();window.open(_.href,"_blank","noopener,noreferrer")});const d=()=>{try{A.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(window.ResizeObserver)new ResizeObserver(d).observe(document.documentElement);const p=()=>{d();if(!document.querySelector('script[type="text/babel"],script[type="text/jsx"]'))return;const e=()=>document.getElementById("root")||document.querySelector("body > div[id]");const t=e()?.firstElementChild??null;let a=0;const u=()=>{const s=e();if(s&&s.firstElementChild!==t||++a>30){d();return}setTimeout(u,100)};setTimeout(u,100)};if(document.readyState==="complete")p();else window.addEventListener("load",p);const f={};let g=0;const h=(e)=>new Promise((t,a)=>{if(!I.length){a(new Error("claude.complete: no parent origin"));return}const u=`c${++g}`;const s=()=>setTimeout(()=>{delete f[u];a(new Error(`claude.complete: no data for ${J/1000}s`))},J);const S=s();f[u]={resolve:t,reject:a,text:"",t:S,arm:s};try{for(const _ of I){A.postMessage({__om_api:true,id:u,body:e},_)}}catch(_){clearTimeout(S);delete f[u];a(_)}});const y=8;const m=async(e,t)=>{if(!Array.isArray(e.messages)){throw new Error("claude.complete: tools require a messages array")}const a=e.messages.slice();const u={...e,tools:e.tools.map((_)=>{if(_===null||typeof _!=="object")return _;const v={};for(const o of Object.keys(_)){if(typeof _[o]!=="function")v[o]=_[o]}return v})};const s=u.tool_choice;const S=s!=null&&(s.type==="any"||s.type==="tool")?{...u,tool_choice:s.disable_parallel_tool_use!==undefined?{type:"auto",disable_parallel_tool_use:s.disable_parallel_tool_use}:{type:"auto"}}:u;for(let _=0;_<y;_++){const v=await h({..._===0?u:S,messages:a});const o=v.message;const r=o&&Array.isArray(o.content)?o.content:null;const l=r?r.filter((c)=>c?.type==="tool_use"):[];if(o?.stop_reason!=="tool_use"||l.length===0){return v.text}const i=[];for(const c of l){const k=t.get(c.name);if(!k){i.push({type:"tool_result",tool_use_id:c.id,content:`no handler for tool "${c.name}"`,is_error:true});continue}try{const b=await k(c.input);const E=typeof b==="string"?b:O(b)??"";i.push({type:"tool_result",tool_use_id:c.id,content:E})}catch(b){i.push({type:"tool_result",tool_use_id:c.id,content:String(b?.message??b??"tool handler failed"),is_error:true})}}a.push({role:"assistant",content:r},{role:"user",content:i})}throw new Error(`claude.complete: exceeded ${y} tool turns`)};window.claude={complete(e){const t=e;if(t!==null&&typeof t==="object"&&Array.isArray(t.tools)&&t.tools.some((a)=>a!==null&&typeof a==="object"&&typeof a.run==="function")){const a=new Map;for(const u of t.tools){if(u!==null&&typeof u==="object"&&typeof u.run==="function"){a.set(String(u.name),u.run)}}return m(t,a)}return h(e).then((a)=>a.text)}};const w={};let R=0;H=(e,t)=>new Promise((a)=>{if(!I.length){a({persisted:false,noHost:true,reason:U});return}const u=`f${++R}`;const s=setTimeout(()=>{delete w[u];a({persisted:false,noHost:true,reason:U})},G);w[u]={settle:a,t:s};try{for(const S of I){A.postMessage({__om_file:true,id:u,op:"write",path:e,content:t},S)}}catch{clearTimeout(s);delete w[u];a({persisted:false,noHost:true,reason:U})}});const O=(e)=>{try{return JSON.stringify(e)}catch{return JSON.stringify(String(e))}};window.addEventListener("message",(e)=>{if(I.indexOf(e.origin)<0)return;if(e.source!==A)return;const t=e.data;if(!t)return;if(t.type==="omelette-preview-refresh"){if(typeof t.token!=="string"||!/^[0-9a-f.-]+(\.(rc|pr-[0-9]+))?(\.[0-9]+\.[0-9a-f]{16})?$/.test(t.token))return;const s=Math.max(1,Math.floor((t.expiresAt||0)-Date.now()/1000));document.cookie="__Host-omelette-preview="+t.token+"; Path=/; Secure; SameSite=None; Partitioned; Max-Age="+s;C();return}if(t.__om_file_r){const s=w[t.id];if(!s)return;clearTimeout(s.t);delete w[t.id];s.settle(t.ok?{persisted:true}:{persisted:false,reason:t.error||"write failed"});return}if(t.__om_api_r){const s=f[t.id];if(!s)return;if(t.error!=null){clearTimeout(s.t);delete f[t.id];s.reject(new Error(t.error));return}if(t.chunk!=null){clearTimeout(s.t);s.t=s.arm();s.text+=t.chunk;return}if(t.done){clearTimeout(s.t);delete f[t.id];s.resolve({text:t.text!=null?t.text:s.text,message:t.message});return}return}if(!t.__om_eval)return;const a=t;const u=(s)=>{e.source.postMessage({...s,__om_eval_r:1,id:a.id},e.origin)};try{const s=(0,eval)(a.code);if(s&&typeof s.then==="function"){s.then((S)=>u({ok:1,v:O(S)}),(S)=>u({ok:0,e:String(S)}))}else{u({ok:1,v:O(s)})}}catch(s){u({ok:0,e:String(s)})}})}})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:absolute;inset:0;min-height:0;display:flex;flex-direction:column;background:transparent;color:var(--text-primary)">
+
+<sc-if value="{{ showOffline }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="flex:none;display:flex;align-items:flex-start;gap:8px;padding:8px 16px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-bottom:1px solid var(--divider)">
+    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:18px;width:18px;overflow:hidden;flex:none;color:var(--text-secondary)">cloud_off</span>
+    <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ offlineText }}</span>
+  </div>
+</sc-if>
+
+<sc-if value="{{ hasAppBar }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height:56px;flex:none;padding:4px 16px 4px 4px;display:flex;align-items:center;gap:8px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-bottom:1px solid var(--divider)">
+    <sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}">
+      <button aria-label="Back" onClick="{{ back }}" style="width:48px;height:48px;flex:none;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">arrow_back</span></button>
+    </sc-if>
+    <sc-if value="{{ noBack }}" hint-placeholder-val="{{ true }}"><span style="width:12px;flex:none"></span></sc-if>
+    <sc-if value="{{ hasMark }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:var(--hw);font-size:13px;line-height:1">{{ brandMark }}</span></sc-if>
+    <sc-if value="{{ noMark }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">content_cut</span></span></sc-if>
+    <span style="flex:1;min-width:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h3);line-height:var(--lh-h3);color:var(--brand-ink)">{{ brandName }}</span>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isU1 }}" hint-placeholder-val="{{ true }}">
+  <div role="button" tabindex="0" aria-label="{{ s.opening }}" onClick="{{ toU2 }}" style="position:relative;overflow:hidden;flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:16px;cursor:pointer;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5)">
+    <div style="position:absolute;inset:0"><image-slot id="u1-hero" shape="rect" src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=900&q=70" credit="Photo by Adam Winger on Unsplash" credit-href="https://unsplash.com/@awcreativeut" placeholder="Drop a salon photo for the splash"></image-slot></div><div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(20,10,14,0) 35%,rgba(20,10,14,0.5) 100%)"></div>
+    <span aria-hidden="true" style="position:relative;width:72px;height:72px;flex:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Outlined';font-size:40px;line-height:1;width:40px;overflow:hidden">content_cut</span></span>
+    <sc-if value="{{ u1Bar }}" hint-placeholder-val="{{ true }}">
+      <span role="progressbar" aria-label="{{ s.opening }}" style="position:relative;width:120px;height:4px;border-radius:2px;background:var(--surface-sunken);overflow:hidden;display:flex"><span style="width:60%;height:4px;background:var(--primary)"></span></span>
+    </sc-if>
+    <sc-if value="{{ u1Err }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:16px;align-self:stretch">
+        <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary)">{{ s.u1Err }}</span>
+        <button onClick="{{ retry }}" style="min-height:48px;padding:12px 20px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;width:100%">{{ s.tryAgain }}</button>
+      </div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isU2Form }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;min-height:0;overflow-y:auto;padding:32px 16px 24px;display:flex;flex-direction:column;gap:24px">
+    <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+      <h1 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-display);line-height:var(--lh-display)">{{ s.joinTitle }}</h1>
+      <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);text-wrap:pretty">{{ s.joinBody }}</p>
+    </div>
+    <sc-if value="{{ isRefused }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:none;display:flex;gap:12px;align-items:flex-start;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+        <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">keyboard</span>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+          <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.noCamTitle }}</span>
+          <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.noCamBody }}</span>
+        </div>
+      </div>
+    </sc-if>
+    <div style="flex:1 0 0px"></div>
+    <sc-if value="{{ notRefused }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ openCam }}" style="flex:none;width:100%;min-height:56px;padding:16px 20px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-active="opacity:0.88"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none">qr_code_scanner</span>{{ s.scan }}</button>
+    </sc-if>
+    <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+      <label for="join-code" style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ codeHeading }}</label>
+      <div style="min-height:56px;display:flex;align-items:stretch;border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);overflow:hidden;border:{{ codeBorder }}">
+        <span aria-hidden="true" style="display:flex;align-items:center;padding:0 4px 0 16px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);letter-spacing:0.06em;color:var(--text-secondary)">CRAY-</span>
+        <input id="join-code" value="{{ codeVal }}" onChange="{{ onCode }}" onKeyDown="{{ onCodeKey }}" readOnly="{{ busy }}" placeholder="7KQ2MX" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="join-code-msg" aria-invalid="{{ codeInvalid }}" style="flex:1;min-width:0;border:none;outline:none;background:transparent;padding:12px 16px 12px 0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);letter-spacing:0.06em;text-transform:uppercase;color:var(--text-primary)"></input>
+      </div>
+      <div id="join-code-msg" aria-live="polite" style="display:flex;gap:4px;align-items:flex-start">
+        <sc-if value="{{ hasCodeIcon }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;flex:none;color:{{ codeIconCol }}">{{ codeIcon }}</span></sc-if>
+        <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:{{ codeMsgCol }}">{{ codeMsg }}</span>
+      </div>
+      <button onClick="{{ onJoin }}" disabled="{{ joinDisabled }}" aria-busy="{{ busyAttr }}" style="width:100%;min-height:56px;padding:16px 20px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;background:{{ joinBg }};color:{{ joinFg }};cursor:{{ joinCursor }}">
+        <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">progress_activity</span></sc-if>
+        {{ joinLabel }}
+      </button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isCam }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;min-height:0;display:flex;flex-direction:column;background:var(--camera);color:var(--on-camera)">
+    <div style="flex:none;display:flex;align-items:center;padding:4px">
+      <button aria-label="Close" onClick="{{ closeCam }}" style="width:48px;height:48px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--on-camera)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">close</span></button>
+    </div>
+    <div style="flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:16px">
+      <button aria-label="Simulate a scan (prototype)" onClick="{{ simulateScan }}" style="position:relative;width:232px;height:232px;flex:none;border:none;background:transparent;cursor:pointer">
+        <span style="position:absolute;top:0;left:0;width:40px;height:40px;border-top:4px solid var(--on-camera);border-left:4px solid var(--on-camera);border-top-left-radius:var(--r)"></span>
+        <span style="position:absolute;top:0;right:0;width:40px;height:40px;border-top:4px solid var(--on-camera);border-right:4px solid var(--on-camera);border-top-right-radius:var(--r)"></span>
+        <span style="position:absolute;bottom:0;left:0;width:40px;height:40px;border-bottom:4px solid var(--on-camera);border-left:4px solid var(--on-camera);border-bottom-left-radius:var(--r)"></span>
+        <span style="position:absolute;bottom:0;right:0;width:40px;height:40px;border-bottom:4px solid var(--on-camera);border-right:4px solid var(--on-camera);border-bottom-right-radius:var(--r)"></span>
+      </button>
+      <span style="max-width:280px;text-align:center;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--on-camera)">{{ s.camHint }}</span>
+    </div>
+    <div style="flex:none;display:flex;align-items:center;gap:12px;padding:16px 16px 24px">
+      <button aria-pressed="{{ torchPressed }}" onClick="{{ toggleTorch }}" style="min-width:64px;min-height:56px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:var(--on-camera)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;font-variation-settings:{{ torchFill }}">{{ torchIcon }}</span><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption)">{{ torchLabel }}</span></button>
+      <button onClick="{{ closeCam }}" style="flex:1;min-height:56px;padding:12px 16px;border:1px solid var(--on-camera);border-radius:var(--r);background:transparent;color:var(--on-camera);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.typeInstead }}</button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isU3 }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;min-height:0;overflow-y:auto;padding:48px 16px 24px;display:flex;flex-direction:column;gap:24px">
+    <sc-if value="{{ u3Content }}" hint-placeholder-val="{{ true }}">
+      <div style="flex:none;height:168px;margin:-24px 0 0"><image-slot id="u3-salon" shape="rounded" radius="20" src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=900&q=70" credit="Photo by Guilherme Petri on Unsplash" credit-href="https://unsplash.com/@guipetri" placeholder="Drop a photo of the salon"></image-slot></div>
+      <sc-if value="{{ hasMark }}" hint-placeholder-val="{{ true }}"><span role="img" aria-label="{{ logoAlt }}" style="flex:none;width:96px;height:96px;border-radius:var(--r);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:var(--hw);font-size:36px;line-height:1;transition:background-color 280ms cubic-bezier(0.2,0,0,1), color 280ms cubic-bezier(0.2,0,0,1), border-radius 280ms cubic-bezier(0.2,0,0,1)">{{ brandMark }}</span></sc-if>
+      <sc-if value="{{ noMark }}" hint-placeholder-val="{{ false }}"><span role="img" aria-label="{{ logoAlt }}" style="flex:none;width:96px;height:96px;border-radius:var(--r);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;transition:background-color 280ms cubic-bezier(0.2,0,0,1)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:48px;line-height:1;width:48px;overflow:hidden">content_cut</span></span></sc-if>
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+        <h1 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-display);line-height:var(--lh-display);color:var(--text-primary)">{{ s.joiningTitle }}</h1>
+        <sc-if value="{{ hasArea }}" hint-placeholder-val="{{ true }}">
+          <span style="display:flex;gap:4px;align-items:flex-start;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;flex:none;margin-top:1px">location_on</span>{{ area }}</span>
+        </sc-if>
+      </div>
+    </sc-if>
+    <sc-if value="{{ u3Loading }}" hint-placeholder-val="{{ false }}">
+      <div aria-busy="true" aria-label="Loading" style="flex:none;display:flex;flex-direction:column;gap:16px">
+        <span style="width:96px;height:96px;border-radius:var(--r);background:var(--surface-sunken)"></span>
+        <span style="width:85%;height:38px;border-radius:6px;background:var(--surface-sunken)"></span>
+        <span style="width:55%;height:18px;border-radius:4px;background:var(--surface-sunken)"></span>
+      </div>
+    </sc-if>
+    <sc-if value="{{ u3Error }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+        <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ s.u3ErrTitle }}</span>
+        <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.errBody }}</span>
+      </div>
+    </sc-if>
+  </div>
+  <div style="flex:none;padding:12px 16px 8px;display:flex;flex-direction:column;gap:4px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider)">
+    <button onClick="{{ u3Primary }}" disabled="{{ u3Disabled }}" style="width:100%;min-height:56px;padding:16px 20px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;transition:background-color 280ms cubic-bezier(0.2,0,0,1), color 280ms cubic-bezier(0.2,0,0,1);background:{{ u3Bg }};color:{{ u3Fg }};cursor:{{ u3Cursor }}" style-active="opacity:0.88">{{ u3Label }}</button>
+    <button onClick="{{ toU2 }}" style="width:100%;min-height:48px;padding:12px;border:none;background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;transition:color 280ms cubic-bezier(0.2,0,0,1)">{{ s.notYours }}</button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isU4 }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px 24px;display:flex;flex-direction:column;gap:24px">
+    <h1 style="flex:none;margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">{{ s.phoneTitle }}</h1>
+    <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+      <p style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.noticeLead }}</p>
+      <ul style="margin:0;padding:0 0 0 20px;display:flex;flex-direction:column;gap:4px;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary)">
+        <li>{{ s.b1 }}</li>
+        <li>{{ s.b2 }}</li>
+        <li>{{ s.b3 }}</li>
+      </ul>
+      <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.responsible }}<sc-if value="{{ hasPrivacy }}" hint-placeholder-val="{{ true }}"> <a href="{{ mailto }}" style="color:var(--brand-ink);font-weight:600;text-decoration:underline;word-break:break-all">{{ privacy }}</a></sc-if><sc-if value="{{ noPrivacy }}" hint-placeholder-val="{{ false }}"> {{ s.askCounter }}</sc-if></p>
+    </div>
+    <div style="flex:none;display:flex;flex-direction:column">
+      <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3);padding-bottom:4px">{{ s.optHead }}</span>
+      <sc-for list="{{ opts }}" as="o" hint-placeholder-count="2">
+        <button role="checkbox" aria-checked="{{ o.checked }}" onClick="{{ o.toggle }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:4px 0;border:none;border-bottom:1px solid var(--divider);background:transparent;cursor:pointer;text-align:left;color:var(--text-primary)">
+          <span style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;margin-left:-12px">
+            <span style="width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:background 120ms cubic-bezier(0.2,0,0,1);background:{{ o.boxBg }};border:{{ o.boxBorder }};color:var(--on-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;font-weight:600">{{ o.tick }}</span></span>
+          </span>
+          <span style="flex:1;min-width:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ o.label }}</span>
+        </button>
+      </sc-for>
+      <span style="padding-top:8px;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.optNote }}</span>
+    </div>
+    <div style="flex:none;display:flex;flex-direction:column;gap:4px">
+      <label for="phone" style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.phoneLabel }}</label>
+      <div style="min-height:48px;display:flex;align-items:stretch;border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);overflow:hidden;border:{{ phoneBorder }}">
+        <span style="display:flex;align-items:center;padding:0 12px;border-right:1px solid var(--glass-line);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);font-variant-numeric:tabular-nums">+91</span>
+        <input id="phone" type="tel" inputmode="numeric" autocomplete="tel-national" value="{{ phoneVal }}" onChange="{{ onPhone }}" onFocus="{{ phoneFocus }}" onBlur="{{ phoneBlur }}" readOnly="{{ busy }}" placeholder="98765 43210" aria-describedby="phone-msg" style="flex:1;min-width:0;border:none;outline:none;background:transparent;padding:12px;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums;letter-spacing:0.04em;color:var(--text-primary)"></input>
+      </div>
+      <div id="phone-msg" aria-live="polite" style="display:flex;gap:4px;align-items:flex-start">
+        <sc-if value="{{ phoneHasIcon }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:18px;width:18px;overflow:hidden;flex:none;color:var(--danger)">error</span></sc-if>
+        <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:{{ phoneMsgCol }}">{{ phoneMsg }}</span>
+      </div>
+    </div>
+  </div>
+  <div style="flex:none;padding:12px 16px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider)">
+    <button onClick="{{ onSend }}" disabled="{{ sendDisabled }}" aria-busy="{{ busyAttr }}" style="width:100%;min-height:56px;padding:16px 20px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;background:{{ sendBg }};color:{{ sendFg }};cursor:{{ sendCursor }}">
+      <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">progress_activity</span></sc-if>
+      {{ sendLabel }}
+    </button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isU5 }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px 24px;display:flex;flex-direction:column;gap:24px">
+    <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+      <h1 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">{{ s.otpTitle }}</h1>
+      <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);font-variant-numeric:tabular-nums">{{ s.otpSent }}</p>
+      <button onClick="{{ toU4 }}" style="align-self:flex-start;min-height:48px;padding:12px 0;border:none;background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.changeNum }}</button>
+    </div>
+    <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+      <label for="otp" style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.otpLabel }}</label>
+      <div style="position:relative;display:flex;gap:8px">
+        <sc-for list="{{ otpBoxes }}" as="d" hint-placeholder-count="6">
+          <span aria-hidden="true" style="flex:1;min-width:0;min-height:56px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-chip);font-family:var(--font-body);font-weight:600;font-size:var(--fs-ml);line-height:var(--lh-ml);font-variant-numeric:tabular-nums;background:{{ d.bg }};border:{{ d.border }};color:var(--text-primary)">{{ d.v }}</span>
+        </sc-for>
+        <input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="{{ otpVal }}" onChange="{{ onOtp }}" onFocus="{{ otpFocus }}" onBlur="{{ otpBlur }}" disabled="{{ otpLocked }}" aria-describedby="otp-msg" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:none;font-size:16px;cursor:text"></input>
+      </div>
+      <div id="otp-msg" aria-live="polite" style="display:flex;flex-direction:column;gap:4px">
+        <sc-if value="{{ otpHasMsg }}" hint-placeholder-val="{{ false }}">
+          <span style="display:flex;gap:4px;align-items:flex-start;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;flex:none;color:{{ otpIconCol }}">{{ otpIcon }}</span>{{ otpMsg }}</span>
+        </sc-if>
+        <sc-if value="{{ otpHasHelp }}" hint-placeholder-val="{{ false }}">
+          <span style="padding-left:24px;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.otpRegHelp }}</span>
+        </sc-if>
+      </div>
+    </div>
+    <div style="flex:none;display:flex;align-items:center;min-height:48px">
+      <sc-if value="{{ counting }}" hint-placeholder-val="{{ true }}">
+        <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);font-variant-numeric:tabular-nums">{{ s.resendIn }}</span>
+      </sc-if>
+      <sc-if value="{{ canResend }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ resend }}" style="min-height:48px;padding:12px 0;border:none;background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ resendLabel }}</button>
+      </sc-if>
+    </div>
+  </div>
+  <div style="flex:none;padding:12px 16px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider)">
+    <button onClick="{{ u5Primary }}" disabled="{{ u5Disabled }}" aria-busy="{{ busyAttr }}" style="width:100%;min-height:56px;padding:16px 20px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;background:{{ u5Bg }};color:{{ u5Fg }};cursor:{{ u5Cursor }}">
+      <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">progress_activity</span></sc-if>
+      {{ u5Label }}
+    </button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isU6 }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;min-height:0;overflow-y:auto;padding:32px 16px 24px;display:flex;flex-direction:column;gap:24px">
+    <sc-if value="{{ u6Content }}" hint-placeholder-val="{{ true }}">
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+        <h1 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-display);line-height:var(--lh-display)">{{ s.youreIn }}</h1>
+        <p style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2);color:var(--text-secondary)">{{ s.welcome }}</p>
+      </div>
+      <sc-if value="{{ showHomeCard }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:none;display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">add_to_home_screen</span>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+              <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.homeTitle }}</span>
+              <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.homeBody }}</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <button onClick="{{ addHome }}" style="flex:1 1 160px;min-height:48px;padding:12px 16px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.addHome }}</button>
+            <button onClick="{{ notNow }}" style="flex:0 1 auto;min-height:48px;padding:12px 16px;border:none;border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.notNow }}</button>
+          </div>
+        </div>
+      </sc-if>
+    </sc-if>
+    <sc-if value="{{ u6Loading }}" hint-placeholder-val="{{ false }}">
+      <div aria-busy="true" aria-label="Loading" style="flex:none;display:flex;flex-direction:column;gap:16px">
+        <span style="width:50%;height:38px;border-radius:6px;background:var(--surface-sunken)"></span>
+        <span style="width:80%;height:26px;border-radius:6px;background:var(--surface-sunken)"></span>
+        <span style="width:100%;height:160px;border-radius:var(--r);background:var(--surface-sunken)"></span>
+      </div>
+    </sc-if>
+    <sc-if value="{{ u6Error }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+        <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ s.u6ErrTitle }}</span>
+        <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.errBody }}</span>
+      </div>
+    </sc-if>
+  </div>
+  <div style="flex:none;padding:12px 16px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider)">
+    <button onClick="{{ u6Primary }}" disabled="{{ u6Disabled }}" style="width:100%;min-height:56px;padding:16px 20px;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;background:{{ u6Bg }};color:{{ u6Fg }};cursor:{{ u6Cursor }}" style-active="opacity:0.88">{{ u6Label }}</button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ hasSnack }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="position:absolute;left:16px;right:16px;bottom:96px;display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:var(--r-chip);background:var(--surface-sunken);border:1px solid var(--border-strong);box-shadow:0 8px 24px rgba(28,27,25,0.16)">
+    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--success)">check_circle</span>
+    <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary)">{{ snackText }}</span>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static STR = {
+    opening: ['Opening', 'खुल रहा है', 'Khul raha hai'],
+    u1Err: ["Couldn't open the app. Check your internet and try again.", 'ऐप नहीं खुल पाया। इंटरनेट देखें और फिर से कोशिश करें।', 'App nahi khul paaya. Internet check karke phir try karein.'],
+    tryAgain: ['Try again', 'फिर कोशिश करें', 'Phir try karein'],
+    errBody: ['Check your internet and try again.', 'इंटरनेट देखें और फिर से कोशिश करें।', 'Internet check karke phir try karein.'],
+    joinTitle: ['Join your salon', 'अपने सैलून से जुड़ें', 'Apne salon se judein'],
+    joinBody: ["Your salon's app opens once you join. The code is on the card at the counter.", 'जुड़ते ही आपके सैलून का ऐप खुल जाएगा। कोड काउंटर पर रखे कार्ड पर है।', 'Judte hi aapke salon ka app khul jaayega. Code counter par rakhe card par hai.'],
+    scan: ["Scan the salon's QR code", 'सैलून का QR कोड स्कैन करें', 'Salon ka QR code scan karein'],
+    orType: ['Or type the code', 'या कोड टाइप करें', 'Ya code type karein'],
+    codeLabel: ['Salon code', 'सैलून कोड', 'Salon code'],
+    codeHelp: ['It is on the card at the counter, like CRAY-7KQ2MX.', 'यह काउंटर के कार्ड पर है, जैसे CRAY-7KQ2MX।', 'Yeh counter ke card par hai, jaise CRAY-7KQ2MX.'],
+    join: ['Join', 'जुड़ें', 'Judein'],
+    checking: ['Checking…', 'जाँच हो रही है…', 'Check ho raha hai…'],
+    noMatch: ["That code didn't match a salon. Check the card at the counter.", 'यह कोड किसी सैलून से मेल नहीं खाया। काउंटर पर रखा कार्ड देखें।', 'Yeh code kisi salon se match nahi hua. Counter par rakha card dekhein.'],
+    closed: ["This salon isn't taking new customers in the app yet.", 'यह सैलून अभी ऐप में नए ग्राहक नहीं ले रहा है।', 'Yeh salon abhi app mein naye customers nahi le raha.'],
+    rate: ['Too many tries. Try again in a few minutes.', 'बहुत ज़्यादा कोशिशें हो गईं। कुछ मिनट बाद फिर कोशिश करें।', 'Bahut zyaada tries ho gaye. Kuch minute baad phir try karein.'],
+    netErr: ["Couldn't check the code. Check your internet and try again.", 'कोड की जाँच नहीं हो पाई। इंटरनेट देखें और फिर से कोशिश करें।', 'Code check nahi ho paaya. Internet check karke phir try karein.'],
+    offJoin: ["You're offline. Connect to the internet to join.", 'आप ऑफ़लाइन हैं। जुड़ने के लिए इंटरनेट चालू करें।', 'Aap offline hain. Judne ke liye internet on karein.'],
+    offU1: ["You're offline. Connect to the internet to open your salon.", 'आप ऑफ़लाइन हैं। सैलून खोलने के लिए इंटरनेट चालू करें।', 'Aap offline hain. Salon kholne ke liye internet on karein.'],
+    camHint: ['Point the camera at the QR code on the counter card.', 'काउंटर कार्ड पर बने QR कोड की ओर कैमरा रखें।', 'Counter card ke QR code ki taraf camera rakhein.'],
+    torchOn: ['Torch on', 'टॉर्च चालू', 'Torch on'], torchOff: ['Torch', 'टॉर्च', 'Torch'],
+    typeInstead: ['Type the code instead', 'इसके बजाय कोड टाइप करें', 'Iske bajaay code type karein'],
+    noCamTitle: ['No camera? No problem.', 'कैमरा नहीं? कोई बात नहीं।', 'Camera nahi? Koi baat nahi.'],
+    noCamBody: ['Type the code from the card at the counter. It works just the same.', 'काउंटर पर रखे कार्ड से कोड टाइप करें। यह भी उतना ही आसान है।', 'Counter par rakhe card se code type karein. Yeh bhi utna hi aasaan hai.'],
+    joiningTitle: ["You're joining {s}", 'आपका सैलून: {s}', 'Aapka salon: {s}'],
+    continue: ['Continue', 'आगे बढ़ें', 'Aage badhein'],
+    notYours: ['Not your salon? Enter another code', 'यह आपका सैलून नहीं? दूसरा कोड डालें', 'Aapka salon nahi? Doosra code daalein'],
+    u3ErrTitle: ["Couldn't load this salon's details.", 'इस सैलून की जानकारी लोड नहीं हो पाई।', 'Is salon ki details load nahi ho paayin.'],
+    offU3: ["You're offline. Connect to continue joining.", 'आप ऑफ़लाइन हैं। आगे बढ़ने के लिए इंटरनेट चालू करें।', 'Aap offline hain. Aage badhne ke liye internet on karein.'],
+    phoneTitle: ['Your phone number', 'आपका फ़ोन नंबर', 'Aapka phone number'],
+    noticeLead: ['{s} will use your phone number to:', '{s} आपके फ़ोन नंबर का इस्तेमाल इनके लिए करेगा:', '{s} aapka phone number inke liye use karega:'],
+    b1: ['log you in', 'आपको लॉग इन कराना', 'aapko log in karana'],
+    b2: ['send your booking and visit updates', 'बुकिंग और विज़िट की जानकारी भेजना', 'booking aur visit ki updates bhejna'],
+    b3: ['remind you when a service is due', 'सर्विस का समय होने पर याद दिलाना', 'service due hone par yaad dilana'],
+    responsible: ['{s} is responsible for your data. Questions:', 'आपके डेटा की ज़िम्मेदारी {s} की है। सवाल हों तो:', 'Aapke data ki zimmedaari {s} ki hai. Sawaal ho to:'],
+    askCounter: ['ask at the counter.', 'काउंटर पर पूछें।', 'counter par poochein.'],
+    optHead: ['You can also choose', 'आप चाहें तो ये भी चुन सकते हैं', 'Aap chahein to yeh bhi chun sakte hain'],
+    opt1: ['Reminders when a service is due', 'सर्विस का समय होने पर रिमाइंडर', 'Service due hone par reminders'],
+    opt2: ['Offers from {s}', '{s} के ऑफ़र', '{s} ke offers'],
+    optNote: ['Optional. You can change these any time in Your data.', 'ज़रूरी नहीं। इन्हें कभी भी "आपका डेटा" में बदला जा सकता है।', 'Zaroori nahi. Inhe kabhi bhi "Aapka data" mein badal sakte hain.'],
+    phoneLabel: ['Phone number', 'फ़ोन नंबर', 'Phone number'],
+    phoneHelp: ['10 digits. We send a 6-digit code to this number.', '10 अंक। इस नंबर पर 6 अंकों का कोड भेजा जाएगा।', '10 digits. Is number par 6-digit code bheja jaayega.'],
+    phoneShort: ['Phone numbers have 10 digits. This one has {k}.', 'फ़ोन नंबर में 10 अंक होते हैं। इसमें {k} हैं।', 'Phone number mein 10 digits hote hain. Ismein {k} hain.'],
+    sendCode: ['Send code', 'कोड भेजें', 'Code bhejein'],
+    sending: ['Sending…', 'भेजा जा रहा है…', 'Bhej rahe hain…'],
+    sendErr: ["Couldn't send the code. Check your internet and try again.", 'कोड नहीं भेजा जा सका। इंटरनेट देखें और फिर से कोशिश करें।', 'Code nahi bheja ja saka. Internet check karke phir try karein.'],
+    offPhone: ["You're offline. The code can be sent once you're back online.", 'आप ऑफ़लाइन हैं। इंटरनेट आने पर कोड भेजा जा सकेगा।', 'Aap offline hain. Internet aane par code bheja ja sakega.'],
+    otpTitle: ['Enter the code', 'कोड डालें', 'Code daalein'],
+    otpSent: ['We sent a 6-digit code to {n}', 'हमने {n} पर 6 अंकों का कोड भेजा है', 'Humne {n} par 6-digit code bheja hai'],
+    otpLabel: ['6-digit code', '6 अंकों का कोड', '6-digit code'],
+    changeNum: ['Change number', 'नंबर बदलें', 'Number badlein'],
+    resendIn: ['Resend in {t}', '{t} में दोबारा भेज सकते हैं', '{t} mein dobaara bhej sakte hain'],
+    resend: ['Resend code', 'कोड दोबारा भेजें', 'Code dobaara bhejein'],
+    sendNew: ['Send a new code', 'नया कोड भेजें', 'Naya code bhejein'],
+    otpWrong: ["That code didn't match. 2 tries left.", 'कोड मेल नहीं खाया। 2 कोशिशें बाकी हैं।', 'Code match nahi hua. 2 tries baaki hain.'],
+    otpExpired: ['That code has expired. We can send a new one.', 'इस कोड का समय खत्म हो गया। हम नया कोड भेज सकते हैं।', 'Is code ka time khatam ho gaya. Hum naya code bhej sakte hain.'],
+    otpReg: ['This number is already registered with a salon.', 'यह नंबर पहले से एक सैलून के साथ रजिस्टर है।', 'Yeh number pehle se ek salon ke saath registered hai.'],
+    otpRegHelp: ['Use a different number, or ask at the counter.', 'दूसरा नंबर इस्तेमाल करें, या काउंटर पर पूछें।', 'Doosra number use karein, ya counter par poochein.'],
+    offOtp: ["You're offline. Connect to check the code.", 'आप ऑफ़लाइन हैं। कोड जाँचने के लिए इंटरनेट चालू करें।', 'Aap offline hain. Code check karne ke liye internet on karein.'],
+    youreIn: ["You're in.", 'सब तैयार है।', 'Sab ready hai.'],
+    welcome: ['Welcome to {s}.', '{s} में आपका स्वागत है।', '{s} mein aapka swagat hai.'],
+    homeTitle: ['Add {s} to your home screen', '{s} को होम स्क्रीन पर जोड़ें', '{s} ko home screen par jodein'],
+    homeBody: ["Open your salon's app in one tap, like any other app.", 'किसी भी दूसरे ऐप की तरह, एक टैप में सैलून का ऐप खोलें।', 'Kisi bhi doosre app ki tarah, ek tap mein salon ka app kholein.'],
+    addHome: ['Add to home screen', 'होम स्क्रीन पर जोड़ें', 'Home screen par jodein'],
+    notNow: ['Not now', 'अभी नहीं', 'Abhi nahi'],
+    added: ['Added to your home screen.', 'होम स्क्रीन पर जोड़ दिया गया।', 'Home screen par jod diya.'],
+    goHome: ['Go to home', 'होम पर जाएँ', 'Home par jaayein'],
+    u6ErrTitle: ["Couldn't load your salon's home.", 'आपके सैलून का होम लोड नहीं हो पाया।', 'Aapke salon ka home load nahi ho paaya.'],
+    offU6: ["You're offline. Your salon's home loads once you're back online.", 'आप ऑफ़लाइन हैं। इंटरनेट आने पर सैलून का होम खुलेगा।', 'Aap offline hain. Internet aane par salon ka home khulega.'],
+  };
+
+  state = { code: '', phone: '', otp: '', opt1: false, opt2: false, busy: false, torch: false, t: 28, homeDone: false, snack: null, phoneTouched: false, otpFocused: false };
+
+  componentDidMount() {
+    this._tick = setInterval(() => { if (this.props.screen === 'U5' && this.state.t > 0) this.setState(s => ({ t: s.t - 1 })); }, 1000);
+  }
+  componentDidUpdate(pp) {
+    if (pp.screen !== this.props.screen) {
+      clearTimeout(this._bt);
+      const p = { busy: false };
+      if (this.props.screen === 'U5') { p.t = 28; p.otp = ''; }
+      if (this.props.screen === 'U6') { p.homeDone = false; }
+      this.setState(p);
+    }
+  }
+  componentWillUnmount() { clearInterval(this._tick); clearTimeout(this._bt); clearTimeout(this._st); }
+  go(code, v) { this.props.go && this.props.go(code, v); }
+  setV(v) { this.props.setVariant && this.props.setVariant(v); }
+  wait(ms, fn) { clearTimeout(this._bt); this.setState({ busy: true }); this._bt = setTimeout(() => { this.setState({ busy: false }); fn(); }, ms); }
+  snack(text) { clearTimeout(this._st); this.setState({ snack: text }); this._st = setTimeout(() => this.setState({ snack: null }), 4000); }
+
+  renderVals() {
+    const P = this.props, S = this.state, C = this.constructor;
+    const screen = P.screen || 'U1', v = P.variant || '', st = P.st || 'content';
+    const li = { en: 0, hi: 1, hl: 2 }[P.lang] ?? 0;
+    const name = P.brandName || 'Your salon';
+    const empty = st === 'empty';
+    const code = empty ? '' : S.code, phone = empty ? '' : S.phone, otp = empty ? '' : S.otp;
+    const pd = phone || '9876504821';
+    const masked = `+91 ${pd.slice(0, 2)}xxx x${pd.slice(6, 10)}`;
+    const tStr = `0:${String(S.t).padStart(2, '0')}`;
+    const s = {};
+    for (const k in C.STR) s[k] = C.STR[k][li].split('{s}').join(name).split('{n}').join(masked).split('{t}').join(tStr);
+    const off = st === 'offline', err = st === 'error', load = st === 'loading';
+    const filled = (on) => ({ bg: on ? 'var(--primary)' : 'var(--surface-sunken)', fg: on ? 'var(--on-primary)' : 'var(--text-muted)', cursor: on ? 'pointer' : 'not-allowed' });
+
+    // U2
+    const isCam = screen === 'U2' && v === 'camera';
+    const valid = /^[A-Z0-9]{6}$/.test(code);
+    const busy = S.busy || ((screen === 'U2' && v === 'checking') || (load && ['U2', 'U4', 'U5'].includes(screen)));
+    let codeMsg = s.codeHelp, codeIcon = '', codeIconCol = '', codeMsgCol = 'var(--text-secondary)', codeErr = false;
+    if (screen === 'U2') {
+      if (err) { codeMsg = s.netErr; codeIcon = 'error'; codeIconCol = 'var(--danger)'; codeMsgCol = 'var(--text-primary)'; }
+      else if (v === 'nomatch') { codeMsg = s.noMatch; codeIcon = 'error'; codeIconCol = 'var(--danger)'; codeMsgCol = 'var(--text-primary)'; codeErr = true; }
+      else if (v === 'closed') { codeMsg = s.closed; codeIcon = 'info'; codeIconCol = 'var(--info)'; codeMsgCol = 'var(--text-primary)'; }
+      else if (v === 'ratelimit') { codeMsg = s.rate; codeIcon = 'schedule'; codeIconCol = 'var(--warning)'; codeMsgCol = 'var(--text-primary)'; }
+    }
+    const shownCode = (v === 'nomatch' && !code) ? '9XK2QM' : (v === 'closed' && !code) ? '4HT8PA' : (v === 'checking' && !code) ? '7KQ2MX' : code;
+    const joinOk = (valid || v === 'checking') && v !== 'ratelimit' && !off && !busy && !err;
+    const jb = filled(joinOk || busy);
+
+    // U4
+    const pValid = phone.length === 10;
+    const pShort = S.phoneTouched && phone.length > 0 && !pValid;
+    let phoneMsg = s.phoneHelp, phoneMsgCol = 'var(--text-secondary)', phoneHasIcon = false;
+    if (screen === 'U4' && err) { phoneMsg = s.sendErr; phoneMsgCol = 'var(--text-primary)'; phoneHasIcon = true; }
+    else if (pShort) { phoneMsg = s.phoneShort.split('{k}').join(String(phone.length)); phoneMsgCol = 'var(--text-primary)'; phoneHasIcon = true; }
+    const sendOk = pValid && !off && !busy;
+    const sb = filled(sendOk || busy);
+    const opts = [['opt1', s.opt1], ['opt2', s.opt2]].map(([k, label]) => { const on = S[k]; return { label, checked: on ? 'true' : 'false', tick: on ? 'check' : '', boxBg: on ? 'var(--primary)' : 'transparent', boxBorder: on ? '2px solid var(--primary)' : '2px solid var(--border-strong)', toggle: () => this.setState({ [k]: !S[k] }) }; });
+
+    // U5
+    const otpErr = v === 'wrong' || err;
+    const otpLocked = v === 'registered' || busy || off;
+    const otpBoxes = [0, 1, 2, 3, 4, 5].map(i => {
+      const d = otp[i] || '', focus = S.otpFocused && i === Math.min(otp.length, 5) && !otpLocked;
+      return { v: d, bg: v === 'registered' ? 'var(--surface-sunken)' : 'var(--surface-alt)', border: otpErr ? '2px solid var(--danger)' : focus ? '2px solid var(--brand-ink)' : '1px solid var(--border-strong)' };
+    });
+    let otpMsg = '', otpIcon = 'error', otpIconCol = 'var(--danger)';
+    if (err) otpMsg = s.netErr;
+    else if (v === 'wrong') otpMsg = s.otpWrong;
+    else if (v === 'expired') { otpMsg = s.otpExpired; otpIcon = 'schedule'; otpIconCol = 'var(--warning)'; }
+    else if (v === 'registered') { otpMsg = s.otpReg; otpIcon = 'info'; otpIconCol = 'var(--info)'; }
+    const submitOtp = (val) => this.wait(800, () => { if (val === '000000') { this.setState({ otp: '' }); this.setV('wrong'); } else this.go('U6'); });
+    const u5Ok = v === 'registered' ? true : (otp.length === 6 && !off && !busy && v !== 'expired');
+    const u5b = filled(u5Ok || busy);
+    const u5Label = busy ? s.checking : v === 'registered' ? s.changeNum : v === 'expired' ? s.sendNew : s.continue;
+
+    // U3 / U6
+    const u3b = filled(!load && !off);
+    const u6b = filled(!load && !off);
+    let offlineText = '';
+    if (off) offlineText = { U1: s.offU1, U2: s.offJoin, U3: s.offU3, U4: s.offPhone, U5: s.offOtp, U6: s.offU6 }[screen] || '';
+
+    return {
+      s, brandName: name, brandMark: P.brandMark || '', hasMark: !!P.brandMark, noMark: !P.brandMark,
+      area: P.area || '', hasArea: !!P.area, privacy: P.privacy || '', hasPrivacy: !!P.privacy, noPrivacy: !P.privacy, mailto: 'mailto:' + (P.privacy || ''),
+      logoAlt: name + ' logo',
+      showOffline: off && !isCam, offlineText,
+      hasAppBar: ['U4', 'U5', 'U6'].includes(screen), hasBack: ['U4', 'U5'].includes(screen), noBack: !['U4', 'U5'].includes(screen),
+      back: () => this.go(screen === 'U5' ? 'U4' : 'U3'),
+      isU1: screen === 'U1', u1Bar: !err, u1Err: err,
+      toU2: () => this.go('U2'), retry: () => this.go('U2'),
+      isU2Form: screen === 'U2' && !isCam, isCam, isRefused: v === 'camrefused', notRefused: v !== 'camrefused',
+      codeHeading: v === 'camrefused' ? s.codeLabel : s.orType,
+      codeVal: shownCode, codeInvalid: codeErr ? 'true' : 'false',
+      codeBorder: codeErr ? '2px solid var(--danger)' : '1px solid var(--border-strong)',
+      codeMsg, codeIcon, codeIconCol, codeMsgCol, hasCodeIcon: !!codeIcon,
+      onCode: (e) => { let r = String(e.target.value || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (r.startsWith('CRAY') && r.length > 6) r = r.slice(4); this.setState({ code: r.slice(0, 6) }); if (['nomatch', 'closed', 'checking'].includes(v)) this.setV('typing'); },
+      onCodeKey: (e) => { if (e.key === 'Enter' && joinOk) this.wait(900, () => (this.state.code === '7KQ2MX' ? this.go('U3') : this.setV('nomatch'))); },
+      onJoin: () => { if (!joinOk) return; this.wait(900, () => (this.state.code === '7KQ2MX' ? this.go('U3') : this.setV('nomatch'))); },
+      joinDisabled: !joinOk, joinBg: jb.bg, joinFg: jb.fg, joinCursor: busy ? 'wait' : jb.cursor, joinLabel: busy ? s.checking : s.join,
+      busy, busyAttr: busy ? 'true' : 'false',
+      openCam: () => this.setV('camera'), closeCam: () => this.setV('typing'),
+      simulateScan: () => { this.setState({ code: '7KQ2MX' }); this.go('U3'); },
+      toggleTorch: () => this.setState({ torch: !S.torch }), torchPressed: S.torch ? 'true' : 'false',
+      torchIcon: S.torch ? 'flashlight_on' : 'flashlight_off', torchFill: S.torch ? "'FILL' 1" : "'FILL' 0", torchLabel: S.torch ? s.torchOn : s.torchOff,
+      isU3: screen === 'U3', u3Content: !load && !err, u3Loading: load, u3Error: err,
+      u3Primary: err ? () => this.go('U3') : () => this.go('U4'), u3Disabled: load || off,
+      u3Bg: u3b.bg, u3Fg: u3b.fg, u3Cursor: u3b.cursor, u3Label: err ? s.tryAgain : s.continue,
+      isU4: screen === 'U4', opts,
+      phoneVal: phone.length > 5 ? phone.slice(0, 5) + ' ' + phone.slice(5) : phone,
+      onPhone: (e) => this.setState({ phone: String(e.target.value || '').replace(/\D/g, '').replace(/^91(?=\d{10})/, '').slice(0, 10) }),
+      phoneFocus: () => {}, phoneBlur: () => this.setState({ phoneTouched: true }),
+      phoneBorder: pShort || (screen === 'U4' && err) ? '2px solid var(--danger)' : '1px solid var(--border-strong)',
+      phoneMsg, phoneMsgCol, phoneHasIcon,
+      onSend: () => { if (sendOk) this.wait(900, () => this.go('U5', 'default')); },
+      sendDisabled: !sendOk, sendBg: sb.bg, sendFg: sb.fg, sendCursor: busy ? 'wait' : sb.cursor, sendLabel: busy ? s.sending : s.sendCode,
+      isU5: screen === 'U5', toU4: () => this.go('U4'),
+      otpBoxes, otpVal: otp, otpLocked,
+      onOtp: (e) => { const val = String(e.target.value || '').replace(/\D/g, '').slice(0, 6); this.setState({ otp: val }); if (v === 'wrong') this.setV('default'); if (val.length === 6 && v !== 'expired' && !off) submitOtp(val); },
+      otpFocus: () => this.setState({ otpFocused: true }), otpBlur: () => this.setState({ otpFocused: false }),
+      otpHasMsg: !!otpMsg, otpMsg, otpIcon, otpIconCol, otpHasHelp: v === 'registered' && !err,
+      counting: S.t > 0 && v !== 'expired' && v !== 'registered', canResend: (S.t === 0 || v === 'expired') && v !== 'registered',
+      resendLabel: v === 'expired' ? s.sendNew : s.resend,
+      resend: () => { this.setState({ t: 28, otp: '' }); if (v === 'expired' || v === 'wrong') this.setV('default'); },
+      u5Primary: () => { if (v === 'registered') return this.go('U4'); if (v === 'expired') { this.setState({ t: 28, otp: '' }); return this.setV('default'); } if (otp.length === 6) submitOtp(otp); },
+      u5Disabled: !u5Ok, u5Bg: u5b.bg, u5Fg: u5b.fg, u5Cursor: busy ? 'wait' : u5b.cursor, u5Label,
+      isU6: screen === 'U6', u6Content: !load && !err, u6Loading: load, u6Error: err,
+      showHomeCard: v !== 'ios' && !S.homeDone,
+      addHome: () => { this.setState({ homeDone: true }); this.snack(s.added); }, notNow: () => this.setState({ homeDone: true }),
+      u6Primary: err ? () => this.go('U6') : () => this.go('00'), u6Disabled: load || off,
+      u6Bg: u6b.bg, u6Fg: u6b.fg, u6Cursor: u6b.cursor, u6Label: err ? s.tryAgain : s.goHome,
+      hasSnack: !!S.snack, snackText: S.snack || '',
+    };
+  }
+}
+</script>
+</body>
+</html>

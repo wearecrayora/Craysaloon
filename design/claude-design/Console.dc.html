@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{{const n=new URLSearchParams(location.search).get("theme");if(n==="light"||n==="dark"){document.documentElement.dataset.theme=n}}{if(new URLSearchParams(location.search).get("_omthumb")==="1"){const n=(f)=>{const g=f.focus;if(!g)return;f.focus=function(h){g.call(this,{...h,preventScroll:true})}};n(HTMLElement.prototype);n(SVGElement.prototype);if(typeof MathMLElement!=="undefined"){n(MathMLElement.prototype)}const d=(f)=>{f.removeAttribute("autofocus");f.inert=true;if(!(f instanceof HTMLElement))f.removeAttribute("tabindex")};const p=(f)=>{if(f.hasAttribute("autofocus"))d(f);for(const g of f.querySelectorAll("[autofocus]")){d(g)}};p(document.documentElement);new MutationObserver((f)=>{for(const g of f){for(const h of g.addedNodes){if(h.nodeType===1)p(h)}}}).observe(document,{childList:true,subtree:true})}}{const n=()=>{try{if(document.querySelector('meta[name="color-scheme"]'))return;const d=getComputedStyle(document.documentElement).getPropertyValue("color-scheme").trim();if(d&&d!=="normal")return;const p=(y)=>{if(!y)return null;const m=getComputedStyle(y).backgroundColor.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+%?))?\s*\)$/);if(!m)return null;const w=m[4]==null?1:parseFloat(m[4])/(m[4].endsWith("%")?100:1);if(w<0.99)return null;return[+m[1],+m[2],+m[3]]};const f=p(document.body)||p(document.documentElement);if(!f)return;const g=(y)=>{const m=y/255;return m<=0.04045?m/12.92:((m+0.055)/1.055)**2.4};const h=0.2126*g(f[0])+0.7152*g(f[1])+0.0722*g(f[2]);document.documentElement.style.setProperty("color-scheme",h<0.4?"dark":"light")}catch{}};if(document.readyState==="complete")n();else window.addEventListener("load",n)}var I=["https://claude.ai","https://preview.claude.ai","https://5f0bd573-2543-4d26-9b98-e594dd744d96.claudeusercontent.com"];var B=true;var K=false;var C=()=>{};if(K===true){try{const n=setTimeout.bind(window);const d=1e4;const p=15;const f=1e4;const g=120000;const h=200;const y=(o)=>{try{let r;if(typeof o==="string")r=o;else if(o instanceof URL)r=o.href;else if(typeof Request!=="undefined"&&o instanceof Request)r=o.url;else return null;if(!r)return null;const l=document.baseURI;const i=new URL(r,l);if(i.protocol!=="http:"&&i.protocol!=="https:")return null;if(i.origin!==new URL(l).origin)return null;return i.origin+i.pathname}catch{return null}};const m=new Map;const w=(o)=>{let r=m.get(o);if(!r){if(m.size>=h){const l=m.keys().next().value;if(l!==undefined)m.delete(l)}r={fails:[],until:0,cooldown:f,hard:false};m.set(o,r)}return r};const R=(o)=>{const r=m.get(o);return r!==undefined&&r.until>Date.now()};const O=(o,r)=>{const l=Date.now();const i=w(o);if(r)i.hard=true;if(i.until>l)return;i.fails.push(l);while(i.fails.length>0&&i.fails[0]<=l-d)i.fails.shift();if(i.fails.length>=p){i.until=l+i.cooldown;if(i.hard)i.cooldown=Math.min(i.cooldown*2,g);i.fails.length=0;try{n(()=>{try{S(true)}catch{}},i.until-l+100)}catch{}console.warn("[omelette] asset circuit breaker: pausing requests to "+o+" for "+Math.round((i.until-l)/1000)+"s after "+p+" failures in "+d/1000+"s")}};const e=(o)=>{m.delete(o)};const t=100;const a=new WeakMap;const u=new Set;let s=null;const S=(o)=>{for(const r of Array.from(u)){try{const l=a.get(r);if(l===undefined){u.delete(r);continue}if(o){const i=y(l);if(i!==null&&R(i))continue}a.delete(r);u.delete(r);if(s!==null)s.call(r,l)}catch{}}};C=()=>{try{m.clear();S(false)}catch{}};document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")C()});const _=window.fetch;if(typeof _==="function"){const o=function(...r){let l=null;try{l=y(r[0])}catch{}if(l!==null&&R(l)){let c;try{if(r[1]&&r[1].signal!==undefined){c=r[1].signal||undefined}else if(typeof Request!=="undefined"&&r[0]instanceof Request){c=r[0].signal||undefined}}catch{c=undefined}return new Promise((k,b)=>{const E=()=>{try{return c.reason!==undefined?c.reason:new DOMException("The operation was aborted.","AbortError")}catch{return new DOMException("The operation was aborted.","AbortError")}};try{if(c&&c.aborted){b(E());return}}catch{}let T=false;const j=()=>{if(T)return;T=true;b(E())};try{if(c)c.addEventListener("abort",j,{once:true})}catch{}n(()=>{if(T)return;T=true;try{if(c)c.removeEventListener("abort",j)}catch{}let L;try{L=new Response(null,{status:429,statusText:"Too Many Requests",headers:{"Retry-After":"10"}})}catch{L={ok:false,status:429}}k(L)},250)})}const i=_.apply(window,r);if(l!==null){const c=l;i.then((k)=>{try{if(k.ok)e(c);else if(k.status===401||k.status===403||k.status===404||k.status===429){O(c,k.status!==404)}}catch{}},()=>{})}return i};window.fetch=o}const v=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src");if(v!==undefined&&v.set!==undefined&&v.get!==undefined){const o=v.set;s=o;Object.defineProperty(HTMLImageElement.prototype,"src",{configurable:true,enumerable:v.enumerable,get:v.get,set(r){const l=`${r}`;try{const i=y(l);if(i!==null&&R(i)){a.set(this,l);if(u.size<t)u.add(this);return}}catch{}try{a.delete(this);u.delete(this)}catch{}o.call(this,l)}})}try{const o=HTMLImageElement.prototype.setAttribute;HTMLImageElement.prototype.setAttribute=function(r,l){if(arguments.length<2){o.apply(this,arguments);return}if(typeof r==="string"&&r.toLowerCase()==="src"){const i=`${l}`;try{const c=y(i);if(c!==null&&R(c)){a.set(this,i);if(u.size<t)u.add(this);return}a.delete(this);u.delete(this)}catch{}o.call(this,r,i);return}o.call(this,r,l)}}catch{}window.addEventListener("error",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)O(l,true)}}catch{}},true);window.addEventListener("load",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)e(l);const i=a.get(r);if(i!==undefined){let c=false;try{c=new URL(i,document.baseURI).href===new URL(r.currentSrc||r.src||"",document.baseURI).href}catch{c=false}if(c){a.delete(r);u.delete(r)}}}}catch{}},true)}catch{}}var J=30000;var G=3000;document.addEventListener("DOMContentLoaded",()=>{const n=window.Babel;const d="om-src-id";if(n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[d])){n.registerPlugin(d,({types:h})=>({visitor:{JSXOpeningElement(y,m){const w=y.node;if(w.name&&w.name.type==="JSXMemberExpression")return;for(let t=0;t<w.attributes.length;t++){const a=w.attributes[t];if(a.type==="JSXAttribute"&&a.name&&a.name.name==="data-om-id")return}const R=m.file&&m.file.opts&&m.file.opts.filename||"?";const O=w.loc&&w.loc.start;const e=`jsx:${R}:${w.start??0}:${O?O.line:0}:${O?O.column+1:0}`;w.attributes.push(h.jsxAttribute(h.jsxIdentifier("data-om-id"),h.stringLiteral(e)))}}}))}const p="om-text-extract";let f=false;if(B&&n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[p])){const h=window.React;if(h&&h.useSyncExternalStore&&h.createElement){f=true;const y={};const m=new Set;let w=0;window.__omTextO=y;window.__omTextSet=(e)=>{for(const t in e){const a=e[t];if(a==null)delete y[t];else y[t]=a}w++;m.forEach((t)=>t())};const R=(e)=>{m.add(e);return()=>m.delete(e)};const O=()=>w;window.__OmT=function e(t){h.useSyncExternalStore(R,O,O);return h.createElement("span",{"data-om-text":t.i,className:"__om-t"},t.i in y?y[t.i]:t.children)};n.registerPlugin(p,({types:e})=>{const t={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const a={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const u=(o,r)=>e.logicalExpression("??",e.memberExpression(e.logicalExpression("||",e.memberExpression(e.identifier("window"),e.identifier("__omTextO")),e.objectExpression([])),e.stringLiteral(o),true),r);const s=(o)=>o.file&&o.file.opts&&o.file.opts.filename||"?";const S=(o)=>o.file&&o.file.code||"";const _=(o,r)=>{const l=(c)=>c&&c.start!=null&&c.end!=null&&(c.type==="StringLiteral"||c.type==="TemplateLiteral"&&c.expressions.length===0)?[c.start,c.end]:null;const i=l(r);if(i)return i;if(r&&r.type==="Identifier"){const c=o.scope.getBinding(r.name);if(c&&c.constant&&c.path.node.type==="VariableDeclarator"){return l(c.path.node.init)}}return null};const v=(o,r,l)=>{const i=o.node;let c=false;const k=(E,T)=>{c=true;return e.jsxElement(e.jsxOpeningElement(e.jsxIdentifier("__OmT"),[e.jsxAttribute(e.jsxIdentifier("i"),e.stringLiteral(E))],false),e.jsxClosingElement(e.jsxIdentifier("__OmT")),[T],false)};const b=i.children.map((E)=>{if(E.type==="JSXText"){if(E.start==null||E.end==null)return E;const T=l.slice(E.start,E.end);const j=T.length-T.trimStart().length;const L=T.length-T.trimEnd().length;if(j+L>=T.length)return E;return k(`txt:${r}:${E.start+j}:${E.end-L}`,E)}if(E.type==="JSXExpressionContainer"){const T=_(o,E.expression);if(T)return k(`str:${r}:${T[0]}:${T[1]}`,E)}return E});if(c)i.children=b};return{visitor:{JSXOpeningElement(o,r){const l=o.node;const i=s(r);const c={};for(let k=0;k<l.attributes.length;k++){const b=l.attributes[k];if(b.type!=="JSXAttribute"||!b.name)continue;const E=b.name.name;if(!a[E])continue;if(!b.value||b.value.type!=="StringLiteral")continue;if(b.value.start==null||b.value.end==null)continue;const T=`txt:${i}:${b.value.start}:${b.value.end}`;c[E]=T;b.value=e.jsxExpressionContainer(u(T,e.stringLiteral(b.value.value)))}if(Object.keys(c).length){l.attributes.push(e.jsxAttribute(e.jsxIdentifier("data-om-text-attrs"),e.stringLiteral(JSON.stringify(c))))}},JSXElement(o,r){const l=o.node.openingElement;const i=l&&l.name&&l.name.name;if(i==="__OmT")return;if(typeof i==="string"&&t[i])return;v(o,s(r),S(r))},JSXFragment(o,r){v(o,s(r),S(r))}}}})}}const g=f?["transform-react-jsx-source",d,p]:["transform-react-jsx-source",d];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach((h,y)=>{const m=h.getAttribute("data-plugins")||"";const w=g.filter((R)=>m.indexOf(R)<0);if(w.length){h.setAttribute("data-plugins",m?`${m},${w.join(",")}`:w.join(","))}if(!h.hasAttribute("data-filename")){h.setAttribute("data-filename",h.getAttribute("src")||`inline-${y}`)}})});var A=window.parent;var U="not editable here — open the project in the Claude Design editor to save";var W=()=>Promise.resolve({persisted:false,noHost:true,reason:U});var H=W;var M="data/storage.json";var z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.match(/\/projects\/([^/]+)\/serve\//);if(d)return d[1];return n.hostname.split(".")[0]||""}catch{return location.hostname.split(".")[0]||""}};var Z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.indexOf("/serve/");if(d>=0)return n.origin+n.pathname.slice(0,d+"/serve/".length)+M}catch{}return"./"+M};var x=null;var N=()=>{if(!x){x=fetch(Z(),{cache:"no-store"}).then((n)=>{if(n.ok)return n.text();return n.status===404?"":null}).catch(()=>null).then((n)=>{if(n===null){x=null;return null}const d=new Map;if(!n)return d;let p;try{p=JSON.parse(n)}catch{console.warn("[omelette.storage] "+M+" is not valid JSON; treating the store as unreadable so a save cannot overwrite the "+"hand-edited bytes. Fix the JSON (or delete the file) to re-enable persistence.");x=null;return null}if(p===null||typeof p!=="object"||Array.isArray(p)){console.warn("[omelette.storage] "+M+" doesn't hold a JSON object; treating the store as unreadable so a save cannot "+"overwrite the hand-edited bytes. Make the top level a JSON object to re-enable persistence.");x=null;return null}const f=p;if("data"in f){const g=f.data;if(g===null||typeof g!=="object"||Array.isArray(g)){console.warn("[omelette.storage] "+M+' has a "data" field that is not a JSON object; treating the store as unreadable so a '+'save cannot overwrite the hand-edited bytes. Make "data" a JSON object to re-enable persistence.');x=null;return null}const h=f._meta;const y=h!==null&&typeof h==="object"?h.project:undefined;if(typeof y==="string"&&y!==""&&y!==z())return d;for(const m of Object.keys(g))d.set(m,g[m]);return d}for(const g of Object.keys(f)){if(g!=="_meta")d.set(g,f[g])}return d})}return x};var F=(n)=>H(M,JSON.stringify({_meta:{project:z(),version:1},data:Object.fromEntries(n)},null,2));var D=Promise.resolve();var $=(n)=>{const d=D.then(n);D=d.then(()=>{return},()=>{return});return d};var V=/sk-(?:ant-)?[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|xox[a-z]-[A-Za-z0-9][A-Za-z0-9-]{9,}|AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/;var Y=/password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|credential/i;var Q=(n,d,p)=>{if(V.test(d)||Y.test(n)&&typeof p==="string"&&p.length>=8){console.warn('[omelette.storage] the value for "'+n+'" looks like a credential. The storage file is a plaintext project file — visible to '+"everyone with project access and copied when the project is duplicated. Do not store secrets here.")}};var q={persisted:false,reason:"could not load the existing store — not overwriting it"};var X={persisted:false,reason:"stored value changed since a failed read — re-read this key before saving"};var P=new Set;var ee={get:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.get: key must be a string"))}return $(N).then((d)=>{if(d===null){P.add(n);return null}P.delete(n);if(!d.has(n))return null;const p=d.get(n);return p==null?null:JSON.parse(JSON.stringify(p))})},set:(n,d)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.set: key must be a string"))}let p;try{p=JSON.stringify(d)}catch(g){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable ("+String(g)+")"))}if(p===undefined){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable"))}Q(n,p,d);const f=JSON.parse(p);return $(()=>N().then((g)=>{if(g===null)return q;if(P.has(n)){if(g.has(n))return X;P.delete(n)}g.set(n,f);return F(g)}))},delete:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.delete: key must be a string"))}return $(()=>N().then((d)=>{if(d===null)return q;if(P.has(n)){if(d.has(n))return X;P.delete(n)}d.delete(n);return F(d)}))},keys:()=>$(N).then((n)=>n===null?[]:Array.from(n.keys()))};window.omelette={writeFile:(n,d)=>H(n,d).then((p)=>{if(!p.persisted&&!p.noHost){throw new Error(p.reason||"write failed")}}),storage:ee};if(A&&A!==window){const n=(e,t)=>{try{A.postMessage({__omelette_log:true,type:e,data:t},"*")}catch{}};["log","warn","error"].forEach((e)=>{const t=console[e];console[e]=(...a)=>{const u=a.map((s)=>{try{return typeof s==="object"?JSON.stringify(s):String(s)}catch{try{return String(s)}catch{return"[unstringifiable]"}}}).join(" ");n(e,u);t.apply(console,a)}});window.addEventListener("error",(e)=>{const t=e.target;if(t&&t!==window&&t.tagName){const a=t.src||t.href||"";n("resource_error",`${t.tagName} failed to load: ${a}`)}else{n("error",`${e.message||"Unknown error"} at ${e.filename||"?"}:${e.lineno||0}:${e.colno||0}`)}},true);window.addEventListener("unhandledrejection",(e)=>{const t=e.reason;const a=t instanceof Error?`${t.message} ${t.stack}`:String(t);n("error",`Unhandled rejection: ${a}`)});window.addEventListener("click",(e)=>{if(e.defaultPrevented||e.button!==0)return;if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const t=e.composedPath?e.composedPath():[];const a=["button","input","select","textarea","summary","label"];let u=null;for(const v of t){if(!(v instanceof Element))continue;if(v.localName==="a"){if(!(v instanceof HTMLAnchorElement))return;u=v;break}if(a.indexOf(v.localName)!==-1)return}if(!u)return;if(u.isContentEditable)return;const s=u.closest("[contenteditable]");if(s&&s.getAttribute("contenteditable")!=="false")return;const S=(u.getAttribute("target")||"_self").toLowerCase();if(S!=="_self"&&S!=="_top"&&S!=="_parent")return;let _;try{_=new URL(u.href)}catch{return}if(_.protocol!=="http:"&&_.protocol!=="https:")return;if(location.origin==="null")return;if(_.origin===location.origin)return;e.preventDefault();window.open(_.href,"_blank","noopener,noreferrer")});const d=()=>{try{A.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(window.ResizeObserver)new ResizeObserver(d).observe(document.documentElement);const p=()=>{d();if(!document.querySelector('script[type="text/babel"],script[type="text/jsx"]'))return;const e=()=>document.getElementById("root")||document.querySelector("body > div[id]");const t=e()?.firstElementChild??null;let a=0;const u=()=>{const s=e();if(s&&s.firstElementChild!==t||++a>30){d();return}setTimeout(u,100)};setTimeout(u,100)};if(document.readyState==="complete")p();else window.addEventListener("load",p);const f={};let g=0;const h=(e)=>new Promise((t,a)=>{if(!I.length){a(new Error("claude.complete: no parent origin"));return}const u=`c${++g}`;const s=()=>setTimeout(()=>{delete f[u];a(new Error(`claude.complete: no data for ${J/1000}s`))},J);const S=s();f[u]={resolve:t,reject:a,text:"",t:S,arm:s};try{for(const _ of I){A.postMessage({__om_api:true,id:u,body:e},_)}}catch(_){clearTimeout(S);delete f[u];a(_)}});const y=8;const m=async(e,t)=>{if(!Array.isArray(e.messages)){throw new Error("claude.complete: tools require a messages array")}const a=e.messages.slice();const u={...e,tools:e.tools.map((_)=>{if(_===null||typeof _!=="object")return _;const v={};for(const o of Object.keys(_)){if(typeof _[o]!=="function")v[o]=_[o]}return v})};const s=u.tool_choice;const S=s!=null&&(s.type==="any"||s.type==="tool")?{...u,tool_choice:s.disable_parallel_tool_use!==undefined?{type:"auto",disable_parallel_tool_use:s.disable_parallel_tool_use}:{type:"auto"}}:u;for(let _=0;_<y;_++){const v=await h({..._===0?u:S,messages:a});const o=v.message;const r=o&&Array.isArray(o.content)?o.content:null;const l=r?r.filter((c)=>c?.type==="tool_use"):[];if(o?.stop_reason!=="tool_use"||l.length===0){return v.text}const i=[];for(const c of l){const k=t.get(c.name);if(!k){i.push({type:"tool_result",tool_use_id:c.id,content:`no handler for tool "${c.name}"`,is_error:true});continue}try{const b=await k(c.input);const E=typeof b==="string"?b:O(b)??"";i.push({type:"tool_result",tool_use_id:c.id,content:E})}catch(b){i.push({type:"tool_result",tool_use_id:c.id,content:String(b?.message??b??"tool handler failed"),is_error:true})}}a.push({role:"assistant",content:r},{role:"user",content:i})}throw new Error(`claude.complete: exceeded ${y} tool turns`)};window.claude={complete(e){const t=e;if(t!==null&&typeof t==="object"&&Array.isArray(t.tools)&&t.tools.some((a)=>a!==null&&typeof a==="object"&&typeof a.run==="function")){const a=new Map;for(const u of t.tools){if(u!==null&&typeof u==="object"&&typeof u.run==="function"){a.set(String(u.name),u.run)}}return m(t,a)}return h(e).then((a)=>a.text)}};const w={};let R=0;H=(e,t)=>new Promise((a)=>{if(!I.length){a({persisted:false,noHost:true,reason:U});return}const u=`f${++R}`;const s=setTimeout(()=>{delete w[u];a({persisted:false,noHost:true,reason:U})},G);w[u]={settle:a,t:s};try{for(const S of I){A.postMessage({__om_file:true,id:u,op:"write",path:e,content:t},S)}}catch{clearTimeout(s);delete w[u];a({persisted:false,noHost:true,reason:U})}});const O=(e)=>{try{return JSON.stringify(e)}catch{return JSON.stringify(String(e))}};window.addEventListener("message",(e)=>{if(I.indexOf(e.origin)<0)return;if(e.source!==A)return;const t=e.data;if(!t)return;if(t.type==="omelette-preview-refresh"){if(typeof t.token!=="string"||!/^[0-9a-f.-]+(\.(rc|pr-[0-9]+))?(\.[0-9]+\.[0-9a-f]{16})?$/.test(t.token))return;const s=Math.max(1,Math.floor((t.expiresAt||0)-Date.now()/1000));document.cookie="__Host-omelette-preview="+t.token+"; Path=/; Secure; SameSite=None; Partitioned; Max-Age="+s;C();return}if(t.__om_file_r){const s=w[t.id];if(!s)return;clearTimeout(s.t);delete w[t.id];s.settle(t.ok?{persisted:true}:{persisted:false,reason:t.error||"write failed"});return}if(t.__om_api_r){const s=f[t.id];if(!s)return;if(t.error!=null){clearTimeout(s.t);delete f[t.id];s.reject(new Error(t.error));return}if(t.chunk!=null){clearTimeout(s.t);s.t=s.arm();s.text+=t.chunk;return}if(t.done){clearTimeout(s.t);delete f[t.id];s.resolve({text:t.text!=null?t.text:s.text,message:t.message});return}return}if(!t.__om_eval)return;const a=t;const u=(s)=>{e.source.postMessage({...s,__om_eval_r:1,id:a.id},e.origin)};try{const s=(0,eval)(a.code);if(s&&typeof s.then==="function"){s.then((S)=>u({ok:1,v:O(S)}),(S)=>u({ok:0,e:String(S)}))}else{u({ok:1,v:O(s)})}}catch(s){u({ok:0,e:String(s)})}})}})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:absolute;inset:0;display:flex;min-height:0;background:transparent;color:var(--text-primary);font-family:'Noto Sans',system-ui,sans-serif">
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+    <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:20px;padding:32px;border:1px solid var(--glass-line);border-radius:12px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5)">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <span style="font-weight:600;font-size:13px;line-height:18px;color:var(--text-secondary)">Crayora</span>
+        <h1 style="margin:0;font-weight:600;font-size:24px;line-height:30px">Salon console</h1>
+        <span style="font-size:14px;line-height:20px;color:var(--text-secondary)">For Crayora staff only. Every action is recorded in the audit log.</span>
+      </div>
+      <sc-if value="{{ loginStep1 }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label for="k-email" style="font-weight:600;font-size:14px;line-height:20px">Work email</label>
+          <input id="k-email" value="{{ email }}" onChange="{{ onEmail }}" placeholder="name@crayora.com" style="min-height:44px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:8px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font:inherit;font-size:14px;color:var(--text-primary);outline-color:var(--brand-ink)"></input>
+          <sc-if value="{{ emailBad }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:4px;font-size:13px;line-height:18px"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:1;width:18px;overflow:hidden;color:var(--danger)">error</span>Use your @crayora.com email.</span></sc-if>
+        </div>
+        <button onClick="{{ sendLogin }}" style="min-height:44px;border:none;border-radius:8px;background:var(--primary);color:var(--on-primary);font:inherit;font-weight:600;font-size:14px;cursor:pointer">Send sign-in code</button>
+      </sc-if>
+      <sc-if value="{{ loginStep2 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label for="k-otp" style="font-weight:600;font-size:14px;line-height:20px">6-digit code from your authenticator</label>
+          <input id="k-otp" inputmode="numeric" maxlength="6" value="{{ otp }}" onChange="{{ onOtp }}" style="min-height:44px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:8px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font:inherit;font-size:18px;letter-spacing:0.3em;font-variant-numeric:tabular-nums;color:var(--text-primary);outline-color:var(--brand-ink)"></input>
+          <span style="font-size:13px;line-height:18px;color:var(--text-secondary)">Any 6 digits work in this prototype.</span>
+        </div>
+        <button onClick="{{ doLogin }}" disabled="{{ otpBad }}" style="min-height:44px;border:none;border-radius:8px;font:inherit;font-weight:600;font-size:14px;cursor:pointer;background:{{ loginBg }};color:{{ loginFg }}">Sign in</button>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isApp }}" hint-placeholder-val="{{ true }}">
+  <nav aria-label="Console" style="width:232px;flex:none;overflow-y:auto;border-right:1px solid var(--glass-line);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);padding:16px 8px;display:flex;flex-direction:column;gap:16px">
+    <div style="padding:0 8px;display:flex;flex-direction:column">
+      <span style="font-weight:600;font-size:15px;line-height:20px">Crayora console</span>
+      <span style="font-size:12px;line-height:16px;color:var(--text-secondary)">rahul@crayora.com</span>
+    </div>
+    <sc-for list="{{ navGroups }}" as="g" hint-placeholder-count="3">
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <span style="padding:4px 8px;font-weight:600;font-size:11px;line-height:16px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">{{ g.title }}</span>
+        <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="4">
+          <button aria-current="{{ it.current }}" onClick="{{ it.pick }}" style="display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:6px 8px;border:none;border-radius:6px;text-align:left;cursor:pointer;font:inherit;font-size:14px;line-height:20px;background:{{ it.bg }};color:{{ it.fg }};font-weight:{{ it.fw }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;flex:none">{{ it.icon }}</span>{{ it.label }}</button>
+        </sc-for>
+      </div>
+    </sc-for>
+  </nav>
+
+  <main style="flex:1;min-width:0;overflow-y:auto;display:flex;flex-direction:column">
+    <sc-if value="{{ supportOn }}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 24px;background:var(--warning);color:#1C1B19;font-size:14px;line-height:20px;font-weight:600">
+        <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">support_agent</span>
+        <span style="flex:1;min-width:0">Support mode · Studio Nine Salon · read-only · ends 11:12 · reason: {{ supportReason }}</span>
+        <button onClick="{{ endSupport }}" style="min-height:32px;padding:4px 12px;border:1px solid #1C1B19;border-radius:6px;background:transparent;color:#1C1B19;font:inherit;font-weight:600;cursor:pointer">End now</button>
+      </div>
+    </sc-if>
+    <div style="width:100%;max-width:1040px;padding:24px 32px 48px;display:flex;flex-direction:column;gap:24px">
+      <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:4px">
+          <sc-if value="{{ hasCrumb }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;line-height:18px;color:var(--text-secondary)">{{ crumb }}</span></sc-if>
+          <h1 style="margin:0;font-weight:600;font-size:24px;line-height:30px">{{ title }}</h1>
+          <sc-if value="{{ hasSub }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;line-height:20px;color:var(--text-secondary);max-width:680px;text-wrap:pretty">{{ sub }}</span></sc-if>
+        </div>
+        <sc-if value="{{ hasAction }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ actionFn }}" disabled="{{ actionDisabled }}" style="min-height:40px;padding:8px 16px;border:none;border-radius:8px;font:inherit;font-weight:600;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;background:{{ actionBg }};color:{{ actionFg }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">{{ actionIcon }}</span>{{ actionLabel }}</button>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+        <sc-if value="{{ isK5 }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:32px;align-items:start">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <sc-for list="{{ brandFields }}" as="f" hint-placeholder-count="7">
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <label for="{{ f.id }}" style="font-weight:600;font-size:14px;line-height:20px">{{ f.label }}</label>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <sc-if value="{{ f.isColor }}" hint-placeholder-val="{{ false }}"><input type="color" aria-label="{{ f.label }}" value="{{ f.value }}" onChange="{{ f.onChange }}" style="width:44px;height:44px;flex:none;padding:2px;border:1px solid var(--border-strong);border-radius:8px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);cursor:pointer"></input></sc-if>
+                    <sc-if value="{{ f.isSelect }}" hint-placeholder-val="{{ false }}">
+                      <select id="{{ f.id }}" value="{{ f.value }}" onChange="{{ f.onChange }}" style="flex:1;min-height:44px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:8px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font:inherit;font-size:14px;color:var(--text-primary)">
+                        <sc-for list="{{ f.options }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                      </select>
+                    </sc-if>
+                    <sc-if value="{{ f.isText }}" hint-placeholder-val="{{ true }}"><input id="{{ f.id }}" value="{{ f.value }}" onChange="{{ f.onChange }}" style="flex:1;min-width:0;min-height:44px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:8px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font:inherit;font-size:14px;color:var(--text-primary);font-variant-numeric:tabular-nums;outline-color:var(--brand-ink)"></input></sc-if>
+                  </div>
+                  <sc-if value="{{ f.hasHelp }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:4px;align-items:flex-start;font-size:13px;line-height:18px;color:var(--text-secondary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:1;width:18px;overflow:hidden;flex:none;color:{{ f.helpCol }}">{{ f.helpIcon }}</span>{{ f.help }}</span></sc-if>
+                </div>
+              </sc-for>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <span style="font-weight:600;font-size:14px;line-height:20px">Logo</span>
+                <div style="min-height:88px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed var(--border-strong);border-radius:8px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font-size:14px;color:var(--text-secondary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">upload</span>Drop a square PNG or SVG, at least 512 × 512</div>
+              </div>
+            </div>
+            <div style="position:sticky;top:24px;display:flex;flex-direction:column;gap:16px">
+              <span style="font-weight:600;font-size:14px;line-height:20px">Preview</span>
+              <div style="border:1px solid var(--glass-line);border-radius:16px;overflow:hidden;background:#FAF9F6;color:#1C1B19">
+                <div style="min-height:56px;padding:4px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #E7E5DF">
+                  <span style="width:32px;height:32px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;background:{{ pvPrimary }};color:{{ pvOnPrimary }};border-radius:{{ pvChip }};font-family:{{ pvHead }}">{{ pvMark }}</span>
+                  <span style="flex:1;min-width:0;font-weight:600;font-size:17px;line-height:24px;color:{{ pvInk }};font-family:{{ pvHead }}">{{ pvName }}</span>
+                </div>
+                <div style="padding:16px;display:flex;flex-direction:column;gap:12px;font-family:{{ pvBody }}">
+                  <span style="font-weight:600;font-size:24px;line-height:30px;font-family:{{ pvHead }}">Hi Asha</span>
+                  <div style="display:flex;flex-direction:column;gap:4px;padding:16px;border:1px solid #DEDCD6;background:#F3F2EE;border-radius:{{ pvR }}">
+                    <span style="font-size:13px;line-height:18px;color:#4A4843">Wallet balance</span>
+                    <span style="font-weight:600;font-size:34px;line-height:38px;font-variant-numeric:tabular-nums">₹1,250</span>
+                  </div>
+                  <span style="align-self:flex-start;padding:2px 8px;font-weight:500;font-size:11px;line-height:16px;background:{{ pvAccent }};color:{{ pvOnAccent }};border-radius:{{ pvChip }}">Offer</span>
+                  <span style="min-height:48px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;background:{{ pvPrimary }};color:{{ pvOnPrimary }};border-radius:{{ pvR }}">Pay your bill · ₹1,000</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;border-top:1px solid var(--divider)">
+                <sc-for list="{{ checks }}" as="c" hint-placeholder-count="5">
+                  <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--divider);font-size:13px;line-height:18px">
+                    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:1;width:18px;overflow:hidden;flex:none;color:{{ c.col }}">{{ c.icon }}</span>
+                    <span style="flex:1;min-width:0">{{ c.label }}</span>
+                    <span style="font-weight:600;font-variant-numeric:tabular-nums">{{ c.ratio }}</span>
+                    <span style="width:36px;text-align:right;font-weight:600">{{ c.word }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <span style="font-size:13px;line-height:18px;color:var(--text-secondary)">On-colours and brand ink are computed. Dark mode is derived automatically.</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="2">
+          <section style="display:flex;flex-direction:column;gap:12px">
+            <sc-if value="{{ b.hasHead }}" hint-placeholder-val="{{ false }}"><h2 style="margin:0;font-weight:600;font-size:17px;line-height:24px">{{ b.head }}</h2></sc-if>
+            <sc-if value="{{ b.hasText }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:14px;line-height:20px;color:var(--text-secondary);max-width:720px;text-wrap:pretty">{{ b.text }}</p></sc-if>
+
+            <sc-if value="{{ b.isStats }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+                <sc-for list="{{ b.tiles }}" as="t" hint-placeholder-count="4">
+                  <div style="display:flex;flex-direction:column;gap:4px;padding:16px;border:1px solid var(--glass-line);border-radius:10px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+                    <span style="font-size:13px;line-height:18px;color:var(--text-secondary)">{{ t.label }}</span>
+                    <span style="font-weight:600;font-size:24px;line-height:30px;font-variant-numeric:tabular-nums">{{ t.value }}</span>
+                    <sc-if value="{{ t.hasNote }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:2px;align-items:flex-start;font-size:13px;line-height:18px"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:16px;line-height:18px;width:16px;overflow:hidden;flex:none;color:{{ t.noteCol }}">{{ t.noteIcon }}</span>{{ t.note }}</span></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ b.isSearch }}" hint-placeholder-val="{{ false }}">
+              <div style="max-width:420px;min-height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid var(--border-strong);border-radius:8px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+                <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;color:var(--text-secondary)">search</span>
+                <input aria-label="{{ b.ph }}" value="{{ b.val }}" onChange="{{ b.onChange }}" placeholder="{{ b.ph }}" style="flex:1;min-width:0;border:none;outline:none;background:transparent;padding:8px 0;font:inherit;font-size:14px;color:var(--text-primary)"></input>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ b.isTable }}" hint-placeholder-val="{{ true }}">
+              <div style="overflow-x:auto;border:1px solid var(--glass-line);border-radius:10px">
+                <div role="table" style="display:grid;min-width:640px;grid-template-columns:{{ b.cols }}">
+                  <sc-for list="{{ b.header }}" as="h" hint-placeholder-count="4">
+                    <div role="columnheader" style="padding:10px 12px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-bottom:1px solid var(--glass-line);font-weight:600;font-size:12px;line-height:16px;color:var(--text-secondary)">{{ h }}</div>
+                  </sc-for>
+                  <sc-for list="{{ b.cells }}" as="c" hint-placeholder-count="12">
+                    <div role="cell" onClick="{{ c.pick }}" style="padding:10px 12px;border-bottom:1px solid var(--divider);font-size:14px;line-height:20px;display:flex;align-items:center;gap:6px;min-width:0;font-variant-numeric:tabular-nums;cursor:{{ c.cursor }};font-weight:{{ c.fw }};color:{{ c.fg }}">
+                      <sc-if value="{{ c.hasIcon }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:1;width:18px;overflow:hidden;flex:none;color:{{ c.iconCol }}">{{ c.icon }}</span></sc-if>
+                      <span style="min-width:0;overflow-wrap:anywhere">{{ c.text }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ b.isFields }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;border:1px solid var(--glass-line);border-radius:10px;overflow:hidden;background:var(--divider)">
+                <sc-for list="{{ b.fields }}" as="f" hint-placeholder-count="4">
+                  <div style="display:flex;flex-direction:column;gap:2px;padding:12px 16px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5)">
+                    <span style="font-size:12px;line-height:16px;color:var(--text-secondary)">{{ f.k }}</span>
+                    <span style="font-weight:600;font-size:14px;line-height:20px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere">{{ f.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ b.isForm }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;max-width:760px">
+                <sc-for list="{{ b.inputs }}" as="i" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;gap:4px">
+                    <label for="{{ i.id }}" style="font-weight:600;font-size:14px;line-height:20px">{{ i.label }}</label>
+                    <input id="{{ i.id }}" value="{{ i.value }}" onChange="{{ i.onChange }}" placeholder="{{ i.ph }}" style="min-height:40px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:8px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font:inherit;font-size:14px;color:var(--text-primary);font-variant-numeric:tabular-nums;outline-color:var(--brand-ink)"></input>
+                    <sc-if value="{{ i.hasHelp }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;line-height:18px;color:var(--text-secondary)">{{ i.help }}</span></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ b.isToggles }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;border:1px solid var(--glass-line);border-radius:10px;overflow:hidden">
+                <sc-for list="{{ b.toggles }}" as="t" hint-placeholder-count="4">
+                  <button role="switch" aria-checked="{{ t.checked }}" onClick="{{ t.toggle }}" style="display:flex;align-items:center;gap:16px;width:100%;min-height:56px;padding:10px 16px;border:none;border-bottom:1px solid var(--divider);background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);cursor:pointer;text-align:left;color:var(--text-primary);font:inherit">
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-weight:600;font-size:14px;line-height:20px">{{ t.label }}</span><span style="font-size:13px;line-height:18px;color:var(--text-secondary)">{{ t.sub }}</span></span>
+                    <span style="font-size:13px;font-weight:600;width:28px">{{ t.word }}</span>
+                    <span style="width:44px;height:26px;flex:none;border-radius:13px;position:relative;background:{{ t.track }};border:{{ t.trackBorder }}"><span style="position:absolute;top:50%;border-radius:10px;transform:translateY(-50%);width:{{ t.knob }};height:{{ t.knob }};left:{{ t.left }};background:{{ t.knobBg }}"></span></span>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ b.isChecklist }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;border:1px solid var(--glass-line);border-radius:10px;overflow:hidden">
+                <sc-for list="{{ b.items }}" as="c" hint-placeholder-count="5">
+                  <button onClick="{{ c.pick }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:10px 16px;border:none;border-bottom:1px solid var(--divider);background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);cursor:pointer;text-align:left;color:var(--text-primary);font:inherit">
+                    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:22px;line-height:1;width:22px;overflow:hidden;flex:none;color:{{ c.col }}">{{ c.icon }}</span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-weight:600;font-size:14px;line-height:20px">{{ c.label }}</span><span style="font-size:13px;line-height:18px;color:var(--text-secondary)">{{ c.sub }}</span></span>
+                    <span style="font-size:13px;font-weight:600">{{ c.word }}</span>
+                    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;color:var(--text-muted)">chevron_right</span>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ b.isNotice }}" hint-placeholder-val="{{ false }}">
+              <div role="status" style="display:flex;gap:10px;align-items:flex-start;max-width:760px;padding:12px 16px;border-radius:10px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border:{{ b.noticeBorder }}">
+                <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:22px;line-height:1;width:22px;overflow:hidden;flex:none;color:{{ b.noticeCol }}">{{ b.noticeIcon }}</span>
+                <span style="font-size:14px;line-height:20px">{{ b.notice }}</span>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ b.isQR }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+                <div role="img" aria-label="QR code placeholder" style="width:200px;height:200px;flex:none;border:1px dashed var(--border-strong);border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);color:var(--text-secondary);font-size:13px;text-align:center;padding:16px">QR code for the join link is generated here</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:13px;line-height:18px;color:var(--text-secondary)">Join code</span>
+                  <span style="font-weight:600;font-size:28px;line-height:34px;letter-spacing:0.06em;font-variant-numeric:tabular-nums">{{ b.code }}</span>
+                  <span style="font-size:13px;line-height:18px;color:var(--text-secondary);font-variant-numeric:tabular-nums">cray.app/j/{{ b.code }}</span>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ b.isButtons }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <sc-for list="{{ b.buttons }}" as="x" hint-placeholder-count="2">
+                  <button onClick="{{ x.onClick }}" disabled="{{ x.disabled }}" style="min-height:40px;padding:8px 16px;border-radius:8px;font:inherit;font-weight:600;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;background:{{ x.bg }};color:{{ x.fg }};border:{{ x.border }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;color:{{ x.iconCol }}">{{ x.icon }}</span>{{ x.label }}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+          </section>
+        </sc-for>
+      </sc-if>
+
+      <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+        <div aria-busy="true" aria-label="Loading" style="display:flex;flex-direction:column;gap:8px">
+          <span style="height:40px;border-radius:8px;background:var(--surface-sunken);max-width:420px"></span>
+          <span style="height:44px;border-radius:6px;background:var(--surface-sunken)"></span>
+          <span style="height:44px;border-radius:6px;background:var(--surface-sunken)"></span>
+          <span style="height:44px;border-radius:6px;background:var(--surface-sunken)"></span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+          <span style="font-weight:600;font-size:17px;line-height:24px">Couldn't load this page.</span>
+          <span style="font-size:14px;line-height:20px;color:var(--text-secondary)">The server did not answer. Nothing was changed.</span>
+          <button onClick="{{ retry }}" style="min-height:40px;padding:8px 16px;border:1px solid var(--border-strong);border-radius:8px;background:transparent;color:var(--brand-ink);font:inherit;font-weight:600;font-size:14px;cursor:pointer">Try again</button>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+</sc-if>
+
+<sc-if value="{{ hasSnack }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="position:absolute;right:24px;bottom:24px;max-width:420px;display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-radius:10px;background:var(--surface-sunken);border:1px solid var(--border-strong);box-shadow:0 8px 24px rgba(28,27,25,0.16);font-size:14px;line-height:20px">
+    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:22px;line-height:1;width:22px;overflow:hidden;flex:none;color:var(--success)">check_circle</span>{{ snackText }}
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    email: '', emailBad: false, step: 1, otp: '', q: '',
+    brand: { name: 'Studio Nine Salon', mark: 'S9', primary: '#1F6F5C', accent: '#C8A24A', head: 'Tiro Devanagari Hindi', body: 'Mukta', radius: '14' },
+    ns: { name: '', area: '', phone: '', plan: 'Salon · 3 staff' },
+    flags: { g_referral: true, g_birthday: true, g_whatsapp: false, s_split: true, s_staffEarnings: true, s_offline: true },
+    support: false, supportReason: '', bindQ: '98765 04821', unbound: false, bindReason: '',
+    wc: { amount: '', kind: 'Bonus credit', reason: '' }, wcSent: false, codeRotated: false, activated: true, snack: null,
+  };
+  componentWillUnmount() { clearTimeout(this._s); }
+  go(c) { this.props.go && this.props.go(c); }
+  snack(t) { clearTimeout(this._s); this.setState({ snack: t }); this._s = setTimeout(() => this.setState({ snack: null }), 3500); }
+  rgb(h) { h = (h || '#000000').replace('#', ''); if (h.length !== 6) h = '000000'; return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16) / 255); }
+  lum(h) { const l = v => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); const [r, g, b] = this.rgb(h); return 0.2126 * l(r) + 0.7152 * l(g) + 0.0722 * l(b); }
+  cr(a, b) { const x = this.lum(a), y = this.lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  on(bg) { return this.cr(bg, '#FDFCFA') >= this.cr(bg, '#1C1B19') ? '#FDFCFA' : '#1C1B19'; }
+  darken(h, surf) { let [r, g, b] = this.rgb(h); for (let i = 0; i < 60 && this.cr(this.hex(r, g, b), surf) < 4.5; i++) { r *= 0.95; g *= 0.95; b *= 0.95; } return this.hex(r, g, b); }
+  hex(r, g, b) { const c = v => Math.round(Math.max(0, Math.min(1, v)) * 255).toString(16).padStart(2, '0'); return ('#' + c(r) + c(g) + c(b)).toUpperCase(); }
+
+  renderVals() {
+    const P = this.props, S = this.state;
+    const screen = P.screen || 'K2', st = P.st || 'content';
+    const load = st === 'loading', err = st === 'error', empty = st === 'empty';
+    const setB = (k) => (e) => this.setState({ brand: { ...S.brand, [k]: e.target.value } });
+    const setNS = (k) => (e) => this.setState({ ns: { ...S.ns, [k]: e.target.value } });
+    const setWC = (k) => (e) => this.setState({ wc: { ...S.wc, [k]: e.target.value }, wcSent: false });
+    const chip = (text, kind) => { const m = { ok: ['check_circle', 'var(--success)'], warn: ['schedule', 'var(--warning)'], bad: ['error', 'var(--danger)'], info: ['info', 'var(--info)'], off: ['pause_circle', 'var(--text-secondary)'] }[kind] || ['', '']; return { text, hasIcon: true, icon: m[0], iconCol: m[1] }; };
+    const B = {
+      text: (text, head) => ({ hasText: true, text, hasHead: !!head, head: head || '' }),
+      stats: (tiles, head) => ({ isStats: true, hasHead: !!head, head: head || '', tiles: tiles.map(t => ({ ...t, hasNote: !!t.note })) }),
+      table: (header, rows, cols, head, onRow) => ({ isTable: true, hasHead: !!head, head: head || '', header, cols: cols || `repeat(${header.length},minmax(0,1fr))`, cells: rows.flatMap((r, ri) => r.map((c, ci) => { const o = typeof c === 'object' ? c : { text: String(c) }; return { hasIcon: false, icon: '', iconCol: '', ...o, fw: ci === 0 ? 600 : 400, fg: ci === 0 && onRow ? 'var(--brand-ink)' : 'var(--text-primary)', cursor: onRow ? 'pointer' : 'default', pick: onRow ? () => onRow(ri) : () => {} }; })) }),
+      fields: (fields, head) => ({ isFields: true, hasHead: !!head, head: head || '', fields }),
+      form: (inputs, head) => ({ isForm: true, hasHead: !!head, head: head || '', inputs: inputs.map(i => ({ ph: '', hasHelp: !!i.help, help: i.help || '', ...i })) }),
+      toggles: (items, head) => ({ isToggles: true, hasHead: !!head, head: head || '', toggles: items.map(t => ({ label: t.label, sub: t.sub, word: t.on ? 'On' : 'Off', checked: t.on ? 'true' : 'false', track: t.on ? 'var(--primary)' : 'var(--surface-sunken)', trackBorder: t.on ? '2px solid var(--primary)' : '2px solid var(--border-strong)', knob: t.on ? '18px' : '12px', left: t.on ? '20px' : '5px', knobBg: t.on ? 'var(--on-primary)' : 'var(--border-strong)', toggle: t.toggle })) }),
+      checklist: (items, head) => ({ isChecklist: true, hasHead: !!head, head: head || '', items }),
+      notice: (notice, icon, col, strong) => ({ isNotice: true, notice, noticeIcon: icon || 'info', noticeCol: col || 'var(--info)', noticeBorder: strong ? `2px solid ${col}` : '1px solid var(--border)' }),
+      buttons: (buttons) => ({ isButtons: true, buttons: buttons.map(b => { const kind = b.kind || 'outline', dis = !!b.disabled; return { icon: b.icon || '', label: b.label, onClick: dis ? () => {} : b.onClick, disabled: dis, bg: dis ? 'var(--surface-sunken)' : kind === 'primary' ? 'var(--primary)' : 'transparent', fg: dis ? 'var(--text-muted)' : kind === 'primary' ? 'var(--on-primary)' : 'var(--text-primary)', border: dis ? '1px solid var(--border)' : kind === 'danger' ? '1px solid var(--danger)' : kind === 'primary' ? 'none' : '1px solid var(--border-strong)', iconCol: dis ? 'var(--text-muted)' : kind === 'danger' ? 'var(--danger)' : 'currentColor' }; }) }),
+      search: (ph, val, onChange) => ({ isSearch: true, ph, val, onChange }),
+      qr: (code) => ({ isQR: true, code }),
+    };
+    const say = (t) => () => this.snack(t);
+    let title = '', sub = '', crumb = '', action = null, blocks = [];
+    const salonCrumb = 'Salons › Studio Nine Salon';
+    const SALONS = [['Studio Nine Salon', 'Indiranagar, Bengaluru', chip('Live', 'ok'), 'Salon · 3 staff', '1,284', '2 min ago'], ['Kesar Unisex Salon', 'Karol Bagh, New Delhi', chip('Live', 'ok'), 'Salon · 5 staff', '2,960', '1 min ago'], ['Glow Studio', 'Baner, Pune', chip('Setting up · 3 of 5', 'warn'), 'Salon · 3 staff', '0', '—'], ['Mirror Men’s Salon', 'Anna Nagar, Chennai', chip('Paused · bill unpaid', 'off'), 'Solo', '412', '3 days ago'], ['Blush & Blade', 'Salt Lake, Kolkata', chip('Sync failing', 'bad'), 'Salon · 3 staff', '738', '6 hours ago']];
+
+    if (screen === 'K2') {
+      title = 'Salons'; sub = 'Every salon on Crayora. Open one to set it up or support it.';
+      action = ['add', 'New salon', () => this.go('K3')];
+      const q = S.q.toLowerCase();
+      const rows = (empty ? [] : SALONS).filter(r => !q || r[0].toLowerCase().includes(q) || r[1].toLowerCase().includes(q));
+      blocks.push(B.search('Search salons by name or area', S.q, (e) => this.setState({ q: e.target.value })));
+      if (rows.length) blocks.push(B.table(['Salon', 'Area', 'Status', 'Plan', 'Customers', 'Last sync'], rows, 'minmax(160px,1.4fr) minmax(140px,1.2fr) minmax(170px,1.3fr) minmax(110px,1fr) 90px 100px', null, (i) => { if (rows[i][0] === 'Studio Nine Salon') this.go('K4'); }));
+      else blocks.push(B.text(empty ? 'No salons yet. Create the first one.' : 'No salons match.'));
+    }
+    if (screen === 'K3') {
+      title = 'New salon'; crumb = 'Salons'; sub = 'This creates the salon in Setting up. Customers cannot join until it is activated in Billing and activation.';
+      blocks.push(B.form([{ id: 'ns-name', label: 'Salon name', value: S.ns.name, onChange: setNS('name'), ph: 'Glow Studio', help: 'Shown in the app bar and on the join screen.' }, { id: 'ns-area', label: 'Area and city', value: S.ns.area, onChange: setNS('area'), ph: 'Baner, Pune' }, { id: 'ns-phone', label: "Owner's phone", value: S.ns.phone, onChange: setNS('phone'), ph: '98xxx xxxxx', help: 'The owner logs in with this number.' }, { id: 'ns-plan', label: 'Plan', value: S.ns.plan, onChange: setNS('plan') }]));
+      const ok = S.ns.name.trim() && S.ns.area.trim() && S.ns.phone.replace(/\D/g, '').length === 10;
+      blocks.push(B.buttons([{ label: 'Create salon', icon: 'add', kind: 'primary', disabled: !ok, onClick: () => { this.snack(`Created ${S.ns.name}. Next: branding.`); this.go('K4'); } }, { label: 'Cancel', icon: 'close', onClick: () => this.go('K2') }]));
+    }
+    if (screen === 'K4') {
+      title = 'Studio Nine Salon'; crumb = 'Salons'; sub = 'Indiranagar, Bengaluru · created 3 Jun 2026';
+      blocks.push(B.fields([{ k: 'Status', v: S.activated ? 'Live' : 'Paused' }, { k: 'Owner', v: 'Nandini Rao · +91 99xxx x2210' }, { k: 'Join code', v: S.codeRotated ? 'CRAY-4PW8ZD' : 'CRAY-7KQ2MX' }, { k: 'Customers', v: '1,284' }, { k: 'Visits, 30 days', v: '540' }, { k: 'Last sync', v: '2 min ago' }]));
+      const ck = (label, sub2, state, code) => ({ label, sub: sub2, icon: state === 'ok' ? 'check_circle' : 'radio_button_unchecked', col: state === 'ok' ? 'var(--success)' : 'var(--text-muted)', word: state === 'ok' ? 'Done' : 'To do', pick: () => this.go(code) });
+      blocks.push(B.checklist([ck('Branding', 'Colours, fonts, logo, radius, name', 'ok', 'K5'), ck('Catalogue', '9 services, 4 add-ons', 'ok', 'K6'), ck('Credentials', 'Payments, SMS, store listing', 'ok', 'K7'), ck('Messaging', 'Templates in English and Hindi', 'ok', 'K8'), ck('QR pack', 'Counter card printed', 'ok', 'K9'), ck('Billing and activation', 'Active since 1 Jul 2026', 'ok', 'K10')], 'Setup'));
+      blocks.push(B.buttons([{ label: 'Open support mode', icon: 'support_agent', onClick: () => this.go('K11') }, { label: 'Wallet correction', icon: 'account_balance_wallet', onClick: () => this.go('K13') }]));
+    }
+    if (screen === 'K5') {
+      title = 'Branding studio'; crumb = salonCrumb; sub = 'Seven things change per salon. Everything else is fixed by the system.';
+      action = ['publish', 'Publish branding', say('Branding published. The app updates on next open.')];
+    }
+    if (screen === 'K6') {
+      title = 'Catalogue'; crumb = salonCrumb; sub = 'Services and add-ons the salon offers. The owner can switch services on and off; prices are set here or by the owner.';
+      action = ['library_add', 'Import a starter list', say('Starter list for a unisex salon imported as drafts.')];
+      const rows = empty ? [] : [['Haircut', 'Hair', '45 min', '₹600', chip('Bookable', 'ok')], ['Hair wash and blow-dry', 'Hair', '30 min', '₹400', chip('Bookable', 'ok')], ["Kids' haircut", 'Hair', '30 min', '₹350', chip('Bookable', 'ok')], ['Beard trim', 'Beard', '20 min', '₹300', chip('Bookable', 'ok')], ['Beard shape and colour', 'Beard', '40 min', '₹650', chip('Bookable', 'ok')], ['Global colour', 'Colour', '90 min', '₹2,500', chip('Bookable', 'ok')], ['Highlights', 'Colour', '120 min', '₹3,800', chip('Hidden by owner', 'off')], ['Clean-up', 'Skin', '45 min', '₹900', chip('Bookable', 'ok')], ['Facial', 'Skin', '60 min', '₹1,500', chip('Bookable', 'ok')]];
+      if (rows.length) blocks.push(B.table(['Service', 'Category', 'Length', 'Price', 'Status'], rows, 'minmax(180px,1.6fr) 110px 90px 90px minmax(150px,1fr)', 'Services'));
+      else blocks.push(B.text('No services yet. Import a starter list or add services one by one.', 'Services'));
+      if (!empty) blocks.push(B.table(['Add-on', 'Offered with', 'Adds', 'Price'], [['Head massage', 'Hair, Beard', '15 min', '+₹150'], ['Hair wash', 'Hair, Beard', '10 min', '+₹100'], ['Hair serum', 'Hair', '5 min', '+₹200'], ['Beard trim', 'Hair', '20 min', '+₹250']], 'minmax(160px,1.4fr) minmax(140px,1fr) 90px 90px', 'Add-ons'));
+    }
+    if (screen === 'K7') {
+      title = 'Credentials'; crumb = salonCrumb; sub = 'Keys the salon’s app uses. Values are write-only: once saved, only the last 4 characters are shown.';
+      blocks.push(B.table(['Service', 'Used for', 'Key', 'Status', 'Last checked'], [['Razorpay', 'UPI and card payments', '•••• 9KfQ', chip('Working', 'ok'), 'Today 10:30'], ['MSG91', 'OTP and SMS', '•••• 2b7a', chip('Working', 'ok'), 'Today 10:30'], ['WhatsApp Business', 'Reminders, bills', '—', chip('Not set up', 'warn'), '—'], ['Google Play', 'Store listing', '•••• play', chip('Live', 'ok'), '28 Sep'], ['FCM', 'Push notices', '•••• f31c', chip('Working', 'ok'), 'Today 10:30']], 'minmax(140px,1fr) minmax(160px,1.3fr) 100px minmax(120px,1fr) 110px'));
+      blocks.push(B.buttons([{ label: 'Replace a key', icon: 'key', onClick: say('Key form opens. The old key keeps working until the new one passes a check.') }, { label: 'Check all now', icon: 'refresh', onClick: say('All keys checked. 4 working, 1 not set up.') }]));
+    }
+    if (screen === 'K8') {
+      title = 'Messaging'; crumb = salonCrumb; sub = 'Messages the salon sends. Templates are shared across salons; the salon name is filled in.';
+      blocks.push(B.table(['Message', 'Channel', 'English', 'हिन्दी', 'Sent, 30 days'], [['Sign-in code', 'SMS', chip('Approved', 'ok'), chip('Approved', 'ok'), '312'], ['Booking confirmed', 'Push, SMS', chip('Approved', 'ok'), chip('Approved', 'ok'), '488'], ['Service due reminder', 'Push', chip('Approved', 'ok'), chip('Waiting for review', 'warn'), '205'], ['Bill ready', 'Push', chip('Approved', 'ok'), chip('Approved', 'ok'), '540'], ['Bonus expiring', 'Push', chip('Approved', 'ok'), chip('Rejected · wording', 'bad'), '61']], 'minmax(170px,1.4fr) 110px minmax(130px,1fr) minmax(150px,1.1fr) 110px'));
+      blocks.push(B.notice('Reminders and offers go only to customers who said yes. Sign-in codes and booking messages always go.', 'info', 'var(--info)'));
+    }
+    if (screen === 'K9') {
+      title = 'QR pack'; crumb = salonCrumb; sub = 'What the salon puts on the counter so customers can join.';
+      const code = S.codeRotated ? 'CRAY-4PW8ZD' : 'CRAY-7KQ2MX';
+      blocks.push(B.qr(code));
+      blocks.push(B.buttons([{ label: 'Download counter card (PDF)', icon: 'download', kind: 'primary', onClick: say('Counter card PDF downloaded: A6, with QR, code and salon name.') }, { label: 'Download poster (PDF)', icon: 'download', onClick: say('Poster PDF downloaded: A4.') }, { label: 'Replace join code', icon: 'autorenew', kind: 'danger', onClick: () => { this.setState({ codeRotated: !S.codeRotated }); this.snack('Join code replaced. The old code stops working now; print new cards.'); } }]));
+      blocks.push(B.text('Replacing the code does not affect customers who already joined.'));
+    }
+    if (screen === 'K10') {
+      title = 'Billing and activation'; crumb = salonCrumb;
+      blocks.push(B.fields([{ k: 'Plan', v: 'Salon · 3 staff · ₹1,499 / month' }, { k: 'Status', v: S.activated ? 'Active' : 'Paused' }, { k: 'Paid by', v: 'UPI AutoPay · last paid 1 Oct' }, { k: 'Next bill', v: '1 Nov 2026' }]));
+      if (S.activated) blocks.push(B.buttons([{ label: 'Pause salon', icon: 'pause_circle', kind: 'danger', onClick: () => { this.setState({ activated: false }); this.snack('Salon paused. Customers see "This salon isn’t taking new customers in the app yet." Existing data is kept.'); } }]));
+      else { blocks.push(B.notice('Paused: new customers cannot join and bookings are closed. Wallet balances are kept.', 'pause_circle', 'var(--warning)', true)); blocks.push(B.buttons([{ label: 'Activate salon', icon: 'play_circle', kind: 'primary', onClick: () => { this.setState({ activated: true }); this.snack('Salon activated.'); } }])); }
+      blocks.push(B.table(['Date', 'Amount', 'Status'], [['1 Oct 2026', '₹1,499', chip('Paid', 'ok')], ['1 Sep 2026', '₹1,499', chip('Paid', 'ok')], ['1 Aug 2026', '₹999', chip('Paid', 'ok')]], '1fr 1fr 1fr', 'Invoices'));
+    }
+    if (screen === 'K11') {
+      title = 'Support mode'; crumb = salonCrumb; sub = 'See the owner app exactly as the owner does, read-only, for 30 minutes. The owner is told, and it is logged.';
+      if (!S.support) {
+        blocks.push(B.form([{ id: 'sm-reason', label: 'Reason (the owner sees this)', value: S.supportReason, onChange: (e) => this.setState({ supportReason: e.target.value }), ph: 'Owner called: bill not showing for 4:30 PM booking' }]));
+        blocks.push(B.buttons([{ label: 'Start support mode', icon: 'support_agent', kind: 'primary', disabled: S.supportReason.trim().length < 10, onClick: () => { this.setState({ support: true }); this.snack('Support mode started. The owner got a notice.'); } }]));
+        blocks.push(B.text('You cannot take payments, cancel bookings or change settings in support mode.'));
+      } else blocks.push(B.notice('Support mode is on. Open the owner app screens (O1–O13) in the prototype to see what the owner sees.', 'support_agent', 'var(--warning)', true));
+    }
+    if (screen === 'K12') {
+      title = 'Customer binding'; sub = 'Each phone number belongs to one salon. Move it only when the customer asks, and write down why.';
+      blocks.push(B.search('Whole phone number', S.bindQ, (e) => this.setState({ bindQ: e.target.value, unbound: false })));
+      if (S.bindQ.replace(/\D/g, '').length === 10) {
+        if (!S.unbound) {
+          blocks.push(B.fields([{ k: 'Customer', v: 'Asha Rao' }, { k: 'Bound to', v: 'Studio Nine Salon' }, { k: 'Since', v: '12 Jul 2026' }, { k: 'Wallet', v: '₹1,250 (₹1,000 paid · ₹250 bonus)' }]));
+          blocks.push(B.notice('Unbinding does not move the wallet. The ₹1,000 paid credit stays at Studio Nine Salon until the customer uses it or asks for a refund there.', 'warning', 'var(--warning)', true));
+          blocks.push(B.form([{ id: 'bd-reason', label: 'Reason', value: S.bindReason, onChange: (e) => this.setState({ bindReason: e.target.value }), ph: 'Customer moved city; asked by phone on 29 Sep' }]));
+          blocks.push(B.buttons([{ label: 'Unbind this number', icon: 'link_off', kind: 'danger', disabled: S.bindReason.trim().length < 10, onClick: () => { this.setState({ unbound: true }); this.snack('Number unbound. It can now join another salon.'); } }]));
+        } else blocks.push(B.notice('This number is not bound to any salon. The customer can join a salon with its code.', 'check_circle', 'var(--success)'));
+      } else blocks.push(B.text('Type the whole 10-digit number. Partial searches are not allowed.'));
+    }
+    if (screen === 'K13') {
+      title = 'Wallet correction'; crumb = salonCrumb + ' › Asha Rao'; sub = 'Fix a wallet mistake. A second person must approve before it takes effect.';
+      blocks.push(B.fields([{ k: 'Paid credit', v: '₹1,000' }, { k: 'Bonus credit', v: '₹250 · expires 14 Nov' }, { k: 'Balance', v: '₹1,250' }]));
+      blocks.push(B.form([{ id: 'wc-amt', label: 'Amount (use − to take away)', value: S.wc.amount, onChange: setWC('amount'), ph: '+300' }, { id: 'wc-kind', label: 'Credit type', value: S.wc.kind, onChange: setWC('kind'), help: 'Bonus credit expires; paid credit never does.' }, { id: 'wc-reason', label: 'Reason (the customer sees this in History)', value: S.wc.reason, onChange: setWC('reason'), ph: 'Top-up of 12 Aug counted twice' }]));
+      const amt = parseInt(String(S.wc.amount).replace(/[^\d-]/g, '').replace('−', '-'), 10);
+      const ok = !isNaN(amt) && amt !== 0 && S.wc.reason.trim().length >= 10;
+      if (S.wcSent) blocks.push(B.notice(`Sent for approval: ${amt > 0 ? '+' : '−'}₹${Math.abs(amt)} ${S.wc.kind.toLowerCase()}. Nothing changes until a second person approves.`, 'schedule', 'var(--info)'));
+      else blocks.push(B.buttons([{ label: 'Send for approval', icon: 'send', kind: 'primary', disabled: !ok, onClick: () => this.setState({ wcSent: true }) }]));
+    }
+    if (screen === 'K14') {
+      title = 'Metrics'; sub = 'Across all salons, last 7 days. Each comparison names what it is compared with.';
+      blocks.push(B.stats([{ label: 'Live salons', value: '41', note: '3 more than last week', noteIcon: 'arrow_upward', noteCol: 'var(--success)' }, { label: 'Bookings a day', value: '1,860' }, { label: 'Payment success', value: '97.8%', note: '0.4 points less than last week', noteIcon: 'arrow_downward', noteCol: 'var(--warning)' }, { label: 'Sync failures', value: '12', note: '9 from Blush & Blade', noteIcon: 'error', noteCol: 'var(--danger)' }]));
+      blocks.push(B.table(['Salon', 'Bookings', 'Paid in app', 'Start-code skips', 'Sync'], [['Kesar Unisex Salon', '2,140', '71%', '2%', chip('OK', 'ok')], ['Studio Nine Salon', '910', '64%', '4%', chip('OK', 'ok')], ['Blush & Blade', '480', '52%', '11%', chip('Failing', 'bad')], ['Mirror Men’s Salon', '0', '—', '—', chip('Paused', 'off')]], 'minmax(170px,1.5fr) 100px 110px 130px minmax(100px,1fr)', 'Salons to watch'));
+    }
+    if (screen === 'K15') {
+      title = 'Feature flags'; sub = 'Turn features on for everyone or for one salon. Changes reach apps within a minute.';
+      const tg = (k, label, sub2) => ({ label, sub: sub2, on: S.flags[k], toggle: () => this.setState(x => ({ flags: { ...x.flags, [k]: !x.flags[k] } })) });
+      blocks.push(B.toggles([tg('g_referral', 'Refer & Earn', 'All salons'), tg('g_birthday', 'Birthday bonus', 'All salons'), tg('g_whatsapp', 'WhatsApp reminders', 'All salons · needs WhatsApp keys')], 'Everyone'));
+      blocks.push(B.toggles([tg('s_split', 'Split payment (wallet + rest)', 'Studio Nine Salon'), tg('s_staffEarnings', 'Staff earnings screen', 'Studio Nine Salon'), tg('s_offline', 'Offline actions for the owner app', 'Studio Nine Salon')], 'Studio Nine Salon'));
+    }
+    if (screen === 'K16') {
+      title = 'Audit log'; sub = 'Every console action and every sensitive app action. Nothing here can be edited or deleted.';
+      blocks.push(B.search('Search by person, salon or action', S.q, (e) => this.setState({ q: e.target.value })));
+      const log = [['Today 10:41', 'rahul@crayora.com', 'Studio Nine Salon', 'Opened support mode · “Bill not showing”'], ['Today 10:12', 'Suresh (staff)', 'Studio Nine Salon', 'Started without code · customer has no app'], ['Today 09:58', 'meera@crayora.com', 'Kesar Unisex Salon', 'Wallet correction +₹300 bonus · approved by rahul@'], ['Yesterday 18:20', 'Nandini (owner)', 'Studio Nine Salon', 'Hid service “Highlights”'], ['Yesterday 16:05', 'rahul@crayora.com', 'Glow Studio', 'Published branding'], ['28 Sep 11:30', 'meera@crayora.com', '—', 'Unbound +91 97xxx x1180 · “moved city”']];
+      const q = S.q.toLowerCase();
+      blocks.push(B.table(['When', 'Who', 'Salon', 'What'], log.filter(r => !q || r.join(' ').toLowerCase().includes(q)), '130px minmax(150px,1fr) minmax(140px,1fr) minmax(240px,2fr)'));
+      blocks.push(B.buttons([{ label: 'Export CSV', icon: 'download', onClick: say('Audit log exported for the last 90 days.') }]));
+    }
+
+    // branding studio
+    const b = S.brand;
+    const ok6 = (h) => /^#[0-9a-fA-F]{6}$/.test(h);
+    const prim = ok6(b.primary) ? b.primary : '#3D4A5C', acc = ok6(b.accent) ? b.accent : '#8A94A3';
+    const r = Math.max(0, Math.min(24, parseInt(b.radius, 10) || 0));
+    const onP = this.on(prim), onA = this.on(acc);
+    const inkL = this.cr(prim, '#FAF9F6') >= 4.5 ? prim.toUpperCase() : this.darken(prim, '#FAF9F6');
+    const chk = (label, ratio, min) => ({ label, ratio: ratio.toFixed(2) + ':1', word: ratio >= min ? 'Pass' : 'Fail', icon: ratio >= min ? 'check_circle' : 'cancel', col: ratio >= min ? 'var(--success)' : 'var(--danger)' });
+    const checks = [chk('Text on primary', this.cr(onP, prim), 4.5), chk('Text on accent', this.cr(onA, acc), 4.5), chk('Brand ink on surface', this.cr(inkL, '#FAF9F6'), 4.5), chk('Primary as UI on surface', this.cr(prim, '#FAF9F6'), 3), chk('Border strong on surface', this.cr('#8F8D85', '#FAF9F6'), 3)];
+    const fonts = ['Tiro Devanagari Hindi', 'Mukta', 'Hind', 'Poppins', 'Noto Sans'];
+    const brandFields = [
+      { id: 'bf-name', label: 'Display name', value: b.name, onChange: setB('name'), isText: true, help: b.name.length > 22 ? 'Long names wrap to two lines in the app bar.' : '', helpIcon: 'info', helpCol: 'var(--info)' },
+      { id: 'bf-mark', label: 'Short mark (1–2 letters, used if no logo)', value: b.mark, onChange: (e) => this.setState({ brand: { ...b, mark: e.target.value.slice(0, 2).toUpperCase() } }), isText: true },
+      { id: 'bf-primary', label: 'Primary colour', value: b.primary, onChange: setB('primary'), isText: true, isColor: true, help: `Text on it is ${onP === '#FDFCFA' ? 'light' : 'dark'} (${onP}). Brand ink: ${inkL}${inkL !== prim.toUpperCase() ? ', darkened to pass 4.5:1' : ''}.`, helpIcon: 'auto_fix', helpCol: 'var(--info)' },
+      { id: 'bf-accent', label: 'Accent colour', value: b.accent, onChange: setB('accent'), isText: true, isColor: true, help: 'Used only for small badges like “Offer” and “New”.', helpIcon: 'info', helpCol: 'var(--info)' },
+      { id: 'bf-head', label: 'Heading font', value: b.head, onChange: setB('head'), isSelect: true, options: fonts, help: 'Must include Devanagari.', helpIcon: 'translate', helpCol: 'var(--info)' },
+      { id: 'bf-body', label: 'Body font', value: b.body, onChange: setB('body'), isSelect: true, options: fonts },
+      { id: 'bf-radius', label: 'Corner radius (0–24 px)', value: b.radius, onChange: setB('radius'), isText: true, help: `Chips ${Math.max(6, Math.min(12, Math.round(r / 2)))}px · sheets ${Math.round(r * 1.5)}px`, helpIcon: 'rounded_corner', helpCol: 'var(--info)' },
+    ].map(f => ({ isColor: false, isSelect: false, isText: false, options: [], hasHelp: !!f.help, help: '', helpIcon: '', helpCol: '', ...f, isText: f.isText && !f.isSelect }));
+
+    const groups = [['Salons', [['K2', 'Salons', 'storefront'], ['K3', 'New salon', 'add_business']]], ['Studio Nine Salon', [['K4', 'Overview', 'dashboard'], ['K5', 'Branding studio', 'palette'], ['K6', 'Catalogue', 'content_cut'], ['K7', 'Credentials', 'key'], ['K8', 'Messaging', 'sms'], ['K9', 'QR pack', 'qr_code_2'], ['K10', 'Billing and activation', 'receipt_long'], ['K11', 'Support mode', 'support_agent'], ['K13', 'Wallet correction', 'account_balance_wallet']]], ['Platform', [['K12', 'Customer binding', 'link'], ['K14', 'Metrics', 'monitoring'], ['K15', 'Feature flags', 'toggle_on'], ['K16', 'Audit log', 'history']]]];
+    const navGroups = groups.map(([t, items]) => ({ title: t, items: items.map(([c, label, icon]) => { const on = c === screen; return { label, icon, current: on ? 'page' : 'false', bg: on ? 'var(--primary-container)' : 'transparent', fg: on ? 'var(--on-primary-container)' : 'var(--text-primary)', fw: on ? 600 : 400, pick: () => this.go(c) }; }) }));
+
+    const normBlocks = blocks.map(x => ({ hasHead: false, head: '', hasText: false, text: '', isStats: false, isSearch: false, isTable: false, isFields: false, isForm: false, isToggles: false, isChecklist: false, isNotice: false, isQR: false, isButtons: false, ...x }));
+    const otpOk = S.otp.replace(/\D/g, '').length === 6;
+
+    return {
+      isLogin: screen === 'K1', isApp: screen !== 'K1',
+      loginStep1: S.step === 1, loginStep2: S.step === 2, email: S.email, onEmail: (e) => this.setState({ email: e.target.value, emailBad: false }), emailBad: S.emailBad,
+      sendLogin: () => (/@crayora\.com$/i.test(S.email.trim()) ? this.setState({ step: 2 }) : this.setState({ emailBad: true })),
+      otp: S.otp, onOtp: (e) => this.setState({ otp: e.target.value.replace(/\D/g, '').slice(0, 6) }), otpBad: !otpOk,
+      loginBg: otpOk ? 'var(--primary)' : 'var(--surface-sunken)', loginFg: otpOk ? 'var(--on-primary)' : 'var(--text-muted)',
+      doLogin: () => { if (otpOk) { this.setState({ step: 1, otp: '' }); this.go('K2'); } },
+      navGroups, supportOn: S.support, supportReason: S.supportReason, endSupport: () => { this.setState({ support: false }); this.snack('Support mode ended.'); },
+      title, hasSub: !!sub, sub, hasCrumb: !!crumb, crumb,
+      hasAction: !!action && !load && !err, actionIcon: action ? action[0] : '', actionLabel: action ? action[1] : '', actionFn: action ? action[2] : () => {}, actionDisabled: false, actionBg: 'var(--primary)', actionFg: 'var(--on-primary)',
+      ready: !load && !err, loading: load, error: err, retry: () => P.setSt && P.setSt('content'),
+      isK5: screen === 'K5', brandFields, checks,
+      pvPrimary: prim, pvOnPrimary: onP, pvAccent: acc, pvOnAccent: onA, pvInk: inkL, pvName: b.name || 'Your salon', pvMark: b.mark || (b.name || 'S').trim().charAt(0).toUpperCase(), pvR: r + 'px', pvChip: Math.max(6, Math.min(12, Math.round(r / 2))) + 'px',
+      pvHead: `'${b.head}', 'Noto Sans Devanagari', sans-serif`, pvBody: `'${b.body}', 'Noto Sans Devanagari', sans-serif`,
+      blocks: normBlocks, hasSnack: !!S.snack, snackText: S.snack || '',
+    };
+  }
+}
+</script>
+</body>
+</html>

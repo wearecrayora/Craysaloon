@@ -1,5 +1,6 @@
 import 'package:craysalon/core/theme/brand_theme.dart';
 import 'package:craysalon/core/theme/brand_tokens.dart';
+import 'package:craysalon/core/theme/cray_glass.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -87,10 +88,27 @@ void main() {
       final t = BrandTokens.fromPublished(publishedBranding(), brightness: Brightness.light)!;
       final theme = brandTheme(t);
       expect(theme.colorScheme.primary, const Color(0xFF1F6F5C));
-      expect(theme.scaffoldBackgroundColor, t.surface);
+      // Transparent on purpose: every page paints the glass chassis's mesh
+      // beneath its scaffold (Claude Design, 29 Sep 2026; DESIGN 3.5).
+      expect(theme.scaffoldBackgroundColor, Colors.transparent);
+      expect(theme.extension<CrayGlass>(), isNotNull);
       // Never tint a surface with the brand colour (DESIGN 3.3).
       expect(theme.colorScheme.surface, t.surface);
     });
+
+    // The mesh carries the brand's colour behind the screen, so it must stay
+    // light enough (dark enough, in dark mode) that body text on it still
+    // reads - headings sit directly on the mesh, not only on cards.
+    for (final brightness in Brightness.values) {
+      test('text on the mesh still clears 4.5:1 ($brightness)', () {
+        final t = BrandTokens.fromPublished(publishedBranding(), brightness: brightness)!;
+        for (final glow in [t.meshTop, t.meshBottom, t.meshPrimaryGlow, t.meshAccentGlow, t.meshPrimaryLow]) {
+          final ratio = _contrast(t.textPrimary, glow);
+          expect(ratio, greaterThanOrEqualTo(4.5),
+              reason: 'textPrimary on ${glow.toARGB32().toRadixString(16)} is ${ratio.toStringAsFixed(2)}:1');
+        }
+      });
+    }
 
     test('Devanagari gets the extra line height and zero letter-spacing', () {
       final latin = brandTheme(
@@ -110,4 +128,10 @@ void main() {
       expect(devanagari.textTheme.bodyMedium!.letterSpacing, 0.0);
     });
   });
+}
+
+double _contrast(Color a, Color b) {
+  final la = a.computeLuminance(), lb = b.computeLuminance();
+  final hi = la > lb ? la : lb, lo = la > lb ? lb : la;
+  return (hi + 0.05) / (lo + 0.05);
 }

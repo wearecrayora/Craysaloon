@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{{const n=new URLSearchParams(location.search).get("theme");if(n==="light"||n==="dark"){document.documentElement.dataset.theme=n}}{if(new URLSearchParams(location.search).get("_omthumb")==="1"){const n=(f)=>{const g=f.focus;if(!g)return;f.focus=function(h){g.call(this,{...h,preventScroll:true})}};n(HTMLElement.prototype);n(SVGElement.prototype);if(typeof MathMLElement!=="undefined"){n(MathMLElement.prototype)}const d=(f)=>{f.removeAttribute("autofocus");f.inert=true;if(!(f instanceof HTMLElement))f.removeAttribute("tabindex")};const p=(f)=>{if(f.hasAttribute("autofocus"))d(f);for(const g of f.querySelectorAll("[autofocus]")){d(g)}};p(document.documentElement);new MutationObserver((f)=>{for(const g of f){for(const h of g.addedNodes){if(h.nodeType===1)p(h)}}}).observe(document,{childList:true,subtree:true})}}{const n=()=>{try{if(document.querySelector('meta[name="color-scheme"]'))return;const d=getComputedStyle(document.documentElement).getPropertyValue("color-scheme").trim();if(d&&d!=="normal")return;const p=(y)=>{if(!y)return null;const m=getComputedStyle(y).backgroundColor.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+%?))?\s*\)$/);if(!m)return null;const w=m[4]==null?1:parseFloat(m[4])/(m[4].endsWith("%")?100:1);if(w<0.99)return null;return[+m[1],+m[2],+m[3]]};const f=p(document.body)||p(document.documentElement);if(!f)return;const g=(y)=>{const m=y/255;return m<=0.04045?m/12.92:((m+0.055)/1.055)**2.4};const h=0.2126*g(f[0])+0.7152*g(f[1])+0.0722*g(f[2]);document.documentElement.style.setProperty("color-scheme",h<0.4?"dark":"light")}catch{}};if(document.readyState==="complete")n();else window.addEventListener("load",n)}var I=["https://claude.ai","https://preview.claude.ai","https://5f0bd573-2543-4d26-9b98-e594dd744d96.claudeusercontent.com"];var B=true;var K=false;var C=()=>{};if(K===true){try{const n=setTimeout.bind(window);const d=1e4;const p=15;const f=1e4;const g=120000;const h=200;const y=(o)=>{try{let r;if(typeof o==="string")r=o;else if(o instanceof URL)r=o.href;else if(typeof Request!=="undefined"&&o instanceof Request)r=o.url;else return null;if(!r)return null;const l=document.baseURI;const i=new URL(r,l);if(i.protocol!=="http:"&&i.protocol!=="https:")return null;if(i.origin!==new URL(l).origin)return null;return i.origin+i.pathname}catch{return null}};const m=new Map;const w=(o)=>{let r=m.get(o);if(!r){if(m.size>=h){const l=m.keys().next().value;if(l!==undefined)m.delete(l)}r={fails:[],until:0,cooldown:f,hard:false};m.set(o,r)}return r};const R=(o)=>{const r=m.get(o);return r!==undefined&&r.until>Date.now()};const O=(o,r)=>{const l=Date.now();const i=w(o);if(r)i.hard=true;if(i.until>l)return;i.fails.push(l);while(i.fails.length>0&&i.fails[0]<=l-d)i.fails.shift();if(i.fails.length>=p){i.until=l+i.cooldown;if(i.hard)i.cooldown=Math.min(i.cooldown*2,g);i.fails.length=0;try{n(()=>{try{S(true)}catch{}},i.until-l+100)}catch{}console.warn("[omelette] asset circuit breaker: pausing requests to "+o+" for "+Math.round((i.until-l)/1000)+"s after "+p+" failures in "+d/1000+"s")}};const e=(o)=>{m.delete(o)};const t=100;const a=new WeakMap;const u=new Set;let s=null;const S=(o)=>{for(const r of Array.from(u)){try{const l=a.get(r);if(l===undefined){u.delete(r);continue}if(o){const i=y(l);if(i!==null&&R(i))continue}a.delete(r);u.delete(r);if(s!==null)s.call(r,l)}catch{}}};C=()=>{try{m.clear();S(false)}catch{}};document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")C()});const _=window.fetch;if(typeof _==="function"){const o=function(...r){let l=null;try{l=y(r[0])}catch{}if(l!==null&&R(l)){let c;try{if(r[1]&&r[1].signal!==undefined){c=r[1].signal||undefined}else if(typeof Request!=="undefined"&&r[0]instanceof Request){c=r[0].signal||undefined}}catch{c=undefined}return new Promise((k,b)=>{const E=()=>{try{return c.reason!==undefined?c.reason:new DOMException("The operation was aborted.","AbortError")}catch{return new DOMException("The operation was aborted.","AbortError")}};try{if(c&&c.aborted){b(E());return}}catch{}let T=false;const j=()=>{if(T)return;T=true;b(E())};try{if(c)c.addEventListener("abort",j,{once:true})}catch{}n(()=>{if(T)return;T=true;try{if(c)c.removeEventListener("abort",j)}catch{}let L;try{L=new Response(null,{status:429,statusText:"Too Many Requests",headers:{"Retry-After":"10"}})}catch{L={ok:false,status:429}}k(L)},250)})}const i=_.apply(window,r);if(l!==null){const c=l;i.then((k)=>{try{if(k.ok)e(c);else if(k.status===401||k.status===403||k.status===404||k.status===429){O(c,k.status!==404)}}catch{}},()=>{})}return i};window.fetch=o}const v=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src");if(v!==undefined&&v.set!==undefined&&v.get!==undefined){const o=v.set;s=o;Object.defineProperty(HTMLImageElement.prototype,"src",{configurable:true,enumerable:v.enumerable,get:v.get,set(r){const l=`${r}`;try{const i=y(l);if(i!==null&&R(i)){a.set(this,l);if(u.size<t)u.add(this);return}}catch{}try{a.delete(this);u.delete(this)}catch{}o.call(this,l)}})}try{const o=HTMLImageElement.prototype.setAttribute;HTMLImageElement.prototype.setAttribute=function(r,l){if(arguments.length<2){o.apply(this,arguments);return}if(typeof r==="string"&&r.toLowerCase()==="src"){const i=`${l}`;try{const c=y(i);if(c!==null&&R(c)){a.set(this,i);if(u.size<t)u.add(this);return}a.delete(this);u.delete(this)}catch{}o.call(this,r,i);return}o.call(this,r,l)}}catch{}window.addEventListener("error",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)O(l,true)}}catch{}},true);window.addEventListener("load",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)e(l);const i=a.get(r);if(i!==undefined){let c=false;try{c=new URL(i,document.baseURI).href===new URL(r.currentSrc||r.src||"",document.baseURI).href}catch{c=false}if(c){a.delete(r);u.delete(r)}}}}catch{}},true)}catch{}}var J=30000;var G=3000;document.addEventListener("DOMContentLoaded",()=>{const n=window.Babel;const d="om-src-id";if(n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[d])){n.registerPlugin(d,({types:h})=>({visitor:{JSXOpeningElement(y,m){const w=y.node;if(w.name&&w.name.type==="JSXMemberExpression")return;for(let t=0;t<w.attributes.length;t++){const a=w.attributes[t];if(a.type==="JSXAttribute"&&a.name&&a.name.name==="data-om-id")return}const R=m.file&&m.file.opts&&m.file.opts.filename||"?";const O=w.loc&&w.loc.start;const e=`jsx:${R}:${w.start??0}:${O?O.line:0}:${O?O.column+1:0}`;w.attributes.push(h.jsxAttribute(h.jsxIdentifier("data-om-id"),h.stringLiteral(e)))}}}))}const p="om-text-extract";let f=false;if(B&&n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[p])){const h=window.React;if(h&&h.useSyncExternalStore&&h.createElement){f=true;const y={};const m=new Set;let w=0;window.__omTextO=y;window.__omTextSet=(e)=>{for(const t in e){const a=e[t];if(a==null)delete y[t];else y[t]=a}w++;m.forEach((t)=>t())};const R=(e)=>{m.add(e);return()=>m.delete(e)};const O=()=>w;window.__OmT=function e(t){h.useSyncExternalStore(R,O,O);return h.createElement("span",{"data-om-text":t.i,className:"__om-t"},t.i in y?y[t.i]:t.children)};n.registerPlugin(p,({types:e})=>{const t={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const a={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const u=(o,r)=>e.logicalExpression("??",e.memberExpression(e.logicalExpression("||",e.memberExpression(e.identifier("window"),e.identifier("__omTextO")),e.objectExpression([])),e.stringLiteral(o),true),r);const s=(o)=>o.file&&o.file.opts&&o.file.opts.filename||"?";const S=(o)=>o.file&&o.file.code||"";const _=(o,r)=>{const l=(c)=>c&&c.start!=null&&c.end!=null&&(c.type==="StringLiteral"||c.type==="TemplateLiteral"&&c.expressions.length===0)?[c.start,c.end]:null;const i=l(r);if(i)return i;if(r&&r.type==="Identifier"){const c=o.scope.getBinding(r.name);if(c&&c.constant&&c.path.node.type==="VariableDeclarator"){return l(c.path.node.init)}}return null};const v=(o,r,l)=>{const i=o.node;let c=false;const k=(E,T)=>{c=true;return e.jsxElement(e.jsxOpeningElement(e.jsxIdentifier("__OmT"),[e.jsxAttribute(e.jsxIdentifier("i"),e.stringLiteral(E))],false),e.jsxClosingElement(e.jsxIdentifier("__OmT")),[T],false)};const b=i.children.map((E)=>{if(E.type==="JSXText"){if(E.start==null||E.end==null)return E;const T=l.slice(E.start,E.end);const j=T.length-T.trimStart().length;const L=T.length-T.trimEnd().length;if(j+L>=T.length)return E;return k(`txt:${r}:${E.start+j}:${E.end-L}`,E)}if(E.type==="JSXExpressionContainer"){const T=_(o,E.expression);if(T)return k(`str:${r}:${T[0]}:${T[1]}`,E)}return E});if(c)i.children=b};return{visitor:{JSXOpeningElement(o,r){const l=o.node;const i=s(r);const c={};for(let k=0;k<l.attributes.length;k++){const b=l.attributes[k];if(b.type!=="JSXAttribute"||!b.name)continue;const E=b.name.name;if(!a[E])continue;if(!b.value||b.value.type!=="StringLiteral")continue;if(b.value.start==null||b.value.end==null)continue;const T=`txt:${i}:${b.value.start}:${b.value.end}`;c[E]=T;b.value=e.jsxExpressionContainer(u(T,e.stringLiteral(b.value.value)))}if(Object.keys(c).length){l.attributes.push(e.jsxAttribute(e.jsxIdentifier("data-om-text-attrs"),e.stringLiteral(JSON.stringify(c))))}},JSXElement(o,r){const l=o.node.openingElement;const i=l&&l.name&&l.name.name;if(i==="__OmT")return;if(typeof i==="string"&&t[i])return;v(o,s(r),S(r))},JSXFragment(o,r){v(o,s(r),S(r))}}}})}}const g=f?["transform-react-jsx-source",d,p]:["transform-react-jsx-source",d];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach((h,y)=>{const m=h.getAttribute("data-plugins")||"";const w=g.filter((R)=>m.indexOf(R)<0);if(w.length){h.setAttribute("data-plugins",m?`${m},${w.join(",")}`:w.join(","))}if(!h.hasAttribute("data-filename")){h.setAttribute("data-filename",h.getAttribute("src")||`inline-${y}`)}})});var A=window.parent;var U="not editable here — open the project in the Claude Design editor to save";var W=()=>Promise.resolve({persisted:false,noHost:true,reason:U});var H=W;var M="data/storage.json";var z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.match(/\/projects\/([^/]+)\/serve\//);if(d)return d[1];return n.hostname.split(".")[0]||""}catch{return location.hostname.split(".")[0]||""}};var Z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.indexOf("/serve/");if(d>=0)return n.origin+n.pathname.slice(0,d+"/serve/".length)+M}catch{}return"./"+M};var x=null;var N=()=>{if(!x){x=fetch(Z(),{cache:"no-store"}).then((n)=>{if(n.ok)return n.text();return n.status===404?"":null}).catch(()=>null).then((n)=>{if(n===null){x=null;return null}const d=new Map;if(!n)return d;let p;try{p=JSON.parse(n)}catch{console.warn("[omelette.storage] "+M+" is not valid JSON; treating the store as unreadable so a save cannot overwrite the "+"hand-edited bytes. Fix the JSON (or delete the file) to re-enable persistence.");x=null;return null}if(p===null||typeof p!=="object"||Array.isArray(p)){console.warn("[omelette.storage] "+M+" doesn't hold a JSON object; treating the store as unreadable so a save cannot "+"overwrite the hand-edited bytes. Make the top level a JSON object to re-enable persistence.");x=null;return null}const f=p;if("data"in f){const g=f.data;if(g===null||typeof g!=="object"||Array.isArray(g)){console.warn("[omelette.storage] "+M+' has a "data" field that is not a JSON object; treating the store as unreadable so a '+'save cannot overwrite the hand-edited bytes. Make "data" a JSON object to re-enable persistence.');x=null;return null}const h=f._meta;const y=h!==null&&typeof h==="object"?h.project:undefined;if(typeof y==="string"&&y!==""&&y!==z())return d;for(const m of Object.keys(g))d.set(m,g[m]);return d}for(const g of Object.keys(f)){if(g!=="_meta")d.set(g,f[g])}return d})}return x};var F=(n)=>H(M,JSON.stringify({_meta:{project:z(),version:1},data:Object.fromEntries(n)},null,2));var D=Promise.resolve();var $=(n)=>{const d=D.then(n);D=d.then(()=>{return},()=>{return});return d};var V=/sk-(?:ant-)?[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|xox[a-z]-[A-Za-z0-9][A-Za-z0-9-]{9,}|AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/;var Y=/password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|credential/i;var Q=(n,d,p)=>{if(V.test(d)||Y.test(n)&&typeof p==="string"&&p.length>=8){console.warn('[omelette.storage] the value for "'+n+'" looks like a credential. The storage file is a plaintext project file — visible to '+"everyone with project access and copied when the project is duplicated. Do not store secrets here.")}};var q={persisted:false,reason:"could not load the existing store — not overwriting it"};var X={persisted:false,reason:"stored value changed since a failed read — re-read this key before saving"};var P=new Set;var ee={get:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.get: key must be a string"))}return $(N).then((d)=>{if(d===null){P.add(n);return null}P.delete(n);if(!d.has(n))return null;const p=d.get(n);return p==null?null:JSON.parse(JSON.stringify(p))})},set:(n,d)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.set: key must be a string"))}let p;try{p=JSON.stringify(d)}catch(g){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable ("+String(g)+")"))}if(p===undefined){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable"))}Q(n,p,d);const f=JSON.parse(p);return $(()=>N().then((g)=>{if(g===null)return q;if(P.has(n)){if(g.has(n))return X;P.delete(n)}g.set(n,f);return F(g)}))},delete:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.delete: key must be a string"))}return $(()=>N().then((d)=>{if(d===null)return q;if(P.has(n)){if(d.has(n))return X;P.delete(n)}d.delete(n);return F(d)}))},keys:()=>$(N).then((n)=>n===null?[]:Array.from(n.keys()))};window.omelette={writeFile:(n,d)=>H(n,d).then((p)=>{if(!p.persisted&&!p.noHost){throw new Error(p.reason||"write failed")}}),storage:ee};if(A&&A!==window){const n=(e,t)=>{try{A.postMessage({__omelette_log:true,type:e,data:t},"*")}catch{}};["log","warn","error"].forEach((e)=>{const t=console[e];console[e]=(...a)=>{const u=a.map((s)=>{try{return typeof s==="object"?JSON.stringify(s):String(s)}catch{try{return String(s)}catch{return"[unstringifiable]"}}}).join(" ");n(e,u);t.apply(console,a)}});window.addEventListener("error",(e)=>{const t=e.target;if(t&&t!==window&&t.tagName){const a=t.src||t.href||"";n("resource_error",`${t.tagName} failed to load: ${a}`)}else{n("error",`${e.message||"Unknown error"} at ${e.filename||"?"}:${e.lineno||0}:${e.colno||0}`)}},true);window.addEventListener("unhandledrejection",(e)=>{const t=e.reason;const a=t instanceof Error?`${t.message} ${t.stack}`:String(t);n("error",`Unhandled rejection: ${a}`)});window.addEventListener("click",(e)=>{if(e.defaultPrevented||e.button!==0)return;if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const t=e.composedPath?e.composedPath():[];const a=["button","input","select","textarea","summary","label"];let u=null;for(const v of t){if(!(v instanceof Element))continue;if(v.localName==="a"){if(!(v instanceof HTMLAnchorElement))return;u=v;break}if(a.indexOf(v.localName)!==-1)return}if(!u)return;if(u.isContentEditable)return;const s=u.closest("[contenteditable]");if(s&&s.getAttribute("contenteditable")!=="false")return;const S=(u.getAttribute("target")||"_self").toLowerCase();if(S!=="_self"&&S!=="_top"&&S!=="_parent")return;let _;try{_=new URL(u.href)}catch{return}if(_.protocol!=="http:"&&_.protocol!=="https:")return;if(location.origin==="null")return;if(_.origin===location.origin)return;e.preventDefault();window.open(_.href,"_blank","noopener,noreferrer")});const d=()=>{try{A.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(window.ResizeObserver)new ResizeObserver(d).observe(document.documentElement);const p=()=>{d();if(!document.querySelector('script[type="text/babel"],script[type="text/jsx"]'))return;const e=()=>document.getElementById("root")||document.querySelector("body > div[id]");const t=e()?.firstElementChild??null;let a=0;const u=()=>{const s=e();if(s&&s.firstElementChild!==t||++a>30){d();return}setTimeout(u,100)};setTimeout(u,100)};if(document.readyState==="complete")p();else window.addEventListener("load",p);const f={};let g=0;const h=(e)=>new Promise((t,a)=>{if(!I.length){a(new Error("claude.complete: no parent origin"));return}const u=`c${++g}`;const s=()=>setTimeout(()=>{delete f[u];a(new Error(`claude.complete: no data for ${J/1000}s`))},J);const S=s();f[u]={resolve:t,reject:a,text:"",t:S,arm:s};try{for(const _ of I){A.postMessage({__om_api:true,id:u,body:e},_)}}catch(_){clearTimeout(S);delete f[u];a(_)}});const y=8;const m=async(e,t)=>{if(!Array.isArray(e.messages)){throw new Error("claude.complete: tools require a messages array")}const a=e.messages.slice();const u={...e,tools:e.tools.map((_)=>{if(_===null||typeof _!=="object")return _;const v={};for(const o of Object.keys(_)){if(typeof _[o]!=="function")v[o]=_[o]}return v})};const s=u.tool_choice;const S=s!=null&&(s.type==="any"||s.type==="tool")?{...u,tool_choice:s.disable_parallel_tool_use!==undefined?{type:"auto",disable_parallel_tool_use:s.disable_parallel_tool_use}:{type:"auto"}}:u;for(let _=0;_<y;_++){const v=await h({..._===0?u:S,messages:a});const o=v.message;const r=o&&Array.isArray(o.content)?o.content:null;const l=r?r.filter((c)=>c?.type==="tool_use"):[];if(o?.stop_reason!=="tool_use"||l.length===0){return v.text}const i=[];for(const c of l){const k=t.get(c.name);if(!k){i.push({type:"tool_result",tool_use_id:c.id,content:`no handler for tool "${c.name}"`,is_error:true});continue}try{const b=await k(c.input);const E=typeof b==="string"?b:O(b)??"";i.push({type:"tool_result",tool_use_id:c.id,content:E})}catch(b){i.push({type:"tool_result",tool_use_id:c.id,content:String(b?.message??b??"tool handler failed"),is_error:true})}}a.push({role:"assistant",content:r},{role:"user",content:i})}throw new Error(`claude.complete: exceeded ${y} tool turns`)};window.claude={complete(e){const t=e;if(t!==null&&typeof t==="object"&&Array.isArray(t.tools)&&t.tools.some((a)=>a!==null&&typeof a==="object"&&typeof a.run==="function")){const a=new Map;for(const u of t.tools){if(u!==null&&typeof u==="object"&&typeof u.run==="function"){a.set(String(u.name),u.run)}}return m(t,a)}return h(e).then((a)=>a.text)}};const w={};let R=0;H=(e,t)=>new Promise((a)=>{if(!I.length){a({persisted:false,noHost:true,reason:U});return}const u=`f${++R}`;const s=setTimeout(()=>{delete w[u];a({persisted:false,noHost:true,reason:U})},G);w[u]={settle:a,t:s};try{for(const S of I){A.postMessage({__om_file:true,id:u,op:"write",path:e,content:t},S)}}catch{clearTimeout(s);delete w[u];a({persisted:false,noHost:true,reason:U})}});const O=(e)=>{try{return JSON.stringify(e)}catch{return JSON.stringify(String(e))}};window.addEventListener("message",(e)=>{if(I.indexOf(e.origin)<0)return;if(e.source!==A)return;const t=e.data;if(!t)return;if(t.type==="omelette-preview-refresh"){if(typeof t.token!=="string"||!/^[0-9a-f.-]+(\.(rc|pr-[0-9]+))?(\.[0-9]+\.[0-9a-f]{16})?$/.test(t.token))return;const s=Math.max(1,Math.floor((t.expiresAt||0)-Date.now()/1000));document.cookie="__Host-omelette-preview="+t.token+"; Path=/; Secure; SameSite=None; Partitioned; Max-Age="+s;C();return}if(t.__om_file_r){const s=w[t.id];if(!s)return;clearTimeout(s.t);delete w[t.id];s.settle(t.ok?{persisted:true}:{persisted:false,reason:t.error||"write failed"});return}if(t.__om_api_r){const s=f[t.id];if(!s)return;if(t.error!=null){clearTimeout(s.t);delete f[t.id];s.reject(new Error(t.error));return}if(t.chunk!=null){clearTimeout(s.t);s.t=s.arm();s.text+=t.chunk;return}if(t.done){clearTimeout(s.t);delete f[t.id];s.resolve({text:t.text!=null?t.text:s.text,message:t.message});return}return}if(!t.__om_eval)return;const a=t;const u=(s)=>{e.source.postMessage({...s,__om_eval_r:1,id:a.id},e.origin)};try{const s=(0,eval)(a.code);if(s&&typeof s.then==="function"){s.then((S)=>u({ok:1,v:O(S)}),(S)=>u({ok:0,e:String(S)}))}else{u({ok:1,v:O(s)})}}catch(s){u({ok:0,e:String(s)})}})}})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Cray Salon · Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600&family=Mukta:wght@400;500;600&family=Noto+Sans:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&family=Poppins:wght@400;500;600&family=Tiro+Devanagari+Hindi&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>html,body{margin:0;height:100%;background:linear-gradient(160deg,#F7DDE0,#EDB8BF);color:#1C1B19;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}button{font:inherit}a{color:#2F4B8A}a:hover{color:#1F3566}</style>
+<script src="./image-slot.js"></script>
+</helmet>
+<div style="display:flex;flex-direction:column;height:100vh;min-height:0">
+
+<header style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:10px 16px;background:rgba(255,255,255,0.55);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-bottom:1px solid rgba(255,255,255,0.8);flex:none;position:relative;z-index:3">
+  <div style="display:flex;flex-direction:column;gap:0;min-width:150px">
+    <span style="font:600 14px/18px system-ui,sans-serif;color:#1C1B19">Cray Salon</span>
+    <span style="font:400 12px/16px system-ui,sans-serif;color:#6E6B64">Prototype · chassis v0</span>
+  </div>
+  <sc-for list="{{ switchers }}" as="sw" hint-placeholder-count="5">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font:500 11px/16px 'IBM Plex Mono',monospace;color:#6E6B64">{{ sw.name }}</span>
+      <div role="group" aria-label="{{ sw.name }}" style="display:flex;gap:2px;padding:2px;border:1px solid rgba(255,255,255,0.85);border-radius:999px;background:rgba(255,255,255,0.45)">
+        <sc-for list="{{ sw.opts }}" as="o" hint-placeholder-count="2">
+          <button aria-pressed="{{ o.pressed }}" onClick="{{ o.onClick }}" style="border:none;border-radius:999px;padding:6px 12px;min-height:32px;white-space:nowrap;cursor:pointer;font:500 13px/18px system-ui,'Noto Sans Devanagari',sans-serif;background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+</header>
+
+<div style="display:flex;flex:1;min-height:0">
+  <nav aria-label="Screens" style="width:248px;flex:none;overflow-y:auto;background:rgba(255,255,255,0.4);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);border-right:1px solid rgba(255,255,255,0.8);padding:12px 8px 24px;display:flex;flex-direction:column;gap:16px">
+    <sc-for list="{{ groups }}" as="g" hint-placeholder-count="6">
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font:600 11px/16px 'IBM Plex Mono',monospace;color:#6E6B64;padding:4px 8px">{{ g.title }}</div>
+        <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="4">
+          <button onClick="{{ it.onClick }}" aria-current="{{ it.current }}" style="display:flex;align-items:baseline;gap:8px;width:100%;text-align:left;border:none;border-radius:10px;padding:6px 8px;cursor:{{ it.cursor }};background:{{ it.bg }};color:{{ it.fg }}">
+            <span style="font:500 11px/16px 'IBM Plex Mono',monospace;width:28px;flex:none;opacity:0.85">{{ it.code }}</span>
+            <span style="font:400 13px/18px system-ui,sans-serif;flex:1;min-width:0">{{ it.name }}</span>
+            <span style="font:500 10px/16px 'IBM Plex Mono',monospace;color:#8A877F">{{ it.tag }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </sc-for>
+  </nav>
+
+  <div style="{{ vars }}" lang="{{ htmlLang }}">
+
+  <sc-if value="{{ isDS }}" hint-placeholder-val="{{ true }}">
+    <main style="flex:1;overflow:auto;background:var(--mesh);background-attachment:fixed;color:var(--text-primary)">
+      <div style="max-width:1180px;margin:0 auto;padding:40px 32px 64px;display:flex;flex-direction:column;gap:48px">
+
+        <div style="display:flex;flex-direction:column;gap:8px;max-width:760px">
+          <span style="font:500 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">DS · Design system</span>
+          <h1 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-display);line-height:var(--lh-display);color:var(--text-primary)">The white-label chassis</h1>
+          <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);text-wrap:pretty">Only seven things change per salon: primary, accent, heading font, body font, logo, one radius and the display name. On-colours, brand ink and containers are computed, never chosen. Colour and contrast tables show all six modes; type and components below wear the brand, mode, language and text size picked above.</p>
+          <p style="margin:0;font:400 12px/18px 'IBM Plex Mono',monospace;color:var(--text-muted)">{{ dsCaption }}</p>
+        </div>
+
+        <section style="display:flex;flex-direction:column;gap:16px">
+          <h2 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">1 · Colour roles</h2>
+          <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">Brand rows vary per salon. Surface, ink, line, status and chart rows are identical for every salon.</p>
+          <div style="overflow-x:auto;border:1px solid var(--glass-line);border-radius:var(--r)">
+            <div style="min-width:980px;display:grid;grid-template-columns:200px repeat(6,minmax(120px,1fr))">
+              <div style="padding:10px 12px;font:600 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-bottom:1px solid var(--glass-line)">Variable</div>
+              <sc-for list="{{ modeCols }}" as="mc" hint-placeholder-count="6">
+                <div style="padding:10px 12px;font:600 11px/16px 'IBM Plex Mono',monospace;color:var(--text-primary);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-bottom:1px solid var(--glass-line)">{{ mc }}</div>
+              </sc-for>
+              <sc-for list="{{ colorRows }}" as="row" hint-placeholder-count="12">
+                <div style="padding:8px 12px;border-bottom:1px solid var(--divider);display:flex;flex-direction:column;gap:0">
+                  <span style="font:500 12px/16px 'IBM Plex Mono',monospace;color:var(--text-primary)">{{ row.name }}</span>
+                  <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">{{ row.group }}</span>
+                </div>
+                <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="6">
+                  <div style="padding:8px 12px;border-bottom:1px solid var(--divider);display:flex;align-items:center;gap:8px">
+                    <span style="width:24px;height:24px;flex:none;border-radius:6px;border:1px solid rgba(128,124,116,0.45);background:{{ c.hex }}"></span>
+                    <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-secondary);word-break:break-all">{{ c.hex }}</span>
+                  </div>
+                </sc-for>
+              </sc-for>
+            </div>
+          </div>
+        </section>
+
+        <section style="display:flex;flex-direction:column;gap:16px">
+          <h2 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">2 · Contrast, computed</h2>
+          <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">WCAG 2.1 ratios, worked out live from the hex values. Body text needs 4.5:1; UI borders and fills need 3:1.</p>
+          <div style="overflow-x:auto;border:1px solid var(--glass-line);border-radius:var(--r)">
+            <div style="min-width:980px;display:grid;grid-template-columns:260px repeat(6,minmax(110px,1fr))">
+              <div style="padding:10px 12px;font:600 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-bottom:1px solid var(--glass-line)">Pair · minimum</div>
+              <sc-for list="{{ modeCols }}" as="mc" hint-placeholder-count="6">
+                <div style="padding:10px 12px;font:600 11px/16px 'IBM Plex Mono',monospace;color:var(--text-primary);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-bottom:1px solid var(--glass-line)">{{ mc }}</div>
+              </sc-for>
+              <sc-for list="{{ contrastRows }}" as="row" hint-placeholder-count="10">
+                <div style="padding:8px 12px;border-bottom:1px solid var(--divider);display:flex;flex-direction:column">
+                  <span style="font:500 12px/16px 'IBM Plex Mono',monospace;color:var(--text-primary)">{{ row.name }}</span>
+                  <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">min {{ row.min }}:1</span>
+                </div>
+                <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="6">
+                  <div style="padding:8px 12px;border-bottom:1px solid var(--divider);display:flex;align-items:center;gap:8px">
+                    <span style="width:40px;height:24px;flex:none;border-radius:6px;display:flex;align-items:center;justify-content:center;font:600 12px/1 system-ui,sans-serif;background:{{ c.bg }};color:{{ c.fg }}">Aa</span>
+                    <span style="display:flex;flex-direction:column">
+                      <span style="font:500 12px/16px 'IBM Plex Mono',monospace;color:var(--text-primary);font-variant-numeric:tabular-nums">{{ c.ratio }}</span>
+                      <span style="display:flex;align-items:center;gap:2px;font:500 11px/16px system-ui,sans-serif;color:var(--text-secondary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:16px;line-height:1;width:16px;overflow:hidden;color:{{ c.col }}">{{ c.icon }}</span>{{ c.word }}</span>
+                    </span>
+                  </div>
+                </sc-for>
+              </sc-for>
+            </div>
+          </div>
+        </section>
+
+        <section style="display:flex;flex-direction:column;gap:16px">
+          <h2 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">3 · Type scale</h2>
+          <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">Heading family for display to h2, body family for the rest. Devanagari gets +2px line height and zero letter-spacing. Numerals stay 0–9.</p>
+          <div style="display:flex;flex-direction:column;border-top:1px solid var(--divider)">
+            <sc-for list="{{ typeRows }}" as="t" hint-placeholder-count="11">
+              <div style="display:grid;grid-template-columns:minmax(120px,160px) minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:baseline;padding:16px 0;border-bottom:1px solid var(--divider)">
+                <div style="display:flex;flex-direction:column">
+                  <span style="font:600 12px/16px 'IBM Plex Mono',monospace;color:var(--text-primary)">{{ t.name }}</span>
+                  <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">{{ t.spec }}</span>
+                </div>
+                <div style="min-width:0;letter-spacing:0;font-family:{{ t.fam }};font-weight:{{ t.fw }};font-size:{{ t.fs }};line-height:{{ t.lhL }};font-variant-numeric:{{ t.num }};color:var(--text-primary)">{{ t.latin }}</div>
+                <div lang="hi" style="min-width:0;letter-spacing:0;font-family:{{ t.fam }};font-weight:{{ t.fw }};font-size:{{ t.fs }};line-height:{{ t.lhD }};font-variant-numeric:{{ t.num }};color:var(--text-primary)">{{ t.dev }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="display:flex;flex-direction:column;gap:16px">
+          <h2 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">4 · Spacing and radius</h2>
+          <div style="display:flex;flex-wrap:wrap;gap:48px">
+            <div style="display:flex;flex-direction:column;gap:8px;min-width:280px">
+              <sc-for list="{{ spacing }}" as="sp" hint-placeholder-count="10">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="width:32px;font:500 12px/16px 'IBM Plex Mono',monospace;color:var(--text-secondary);text-align:right">{{ sp.v }}</span>
+                  <span style="height:12px;border-radius:2px;background:var(--text-secondary);width:{{ sp.w }}"></span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;min-width:280px;max-width:420px">
+              <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">Screen side padding 16 · between cards 12 · between sections 24 · label to field 4.</p>
+              <div style="display:flex;flex-wrap:wrap;gap:16px">
+                <sc-for list="{{ radii }}" as="rd" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+                    <span style="width:96px;height:64px;border:2px solid var(--border-strong);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-radius:{{ rd.px }}"></span>
+                    <span style="font:500 12px/16px 'IBM Plex Mono',monospace;color:var(--text-secondary)">{{ rd.name }} {{ rd.px }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section style="display:flex;flex-direction:column;gap:24px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <h2 style="margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">5 · Components</h2>
+            <p style="margin:0;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">Each specimen is drawn at phone column width (328px). Switch brand, mode, language and text size to stress them.</p>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Buttons</h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font:500 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">filled · 48 · 56 · disabled · busy</span>
+                <button style="min-height:48px;padding:12px 20px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;width:100%" style-active="opacity:0.88">{{ s.continue }}</button>
+                <button style="min-height:56px;padding:16px 20px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;width:100%" style-active="opacity:0.88">{{ s.start }}</button>
+                <button disabled="{{ true }}" style="min-height:48px;padding:12px 20px;border:none;border-radius:var(--r);background:var(--surface-sunken);color:var(--text-muted);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:not-allowed;width:100%">{{ s.continue }}</button>
+                <button aria-busy="true" style="min-height:48px;padding:12px 20px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:wait;width:100%"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;font-weight:400">progress_activity</span>{{ s.sending }}</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font:500 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">tonal</span>
+                <button style="min-height:48px;padding:12px 20px;border:none;border-radius:var(--r);background:var(--primary-container);color:var(--on-primary-container);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;width:100%">{{ s.addMoney }}</button>
+                <button style="min-height:56px;padding:16px 20px;border:none;border-radius:var(--r);background:var(--primary-container);color:var(--on-primary-container);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;width:100%">{{ s.addMoney }}</button>
+                <button disabled="{{ true }}" style="min-height:48px;padding:12px 20px;border:none;border-radius:var(--r);background:var(--surface-sunken);color:var(--text-muted);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;cursor:not-allowed;width:100%">{{ s.addMoney }}</button>
+                <button aria-busy="true" style="min-height:48px;padding:12px 20px;border:none;border-radius:var(--r);background:var(--primary-container);color:var(--on-primary-container);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:wait;width:100%"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;font-weight:400">progress_activity</span>{{ s.sending }}</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font:500 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">outlined</span>
+                <button style="min-height:48px;padding:12px 20px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;width:100%">{{ s.viewWallet }}</button>
+                <button style="min-height:56px;padding:16px 20px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;width:100%">{{ s.takePayment }}</button>
+                <button disabled="{{ true }}" style="min-height:48px;padding:12px 20px;border:1px solid var(--glass-line);border-radius:var(--r);background:transparent;color:var(--text-muted);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;cursor:not-allowed;width:100%">{{ s.viewWallet }}</button>
+                <button aria-busy="true" style="min-height:48px;padding:12px 20px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:wait;width:100%"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;font-weight:400">progress_activity</span>{{ s.sending }}</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+                <span style="font:500 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">text</span>
+                <button style="min-height:48px;padding:12px 12px;border:none;border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.bookNow }}</button>
+                <button style="min-height:56px;padding:16px 12px;border:none;border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.bookNow }}</button>
+                <button disabled="{{ true }}" style="min-height:48px;padding:12px 12px;border:none;background:transparent;color:var(--text-muted);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:not-allowed">{{ s.bookNow }}</button>
+                <button aria-busy="true" style="min-height:48px;padding:12px 12px;border:none;background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;display:flex;align-items:center;gap:8px;cursor:wait"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;font-weight:400">progress_activity</span>{{ s.sending }}</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(344px,1fr));gap:40px 32px;align-items:start">
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Text field</h3>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.nameLabel }}</span>
+                <div style="min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary)">Asha Rao</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.phoneLabel }}</span>
+                <div style="min-height:48px;display:flex;align-items:stretch;border:2px solid var(--brand-ink);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);overflow:hidden">
+                  <span style="display:flex;align-items:center;padding:0 12px;border-right:1px solid var(--glass-line);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);font-variant-numeric:tabular-nums">+91</span>
+                  <span style="display:flex;align-items:center;padding:10px 12px;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums;letter-spacing:0.04em">98765 4821</span>
+                </div>
+                <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.phoneHelp }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.phoneLabel }}</span>
+                <div style="min-height:48px;display:flex;align-items:stretch;border:2px solid var(--danger);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);overflow:hidden">
+                  <span style="display:flex;align-items:center;padding:0 12px;border-right:1px solid var(--glass-line);font-family:var(--font-body);font-size:var(--fs-body);color:var(--text-secondary)">+91</span>
+                  <span style="display:flex;align-items:center;padding:10px 12px;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-variant-numeric:tabular-nums;letter-spacing:0.04em">98765 482</span>
+                </div>
+                <span style="display:flex;gap:4px;align-items:flex-start;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:1;width:18px;overflow:hidden;flex:none;color:var(--danger)">error</span>{{ s.phoneErr }}</span>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">4-digit start code</h3>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.startCodeLabel }}</span>
+                <div style="display:flex;gap:12px">
+                  <sc-for list="{{ code4 }}" as="d" hint-placeholder-count="4">
+                    <span style="flex:1;min-height:72px;display:flex;align-items:center;justify-content:center;border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font-family:var(--font-body);font-weight:600;font-size:var(--fs-mxl);line-height:var(--lh-mxl);font-variant-numeric:tabular-nums;border:{{ d.border }}">{{ d.v }}</span>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display:flex;gap:12px">
+                <sc-for list="{{ code4err }}" as="d" hint-placeholder-count="4">
+                  <span style="flex:1;min-height:72px;display:flex;align-items:center;justify-content:center;border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border:2px solid var(--danger);font-family:var(--font-body);font-weight:600;font-size:var(--fs-mxl);line-height:var(--lh-mxl);font-variant-numeric:tabular-nums">{{ d }}</span>
+                </sc-for>
+              </div>
+              <span style="display:flex;gap:4px;align-items:flex-start;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;flex:none;color:var(--danger)">error</span>{{ s.codeWrong }}</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">6-box OTP</h3>
+              <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.otpLabel }}</span>
+              <div style="display:flex;gap:8px">
+                <sc-for list="{{ otp }}" as="d" hint-placeholder-count="6">
+                  <span style="flex:1;min-width:0;min-height:56px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-chip);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);font-family:var(--font-body);font-weight:600;font-size:var(--fs-ml);line-height:var(--lh-ml);font-variant-numeric:tabular-nums;border:{{ d.border }}">{{ d.v }}</span>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:8px">
+                <sc-for list="{{ otpErr }}" as="d" hint-placeholder-count="6">
+                  <span style="flex:1;min-width:0;min-height:56px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-chip);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border:2px solid var(--danger);font-family:var(--font-body);font-weight:600;font-size:var(--fs-ml);line-height:var(--lh-ml);font-variant-numeric:tabular-nums">{{ d }}</span>
+                </sc-for>
+              </div>
+              <span style="display:flex;gap:4px;align-items:flex-start;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;flex:none;color:var(--danger)">error</span>{{ s.otpWrong }}</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:4px;max-width:328px">
+              <h3 style="margin:0 0 8px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Checkbox row</h3>
+              <sc-for list="{{ addons }}" as="a" hint-placeholder-count="2">
+                <button role="checkbox" aria-checked="{{ a.checked }}" onClick="{{ a.toggle }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 0;border:none;border-bottom:1px solid var(--divider);background:transparent;cursor:pointer;text-align:left;color:var(--text-primary)">
+                  <span style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;margin-left:-12px">
+                    <span style="width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:background 120ms cubic-bezier(0.2,0,0,1);background:{{ a.boxBg }};border:{{ a.boxBorder }};color:var(--on-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;font-weight:600">{{ a.tick }}</span></span>
+                  </span>
+                  <span style="flex:1;min-width:0;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ a.name }}</span>
+                  <span style="display:flex;flex-direction:column;align-items:flex-end">
+                    <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;white-space:nowrap">{{ a.price }}</span>
+                    <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary);white-space:nowrap">{{ a.mins }}</span>
+                  </span>
+                </button>
+              </sc-for>
+              <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted);padding-top:4px">Tap to toggle. Always starts unticked.</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Choice card</h3>
+              <button style="display:flex;align-items:center;gap:12px;width:100%;min-height:72px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);cursor:pointer;text-align:left;color:var(--text-primary)" style-hover="border-color:var(--border-strong)">
+                <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">smartphone</span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                  <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.optUpi }}</span>
+                  <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.optUpiD }}</span>
+                </span>
+                <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-muted)">chevron_right</span>
+              </button>
+              <button style="display:flex;align-items:center;gap:12px;width:100%;min-height:72px;padding:15px;border:2px solid var(--primary);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);cursor:pointer;text-align:left;color:var(--text-primary)">
+                <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--brand-ink)">storefront</span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                  <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.optCounter }}</span>
+                  <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.optCounterD }}</span>
+                </span>
+                <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--brand-ink)">chevron_right</span>
+              </button>
+              <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">default · pressed/focused (2px primary border)</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Chips</h3>
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <sc-for list="{{ stylists }}" as="c" hint-placeholder-count="3">
+                  <button aria-pressed="{{ c.pressed }}" onClick="{{ c.pick }}" style="min-height:48px;padding:8px 16px;display:flex;align-items:center;gap:4px;border-radius:var(--r-chip);cursor:pointer;font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;transition:background 120ms cubic-bezier(0.2,0,0,1);background:{{ c.bg }};color:{{ c.fg }};border:{{ c.border }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:1;overflow:hidden;width:{{ c.iw }}">check</span>{{ c.name }}</button>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="3">
+                  <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:var(--r-chip);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border:1px solid var(--glass-line);font-family:var(--font-body);font-weight:500;font-size:var(--fs-micro);line-height:var(--lh-micro);color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:16px;line-height:1;width:16px;overflow:hidden;color:{{ c.col }}">{{ c.icon }}</span>{{ c.label }}</span>
+                </sc-for>
+              </div>
+              <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">Filter chips (tap) · status chips: icon + word</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;max-width:328px">
+              <h3 style="margin:0 0 8px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">List row</h3>
+              <sc-for list="{{ visits }}" as="v" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--divider)">
+                  <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">content_cut</span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column">
+                    <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ v.title }}</span>
+                    <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ v.sub }}</span>
+                  </span>
+                  <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;white-space:nowrap">{{ v.amt }}</span>
+                  <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-muted)">chevron_right</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:16px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Money</h3>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <span style="font:500 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">Balance · always with its line</span>
+                <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.walletBal }}</span>
+                <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mxl);line-height:var(--lh-mxl);font-variant-numeric:tabular-nums">₹1,250</span>
+                <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.walletLine }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <span style="font:500 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">Amount · labelled</span>
+                <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+                  <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.total }}</span>
+                  <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-ml);line-height:var(--lh-ml);font-variant-numeric:tabular-nums">₹1,20,500</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column">
+                <span style="font:500 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">Delta · sign + icon, never colour alone</span>
+                <sc-for list="{{ deltas }}" as="d" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--divider)">
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column">
+                      <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ d.what }}</span>
+                      <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ d.date }}</span>
+                    </span>
+                    <span style="display:flex;align-items:center;gap:4px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;white-space:nowrap"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden;font-weight:400;color:{{ d.col }}">{{ d.icon }}</span>{{ d.amt }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Stat tile</h3>
+              <div style="display:grid;gap:12px;grid-template-columns:{{ tileCols }}">
+                <div style="display:flex;flex-direction:column;gap:4px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);min-width:0">
+                  <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.statRev }}</span>
+                  <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-ml);line-height:var(--lh-ml);font-variant-numeric:tabular-nums">₹12,450</span>
+                  <span style="display:flex;align-items:flex-start;gap:2px;font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:16px;line-height:18px;width:16px;overflow:hidden;flex:none;color:var(--success)">arrow_upward</span>{{ s.statVs }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);min-width:0">
+                  <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.statVisits }}</span>
+                  <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-ml);line-height:var(--lh-ml);font-variant-numeric:tabular-nums">23</span>
+                </div>
+              </div>
+              <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">Label on top, big number, optional comparison that names its baseline.</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Bottom sheet</h3>
+              <div style="position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:360px;border-radius:var(--r);overflow:hidden;background:var(--overlay);padding-top:48px">
+                <div style="background:var(--glass-sheet);backdrop-filter:blur(30px) saturate(1.6);-webkit-backdrop-filter:blur(30px) saturate(1.6);box-shadow:0 -12px 40px rgba(90,30,45,0.18);border-top:1px solid var(--glass-line);border-radius:var(--r-sheet) var(--r-sheet) 0 0;padding:8px 16px 16px;display:flex;flex-direction:column;gap:12px">
+                  <span style="align-self:center;width:32px;height:4px;border-radius:2px;background:var(--border-strong)"></span>
+                  <div style="display:flex;align-items:flex-start;gap:8px">
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+                      <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ s.payTitle }}</span>
+                      <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);font-variant-numeric:tabular-nums">{{ s.toPay }}</span>
+                    </div>
+                    <span aria-label="Close" style="width:48px;height:48px;margin:-8px -12px 0 0;display:flex;align-items:center;justify-content:center;flex:none"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;color:var(--text-secondary)">close</span></span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;min-height:72px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+                    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">smartphone</span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ s.optUpi }}</span><span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.optUpiD }}</span></span>
+                    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-muted)">chevron_right</span>
+                  </div>
+                </div>
+              </div>
+              <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">Enters 220ms cubic-bezier(0.2,0,0,1) · exits 176ms · radius = r × 1.5. Try it on 00 Chassis sample.</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Snackbar · offline banner</h3>
+              <div role="status" style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:var(--r-chip);background:var(--surface-sunken);border:1px solid var(--border-strong)">
+                <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--success)">check_circle</span>
+                <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.snackWallet }}</span>
+              </div>
+              <div role="status" style="display:flex;align-items:flex-start;gap:8px;padding:8px 16px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-top:1px solid var(--divider);border-bottom:1px solid var(--divider)">
+                <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:18px;width:18px;overflow:hidden;flex:none;color:var(--text-secondary)">cloud_off</span>
+                <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.offline }}</span>
+              </div>
+              <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">Banner is persistent and quiet: not a popup, not an error style.</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Empty state</h3>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ s.emptyTitle }}</span>
+                <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);text-wrap:pretty">{{ s.emptyBody }}</span>
+              </div>
+              <button style="min-height:48px;padding:12px 20px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;width:100%">{{ s.emptyCta }}</button>
+              <h3 style="margin:16px 0 0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Error state</h3>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.errTitle }}</span>
+                <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.errBody }}</span>
+              </div>
+              <button style="min-height:48px;padding:12px 20px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;width:100%">{{ s.tryAgain }}</button>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Skeleton</h3>
+              <div aria-busy="true" aria-label="Loading" style="display:flex;flex-direction:column;gap:12px">
+                <span style="width:55%;height:24px;border-radius:6px;background:var(--surface-sunken)"></span>
+                <div style="display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r)">
+                  <span style="width:40%;height:14px;border-radius:4px;background:var(--surface-sunken)"></span>
+                  <span style="width:60%;height:32px;border-radius:6px;background:var(--surface-sunken)"></span>
+                  <span style="width:90%;height:14px;border-radius:4px;background:var(--surface-sunken)"></span>
+                </div>
+                <span style="width:100%;height:48px;border-radius:var(--r);background:var(--surface-sunken)"></span>
+              </div>
+              <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">Static blocks shaped like the content. No shimmer, no pulse.</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;max-width:328px">
+              <h3 style="margin:0 0 8px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Needs-attention row</h3>
+              <sc-for list="{{ attn }}" as="a" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--divider)">
+                  <div style="display:flex;gap:12px;align-items:flex-start">
+                    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:{{ a.col }}">{{ a.icon }}</span>
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                      <span style="font-family:var(--font-body);font-weight:500;font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ a.kind }}</span>
+                      <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ a.what }}</span>
+                      <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ a.why }}</span>
+                    </div>
+                  </div>
+                  <button style="align-self:flex-start;margin-left:36px;min-height:48px;padding:12px 20px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ a.action }}</button>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Badge</h3>
+              <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+                <span style="position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center">
+                  <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;color:var(--text-primary)">notifications</span>
+                  <span style="position:absolute;top:4px;right:2px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--danger);color:var(--on-danger);font-family:var(--font-body);font-weight:600;font-size:11px;line-height:20px;text-align:center;font-variant-numeric:tabular-nums">3</span>
+                </span>
+                <span style="position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center">
+                  <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;color:var(--text-primary)">sync</span>
+                  <span style="position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:4px;background:var(--info)"></span>
+                </span>
+                <span style="display:inline-flex;padding:2px 8px;border-radius:var(--r-chip);background:var(--accent);color:var(--on-accent);font-family:var(--font-body);font-weight:500;font-size:var(--fs-micro);line-height:var(--lh-micro)">{{ s.new }}</span>
+              </div>
+              <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">Count (danger, fixed) · dot · text badge (accent)</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px;grid-column:span 1">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">App bar</h3>
+              <div style="border:1px solid var(--glass-line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column">
+                <div style="min-height:56px;padding:4px 4px 4px 16px;display:flex;align-items:center;gap:8px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-bottom:1px solid var(--divider)">
+                  <sc-if value="{{ hasMark }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:var(--hw);font-size:13px;line-height:1">{{ brandMark }}</span></sc-if>
+                  <sc-if value="{{ noMark }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">content_cut</span></span></sc-if>
+                  <span style="flex:1;min-width:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h3);line-height:var(--lh-h3);color:var(--brand-ink)">{{ brandName }}</span>
+                  <button style="min-width:56px;min-height:48px;padding:4px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">shield</span><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.yourData }}</span></button>
+                </div>
+                <div style="min-height:56px;padding:4px 4px 4px 16px;display:flex;align-items:center;gap:8px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5)">
+                  <sc-if value="{{ hasMark }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:var(--hw);font-size:13px;line-height:1">{{ brandMark }}</span></sc-if>
+                  <sc-if value="{{ noMark }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">content_cut</span></span></sc-if>
+                  <span style="flex:1;min-width:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h3);line-height:var(--lh-h3);color:var(--brand-ink)">{{ brandName }}</span>
+                  <button style="position:relative;min-width:56px;min-height:48px;padding:4px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">notification_important</span><span style="position:absolute;top:0;right:8px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--danger);color:var(--on-danger);font-family:var(--font-body);font-weight:600;font-size:11px;line-height:20px;text-align:center">2</span><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.needsAttnShort }}</span></button>
+                  <button style="min-width:56px;min-height:48px;padding:4px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">add</span><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.walkIn }}</span></button>
+                </div>
+              </div>
+              <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">Customer · owner. Logo appears here and nowhere else on the screen.</span>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:328px">
+              <h3 style="margin:0;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">Bottom navigation</h3>
+              <div style="border:1px solid var(--glass-line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;gap:0">
+                <div style="display:flex;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);padding:8px 0 4px;border-bottom:1px solid var(--divider)">
+                  <sc-for list="{{ navCustomer }}" as="n" hint-placeholder-count="4">
+                    <button aria-current="{{ n.current }}" onClick="{{ n.pick }}" style="flex:1;min-width:0;min-height:56px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:0 2px">
+                      <span style="width:56px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;transition:background 120ms cubic-bezier(0.2,0,0,1);background:{{ n.pill }};color:{{ n.ic }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;font-variation-settings:{{ n.fill }}">{{ n.icon }}</span></span>
+                      <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);text-align:center;font-weight:{{ n.fw }};color:{{ n.fg }}">{{ n.label }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+                <div style="display:flex;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);padding:8px 0 4px">
+                  <sc-for list="{{ navOwner }}" as="n" hint-placeholder-count="4">
+                    <button aria-current="{{ n.current }}" onClick="{{ n.pick }}" style="flex:1;min-width:0;min-height:56px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:0 2px">
+                      <span style="width:56px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;transition:background 120ms cubic-bezier(0.2,0,0,1);background:{{ n.pill }};color:{{ n.ic }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;font-variation-settings:{{ n.fill }}">{{ n.icon }}</span></span>
+                      <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);text-align:center;font-weight:{{ n.fw }};color:{{ n.fg }}">{{ n.label }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+              <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--text-muted)">Customer · owner. Tap to select.</span>
+            </div>
+
+          </div>
+        </section>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isConsole }}" hint-placeholder-val="{{ false }}">
+    <main style="flex:1;min-width:0;position:relative;overflow:hidden;background:var(--mesh)">
+      <dc-import name="Console" screen="{{ screen }}" st="{{ st }}" go="{{ go }}" set-st="{{ setSt }}" hint-size="100%,100%" style="position:absolute;inset:0"></dc-import>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
+    <main style="flex:1;overflow:auto;background:var(--page-bg);display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:32px;padding:32px 24px">
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+        <div style="font:500 12px/16px 'IBM Plex Mono',monospace;color:var(--page-ink-2)">{{ screenTitle }}</div>
+        <div style="width:380px;height:820px;flex:none;border-radius:46px;background:var(--bezel);border:1px solid rgba(255,255,255,0.7);padding:10px;box-shadow:0 30px 70px rgba(120,40,60,0.28), inset 0 1px 0 rgba(255,255,255,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)">
+          <div style="position:relative;width:360px;height:800px;border-radius:34px;overflow:hidden;background:var(--mesh);color:var(--text-primary);display:flex;flex-direction:column">
+
+            <div style="height:24px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:transparent;color:var(--text-primary)">
+              <span style="font:600 12px/1 system-ui,sans-serif;font-variant-numeric:tabular-nums">10:42</span>
+              <span aria-hidden="true" style="display:flex;gap:4px;font-family:'Material Symbols Outlined';font-size:16px;line-height:1"><span>signal_cellular_alt</span><span>{{ wifiIcon }}</span><span>battery_5_bar</span></span>
+            </div>
+
+            <sc-if value="{{ isJoin }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;min-height:0;position:relative"><dc-import name="Join Flow" screen="{{ screen }}" variant="{{ variant }}" st="{{ st }}" lang="{{ lang }}" brand-name="{{ joinName }}" brand-mark="{{ joinMark }}" area="{{ joinArea }}" privacy="{{ joinPrivacy }}" go="{{ go }}" set-variant="{{ setVariant }}" hint-size="100%,100%" style="position:absolute;inset:0"></dc-import></div>
+              <div style="height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5)"><span style="width:108px;height:4px;border-radius:2px;background:var(--text-muted)"></span></div>
+            </sc-if>
+
+            <sc-if value="{{ isCustomer }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;min-height:0;position:relative"><dc-import name="Customer App" screen="{{ screen }}" variant="{{ variant }}" st="{{ st }}" lang="{{ lang }}" ts="{{ tsVal }}" brand-name="{{ joinName }}" brand-mark="{{ joinMark }}" go="{{ go }}" set-variant="{{ setVariant }}" set-st="{{ setSt }}" hint-size="100%,100%" style="position:absolute;inset:0"></dc-import></div>
+              <div style="height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5)"><span style="width:108px;height:4px;border-radius:2px;background:var(--text-muted)"></span></div>
+            </sc-if>
+
+            <sc-if value="{{ isBooking }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;min-height:0;position:relative"><dc-import name="Customer Booking" screen="{{ screen }}" variant="{{ variant }}" st="{{ st }}" lang="{{ lang }}" ts="{{ tsVal }}" brand-name="{{ joinName }}" brand-mark="{{ joinMark }}" privacy="{{ joinPrivacy }}" go="{{ go }}" set-variant="{{ setVariant }}" set-st="{{ setSt }}" set-lang="{{ setLang }}" hint-size="100%,100%" style="position:absolute;inset:0"></dc-import></div>
+              <div style="height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5)"><span style="width:108px;height:4px;border-radius:2px;background:var(--text-muted)"></span></div>
+            </sc-if>
+
+            <sc-if value="{{ isOwner }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;min-height:0;position:relative"><dc-import name="Owner App" screen="{{ screen }}" variant="{{ variant }}" st="{{ st }}" lang="{{ lang }}" ts="{{ tsVal }}" brand-name="{{ joinName }}" brand-mark="{{ joinMark }}" go="{{ go }}" set-variant="{{ setVariant }}" set-st="{{ setSt }}" hint-size="100%,100%" style="position:absolute;inset:0"></dc-import></div>
+              <div style="height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5)"><span style="width:108px;height:4px;border-radius:2px;background:var(--text-muted)"></span></div>
+            </sc-if>
+
+            <sc-if value="{{ isManage }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;min-height:0;position:relative"><dc-import name="Owner Manage" screen="{{ screen }}" st="{{ st }}" lang="{{ lang }}" ts="{{ tsVal }}" brand-name="{{ joinName }}" brand-mark="{{ joinMark }}" area="{{ joinArea }}" privacy="{{ joinPrivacy }}" go="{{ go }}" set-st="{{ setSt }}" cycle-lang="{{ cycleLang }}" hint-size="100%,100%" style="position:absolute;inset:0"></dc-import></div>
+              <div style="height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5)"><span style="width:108px;height:4px;border-radius:2px;background:var(--text-muted)"></span></div>
+            </sc-if>
+
+            <sc-if value="{{ isSample }}" hint-placeholder-val="{{ false }}">
+            <div style="min-height:56px;flex:none;padding:4px 4px 4px 16px;display:flex;align-items:center;gap:8px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-bottom:1px solid var(--divider)">
+              <sc-if value="{{ hasMark }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:var(--hw);font-size:13px;line-height:1">{{ brandMark }}</span></sc-if>
+              <sc-if value="{{ noMark }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width:32px;height:32px;flex:none;border-radius:var(--r-chip);background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Outlined';font-size:20px;line-height:1;width:20px;overflow:hidden">content_cut</span></span></sc-if>
+              <span style="flex:1;min-width:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h3);line-height:var(--lh-h3);color:var(--brand-ink)">{{ brandName }}</span>
+              <button style="min-width:56px;min-height:48px;padding:4px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;cursor:pointer;color:var(--text-primary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">shield</span><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.yourData }}</span></button>
+            </div>
+
+            <sc-if value="{{ isOffline }}" hint-placeholder-val="{{ false }}">
+              <div role="status" style="flex:none;display:flex;align-items:flex-start;gap:8px;padding:8px 16px;background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);border-bottom:1px solid var(--divider)">
+                <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:18px;line-height:18px;width:18px;overflow:hidden;flex:none;color:var(--text-secondary)">cloud_off</span>
+                <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.offline }}</span>
+              </div>
+            </sc-if>
+
+            <div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px 24px;display:flex;flex-direction:column;gap:24px">
+              <sc-if value="{{ showContent }}" hint-placeholder-val="{{ true }}">
+                <h1 style="flex:none;margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">{{ s.hiName }}</h1>
+                <div style="flex:none;display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;flex-direction:column;gap:4px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+                    <span style="display:flex;align-items:center;gap:8px;font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--info)">receipt_long</span>{{ s.billReady }}</span>
+                    <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.billSvc }}</span>
+                    <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-ml);line-height:var(--lh-ml);font-variant-numeric:tabular-nums">₹1,000</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+                    <div style="display:flex;flex-direction:column;gap:4px">
+                      <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.walletBal }}</span>
+                      <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mxl);line-height:var(--lh-mxl);font-variant-numeric:tabular-nums">₹1,250</span>
+                      <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.walletLine }}</span>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px">
+                      <button style="flex:1 1 120px;min-height:48px;padding:12px 16px;border:none;border-radius:var(--r);background:var(--primary-container);color:var(--on-primary-container);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.addMoney }}</button>
+                      <button style="flex:1 1 120px;min-height:48px;padding:12px 16px;border:1px solid var(--border-strong);border-radius:var(--r);background:transparent;color:var(--brand-ink);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer">{{ s.viewWallet }}</button>
+                    </div>
+                  </div>
+                  <button style="display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:12px 16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);cursor:pointer;text-align:left;color:var(--text-primary)">
+                    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">redeem</span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body)">{{ s.refer }}</span><span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.referSub }}</span></span>
+                    <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-muted)">chevron_right</span>
+                  </button>
+                </div>
+                <div style="flex:none;display:flex;flex-direction:column">
+                  <h2 style="margin:0 0 4px;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ s.recent }}</h2>
+                  <sc-for list="{{ visits }}" as="v" hint-placeholder-count="2">
+                    <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--divider)">
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column">
+                        <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body)">{{ v.title }}</span>
+                        <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ v.sub }}</span>
+                      </span>
+                      <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mm);line-height:var(--lh-mm);font-variant-numeric:tabular-nums;white-space:nowrap">{{ v.amt }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+                <h1 style="flex:none;margin:0;font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h1);line-height:var(--lh-h1)">{{ s.hiName }}</h1>
+                <div style="flex:none;display:flex;flex-direction:column;gap:8px">
+                  <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ s.emptyTitle }}</span>
+                  <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);text-wrap:pretty">{{ s.emptyBody }}</span>
+                </div>
+                <div style="flex:none;display:flex;flex-direction:column;gap:4px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow)">
+                  <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--text-secondary)">{{ s.walletBal }}</span>
+                  <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-mxl);line-height:var(--lh-mxl);font-variant-numeric:tabular-nums">₹0</span>
+                  <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.walletLine }}</span>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+                <div aria-busy="true" aria-label="Loading" style="flex:none;display:flex;flex-direction:column;gap:24px">
+                  <span style="width:45%;height:30px;border-radius:6px;background:var(--surface-sunken)"></span>
+                  <div style="display:flex;flex-direction:column;gap:12px">
+                    <div style="display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r)"><span style="width:55%;height:20px;border-radius:4px;background:var(--surface-sunken)"></span><span style="width:40%;height:14px;border-radius:4px;background:var(--surface-sunken)"></span><span style="width:30%;height:26px;border-radius:6px;background:var(--surface-sunken)"></span></div>
+                    <div style="display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r)"><span style="width:35%;height:14px;border-radius:4px;background:var(--surface-sunken)"></span><span style="width:50%;height:38px;border-radius:6px;background:var(--surface-sunken)"></span><span style="width:90%;height:14px;border-radius:4px;background:var(--surface-sunken)"></span><span style="width:100%;height:48px;border-radius:var(--r);background:var(--surface-sunken)"></span></div>
+                    <span style="width:100%;height:56px;border-radius:var(--r);background:var(--surface-sunken)"></span>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}">
+                <div style="flex:none;display:flex;flex-direction:column;gap:8px;padding-top:24px">
+                  <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ s.errTitle }}</span>
+                  <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ s.errBody }}</span>
+                </div>
+              </sc-if>
+            </div>
+
+            <sc-if value="{{ showSticky }}" hint-placeholder-val="{{ true }}">
+              <div style="flex:none;padding:12px 16px;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider)">
+                <button onClick="{{ stickyAction }}" style="width:100%;min-height:56px;padding:16px 20px;border:none;border-radius:var(--r);background:var(--primary);color:var(--on-primary);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap" style-active="opacity:0.88">{{ stickyLabel }}</button>
+              </div>
+            </sc-if>
+
+            <div style="flex:none;display:flex;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);border-top:1px solid var(--divider);padding:8px 0 4px">
+              <sc-for list="{{ navCustomer }}" as="n" hint-placeholder-count="4">
+                <button aria-current="{{ n.current }}" onClick="{{ n.pick }}" style="flex:1;min-width:0;min-height:56px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:0 2px">
+                  <span style="width:56px;height:32px;border-radius:16px;display:flex;align-items:center;justify-content:center;transition:background 120ms cubic-bezier(0.2,0,0,1);background:{{ n.pill }};color:{{ n.ic }}"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;font-variation-settings:{{ n.fill }}">{{ n.icon }}</span></span>
+                  <span style="font-family:var(--font-body);font-size:var(--fs-caption);line-height:var(--lh-caption);text-align:center;font-weight:{{ n.fw }};color:{{ n.fg }}">{{ n.label }}</span>
+                </button>
+              </sc-for>
+            </div>
+            <div style="height:16px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--glass-bar);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5)"><span style="width:108px;height:4px;border-radius:2px;background:var(--text-muted)"></span></div>
+
+            <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:var(--overlay);transition:opacity 220ms cubic-bezier(0.2,0,0,1);opacity:{{ ovOp }};pointer-events:{{ ovPe }}"></div>
+            <div role="dialog" aria-modal="true" aria-label="{{ s.payTitle }}" style="position:absolute;left:0;right:0;bottom:0;max-height:88%;overflow-y:auto;background:var(--glass-sheet);backdrop-filter:blur(30px) saturate(1.6);-webkit-backdrop-filter:blur(30px) saturate(1.6);box-shadow:0 -12px 40px rgba(90,30,45,0.18);border-top:1px solid var(--glass-line);border-radius:var(--r-sheet) var(--r-sheet) 0 0;padding:8px 16px 32px;display:flex;flex-direction:column;gap:12px;transform:{{ sheetT }};transition:{{ sheetTr }}">
+              <span style="flex:none;align-self:center;width:32px;height:4px;border-radius:2px;background:var(--border-strong)"></span>
+              <div style="flex:none;display:flex;align-items:flex-start;gap:8px">
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+                  <span style="font-family:var(--font-head);font-weight:var(--hw);font-size:var(--fs-h2);line-height:var(--lh-h2)">{{ s.payTitle }}</span>
+                  <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);font-variant-numeric:tabular-nums">{{ s.toPay }}</span>
+                </div>
+                <button aria-label="Close" onClick="{{ closeSheet }}" style="width:48px;height:48px;margin:-8px -12px 0 0;border:none;background:transparent;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;color:var(--text-secondary)"><span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden">close</span></button>
+              </div>
+              <sc-for list="{{ payOpts }}" as="p" hint-placeholder-count="3">
+                <button onClick="{{ p.pick }}" style="flex:none;display:flex;align-items:center;gap:12px;width:100%;min-height:72px;padding:16px;border:1px solid var(--glass-line);border-radius:var(--r);background:var(--glass-card);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--glass-shadow);cursor:pointer;text-align:left;color:var(--text-primary)" style-hover="border-color:var(--border-strong)" style-active="border-color:var(--primary)">
+                  <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-secondary)">{{ p.icon }}</span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                    <span style="font-family:var(--font-body);font-weight:600;font-size:var(--fs-h3);line-height:var(--lh-h3)">{{ p.title }}</span>
+                    <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)">{{ p.desc }}</span>
+                  </span>
+                  <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:var(--text-muted)">chevron_right</span>
+                </button>
+              </sc-for>
+            </div>
+
+            <sc-if value="{{ hasSnack }}" hint-placeholder-val="{{ false }}">
+              <div role="status" style="position:absolute;left:16px;right:16px;bottom:96px;display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:var(--r-chip);background:var(--surface-sunken);border:1px solid var(--border-strong);box-shadow:0 8px 24px rgba(28,27,25,0.16)">
+                <span aria-hidden="true" style="font-family:'Material Symbols Outlined';font-size:24px;line-height:1;width:24px;overflow:hidden;flex:none;color:{{ snackCol }}">{{ snackIcon }}</span>
+                <span style="font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary)">{{ snackText }}</span>
+              </div>
+            </sc-if>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+
+      <aside style="width:260px;flex:none;display:flex;flex-direction:column;gap:12px;padding-top:28px">
+        <sc-if value="{{ hasVariants }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--glass-line)">
+            <div style="font:600 12px/16px system-ui,sans-serif;color:var(--page-ink)">Variant</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              <sc-for list="{{ variants }}" as="vo" hint-placeholder-count="4">
+                <button aria-pressed="{{ vo.pressed }}" onClick="{{ vo.onClick }}" style="border:1px solid var(--glass-line);border-radius:999px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:6px 10px;min-height:32px;cursor:pointer;font:500 12px/16px system-ui,sans-serif;background:{{ vo.bg }};color:{{ vo.fg }}">{{ vo.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:6px;padding-bottom:12px;border-bottom:1px solid var(--glass-line)">
+          <div style="font:600 12px/16px system-ui,sans-serif;color:var(--page-ink)">Notes</div>
+          <sc-for list="{{ notes }}" as="nt" hint-placeholder-count="2">
+            <p style="margin:0;font:400 12px/18px system-ui,sans-serif;color:var(--page-ink-2);text-wrap:pretty">{{ nt }}</p>
+          </sc-for>
+        </div>
+        <div style="font:600 12px/16px system-ui,sans-serif;color:var(--page-ink)">Tokens in use</div>
+        <sc-for list="{{ tokenInfo }}" as="ti" hint-placeholder-count="7">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="width:20px;height:20px;flex:none;border-radius:4px;border:1px solid var(--glass-line);background:{{ ti.sw }}"></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column">
+              <span style="font:500 11px/16px 'IBM Plex Mono',monospace;color:var(--page-ink)">{{ ti.name }}</span>
+              <span style="font:400 11px/16px 'IBM Plex Mono',monospace;color:var(--page-ink-2)">{{ ti.val }}</span>
+            </span>
+          </div>
+        </sc-for>
+              </aside>
+    </main>
+  </sc-if>
+
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static BRANDS = {
+    A: { name: 'Studio Nine Salon', mark: 'S9', area: 'Indiranagar, Bengaluru', privacy: 'privacy@studionine.in', light: { primary: '#B84F5E', accent: '#E8B4A0' }, dark: { primary: '#F2A7B0', accent: '#E8B4A0' }, head: "'Poppins'", body: "'Poppins'", hw: 500, radius: 18 },
+    B: { name: 'Kesar Unisex Salon', mark: 'K', area: 'Karol Bagh, New Delhi', privacy: 'privacy@kesarsalon.in', light: { primary: '#7A1F3D', accent: '#E0A96D' }, dark: { primary: '#E7A0B8', accent: '#F0C497' }, head: "'Poppins'", body: "'Hind'", hw: 600, radius: 6 },
+    N: { name: 'Your salon', mark: null, area: '', privacy: '', light: { primary: '#3D4A5C', accent: '#8A94A3' }, dark: { primary: '#A9B8CC', accent: '#8A94A3' }, head: "'Noto Sans'", body: "'Noto Sans'", hw: 600, radius: 12 },
+  };
+  static SURF = {
+    light: { surface: '#FBF6F5', surfaceAlt: '#F3F2EE', surfaceSunken: '#ECEAE5', overlay: 'rgba(28,27,25,0.45)', textPrimary: '#1C1B19', textSecondary: '#4A4843', textMuted: '#6E6B64', border: '#DEDCD6', borderStrong: '#8F8D85', divider: 'rgba(150,70,85,0.14)', series1: '#2A78D6', series2: '#EB6834', series3: '#1BAF7A' },
+    dark: { surface: '#161614', surfaceAlt: '#1F1E1B', surfaceSunken: '#0F0F0E', overlay: 'rgba(15,15,14,0.64)', textPrimary: '#EDEBE6', textSecondary: '#C4C1BA', textMuted: '#9A968E', border: '#35342F', borderStrong: '#7D7B73', divider: 'rgba(255,255,255,0.08)', series1: '#3987E5', series2: '#D95926', series3: '#199E70' },
+  };
+  static STATUS = { success: '#0CA30C', warning: '#FAB219', danger: '#D03B3B', info: '#2563A8' };
+  static ROLES = { display: [32, 38], h1: [24, 30], h2: [20, 26], h3: [17, 24], body: [15, 22], caption: [13, 18], micro: [11, 16], mxl: [34, 38], ml: [22, 26], mm: [17, 22] };
+  static STR = {
+    hiName: ['Hi Asha', 'नमस्ते आशा', 'Hi Asha'],
+    billReady: ['Your bill is ready', 'आपका बिल तैयार है', 'Aapka bill ready hai'],
+    billSvc: ['Haircut + Beard trim', 'हेयरकट + दाढ़ी ट्रिम', 'Haircut + Beard trim'],
+    payBill: ['Pay your bill', 'अपना बिल चुकाएँ', 'Apna bill pay karein'],
+    bookNow: ['Book now', 'अभी बुक करें', 'Abhi book karein'],
+    walletBal: ['Wallet balance', 'वॉलेट बैलेंस', 'Wallet balance'],
+    walletLine: ['Usable only at {s}. Cannot be withdrawn as cash.', 'सिर्फ़ {s} में इस्तेमाल हो सकता है। इसे नकद में नहीं निकाला जा सकता।', 'Sirf {s} mein use ho sakta hai. Ise cash mein nikaala nahi ja sakta.'],
+    addMoney: ['Add money', 'पैसे जोड़ें', 'Paise add karein'],
+    viewWallet: ['View wallet', 'वॉलेट देखें', 'Wallet dekhein'],
+    takePayment: ['Take payment', 'भुगतान लें', 'Payment lein'],
+    refer: ['Refer & Earn', 'रेफ़र करें और कमाएँ', 'Refer karein aur kamaayein'],
+    referSub: ['Give ₹100, get ₹100', '₹100 दें, ₹100 पाएँ', '₹100 dein, ₹100 paayein'],
+    recent: ['Recent visits', 'हाल की विज़िट', 'Haal ki visits'],
+    v1: ['12 Sep · Haircut', '12 सितंबर · हेयरकट', '12 Sep · Haircut'],
+    v1s: ['with Suresh · Paid from wallet', 'सुरेश के साथ · वॉलेट से चुकाया', 'Suresh ke saath · Wallet se pay kiya'],
+    v2: ['14 Aug · Haircut + Beard trim', '14 अगस्त · हेयरकट + दाढ़ी ट्रिम', '14 Aug · Haircut + Beard trim'],
+    v2s: ['with Priya · Paid by UPI', 'प्रिया के साथ · UPI से चुकाया', 'Priya ke saath · UPI se pay kiya'],
+    navHome: ['Home', 'होम', 'Home'], navBook: ['Book', 'बुक करें', 'Book'], navWallet: ['Wallet', 'वॉलेट', 'Wallet'], navMe: ['Me', 'मेरा खाता', 'Mera khaata'],
+    navToday: ['Today', 'आज', 'Aaj'], navCustomers: ['Customers', 'ग्राहक', 'Customers'], navDash: ['Dashboard', 'डैशबोर्ड', 'Dashboard'], navMore: ['More', 'और', 'Aur'],
+    yourData: ['Your data', 'आपका डेटा', 'Aapka data'],
+    emptyTitle: ['Your salon, in your pocket', 'आपका सैलून, आपकी जेब में', 'Aapka salon, aapki jeb mein'],
+    emptyBody: ['Book a visit in a few taps and pay from a wallet here. We remind you when your next haircut is due.', 'कुछ ही टैप में विज़िट बुक करें और यहाँ के वॉलेट से भुगतान करें। अगले हेयरकट का समय होने पर हम याद दिलाएँगे।', 'Kuch hi taps mein visit book karein aur yahan ke wallet se pay karein. Agle haircut ka time hone par hum yaad dilaayenge.'],
+    emptyCta: ['Book your first visit', 'अपनी पहली विज़िट बुक करें', 'Apni pehli visit book karein'],
+    errTitle: ["Couldn't load your salon.", 'आपका सैलून लोड नहीं हो पाया।', 'Aapka salon load nahi ho paaya.'],
+    errBody: ['Check your internet and try again.', 'इंटरनेट देखें और फिर से कोशिश करें।', 'Internet check karein aur phir try karein.'],
+    tryAgain: ['Try again', 'फिर कोशिश करें', 'Phir try karein'],
+    offline: ['Offline · 1 change waiting to sync', 'ऑफ़लाइन · 1 बदलाव सिंक होना बाकी है', 'Offline · 1 change sync hona baaki hai'],
+    payTitle: ['How would you like to pay?', 'भुगतान कैसे करना है?', 'Payment kaise karna hai?'],
+    toPay: ['To pay: ₹1,000', 'चुकाना है: ₹1,000', 'Pay karna hai: ₹1,000'],
+    optWallet: ['Wallet', 'वॉलेट', 'Wallet'],
+    optWalletD: ['Pay ₹1,000 from your balance of ₹1,250. That is ₹750 you paid in and ₹250 bonus.', '₹1,250 के बैलेंस में से ₹1,000 चुकाएँ। इसमें ₹750 आपके जमा किए हुए हैं और ₹250 बोनस है।', '₹1,250 ke balance se ₹1,000 pay karein. Ismein ₹750 aapka jama kiya hua hai aur ₹250 bonus.'],
+    optUpi: ['UPI', 'UPI', 'UPI'],
+    optUpiD: ['Pay ₹1,000 with any UPI app.', 'किसी भी UPI ऐप से ₹1,000 चुकाएँ।', 'Kisi bhi UPI app se ₹1,000 pay karein.'],
+    optCounter: ['At the counter', 'काउंटर पर', 'Counter par'],
+    optCounterD: ['Pay ₹1,000 in cash or by card at reception.', 'रिसेप्शन पर नकद या कार्ड से ₹1,000 चुकाएँ।', 'Reception par cash ya card se ₹1,000 pay karein.'],
+    snackWallet: ['Paid from your wallet.', 'आपके वॉलेट से भुगतान हो गया।', 'Aapke wallet se payment ho gaya.'],
+    snackUpi: ['Payment sent. Your bill will show as paid once the bank confirms it.', 'भुगतान भेज दिया गया। बैंक की पुष्टि होते ही बिल चुकाया हुआ दिखेगा।', 'Payment bhej diya. Bank confirm karte hi bill paid dikhega.'],
+    snackCounter: ['The counter knows. Your bill shows as paid once they take the money.', 'काउंटर को पता है। पैसे लेते ही बिल चुकाया हुआ दिखेगा।', 'Counter ko pata hai. Paise lete hi bill paid dikhega.'],
+    continue: ['Continue', 'आगे बढ़ें', 'Aage badhein'],
+    start: ['Start', 'शुरू करें', 'Start karein'],
+    sending: ['Sending…', 'भेजा जा रहा है…', 'Bhej rahe hain…'],
+    nameLabel: ['Your name', 'आपका नाम', 'Aapka naam'],
+    phoneLabel: ['Phone number', 'फ़ोन नंबर', 'Phone number'],
+    phoneHelp: ['We send a 6-digit code to this number.', 'इस नंबर पर 6 अंकों का कोड भेजा जाएगा।', 'Is number par 6-digit code bheja jaayega.'],
+    phoneErr: ['That number has 9 digits. Phone numbers have 10.', 'इस नंबर में 9 अंक हैं। फ़ोन नंबर में 10 अंक होते हैं।', 'Is number mein 9 digits hain. Phone number mein 10 hote hain.'],
+    startCodeLabel: ['Start code', 'शुरुआत का कोड', 'Start code'],
+    codeWrong: ['That is not their code. 2 tries left.', 'यह उनका कोड नहीं है। 2 कोशिशें बाकी हैं।', 'Yeh unka code nahi hai. 2 tries baaki hain.'],
+    otpLabel: ['Enter the 6-digit code', '6 अंकों का कोड डालें', '6-digit code daalein'],
+    otpWrong: ["That code didn't match. 2 tries left.", 'कोड मेल नहीं खाया। 2 कोशिशें बाकी हैं।', 'Code match nahi hua. 2 tries baaki hain.'],
+    addon1: ['Head massage', 'सिर की मालिश', 'Head massage'],
+    addon2: ['Hair wash', 'बाल धुलाई', 'Hair wash'],
+    min15: ['+15 min', '+15 मिनट', '+15 min'], min10: ['+10 min', '+10 मिनट', '+10 min'],
+    anyone: ['Anyone', 'कोई भी', 'Koi bhi'], suresh: ['Suresh', 'सुरेश', 'Suresh'], priya: ['Priya', 'प्रिया', 'Priya'],
+    joined: ['Joined', 'जुड़ गए', 'Join kiya'], visited: ['Visited', 'विज़िट की', 'Visit kiya'], rewarded: ['Rewarded', 'इनाम मिला', 'Reward mila'],
+    topup: ['Top-up', 'टॉप-अप', 'Top-up'], usedAt: ['Used at the salon', 'सैलून में इस्तेमाल', 'Salon mein use hua'], bonusExp: ['Bonus expired', 'बोनस की अवधि खत्म', 'Bonus expire ho gaya'],
+    d1: ['2 Sep 2026', '2 सितंबर 2026', '2 Sep 2026'], d2: ['12 Sep 2026', '12 सितंबर 2026', '12 Sep 2026'], d3: ['14 Sep 2026', '14 सितंबर 2026', '14 Sep 2026'],
+    total: ['Total', 'कुल', 'Total'],
+    statRev: ["Today's revenue", 'आज की कमाई', 'Aaj ki kamaai'],
+    statVs: ['18% vs last Tue', 'पिछले मंगलवार से 18% ज़्यादा', 'Pichhle Tue se 18% zyaada'],
+    statVisits: ['Visits today', 'आज की विज़िट', 'Aaj ki visits'],
+    attnWarn: ['Try again', 'फिर से करना होगा', 'Phir se karna hoga'],
+    attnWhat: ['Mark complete · Asha · 4:30 PM', 'पूरा हुआ · आशा · 4:30 PM', 'Mark complete · Asha · 4:30 PM'],
+    attnWhy: ['That appointment was already finished or cancelled.', 'यह अपॉइंटमेंट पहले ही पूरा या रद्द हो चुका था।', 'Yeh appointment pehle hi complete ya cancel ho chuka tha.'],
+    attnDanger: ['Needs a decision', 'फ़ैसला करना होगा', 'Faisla karna hoga'],
+    attnWhat2: ['Take payment · Ravi · ₹450', 'भुगतान लें · रवि · ₹450', 'Payment lein · Ravi · ₹450'],
+    attnWhy2: ['The server refused this payment because the booking was cancelled.', 'बुकिंग रद्द होने की वजह से सर्वर ने यह भुगतान नहीं लिया।', 'Booking cancel hone ki wajah se server ne yeh payment nahi liya.'],
+    review: ['Review', 'देखें', 'Dekhein'],
+    needsAttnShort: ['Attention', 'ध्यान दें', 'Dhyaan dein'],
+    walkIn: ['Walk-in', 'वॉक-इन', 'Walk-in'],
+    new: ['New', 'नया', 'Naya'],
+  };
+  static GROUPS = [
+    ['System', [['DS', 'Design system', 1], ['00', 'Chassis sample', 1]]],
+    ['Join · U', [['U1', 'Splash', 1], ['U2', 'Join your salon', 1], ['U3', 'Salon confirmation', 1], ['U4', 'Your phone number', 1], ['U5', 'Enter the code', 1], ['U6', 'Welcome', 1]]],
+    ['Customer · C', [['C1', 'Home', 1], ['C2', 'Wallet', 1], ['C3', 'Add money', 1], ['C4', 'Payment result', 1], ['C5', 'Book ① Service', 1], ['C6', 'Book ② Add-ons', 1], ['C7', 'Book ③ Stylist and time', 1], ['C8', 'Book ④ Review', 1], ['C9', 'Booking detail', 1], ['C10', 'Visit history', 1], ['C11', 'Refer & Earn', 1], ['C12', 'Me', 1], ['C13', 'Your data', 1], ['C14', 'Pay sheet', 1]]],
+    ['Owner · O', [['O1', 'Today', 1], ['O2', 'Add walk-in', 1], ['O3', 'Needs attention', 1], ['O4', 'Customers', 1], ['O5', 'Customer detail', 1], ['O6', 'Dashboard', 1], ['OM', 'More', 1], ['O7', 'Services', 1], ['O8', 'Add-ons', 1], ['O9', 'Team', 1], ['O10', 'Rules', 1], ['O11', 'Hours and holidays', 1], ['O12', 'Billing', 1], ['O13', 'Salon profile', 1]]],
+    ['Staff · S', [['S1', 'My schedule', 1], ['S2', 'Booking detail', 1], ['S3', 'My earnings', 1]]],
+    ['Console · K', [['K1', 'Login', 1], ['K2', 'Salons', 1], ['K3', 'New salon', 1], ['K4', 'Salon overview', 1], ['K5', 'Branding studio', 1], ['K6', 'Catalogue', 1], ['K7', 'Credentials', 1], ['K8', 'Messaging', 1], ['K9', 'QR pack', 1], ['K10', 'Billing and activation', 1], ['K11', 'Support mode', 1], ['K12', 'Customer binding', 1], ['K13', 'Wallet correction', 1], ['K14', 'Metrics', 1], ['K15', 'Feature flags', 1], ['K16', 'Audit log', 1]]],
+  ];
+
+  static VARIANTS = {
+    U2: [['typing', 'Typing'], ['checking', 'Checking'], ['nomatch', 'No match'], ['closed', 'Not taking customers'], ['ratelimit', 'Too many tries'], ['camera', 'Camera'], ['camrefused', 'Camera refused']],
+    U5: [['default', 'Waiting'], ['wrong', 'Wrong code'], ['expired', 'Expired'], ['registered', 'Already registered']],
+    U6: [['android', 'Android'], ['ios', 'iPhone']],
+    C1: [['ordinary', 'Ordinary day'], ['new', 'Brand-new'], ['today', 'Booking today'], ['inprogress', 'In progress'], ['bill', 'Bill ready'], ['counter', 'Paying at counter']],
+    O1: [['day', 'The day'], ['start', 'Start sheet'], ['wrong', 'Start · wrong code'], ['locked', 'Start · locked'], ['startOffline', 'Start · offline'], ['noapp', 'Start · no app'], ['pay', 'Take payment'], ['payWallet', 'Payment · wallet'], ['payOffline', 'Payment · offline']],
+    C8: [['ok', 'Ready'], ['taken', 'Slot just taken']],
+    C9: [['booked', 'Booked'], ['cancelled', 'Cancelled']],
+    C13: [['default', 'Default'], ['requested', 'Copy requested'], ['nocontact', 'No privacy contact']],
+    C4: [['sent', 'Sent'], ['cancelled', 'Cancelled'], ['failed', 'Failed'], ['notready', 'Salon not ready'], ['min', 'Below minimum']],
+    C14: [['full', 'Wallet covers it'], ['short', 'Wallet short'], ['zero', 'Wallet ₹0'], ['rest', 'Step 2 · the rest'], ['upiSent', 'UPI sent'], ['counterSent', 'Counter'], ['upiCancel', 'UPI cancelled'], ['noConn', 'No connection']],
+  };
+  static NOTES = {
+    '00': ['Tap "Pay your bill" to open the sheet. Nothing in it is pre-selected.', 'Every switch above re-renders this screen.'],
+    U1: ['Neutral brand: no salon is known yet, so the Brand switch has no effect here.', 'Tap anywhere to continue to U2.', 'Empty does not apply to a splash; it shows the splash.'],
+    U2: ['Neutral brand until a code matches.', 'Type 7KQ2MX (or CRAY-7KQ2MX) to join. Any other code shows "no match".', 'In Camera, tap the square guide to simulate a scan.', 'Empty clears the field. Loading shows Checking.'],
+    U3: ["The salon's brand fades in here, a moment after arrival. Switch Brand to see A, B or Neutral (branding couldn't load).", 'The logo sits large in the content. This screen has no app bar, so the logo still appears once.'],
+    U4: ['The notice sits above the field, at body size, never collapsed.', 'Optional checkboxes start unticked. The field is not auto-focused.', 'Enter 10 digits to enable Send code.'],
+    U5: ['Any 6 digits signs in. 000000 shows the mismatch.', 'Resend counts down from 0:28.', 'The other salon is never named.'],
+    U6: ['iPhone variant: the home-screen card is absent.'],
+    C1: ['Bill ready: a push-style notice drops in, then the pay sheet opens by itself.', 'Empty shows the brand-new customer. Error never shows an old balance.', 'Offline labels the balance "As of 10:42".'],
+    C2: ['Paid and bonus credit are shown separately. History rows reconcile to ₹1,250.', 'Error hides the balance entirely.'],
+    C3: ['₹1,000 is selected on open, as specified. Type an amount under ₹500 to see "No bonus".', '"Before you pay" is above the button, at body size, never collapsed.', 'Loading = offer loading: the bonus line is a skeleton and Pay is disabled.'],
+    C4: ['Results are shown on C3 itself, above the amounts.', '"Below minimum" pre-fills ₹50 in the other-amount field.'],
+    O1: ['Every row state is on the day: Booked, In progress, Done, Paying at the counter, Paid, Part paid, a walk-in, and a row waiting to sync.', 'Mark complete is one tap with no dialog. Start on Asha: code 4821. Nikhil has no app.', 'Offline shows a quiet line, not an error.'],
+    O2: ['Search "as" or a whole phone number to find a customer, or type a new name. Add-ons start unticked.', 'With State = Offline: "Will book when you are online."'],
+    O3: ['Try again or Discard clears the row; the badge on Today updates.', 'Empty: "Nothing needs attention."'],
+    O4: ['Search and filter chips work. Tap Asha Rao for the detail screen.'],
+    O5: ['Owners see the wallet but cannot correct it; that is a console job (K13), so every change is audited.'],
+    O6: ['Switch Today / 7 days / 30 days. Every comparison names its baseline and uses an arrow, not colour alone.', 'The bar chart uses --series-1, with values printed on the bars.'],
+    OM: ['The fourth tab. Language here cycles the prototype language.'],
+    K1: ['Console is English-only (internal tool) and always Neutral-branded. Use an @crayora.com email.'],
+    K5: ['Edit the seven inputs; the preview and contrast checks update live. Try a pale primary like #E8D36A to see brand ink darken.'],
+    K11: ['A reason of 10+ characters is required; a banner stays on every console page until it ends.'],
+    K12: ['Whole numbers only. Unbinding needs a reason and does not move the wallet.'],
+    K13: ['Corrections need a reason and a second approver.'],
+    S1: ['Staff see only their own bookings, with no prices or phone numbers. Tap Asha for the detail.'],
+    S2: ['Start, then Mark complete. Payment stays with reception.'],
+    S3: ['Earnings name how they are worked out (30% share).'],
+    O7: ['Toggles hide a service from booking in one tap.'],
+    O10: ['The rules customers see on C3, C8 and C11 come from here.'],
+    O13: ['Switch Brand to Neutral to see the missing privacy contact warning.', 'Branding is changed in the console (K5), not here.'],
+    C5: ['Tap a service to select it (brand-filled radio). Nothing is selected on open.', 'Empty: no services open for booking.'],
+    C6: ['Every add-on starts unticked. Total and time update on the same tap.', 'Colour and Skin services have no add-ons, so the list is empty (never greyed).'],
+    C7: ['Only free times are shown. Add-ons change the length and the grid.', 'Mon 5 Oct is closed: "No free times on this day".'],
+    C8: ['"Slot just taken" shows the error and disables Confirm.'],
+    C9: ['Cancel booking sits high on the screen, away from the thumb, and opens a sheet that repeats the policy.'],
+    C10: ['Empty: no visits yet, with Book a visit.'],
+    C11: ['The condition sits above the code. Share opens the phone share sheet.'],
+    C12: ['Language opens a sheet and switches the whole prototype.', '"App by Crayora" is the only Crayora mention in the app.'],
+    C13: ['Toggles turn off in one tap. Erase explains what is kept before asking, then needs ERASE typed.', 'The privacy contact comes from the salon; switch Brand to Neutral or pick the variant to see it missing.'],
+    C14: ['Nothing is pre-selected. Tap a card to walk the flow.', 'Wallet short → tap Wallet to reach step 2. Wallet ₹0 hides the Wallet card.', 'With State = Offline, any choice shows "No connection".'],
+  };
+  static READY = new Set(Component.GROUPS.flatMap(([, items]) => items.filter(i => i[2]).map(i => i[0])));
+  state = { variant: '', revealed: true, screen: 'DS', brand: 'A', mode: 'light', lang: 'en', ts: 1, st: 'content', sheet: false, snack: null, addons: [false, false], stylist: 0, nav: 0, onav: 0 };
+
+  componentDidMount() {
+    try { const s = JSON.parse(localStorage.getItem('cray-proto-v0') || '{}'); if (s && typeof s === 'object') this.setState(s); } catch (e) {}
+  }
+  componentWillUnmount() { clearTimeout(this._snackT); }
+  set(p) {
+    const C = this.constructor;
+    if (p.screen && p.screen !== this.state.screen) {
+      if (p.variant === undefined) p.variant = (C.VARIANTS[p.screen] || [['']])[0][0];
+      p.sheet = false;
+      clearTimeout(this._rv);
+      if (p.screen === 'U3') { p.revealed = false; this._rv = setTimeout(() => this.setState({ revealed: true }), 450); }
+    }
+    this.setState(p, () => {
+      const { screen, brand, mode, lang, ts, st } = this.state;
+      try { localStorage.setItem('cray-proto-v0', JSON.stringify({ screen, brand, mode, lang, ts, st })); } catch (e) {}
+    });
+  }
+  showSnack(key) {
+    clearTimeout(this._snackT);
+    this.setState({ sheet: false, snack: key });
+    this._snackT = setTimeout(() => this.setState({ snack: null }), 4000);
+  }
+
+  // colour maths, ported from packages/design-tokens/src/color.ts + derive.ts
+  rgb(hex) { const h = hex.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16) / 255); }
+  hex(r, g, b) { const c = v => Math.round(Math.max(0, Math.min(1, v)) * 255).toString(16).padStart(2, '0'); return ('#' + c(r) + c(g) + c(b)).toUpperCase(); }
+  lum(hex) { const l = v => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); const [r, g, b] = this.rgb(hex); return 0.2126 * l(r) + 0.7152 * l(g) + 0.0722 * l(b); }
+  contrast(a, b) { const x = this.lum(a), y = this.lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  toOk(hex) {
+    const lin = v => v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    const [r, g, b] = this.rgb(hex).map(lin);
+    const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b), m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b), s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+    return [0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s, 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s];
+  }
+  fromOk(L, A, B) {
+    const l = Math.pow(L + 0.3963377774 * A + 0.2158037573 * B, 3), m = Math.pow(L - 0.1055613458 * A - 0.0638541728 * B, 3), s = Math.pow(L - 0.0894841775 * A - 1.2914855480 * B, 3);
+    const g = v => v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(Math.max(v, 0), 1 / 2.4) - 0.055;
+    return this.hex(g(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s), g(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s), g(-0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s));
+  }
+  mix(a, b, t) { const x = this.toOk(a), y = this.toOk(b); return this.fromOk(x[0] + (y[0] - x[0]) * t, x[1] + (y[1] - x[1]) * t, x[2] + (y[2] - x[2]) * t); }
+  onColor(bg) { const W = '#FDFCFA', K = '#1C1B19'; return this.contrast(bg, W) >= this.contrast(bg, K) ? W : K; }
+  ink(primary, surface, mode) {
+    if (this.contrast(primary, surface) >= 4.5) return primary.toUpperCase();
+    const [L, A, B] = this.toOk(primary); const step = mode === 'light' ? -0.01 : 0.01;
+    for (let l = L + step, i = 0; i < 100 && l > 0 && l < 1; i++, l += step) { const c = this.fromOk(l, A, B); if (this.contrast(c, surface) >= 4.5) return c; }
+    return null;
+  }
+  resolve(bk, mode) {
+    const C = this.constructor, b = C.BRANDS[bk], s = C.SURF[mode], br = b[mode];
+    const pc = this.mix(br.primary, s.surface, mode === 'light' ? 0.86 : 0.78);
+    return {
+      primary: br.primary, onPrimary: this.onColor(br.primary), primaryContainer: pc,
+      onPrimaryContainer: this.ink(br.primary, pc, mode) || s.textPrimary,
+      accent: br.accent, onAccent: this.onColor(br.accent), brandInk: this.ink(br.primary, s.surface, mode) || s.textPrimary,
+      ...s, ...C.STATUS,
+    };
+  }
+
+  renderVals() {
+    const C = this.constructor, S = this.state;
+    const eff = (S.screen[0] === 'K' || ['U1', 'U2'].includes(S.screen) || (S.screen === 'U3' && !S.revealed)) ? 'N' : S.brand;
+    const b = C.BRANDS[eff], tk = this.resolve(eff, S.mode), jb = C.BRANDS[S.brand];
+    const li = { en: 0, hi: 1, hl: 2 }[S.lang] ?? 0, ts = S.ts, dv = S.lang === 'hi' ? 2 : 0;
+    const s = {}; for (const k in C.STR) s[k] = C.STR[k][li].split('{s}').join(b.name);
+    const kebab = k => k.replace(/[A-Z]/g, m => '-' + m.toLowerCase()).replace(/series(\d)/, 'series-$1');
+    const vars = { flex: '1', minWidth: 0, minHeight: 0, display: 'flex', overflow: 'hidden' };
+    for (const k in tk) vars['--' + kebab(k)] = tk[k];
+    const L = S.mode === 'light', P0 = tk.primary, A0 = tk.accent;
+    vars['--glass-card'] = L ? 'rgba(255,255,255,0.58)' : 'rgba(44,30,36,0.55)';
+    vars['--glass-bar'] = L ? 'rgba(255,255,255,0.5)' : 'rgba(30,20,24,0.5)';
+    vars['--glass-sheet'] = L ? 'rgba(255,250,250,0.82)' : 'rgba(34,22,28,0.86)';
+    vars['--glass-line'] = L ? 'rgba(255,255,255,0.78)' : 'rgba(255,255,255,0.12)';
+    vars['--glass-shadow'] = L ? '0 8px 28px rgba(120,40,60,0.08), inset 0 1px 0 rgba(255,255,255,0.7)' : '0 8px 28px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)';
+    vars['--mesh'] = L
+      ? `radial-gradient(90% 55% at 0% 0%, color-mix(in oklch, ${P0} 38%, white) 0%, transparent 62%), radial-gradient(80% 45% at 100% 22%, color-mix(in oklch, ${A0} 55%, white) 0%, transparent 60%), radial-gradient(110% 60% at 30% 100%, color-mix(in oklch, ${P0} 26%, white) 0%, transparent 70%), linear-gradient(180deg, #FCF4F3 0%, #F8E9E9 100%)`
+      : `radial-gradient(90% 55% at 0% 0%, color-mix(in oklch, ${P0} 34%, #140E11) 0%, transparent 62%), radial-gradient(80% 45% at 100% 25%, color-mix(in oklch, ${A0} 22%, #140E11) 0%, transparent 60%), radial-gradient(110% 60% at 30% 100%, color-mix(in oklch, ${P0} 22%, #140E11) 0%, transparent 70%), linear-gradient(180deg, #1A1216 0%, #120C0F 100%)`;
+    vars['--page-bg'] = L ? `radial-gradient(60% 50% at 15% 10%, color-mix(in oklch, ${P0} 30%, white), transparent 70%), radial-gradient(50% 50% at 90% 90%, color-mix(in oklch, ${A0} 45%, white), transparent 70%), linear-gradient(160deg, #F7DDE0 0%, #EDB8BF 100%)` : 'linear-gradient(160deg, #241820 0%, #140E11 100%)';
+    vars['--bezel'] = L ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.08)';
+    vars['--page-ink'] = L ? '#3A1F26' : '#EDE3E5';
+    vars['--page-ink-2'] = L ? '#5E3A43' : '#C9B8BC';
+    vars['--on-danger'] = '#FDFCFA'; vars['--camera'] = '#0F0F0E'; vars['--on-camera'] = '#EDEBE6';
+    const dev = "'Noto Sans Devanagari', system-ui, sans-serif";
+    vars['--font-head'] = `${b.head}, ${dev}`; vars['--font-body'] = `${b.body}, ${dev}`; vars['--hw'] = b.hw;
+    const r = Math.max(0, Math.min(24, b.radius));
+    vars['--r'] = r + 'px'; vars['--r-chip'] = Math.max(6, Math.min(12, Math.round(r / 2))) + 'px'; vars['--r-sheet'] = Math.round(r * 1.5) + 'px';
+    for (const k in C.ROLES) { const [z, l] = C.ROLES[k]; vars['--fs-' + k] = z * ts + 'px'; vars['--lh-' + k] = (l + dv) * ts + 'px'; }
+
+    const ACT = '#B84F5E';
+    const seg = (key, list) => list.map(([v, l]) => ({ label: l, onClick: () => this.set({ [key]: v }), bg: S[key] === v ? ACT : 'transparent', fg: S[key] === v ? '#FDFCFA' : '#1C1B19', pressed: S[key] === v ? 'true' : 'false' }));
+    const switchers = [
+      { name: 'Brand', opts: seg('brand', [['A', 'A · Studio Nine'], ['B', 'B · Kesar'], ['N', 'Neutral']]) },
+      { name: 'Mode', opts: seg('mode', [['light', 'Light'], ['dark', 'Dark']]) },
+      { name: 'Language', opts: seg('lang', [['en', 'English'], ['hi', 'हिन्दी'], ['hl', 'Hinglish']]) },
+      { name: 'Text', opts: seg('ts', [[1, '100%'], [2, '200%']]) },
+      { name: 'State', opts: seg('st', [['content', 'Content'], ['empty', 'Empty'], ['loading', 'Loading'], ['error', 'Error'], ['offline', 'Offline']]) },
+    ];
+    const groups = C.GROUPS.map(([title, items]) => ({
+      title, items: items.map(([code, name, ready]) => {
+        const cur = S.screen === code;
+        return { code, name, tag: ready ? '' : 'next', current: cur ? 'page' : 'false', cursor: ready ? 'pointer' : 'default', onClick: ready ? () => this.set({ screen: code }) : () => {}, bg: cur ? ACT : 'transparent', fg: cur ? '#FDFCFA' : ready ? '#1C1B19' : '#8A877F' };
+      }),
+    }));
+
+    // six-mode tables
+    const modes = []; ['A', 'B', 'N'].forEach(k => ['light', 'dark'].forEach(m => modes.push({ k, m, t: this.resolve(k, m) })));
+    const modeCols = modes.map(x => `${x.k === 'N' ? 'Neutral' : x.k} · ${x.m === 'light' ? 'Light' : 'Dark'}`);
+    const ROWS = [['primary', 'brand'], ['onPrimary', 'brand · computed'], ['primaryContainer', 'brand · derived'], ['onPrimaryContainer', 'brand · computed'], ['accent', 'brand'], ['onAccent', 'brand · computed'], ['brandInk', 'brand · computed'], ['surface', 'surface'], ['surfaceAlt', 'surface'], ['surfaceSunken', 'surface'], ['overlay', 'surface'], ['textPrimary', 'ink'], ['textSecondary', 'ink'], ['textMuted', 'ink'], ['border', 'line'], ['borderStrong', 'line'], ['divider', 'line'], ['success', 'status'], ['warning', 'status'], ['danger', 'status'], ['info', 'status'], ['series1', 'chart'], ['series2', 'chart'], ['series3', 'chart']];
+    const colorRows = ROWS.map(([k, g]) => ({ name: '--' + kebab(k), group: g, cells: modes.map(x => ({ hex: x.t[k] })) }));
+    const PAIRS = [['textPrimary', 'surface', 4.5], ['textSecondary', 'surface', 4.5], ['textMuted', 'surface', 4.5], ['textMuted', 'surfaceAlt', 4.5], ['onPrimary', 'primary', 4.5], ['brandInk', 'surface', 4.5], ['onPrimaryContainer', 'primaryContainer', 4.5], ['onAccent', 'accent', 4.5], ['textPrimary', 'surfaceSunken', 4.5], ['primary', 'surface', 3], ['borderStrong', 'surface', 3]];
+    const contrastRows = PAIRS.map(([f, bg, min]) => ({
+      name: `${kebab(f)} on ${kebab(bg)}`, min,
+      cells: modes.map(x => { const c = this.contrast(x.t[f], x.t[bg]); const ok = c >= min; return { ratio: (Math.floor(c * 100) / 100).toFixed(2) + ':1', ok, icon: ok ? 'check_circle' : 'cancel', word: ok ? 'Pass' : 'Fail', col: ok ? C.STATUS.success : C.STATUS.danger, bg: x.t[bg], fg: x.t[f] }; }),
+    }));
+
+    const HEAD = `var(--font-head)`, BODY = `var(--font-body)`;
+    const TR = [['display', 'display', '32/38 · heading', HEAD, b.hw], ['h1', 'h1', '24/30 · heading', HEAD, b.hw], ['h2', 'h2', '20/26 · heading', HEAD, b.hw], ['h3', 'h3', '17/24 · 600', BODY, 600], ['body', 'body', '15/22 · 400', BODY, 400], ['body', 'body-strong', '15/22 · 600', BODY, 600], ['caption', 'caption', '13/18 · 400', BODY, 400], ['micro', 'micro', '11/16 · 500 · chips only', BODY, 500], ['mxl', 'money-xl', '34/38 · 600 · tabular', BODY, 600], ['ml', 'money-l', '22/26 · 600 · tabular', BODY, 600], ['mm', 'money-m', '17/22 · 600 · tabular', BODY, 600]];
+    const typeRows = TR.map(([k, name, spec, fam, fw]) => {
+      const [z, l] = C.ROLES[k], money = k[0] === 'm' && k !== 'micro';
+      return { name, spec, fam, fw, fs: z * ts + 'px', lhL: l * ts + 'px', lhD: (l + 2) * ts + 'px', num: money ? 'tabular-nums' : 'normal', latin: money ? '₹1,20,500' : 'Book your next haircut', dev: money ? '−₹1,250' : 'अपना अगला हेयरकट बुक करें' };
+    });
+    const spacing = [4, 8, 12, 16, 20, 24, 32, 40, 48, 64].map(v => ({ v, w: v * 3 + 'px' }));
+    const radii = [['base', vars['--r']], ['chip', vars['--r-chip']], ['sheet', vars['--r-sheet']]].map(([name, px]) => ({ name, px }));
+
+    const code4 = ['4', '8', '2', '1'].map(v => ({ v, border: '1px solid var(--border-strong)' }));
+    const otp = ['3', '9', '', '', '', ''].map((v, i) => ({ v, border: i === 2 ? '2px solid var(--brand-ink)' : '1px solid var(--border-strong)' }));
+    const addons = [[s.addon1, '+₹150', s.min15], [s.addon2, '+₹100', s.min10]].map(([name, price, mins], i) => {
+      const on = S.addons[i];
+      return { name, price, mins, checked: on ? 'true' : 'false', tick: on ? 'check' : '', boxBg: on ? 'var(--primary)' : 'transparent', boxBorder: on ? '2px solid var(--primary)' : '2px solid var(--border-strong)', toggle: () => this.setState(st => { const a = st.addons.slice(); a[i] = !a[i]; return { addons: a }; }) };
+    });
+    const stylists = [s.anyone, s.suresh, s.priya].map((name, i) => { const on = S.stylist === i; return { name, pressed: on ? 'true' : 'false', bg: on ? 'var(--primary)' : 'var(--surface-alt)', fg: on ? 'var(--on-primary)' : 'var(--text-primary)', border: on ? '1px solid var(--primary)' : '1px solid var(--border-strong)', iw: on ? '18px' : '0px', pick: () => this.setState({ stylist: i }) }; });
+    const statusChips = [{ label: s.joined, icon: 'schedule', col: C.STATUS.warning }, { label: s.visited, icon: 'event_available', col: C.STATUS.info }, { label: s.rewarded, icon: 'check_circle', col: C.STATUS.success }];
+    const visits = [{ title: s.v1, sub: s.v1s, amt: '₹600' }, { title: s.v2, sub: s.v2s, amt: '₹1,000' }];
+    const deltas = [{ what: s.topup, date: s.d1, amt: '+₹1,000', icon: 'add_circle', col: C.STATUS.success }, { what: s.usedAt, date: s.d2, amt: '−₹300', icon: 'remove_circle', col: 'var(--text-secondary)' }, { what: s.bonusExp, date: s.d3, amt: '−₹50', icon: 'schedule', col: C.STATUS.warning }];
+    const attn = [{ icon: 'warning', col: C.STATUS.warning, kind: s.attnWarn, what: s.attnWhat, why: s.attnWhy, action: s.tryAgain }, { icon: 'report', col: C.STATUS.danger, kind: s.attnDanger, what: s.attnWhat2, why: s.attnWhy2, action: s.review }];
+    const nav = (list, key) => list.map(([icon, label], i) => { const on = S[key] === i; return { icon, label, current: on ? 'page' : 'false', pill: on ? 'var(--primary-container)' : 'transparent', ic: on ? 'var(--on-primary-container)' : 'var(--text-secondary)', fg: on ? 'var(--text-primary)' : 'var(--text-secondary)', fw: on ? 600 : 400, fill: on ? "'FILL' 1" : "'FILL' 0", pick: () => this.setState({ [key]: i }) }; });
+    const navCustomer = nav([['home', s.navHome], ['event', s.navBook], ['account_balance_wallet', s.navWallet], ['person', s.navMe]], 'nav');
+    const navOwner = nav([['today', s.navToday], ['group', s.navCustomers], ['monitoring', s.navDash], ['more_horiz', s.navMore]], 'onav');
+
+    const st = S.st, snacks = { wallet: [s.snackWallet, 'check_circle', C.STATUS.success], upi: [s.snackUpi, 'schedule', C.STATUS.info], counter: [s.snackCounter, 'storefront', C.STATUS.info] };
+    const sn = S.snack ? snacks[S.snack] : null;
+    const stickyLabel = st === 'empty' ? s.emptyCta : st === 'error' ? s.tryAgain : `${s.payBill} · ₹1,000`;
+    const tokenInfo = [['display name', b.name, tk.surface], ['--primary', tk.primary, tk.primary], ['--on-primary', `${tk.onPrimary} · ${this.contrast(tk.onPrimary, tk.primary).toFixed(2)}:1`, tk.onPrimary], ['--brand-ink', `${tk.brandInk} · ${this.contrast(tk.brandInk, tk.surface).toFixed(2)}:1 on surface`, tk.brandInk], ['--accent', tk.accent, tk.accent], ['radius', `${vars['--r']} · chip ${vars['--r-chip']} · sheet ${vars['--r-sheet']}`, tk.surfaceAlt], ['fonts', `${b.head.replace(/'/g, '')} / ${b.body.replace(/'/g, '')}`, tk.surfaceAlt]].map(([name, val, sw]) => ({ name, val, sw }));
+    const langName = ['English', 'हिन्दी', 'Hinglish'][li];
+    let screenTitle = S.screen; C.GROUPS.forEach(([, items]) => items.forEach(([c, n]) => { if (c === S.screen) screenTitle = c + ' · ' + n; }));
+    if (eff !== S.brand) screenTitle += ' · Neutral brand (pre-join)';
+
+    return {
+      vars, switchers, groups, s, htmlLang: S.lang === 'hi' ? 'hi' : 'en',
+      isDS: S.screen === 'DS', isPhone: S.screen !== 'DS' && S.screen[0] !== 'K', isConsole: S.screen[0] === 'K', isSample: S.screen === '00', isJoin: S.screen[0] === 'U', isManage: /^(O([4-9]|1[0-3]|M)|S[1-3])$/.test(S.screen), cycleLang: () => this.set({ lang: { en: 'hi', hi: 'hl', hl: 'en' }[S.lang] || 'en' }), isOwner: ['O1', 'O2', 'O3'].includes(S.screen), isCustomer: ['C1', 'C2', 'C3', 'C4', 'C14'].includes(S.screen), isBooking: /^C([5-9]|1[0-3])$/.test(S.screen), setLang: (x) => this.set({ lang: x }),
+      screenTitle, screen: S.screen, variant: S.variant, st: S.st, lang: S.lang,
+      joinName: jb.name, joinMark: jb.mark || '', joinArea: jb.area, joinPrivacy: jb.privacy,
+      go: (code, v) => { if (!C.READY.has(code)) return; this.set(v ? { screen: code, variant: v } : { screen: code }); },
+      setSt: (x) => this.set({ st: x }), tsVal: S.ts,
+      setVariant: (v) => this.setState({ variant: v }),
+      hasVariants: !!C.VARIANTS[S.screen], variants: (C.VARIANTS[S.screen] || []).map(([v, l]) => ({ label: l, pressed: S.variant === v ? 'true' : 'false', bg: S.variant === v ? ACT : 'var(--glass-card)', fg: S.variant === v ? '#FDFCFA' : 'var(--page-ink)', onClick: () => this.setState({ variant: v }) })),
+      notes: C.NOTES[S.screen] || [],
+      dsCaption: `Wearing: ${b.name} · ${S.mode === 'light' ? 'Light' : 'Dark'} · ${langName} · ${ts * 100}% text`,
+      modeCols, colorRows, contrastRows, typeRows, spacing, radii,
+      code4, code4err: ['4', '8', '1', '2'], otp, otpErr: ['3', '9', '1', '0', '5', '5'], addons, stylists, statusChips, visits, deltas, attn,
+      tileCols: ts > 1 ? 'minmax(0,1fr)' : 'repeat(2,minmax(0,1fr))',
+      navCustomer, navOwner, hasMark: !!b.mark, noMark: !b.mark, brandMark: b.mark || '', brandName: b.name,
+      wifiIcon: st === 'offline' ? 'wifi_off' : 'wifi',
+      showContent: st === 'content' || st === 'offline', isEmpty: st === 'empty', isLoading: st === 'loading', isError: st === 'error', isOffline: st === 'offline',
+      showSticky: st !== 'loading', stickyLabel,
+      stickyAction: st === 'error' ? () => this.set({ st: 'content' }) : st === 'empty' ? () => {} : () => this.setState({ sheet: true, snack: null }),
+      ovOp: S.sheet ? 1 : 0, ovPe: S.sheet ? 'auto' : 'none',
+      sheetT: S.sheet ? 'translateY(0)' : 'translateY(105%)',
+      sheetTr: S.sheet ? 'transform 220ms cubic-bezier(0.2,0,0,1)' : 'transform 176ms cubic-bezier(0.3,0,1,1)',
+      closeSheet: () => this.setState({ sheet: false }),
+      payOpts: [{ icon: 'account_balance_wallet', title: s.optWallet, desc: s.optWalletD, pick: () => this.showSnack('wallet') }, { icon: 'smartphone', title: s.optUpi, desc: s.optUpiD, pick: () => this.showSnack('upi') }, { icon: 'storefront', title: s.optCounter, desc: s.optCounterD, pick: () => this.showSnack('counter') }],
+      hasSnack: !!sn, snackText: sn ? sn[0] : '', snackIcon: sn ? sn[1] : '', snackCol: sn ? sn[2] : '',
+      tokenInfo,
+    };
+  }
+}
+</script>
+</body>
+</html>
