@@ -676,8 +676,11 @@ awaited** before any paid WhatsApp (§12).
 When a customer who booked arrives, their app shows a **4-digit start code** for today's booking.
 They read it to the stylist, who types it to **start** the service (`in_progress`). When the work
 is done the stylist taps **mark complete** — still one tap — and the customer is told "your bill is
-ready" by push. They pay from the app: **wallet** first as far as it goes, the rest by **UPI**
-through the salon's own Razorpay account, or they say they will pay **at the counter**.
+ready" by push, and the app **asks how they want to pay** — nothing pre-selected: **wallet**,
+**UPI** through the salon's own Razorpay account, or **at the counter**. A wallet short of the bill
+is spent in full — paid credit and bonus alike, bonus first — and the app then asks how to pay the
+rest (UPI or counter). Example: a ₹1,000 bill against ₹500 paid + ₹50 bonus spends ₹550, and the
+counter is asked for ₹450, not ₹1,000.
 
 Decisions: the code is **required when possible** — when the customer has no app, there is no
 connection, or the code locked after five wrong guesses, the stylist starts **without** it; nobody
@@ -691,7 +694,8 @@ owner sees it · [ ] an in-progress chair cannot be double-booked · [ ] "your b
 by push only — **never** escalates to a channel the salon pays for · [ ] every amount the customer
 pays is the server's; the app sends a visit id, never a sum · [ ] a UPI payment for a bill settles
 the visit and credits **nothing** to the wallet · [ ] "at the counter" settles nothing · [ ] no
-customer can see or pay another customer's bill.
+customer can see or pay another customer's bill · [ ] after a part-payment from the wallet, the
+counter's "Take payment" asks only for the rest.
 
 ### 9.3 Booking Add-ons
 

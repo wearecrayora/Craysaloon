@@ -17,11 +17,12 @@
 --   * "your bill is ready" goes to a phone that can take a push, and never
 --     escalates to a channel the salon pays for
 
-select plan(28);
+select plan(34);
 
 insert into auth.users (id) values
   ('66666666-aaaa-4000-8000-00000000000a'),
   ('66666666-aaaa-4000-8000-00000000000c'),
+  ('66666666-aaaa-4000-8000-00000000000d'),
   ('66666666-aaaa-4000-8000-00000000000f');
 
 insert into public.platform_admins (id, email, name, is_super, active)
@@ -42,7 +43,9 @@ values
   ('66666666-1111-4000-8000-00000000000b', '66666666-0000-4000-8000-000000000001',
    null, 'Bhanu', app.phone_hash('9755500012')),
   ('66666666-1111-4000-8000-00000000000c', '66666666-0000-4000-8000-000000000001',
-   '66666666-aaaa-4000-8000-00000000000c', 'Chitra', app.phone_hash('9755500013'));
+   '66666666-aaaa-4000-8000-00000000000c', 'Chitra', app.phone_hash('9755500013')),
+  ('66666666-1111-4000-8000-00000000000d', '66666666-0000-4000-8000-000000000001',
+   '66666666-aaaa-4000-8000-00000000000d', 'Divya', app.phone_hash('9755500014'));
 
 insert into public.notification_tokens (salon_id, customer_id, token, platform)
 values ('66666666-0000-4000-8000-000000000001', '66666666-1111-4000-8000-00000000000a',
@@ -93,6 +96,25 @@ values ('66666666-1111-4000-8000-00000000000a', '66666666-0000-4000-8000-0000000
 insert into public.wallet_lots (salon_id, customer_id, kind, amount_paise, remaining_paise)
 values ('66666666-0000-4000-8000-000000000001', '66666666-1111-4000-8000-00000000000a',
         'paid', 20000, 20000);
+-- Divya: the split the product was asked for on 29 Sep 2026. A Rs 1,000 bill,
+-- Rs 500 of paid credit and Rs 50 of bonus. She spends all Rs 550 and pays the
+-- other Rs 450 at the counter.
+insert into public.bookings (id, salon_id, customer_id, staff_id, starts_at, ends_at, status, total_paise)
+select '66666666-4444-4000-8000-000000000005', '66666666-0000-4000-8000-000000000001',
+       '66666666-1111-4000-8000-00000000000d', '66666666-3333-4000-8000-000000000001',
+       t, t + interval '45 minutes', 'confirmed', 100000
+  from at_hour where h = 17;
+insert into public.booking_items (booking_id, salon_id, kind, ref_id, name_snapshot, price_paise, duration_minutes)
+values ('66666666-4444-4000-8000-000000000005', '66666666-0000-4000-8000-000000000001', 'service',
+        '66666666-5555-4000-8000-000000000001', 'Haircut and colour', 100000, 45);
+insert into public.wallet_accounts (customer_id, salon_id, balance_paise)
+values ('66666666-1111-4000-8000-00000000000d', '66666666-0000-4000-8000-000000000001', 55000);
+insert into public.wallet_lots (salon_id, customer_id, kind, amount_paise, remaining_paise, expires_at)
+values ('66666666-0000-4000-8000-000000000001', '66666666-1111-4000-8000-00000000000d',
+        'paid', 50000, 50000, null),
+       ('66666666-0000-4000-8000-000000000001', '66666666-1111-4000-8000-00000000000d',
+        'bonus', 5000, 5000, now() + interval '30 days');
+
 insert into public.wallet_accounts (customer_id, salon_id, balance_paise)
 values ('66666666-1111-4000-8000-00000000000c', '66666666-0000-4000-8000-000000000001', 10000);
 insert into public.wallet_lots (salon_id, customer_id, kind, amount_paise, remaining_paise)
@@ -117,6 +139,18 @@ create temp table codes as
   select (e ->> 'booking_id')::uuid as booking_id, e ->> 'start_code' as code
     from today, jsonb_array_elements(today.v) e;
 grant select on codes to public;
+
+-- Divya's code, from Divya's own app.
+set local role authenticated;
+select set_config('request.jwt.claims',
+  '{"sub":"66666666-aaaa-4000-8000-00000000000d","app_role":"customer",'
+  '"salon_id":"66666666-0000-4000-8000-000000000001"}', true);
+create temp table today_d as select public.my_visits_today() as v;
+grant select on today_d to public;
+reset role;
+insert into codes
+  select (e ->> 'booking_id')::uuid, e ->> 'start_code'
+    from today_d, jsonb_array_elements(today_d.v) e;
 
 select matches(
   (select code from codes where booking_id = '66666666-4444-4000-8000-000000000001'),
@@ -248,6 +282,13 @@ select is((select r ->> 'ok' from done), 'true', 'the stylist marks the work com
 select public.mark_visit_complete('66666666-9999-4000-8000-000000000014',
                                   '66666666-4444-4000-8000-000000000004');
 
+-- Divya's service: started with her code, then completed.
+select public.start_service('66666666-9999-4000-8000-000000000015',
+         '66666666-4444-4000-8000-000000000005',
+         (select code from codes where booking_id = '66666666-4444-4000-8000-000000000005'));
+select public.mark_visit_complete('66666666-9999-4000-8000-000000000016',
+                                  '66666666-4444-4000-8000-000000000005');
+
 reset role;
 
 select is(
@@ -363,6 +404,65 @@ select is(
   'another customer cannot pay - or even see - someone else''s bill');
 
 reset role;
+
+-- ---------------------------------------------------------------------------
+-- The split: Rs 1,000 bill, Rs 500 paid + Rs 50 bonus, the rest at the counter
+-- ---------------------------------------------------------------------------
+
+create temp table divya_visit as
+  select v.id as visit_id from public.visits v
+   where v.booking_id = '66666666-4444-4000-8000-000000000005';
+grant select on divya_visit to public;
+
+set local role authenticated;
+select set_config('request.jwt.claims',
+  '{"sub":"66666666-aaaa-4000-8000-00000000000d","app_role":"customer",'
+  '"salon_id":"66666666-0000-4000-8000-000000000001"}', true);
+
+create temp table divya_wallet as
+  select public.pay_bill_from_wallet('66666666-9999-4000-8000-000000000031',
+                                     (select visit_id from divya_visit)) as r;
+grant select on divya_wallet to public;
+
+select is((select r ->> 'from_wallet_paise' from divya_wallet), '55000',
+  'the wallet pays ALL it holds - Rs 500 paid credit AND Rs 50 bonus');
+
+select is((select r ->> 'payment_status' from divya_wallet), 'partial',
+  'which leaves Rs 450 on a Rs 1,000 bill');
+
+select public.request_counter_payment((select visit_id from divya_visit));
+
+reset role;
+
+set local role authenticated;
+select set_config('request.jwt.claims',
+  '{"sub":"66666666-aaaa-4000-8000-00000000000f","app_role":"owner",'
+  '"salon_id":"66666666-0000-4000-8000-000000000001"}', true);
+
+select is(
+  (select q ->> 'due_paise' || '/' || (q ->> 'from_wallet_paise') || '/' || (q ->> 'from_counter_paise')
+     from (select public.checkout_quote('66666666-4444-4000-8000-000000000005') as q) s),
+  '45000/0/45000',
+  'the counter is asked for Rs 450 - the rest, not the whole bill, and nothing from an empty wallet');
+
+select is(
+  (public.checkout_booking('66666666-9999-4000-8000-000000000032',
+                           '66666666-4444-4000-8000-000000000005', true, 'cash') ->> 'ok'),
+  'true',
+  'staff take the Rs 450 in cash');
+
+reset role;
+
+select is(
+  (select payment_status::text from public.visits where id = (select visit_id from divya_visit)),
+  'paid',
+  'and the bill is paid: Rs 550 from the wallet plus Rs 450 at the counter');
+
+select is(
+  (select coalesce(sum(remaining_paise), 0)::bigint from public.wallet_lots
+    where customer_id = '66666666-1111-4000-8000-00000000000d'),
+  0::bigint,
+  'both lots were spent - the bonus is money she can use, not a number to look at');
 
 -- ---------------------------------------------------------------------------
 -- The owner sees every start without the code

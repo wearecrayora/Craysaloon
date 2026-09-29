@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/platform/home_shortcut.dart';
 import '../../core/platform/salon_notifications.dart';
 import '../../core/theme/brand_tokens.dart';
+import '../../domain/visit/visit.dart';
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
 import '../notifications/push_registration.dart';
@@ -39,6 +40,25 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
   String? _confirmation;
   PushRegistration? _push;
 
+  /// Bills already asked about in this session. Once asked, the card stays
+  /// on the screen; the sheet does not reopen by itself.
+  final Set<String> _asked = {};
+  bool _asking = false;
+
+  /// When the work is finished, ASK how they want to pay (29 Sep 2026) -
+  /// unless they already said "at the counter".
+  void _askAboutNewBill(List<Bill> bills) {
+    if (_asking) return;
+    final bill = bills.where((b) => !b.counterRequested && !_asked.contains(b.visitId)).firstOrNull;
+    if (bill == null) return;
+    _asked.add(bill.visitId);
+    _asking = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (mounted) await PayBillSheet.open(context, bill);
+      _asking = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -61,7 +81,13 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
   Future<void> _startPush() async {
     final api = ref.read(pushApiProvider);
     if (api == null) return;
-    final push = PushRegistration(api);
+    final push = PushRegistration(api, onArrived: (purpose) {
+      // "Your bill is ready": re-read, and the listener in build() asks.
+      if (purpose == 'visit_completed' && mounted) {
+        ref.invalidate(billsProvider);
+        ref.invalidate(visitsTodayProvider);
+      }
+    });
     _push = push;
     await push.start();
   }
@@ -110,6 +136,7 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
     final branding = ref.watch(resolvedBrandingProvider);
     final salonName = branding?.displayName ?? l10n.appTitle;
     final text = Theme.of(context).textTheme;
+    ref.listen(billsProvider, (_, next) => _askAboutNewBill(next.value ?? const []));
 
     return Scaffold(
       appBar: AppBar(

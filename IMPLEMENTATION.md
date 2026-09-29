@@ -33,7 +33,7 @@
 
 | # | Route | Screen | M |
 |---|---|---|---|
-| C1 | `/home` | **Home** — balance, next-visit-due, Book CTA, active offer · *built 2026-09-29: "your bill is ready" card first (pay sheet: wallet as far as it goes, then UPI through the salon's Razorpay, or "at the counter", which settles nothing), then today's booking with the **start code**, big and read digit by digit; pull to refresh* | 7 |
+| C1 | `/home` | **Home** — balance, next-visit-due, Book CTA, active offer · *built 2026-09-29: when a bill arrives (push or on open) the app ASKS "How would you like to pay?" - Wallet / UPI (salon's Razorpay) / At the counter, nothing pre-selected, asked once per session and never after "at the counter"; a short wallet is spent in full (paid + bonus, bonus first, both shown) and the rest is asked about again; "at the counter" settles nothing. The bill card stays on home, then today's booking with the **start code**, big and read digit by digit; pull to refresh* | 7 |
 | C2 | `/wallet` | **Wallet** — balance (never shown alone), paid/bonus separately, history. **Built** | 7 |
 | C3 | `/wallet/add` | **Add Money** — packs, **disclosure block above the pay button**, server-priced quote. **Built**, with Razorpay Checkout behind `PaymentSheet` against the salon's own key | 7 |
 | C4 | *(on C3)* | Payment result — sent / cancelled / failed, stated on the Add Money screen itself. A separate route would be a screen the customer lands on with nothing to do. **Never says "paid"**: the credit follows the webhook | 7 |

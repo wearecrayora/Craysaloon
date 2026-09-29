@@ -141,8 +141,10 @@ class BillsCard extends ConsumerWidget {
   }
 }
 
-/// Paying a bill: the wallet first, as far as it goes; then UPI through
-/// Razorpay, or cash at the counter.
+/// Paying a bill: the customer is ASKED how - wallet, UPI through the salon's
+/// Razorpay, or at the counter (change of 29 Sep 2026). A wallet that does not
+/// cover the bill is spent in full, paid credit and bonus alike, and the sheet
+/// then asks how to pay the rest.
 ///
 /// Every amount on this sheet is the SERVER's. The app sends a visit id and
 /// never a number (0085). And nothing here can mark a bill paid by itself: the
@@ -170,6 +172,12 @@ class _PayBillSheetState extends ConsumerState<PayBillSheet> {
   late int _due = widget.bill.duePaise;
   bool _busy = false;
   String? _message;
+
+  /// The wallet has been spent on this bill; what is left is asked about again.
+  bool _walletUsed = false;
+
+  /// UPI sent or the counter told: nothing more to choose.
+  bool _finished = false;
 
   /// One per intent, reused on retry, so a double tap spends once.
   final String _walletAction = Outbox.newActionId();
@@ -208,11 +216,16 @@ class _PayBillSheetState extends ConsumerState<PayBillSheet> {
             .payBillFromWallet(clientActionId: _walletAction, visitId: widget.bill.visitId);
         _refreshAll();
         if (!mounted) return;
+        if (left == 0) {
+          ScaffoldMessenger.maybeOf(context)
+              ?.showSnackBar(SnackBar(content: Text(l10n.billPaidFromWallet)));
+          Navigator.of(context).pop();
+          return;
+        }
         setState(() {
           _due = left;
-          _message = left == 0 ? l10n.billPaidFromWallet : l10n.billWalletPartly(rupees(left));
+          _walletUsed = true;
         });
-        if (left == 0) Navigator.of(context).pop();
       });
 
   Future<void> _byUpi() => _run((l10n) async {
@@ -223,67 +236,158 @@ class _PayBillSheetState extends ConsumerState<PayBillSheet> {
         final outcome = await ref.read(paymentSheetProvider).open(order, salonName: salonName);
         _refreshAll();
         if (!mounted) return;
-        setState(() => _message = switch (outcome) {
-              // Never "paid": the bill settles when Razorpay's webhook arrives.
-              PaymentOutcome.submitted => l10n.billUpiSent,
-              PaymentOutcome.cancelled => l10n.addMoneyCancelled,
-              PaymentOutcome.failed => l10n.addMoneyFailed,
-              PaymentOutcome.unavailable => l10n.addMoneyCheckoutNotReady,
-            });
+        setState(() {
+          _finished = outcome == PaymentOutcome.submitted;
+          _message = switch (outcome) {
+            // Never "paid": the bill settles when Razorpay's webhook arrives.
+            PaymentOutcome.submitted => l10n.billUpiSent,
+            PaymentOutcome.cancelled => l10n.addMoneyCancelled,
+            PaymentOutcome.failed => l10n.addMoneyFailed,
+            PaymentOutcome.unavailable => l10n.addMoneyCheckoutNotReady,
+          };
+        });
       });
 
   Future<void> _atCounter() => _run((l10n) async {
         await ref.read(visitApiProvider)!.requestCounterPayment(widget.bill.visitId);
         _refreshAll();
-        if (mounted) setState(() => _message = l10n.billCounterTold);
+        if (!mounted) return;
+        setState(() {
+          _finished = true;
+          _message = l10n.billCounterTold;
+        });
       });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppL10n.of(context);
     final text = Theme.of(context).textTheme;
-    final balance = ref.watch(walletProvider).value?.summary.balancePaise ?? 0;
-    final fromWallet = balance < _due ? balance : _due;
+    final summary = ref.watch(walletProvider).value?.summary;
+    // Offered only while it can pay something - and never twice on one bill.
+    final balance = _walletUsed ? 0 : (summary?.balancePaise ?? 0);
+    final covers = balance >= _due;
+
+    // What the wallet would spend, split the way the server spends it: bonus
+    // first, because bonus expires (ARCHITECTURE 6.4).
+    final bonus = summary?.bonusPaise ?? 0;
+    final fromWallet = covers ? _due : balance;
+    final fromBonus = bonus < fromWallet ? bonus : fromWallet;
+    final fromPaid = fromWallet - fromBonus;
 
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(l10n.billPay, style: text.titleLarge),
-            const SizedBox(height: 8),
-            Text(l10n.billToPay(rupees(_due)),
-                style: text.titleMedium?.copyWith(fontFeatures: moneyFeatures)),
-            const SizedBox(height: 16),
-            if (fromWallet > 0) ...[
-              FilledButton(
-                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
-                onPressed: _busy ? null : _fromWallet,
-                child: Text(l10n.billFromWallet(rupees(fromWallet))),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                _walletUsed ? l10n.payRestTitle(rupees(_due)) : l10n.payHowTitle,
+                style: text.titleLarge?.copyWith(fontFeatures: moneyFeatures),
               ),
-              const SizedBox(height: 8),
-              if (fromWallet < _due)
-                Text(l10n.billWalletCovers(rupees(fromWallet), rupees(_due - fromWallet)),
-                    style: text.bodySmall),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
+              Text(
+                _walletUsed ? l10n.payRestHow : l10n.billToPay(rupees(_due)),
+                style: text.titleMedium?.copyWith(fontFeatures: moneyFeatures),
+              ),
+              const SizedBox(height: 16),
+              if (!_finished) ...[
+                if (balance > 0)
+                  _PayOption(
+                    icon: Icons.account_balance_wallet_outlined,
+                    title: l10n.payOptWallet,
+                    body: [
+                      covers
+                          ? l10n.payOptWalletAll(rupees(_due), rupees(balance))
+                          : l10n.payOptWalletPart(rupees(balance), rupees(_due - balance)),
+                      if (fromBonus > 0 && fromPaid > 0)
+                        l10n.payWalletBreakdown(rupees(fromPaid), rupees(fromBonus)),
+                    ].join(' '),
+                    onTap: _busy ? null : _fromWallet,
+                  ),
+                _PayOption(
+                  icon: Icons.qr_code_2,
+                  title: l10n.payOptUpi,
+                  body: l10n.payOptUpiBody(rupees(_due)),
+                  onTap: _busy ? null : _byUpi,
+                ),
+                _PayOption(
+                  icon: Icons.storefront_outlined,
+                  title: l10n.payOptCounter,
+                  body: l10n.payOptCounterBody(rupees(_due)),
+                  onTap: _busy ? null : _atCounter,
+                ),
+              ],
+              if (_message != null) ...[
+                const SizedBox(height: 12),
+                Text(_message!, style: text.bodyMedium),
+              ],
+              if (_finished) ...[
+                const SizedBox(height: 16),
+                FilledButton(
+                  style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(MaterialLocalizations.of(context).closeButtonLabel),
+                ),
+              ],
             ],
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(56)),
-              onPressed: _busy ? null : _byUpi,
-              child: Text(l10n.billByUpi(rupees(_due))),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// One way to pay: the whole row is the target, at least 56dp tall.
+class _PayOption extends StatelessWidget {
+  const _PayOption({
+    required this.icon,
+    required this.title,
+    required this.body,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String body;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      clipBehavior: Clip.antiAlias,
+      child: Semantics(
+        button: true,
+        child: InkWell(
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 56),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(icon),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title, style: text.titleMedium),
+                        const SizedBox(height: 4),
+                        Text(body,
+                            style: text.bodyMedium?.copyWith(fontFeatures: moneyFeatures)),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: _busy ? null : _atCounter,
-              child: Text(l10n.billAtCounter),
-            ),
-            if (_message != null) ...[
-              const SizedBox(height: 12),
-              Text(_message!, style: text.bodyMedium),
-            ],
-          ],
+          ),
         ),
       ),
     );

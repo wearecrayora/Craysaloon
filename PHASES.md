@@ -414,7 +414,9 @@ at login); the owner's daily summary push needs owner device registration; the o
 bonus expiry in the app (O10), which RULES says is theirs.
 
 **Added 2026-09-29 - start code and the customer paying their own bill** (PRD §9.2a; 0083-0086;
-`booking/start_and_pay_test.sql`, 28 assertions + two canaries; 15 app tests). A booked customer
+`booking/start_and_pay_test.sql`, 34 assertions + two canaries; 16 app tests). Revised the same
+day: the app now ASKS how to pay rather than leading with the wallet, and the gate carries the
+split that was asked for - Rs 1,000 against Rs 500 paid + Rs 50 bonus, Rs 450 at the counter. A booked customer
 reads a 4-digit code from their app and the stylist types it to start the service; mark-complete
 pushes "your bill is ready" (push only - it never escalates to a paid channel); the customer pays
 from the wallet as far as it goes, then by UPI through the salon's own Razorpay, or says "at the

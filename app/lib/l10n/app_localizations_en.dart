@@ -962,33 +962,56 @@ class AppL10nEn extends AppL10n {
   }
 
   @override
-  String billFromWallet(String amount) {
-    return 'Pay $amount from your wallet';
+  String get payHowTitle => 'How would you like to pay?';
+
+  @override
+  String get payOptWallet => 'Wallet';
+
+  @override
+  String payOptWalletAll(String amount, String balance) {
+    return 'Pay $amount from your balance of $balance.';
   }
 
   @override
-  String billWalletCovers(String wallet, String rest) {
-    return 'Your wallet covers $wallet. The other $rest can be paid by UPI or at the counter.';
+  String payOptWalletPart(String wallet, String rest) {
+    return 'Use all $wallet in your wallet, then pay the other $rest by UPI or at the counter.';
   }
 
   @override
-  String billByUpi(String amount) {
-    return 'Pay $amount by UPI';
+  String payWalletBreakdown(String paid, String bonus) {
+    return 'That is $paid you paid in and $bonus bonus.';
   }
 
   @override
-  String get billAtCounter => 'I will pay at the counter';
+  String get payOptUpi => 'UPI';
+
+  @override
+  String payOptUpiBody(String amount) {
+    return 'Pay $amount with any UPI app.';
+  }
+
+  @override
+  String get payOptCounter => 'At the counter';
+
+  @override
+  String payOptCounterBody(String amount) {
+    return 'Pay $amount in cash or by card at reception.';
+  }
+
+  @override
+  String payRestTitle(String amount) {
+    return '$amount left to pay';
+  }
+
+  @override
+  String get payRestHow =>
+      'Your wallet has been used. How would you like to pay the rest?';
 
   @override
   String get billAlreadyPaid => 'This bill is already paid.';
 
   @override
   String get billPaidFromWallet => 'Paid from your wallet.';
-
-  @override
-  String billWalletPartly(String rest) {
-    return 'Paid from your wallet. $rest left to pay - by UPI or at the counter.';
-  }
 
   @override
   String get billUpiSent =>

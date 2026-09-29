@@ -955,33 +955,56 @@ class AppL10nHi extends AppL10n {
   }
 
   @override
-  String billFromWallet(String amount) {
-    return 'वॉलेट से $amount भरें';
+  String get payHowTitle => 'आप भुगतान कैसे करना चाहेंगे?';
+
+  @override
+  String get payOptWallet => 'वॉलेट';
+
+  @override
+  String payOptWalletAll(String amount, String balance) {
+    return 'अपने $balance के बैलेंस से $amount भरें।';
   }
 
   @override
-  String billWalletCovers(String wallet, String rest) {
-    return 'आपका वॉलेट $wallet देता है। बाकी $rest UPI से या काउंटर पर।';
+  String payOptWalletPart(String wallet, String rest) {
+    return 'वॉलेट के पूरे $wallet इस्तेमाल करें, फिर बाकी $rest UPI से या काउंटर पर भरें।';
   }
 
   @override
-  String billByUpi(String amount) {
-    return 'UPI से $amount भरें';
+  String payWalletBreakdown(String paid, String bonus) {
+    return 'इसमें $paid आपके जमा किए हुए और $bonus बोनस है।';
   }
 
   @override
-  String get billAtCounter => 'भुगतान काउंटर पर होगा';
+  String get payOptUpi => 'UPI';
+
+  @override
+  String payOptUpiBody(String amount) {
+    return 'किसी भी UPI ऐप से $amount भरें।';
+  }
+
+  @override
+  String get payOptCounter => 'काउंटर पर';
+
+  @override
+  String payOptCounterBody(String amount) {
+    return 'रिसेप्शन पर नकद या कार्ड से $amount भरें।';
+  }
+
+  @override
+  String payRestTitle(String amount) {
+    return '$amount भरना बाकी है';
+  }
+
+  @override
+  String get payRestHow =>
+      'आपका वॉलेट इस्तेमाल हो गया। बाकी का भुगतान कैसे करना चाहेंगे?';
 
   @override
   String get billAlreadyPaid => 'यह बिल पहले से भरा है।';
 
   @override
   String get billPaidFromWallet => 'वॉलेट से भुगतान हो गया।';
-
-  @override
-  String billWalletPartly(String rest) {
-    return 'वॉलेट से भुगतान हुआ। $rest बाकी - UPI से या काउंटर पर।';
-  }
 
   @override
   String get billUpiSent =>
@@ -1951,33 +1974,56 @@ class AppL10nHiLatn extends AppL10nHi {
   }
 
   @override
-  String billFromWallet(String amount) {
-    return 'Wallet se $amount bharein';
+  String get payHowTitle => 'Aap payment kaise karna chahenge?';
+
+  @override
+  String get payOptWallet => 'Wallet';
+
+  @override
+  String payOptWalletAll(String amount, String balance) {
+    return 'Apne $balance ke balance se $amount bharein.';
   }
 
   @override
-  String billWalletCovers(String wallet, String rest) {
-    return 'Aapka wallet $wallet deta hai. Baaki $rest UPI se ya counter par.';
+  String payOptWalletPart(String wallet, String rest) {
+    return 'Wallet ke poore $wallet use karein, phir baaki $rest UPI se ya counter par bharein.';
   }
 
   @override
-  String billByUpi(String amount) {
-    return 'UPI se $amount bharein';
+  String payWalletBreakdown(String paid, String bonus) {
+    return 'Ismein $paid aapke jama kiye hue aur $bonus bonus hai.';
   }
 
   @override
-  String get billAtCounter => 'Payment counter par hoga';
+  String get payOptUpi => 'UPI';
+
+  @override
+  String payOptUpiBody(String amount) {
+    return 'Kisi bhi UPI app se $amount bharein.';
+  }
+
+  @override
+  String get payOptCounter => 'Counter par';
+
+  @override
+  String payOptCounterBody(String amount) {
+    return 'Reception par cash ya card se $amount bharein.';
+  }
+
+  @override
+  String payRestTitle(String amount) {
+    return '$amount bharna baaki hai';
+  }
+
+  @override
+  String get payRestHow =>
+      'Aapka wallet use ho gaya. Baaki ka payment kaise karna chahenge?';
 
   @override
   String get billAlreadyPaid => 'Yeh bill pehle se bhara hai.';
 
   @override
   String get billPaidFromWallet => 'Wallet se payment ho gaya.';
-
-  @override
-  String billWalletPartly(String rest) {
-    return 'Wallet se payment hua. $rest baaki - UPI se ya counter par.';
-  }
 
   @override
   String get billUpiSent =>

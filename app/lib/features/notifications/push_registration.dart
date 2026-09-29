@@ -31,9 +31,13 @@ final pushApiProvider = Provider<PushApi?>((ref) {
 /// escalation; an exception thrown out of a notification handler costs the
 /// customer the screen they were looking at.
 class PushRegistration {
-  PushRegistration(this._api);
+  PushRegistration(this._api, {this.onArrived});
 
   final PushApi _api;
+
+  /// Told the purpose of each push that lands or is opened, so a screen can
+  /// react - "your bill is ready" opens the pay sheet (29 Sep 2026).
+  final void Function(String purpose)? onArrived;
 
   /// Kept so the subscriptions can be cancelled when the session ends.
   final List<StreamSubscription<dynamic>> _subscriptions = [];
@@ -90,7 +94,18 @@ class PushRegistration {
     }
   }
 
-  Future<void> _ack(RemoteMessage message) => acknowledge(message.data);
+  Future<void> _ack(RemoteMessage message) {
+    final purpose = message.data['purpose'];
+    if (purpose is String) {
+      try {
+        onArrived?.call(purpose);
+      } catch (e) {
+        // Same reasoning as the ack: never throw out of a notification handler.
+        debugPrint('A push handler failed: ${e.runtimeType}');
+      }
+    }
+    return acknowledge(message.data);
+  }
 
   Future<void> dispose() async {
     for (final subscription in _subscriptions) {

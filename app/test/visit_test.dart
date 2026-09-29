@@ -71,10 +71,10 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> openBill(WidgetTester tester) async {
-    await tester.tap(find.text('Pay your bill'));
-    await tester.pumpAndSettle();
-  }
+  // The home screen has its own "Wallet" button, so options are found inside
+  // the sheet only.
+  Finder inSheet(String label) =>
+      find.descendant(of: find.byType(PayBillSheet), matching: find.text(label));
 
   group('the start code', () {
     testWidgets("today's booking shows the code to read to the stylist", (tester) async {
@@ -107,20 +107,44 @@ void main() {
   });
 
   group('the bill', () {
-    testWidgets('a completed visit shows the bill, with what is left to pay', (tester) async {
+    testWidgets('when the work is finished, the customer is ASKED how to pay', (tester) async {
       visits.billList = [visits.bill(due: 45000)];
       await pump(tester);
 
+      // Nobody tapped anything: the bill arrived, and the app asked.
+      expect(find.text('How would you like to pay?'), findsOneWidget);
+      expect(inSheet('Wallet'), findsOneWidget);
+      expect(inSheet('UPI'), findsOneWidget);
+      expect(inSheet('At the counter'), findsOneWidget);
+      expect(visits.walletCalls, isEmpty, reason: 'asking spends nothing');
+      expect(visits.counterCalls, isEmpty);
+
+      // Closed without choosing, the bill stays on the home screen - and is not
+      // asked about again in this session.
+      Navigator.of(tester.element(find.text('How would you like to pay?'))).pop();
+      await tester.pumpAndSettle();
       expect(find.text('Your bill is ready'), findsOneWidget);
       expect(find.text('₹450'), findsOneWidget);
+      expect(find.text('How would you like to pay?'), findsNothing);
+    });
+
+    testWidgets('a customer who already said "at the counter" is not asked again',
+        (tester) async {
+      visits.billList = [visits.bill(due: 45000, counterRequested: true)];
+      await pump(tester);
+
+      expect(find.text('How would you like to pay?'), findsNothing);
+      expect(find.text('You said you will pay at the counter.'), findsOneWidget);
     });
 
     testWidgets('the wallet pays it when it can, and the server says how much', (tester) async {
       visits.billList = [visits.bill(due: 45000)];
       await pump(tester);
-      await openBill(tester);
 
-      await tester.tap(find.text('Pay ₹450 from your wallet'));
+      expect(find.text('Pay ₹450 from your balance of ₹1,250. '
+          'That is ₹200 you paid in and ₹250 bonus.'), findsOneWidget,
+          reason: 'bonus is spent first, and the customer is told what goes');
+      await tester.tap(inSheet('Wallet'));
       await tester.pumpAndSettle();
 
       expect(visits.walletCalls, ['visit-1']);
@@ -128,29 +152,31 @@ void main() {
           reason: 'the server settled it, so the next read has no bill');
     });
 
-    testWidgets('a wallet that covers part says what is left, and how to pay it', (tester) async {
+    testWidgets('a wallet short of the bill is spent in full, then the rest is asked about',
+        (tester) async {
+      // Rs 2,000 against Rs 1,000 paid + Rs 250 bonus - the case asked for on
+      // 29 Sep 2026, with the fake's numbers.
       visits.billList = [visits.bill(due: 200000)];
       await pump(tester);
-      await openBill(tester);
 
-      expect(find.text('Pay ₹1,250 from your wallet'), findsOneWidget);
-      expect(find.textContaining('The other ₹750'), findsOneWidget);
+      expect(find.text('Use all ₹1,250 in your wallet, then pay the other ₹750 by UPI '
+          'or at the counter. That is ₹1,000 you paid in and ₹250 bonus.'), findsOneWidget);
 
-      await tester.tap(find.text('Pay ₹1,250 from your wallet'));
+      await tester.tap(inSheet('Wallet'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Paid from your wallet. ₹750 left to pay - by UPI or at the counter.'),
-          findsOneWidget);
-      expect(find.text('Pay ₹750 by UPI'), findsOneWidget);
+      expect(find.text('₹750 left to pay'), findsOneWidget);
+      expect(inSheet('Wallet'), findsNothing, reason: 'the wallet is spent; it is not offered twice');
+      expect(find.text('Pay ₹750 with any UPI app.'), findsOneWidget);
+      expect(find.text('Pay ₹750 in cash or by card at reception.'), findsOneWidget);
     });
 
     testWidgets('UPI never reads as paid - the webhook decides', (tester) async {
       visits.billList = [visits.bill(due: 45000)];
       sheet.outcome = PaymentOutcome.submitted;
       await pump(tester);
-      await openBill(tester);
 
-      await tester.tap(find.text('Pay ₹450 by UPI'));
+      await tester.tap(inSheet('UPI'));
       await tester.pumpAndSettle();
 
       expect(sheet.opened.single.amountPaise, 45000,
@@ -162,9 +188,8 @@ void main() {
     testWidgets('"at the counter" tells the counter, and settles NOTHING', (tester) async {
       visits.billList = [visits.bill(due: 45000)];
       await pump(tester);
-      await openBill(tester);
 
-      await tester.tap(find.text('I will pay at the counter'));
+      await tester.tap(inSheet('At the counter'));
       await tester.pumpAndSettle();
 
       expect(visits.counterCalls, ['visit-1']);
@@ -177,13 +202,12 @@ void main() {
       visits.billList = [visits.bill(due: 45000)];
       visits.failWallet = 1;
       await pump(tester);
-      await openBill(tester);
 
-      await tester.tap(find.text('Pay ₹450 from your wallet'));
+      await tester.tap(inSheet('Wallet'));
       await tester.pumpAndSettle();
       expect(find.text('No connection. Check your internet and try again.'), findsOneWidget);
 
-      await tester.tap(find.text('Pay ₹450 from your wallet'));
+      await tester.tap(inSheet('Wallet'));
       await tester.pumpAndSettle();
 
       expect(visits.walletActionIds, hasLength(2));
@@ -213,12 +237,13 @@ class FakeVisitApi implements VisitApi {
         startCode: status == 'in_progress' ? null : code,
       );
 
-  Bill bill({required int due}) => Bill(
+  Bill bill({required int due, bool counterRequested = false}) => Bill(
         visitId: 'visit-1',
         completedAt: DateTime.now(),
         totalPaise: due,
         duePaise: due,
         services: 'Haircut',
+        counterRequested: counterRequested,
       );
 
   @override

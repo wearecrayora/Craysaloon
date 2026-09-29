@@ -864,16 +864,25 @@
       }
     }
   },
-  "billFromWallet": "Pay {amount} from your wallet",
-  "@billFromWallet": {
+  "payHowTitle": "How would you like to pay?",
+  "@payHowTitle": {
+    "description": "Asked when the work is finished (change of 29 Sep 2026). No option is pre-selected."
+  },
+  "payOptWallet": "Wallet",
+  "@payOptWallet": {},
+  "payOptWalletAll": "Pay {amount} from your balance of {balance}.",
+  "@payOptWalletAll": {
     "placeholders": {
       "amount": {
+        "type": "String"
+      },
+      "balance": {
         "type": "String"
       }
     }
   },
-  "billWalletCovers": "Your wallet covers {wallet}. The other {rest} can be paid by UPI or at the counter.",
-  "@billWalletCovers": {
+  "payOptWalletPart": "Use all {wallet} in your wallet, then pay the other {rest} by UPI or at the counter.",
+  "@payOptWalletPart": {
     "placeholders": {
       "wallet": {
         "type": "String"
@@ -883,28 +892,52 @@
       }
     }
   },
-  "billByUpi": "Pay {amount} by UPI",
-  "@billByUpi": {
+  "payWalletBreakdown": "That is {paid} you paid in and {bonus} bonus.",
+  "@payWalletBreakdown": {
+    "description": "Bonus is spent first, because it expires.",
+    "placeholders": {
+      "paid": {
+        "type": "String"
+      },
+      "bonus": {
+        "type": "String"
+      }
+    }
+  },
+  "payOptUpi": "UPI",
+  "@payOptUpi": {},
+  "payOptUpiBody": "Pay {amount} with any UPI app.",
+  "@payOptUpiBody": {
     "placeholders": {
       "amount": {
         "type": "String"
       }
     }
   },
-  "billAtCounter": "I will pay at the counter",
-  "@billAtCounter": {},
-  "billAlreadyPaid": "This bill is already paid.",
-  "@billAlreadyPaid": {},
-  "billPaidFromWallet": "Paid from your wallet.",
-  "@billPaidFromWallet": {},
-  "billWalletPartly": "Paid from your wallet. {rest} left to pay - by UPI or at the counter.",
-  "@billWalletPartly": {
+  "payOptCounter": "At the counter",
+  "@payOptCounter": {},
+  "payOptCounterBody": "Pay {amount} in cash or by card at reception.",
+  "@payOptCounterBody": {
     "placeholders": {
-      "rest": {
+      "amount": {
         "type": "String"
       }
     }
   },
+  "payRestTitle": "{amount} left to pay",
+  "@payRestTitle": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payRestHow": "Your wallet has been used. How would you like to pay the rest?",
+  "@payRestHow": {},
+  "billAlreadyPaid": "This bill is already paid.",
+  "@billAlreadyPaid": {},
+  "billPaidFromWallet": "Paid from your wallet.",
+  "@billPaidFromWallet": {},
   "billUpiSent": "Payment sent. Your bill will show as paid once the bank confirms it.",
   "@billUpiSent": {
     "description": "Never say paid before the webhook does."

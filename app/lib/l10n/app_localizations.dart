@@ -1634,29 +1634,71 @@ abstract class AppL10n {
   /// **'To pay: {amount}'**
   String billToPay(String amount);
 
-  /// No description provided for @billFromWallet.
+  /// Asked when the work is finished (change of 29 Sep 2026). No option is pre-selected.
   ///
   /// In en, this message translates to:
-  /// **'Pay {amount} from your wallet'**
-  String billFromWallet(String amount);
+  /// **'How would you like to pay?'**
+  String get payHowTitle;
 
-  /// No description provided for @billWalletCovers.
+  /// No description provided for @payOptWallet.
   ///
   /// In en, this message translates to:
-  /// **'Your wallet covers {wallet}. The other {rest} can be paid by UPI or at the counter.'**
-  String billWalletCovers(String wallet, String rest);
+  /// **'Wallet'**
+  String get payOptWallet;
 
-  /// No description provided for @billByUpi.
+  /// No description provided for @payOptWalletAll.
   ///
   /// In en, this message translates to:
-  /// **'Pay {amount} by UPI'**
-  String billByUpi(String amount);
+  /// **'Pay {amount} from your balance of {balance}.'**
+  String payOptWalletAll(String amount, String balance);
 
-  /// No description provided for @billAtCounter.
+  /// No description provided for @payOptWalletPart.
   ///
   /// In en, this message translates to:
-  /// **'I will pay at the counter'**
-  String get billAtCounter;
+  /// **'Use all {wallet} in your wallet, then pay the other {rest} by UPI or at the counter.'**
+  String payOptWalletPart(String wallet, String rest);
+
+  /// Bonus is spent first, because it expires.
+  ///
+  /// In en, this message translates to:
+  /// **'That is {paid} you paid in and {bonus} bonus.'**
+  String payWalletBreakdown(String paid, String bonus);
+
+  /// No description provided for @payOptUpi.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI'**
+  String get payOptUpi;
+
+  /// No description provided for @payOptUpiBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount} with any UPI app.'**
+  String payOptUpiBody(String amount);
+
+  /// No description provided for @payOptCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'At the counter'**
+  String get payOptCounter;
+
+  /// No description provided for @payOptCounterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount} in cash or by card at reception.'**
+  String payOptCounterBody(String amount);
+
+  /// No description provided for @payRestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} left to pay'**
+  String payRestTitle(String amount);
+
+  /// No description provided for @payRestHow.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wallet has been used. How would you like to pay the rest?'**
+  String get payRestHow;
 
   /// No description provided for @billAlreadyPaid.
   ///
@@ -1669,12 +1711,6 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Paid from your wallet.'**
   String get billPaidFromWallet;
-
-  /// No description provided for @billWalletPartly.
-  ///
-  /// In en, this message translates to:
-  /// **'Paid from your wallet. {rest} left to pay - by UPI or at the counter.'**
-  String billWalletPartly(String rest);
 
   /// Never say paid before the webhook does.
   ///
