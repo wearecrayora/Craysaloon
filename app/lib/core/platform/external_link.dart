@@ -1,5 +1,7 @@
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../domain/join/join_link.dart';
+
 /// Leaving the app on purpose: the privacy policy, and the salon's own privacy
 /// contact.
 ///
@@ -30,4 +32,4 @@ class UrlLauncherExternalLink implements ExternalLink {
 
 /// The published policy. One URL, in one place: it is printed on the Play
 /// listing and linked from the join site, and three copies would drift.
-final Uri privacyPolicyUrl = Uri.parse('https://join.craysalon.in/privacy');
+final Uri privacyPolicyUrl = Uri.parse('${JoinLink.origin}/privacy');

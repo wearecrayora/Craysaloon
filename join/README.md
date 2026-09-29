@@ -1,6 +1,6 @@
-# `join.craysalon.in`
+# The join site - `craysalon-join.crayoratech.workers.dev`
 
-The domain every printed QR points at (`ARCHITECTURE.md` 5.6). Three jobs, in order
+The address every printed QR points at (`ARCHITECTURE.md` 5.6). Three jobs, in order
 of how often they matter:
 
 1. **`/.well-known/assetlinks.json`** — makes `/s/<code>` an Android **App Link**, so a
@@ -9,7 +9,7 @@ of how often they matter:
 2. **`/s/<code>`** — what a phone sees when the app is *not* installed: the code, in
    large type, and a Play link carrying `referrer=code=CRAY-XXXXXX` so a fresh install
    can open on the right salon.
-3. **`/`** — for someone who typed the domain. It names no salon and lists none.
+3. **`/`** — for someone who typed the address. It names no salon and lists none.
 
 Static, no framework, no analytics, no fonts. It is opened on salon wifi.
 
@@ -28,26 +28,29 @@ npx wrangler dev --ip 127.0.0.1  # local check
 
 Cloudflare has folded Pages into Workers: "Pages" is now a Worker that serves static assets and
 runs no script, and `_redirects` / `_headers` still apply. Live (29 Sep 2026) at
-`https://craysalon-join.crayoratech.workers.dev`. **`join.craysalon.in` is not attached yet** - see
-the privacy section below: the policy still has placeholders.
+`https://craysalon-join.crayoratech.workers.dev`, **and that is the permanent address**: no custom domain is being
+bought (30 Sep 2026), and every QR the console prints encodes this origin. If a domain is
+attached one day, it is **added** - to the Worker, to `JoinLink.hosts` in the app, to the
+Android intent filter and to `assetlinks.json` - and this address stays live, because cards
+already on salon counters point at it.
 
 Routing lives in `public/_redirects` (`/s/<code>` is a rewrite to `s.html`, so the address
 bar keeps the code the page reads) and headers in `public/_headers`. Pages serves
 `/privacy` for `privacy.html` on its own. Checked locally on Cloudflare's Pages server:
 `/s/CRAY-7KQ2MX` 200 with the code intact, `/privacy` 200, `/privacy.html` 308 to `/privacy`.
 
-Then point `join.craysalon.in` at it, and add the same domain to
-`console/server/qr-pack.ts`'s expectations only if the URL shape ever changes — every
-QR already printed encodes `https://join.craysalon.in/s/<code>`, and those cards are
-on salon counters. **The path shape is now permanent.**
+The origin lives in exactly two constants: `JOIN_ORIGIN` in `console/server/qr-pack.ts` and
+`JoinLink.origin` in the app. Every QR printed encodes `https://craysalon-join.crayoratech.workers.dev/s/<code>`,
+and those cards are on salon counters. **The origin and the path shape are now permanent.**
 
 ## `/privacy` — the published policy
 
-`public/privacy.html`, served at `https://join.craysalon.in/privacy` (`cleanUrls`). It is the
+`public/privacy.html`, served at `https://craysalon-join.crayoratech.workers.dev/privacy`. It is the
 URL the Play listing points at, the URL the in-app consent notice links to, and the document a
 customer is entitled to under DPDP s.5. It is linked from `/` and from `/s/<code>`.
 
-**Two things must happen before this URL is published or given to Play:**
+**The page is already reachable** (the site is live). **Two things must happen before this URL
+is given to Play, linked from a printed card, or a salon goes live:**
 
 1. **Fill the placeholders.** Every `[SQUARE-BRACKET]` item is one of Crayora's own registered
    details — legal name, registered address, the named privacy contact and its email. Grep for
@@ -95,7 +98,7 @@ if the generated file contains anything but real fingerprints.
 Verify after deploying:
 
 ```
-https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://join.craysalon.in&relation=delegate_permission/common.handle_all_urls
+https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://craysalon-join.crayoratech.workers.dev&relation=delegate_permission/common.handle_all_urls
 ```
 
 ## What is still missing

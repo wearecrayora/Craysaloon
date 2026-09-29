@@ -29,7 +29,9 @@ session — drift between the documents is how a rule quietly dies.
 - **App:** Flutter / Dart, install-first. **Android ships first (cost), iOS-ready from day one.**
   `app/ios` exists and CI builds it on a macOS runner every commit - never let it rot
 - **Console:** Next.js, built with **vinext** and served by **Cloudflare Workers**; the static
-  `join.craysalon.in` site (QR landing, privacy policy) on **Cloudflare Pages**. Moved from Vercel
+  join site (QR landing, privacy policy) on **Cloudflare Pages** (Workers static assets).
+  **No custom domain**: both live on `workers.dev` - `craysalon-join.crayoratech.workers.dev` (every QR encodes it) and
+  `craysalon-console.crayoratech.workers.dev`. A domain bought later is added, never swapped in. Moved from Vercel
   on 29 Sep 2026 (ARCHITECTURE §14.1). Deploy the console with `npm run deploy` in `console/`,
   the join site with `npx wrangler deploy` in `join/` - both to the **Crayoratech** Cloudflare
   account (the token in `.env`), never the other account wrangler may be logged in to. The console

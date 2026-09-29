@@ -1,5 +1,5 @@
 {
-  // join.craysalon.in - static, public, no secrets. Cloudflare Pages in its
+  // The join site (craysalon-join.crayoratech.workers.dev) - static, public, no secrets. Cloudflare Pages in its
   // current form (Pages is now part of Workers: static assets, no script).
   // public/_redirects and public/_headers still apply.
   // Deploy: npx wrangler deploy   (from this directory)

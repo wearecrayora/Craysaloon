@@ -10,7 +10,7 @@ import 'join_controller.dart';
 /// Injected so the deep-link path can be driven in tests without a launcher.
 final appLinkStreamProvider = Provider<Stream<Uri>>((ref) => AppLinks().uriLinkStream);
 
-/// Feeds a scanned or tapped `join.craysalon.in/s/<code>` link into the join
+/// Feeds a scanned or tapped `<join site>/s/<code>` link into the join
 /// flow.
 ///
 /// A link is a **code**, nothing more: it pre-fills the step the customer would

@@ -34,7 +34,7 @@
 
             <!-- The printed QR (ARCHITECTURE 5.6). autoVerify makes this an
                  Android App Link: the phone checks
-                 https://join.craysalon.in/.well-known/assetlinks.json for this
+                 https://craysalon-join.crayoratech.workers.dev/.well-known/assetlinks.json for this
                  app's signing fingerprint and, when it matches, opens the app
                  with no chooser. Until that file is published WITH THE RELEASE
                  FINGERPRINT (M13 owns release signing), verification fails and
@@ -45,7 +45,7 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="https" android:host="join.craysalon.in" android:pathPrefix="/s"/>
+                <data android:scheme="https" android:host="craysalon-join.crayoratech.workers.dev" android:pathPrefix="/s"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

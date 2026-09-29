@@ -543,7 +543,7 @@ the moment consent is asked for. Crayora is the escalation when a salon does not
 never the first line.
 
 11.7b **The published privacy policy is a statement about the system**, not marketing copy
-(`join/public/privacy.html`, served at `join.craysalon.in/privacy`). Every claim in it must be
+(`join/public/privacy.html`, served at `craysalon-join.crayoratech.workers.dev/privacy`). Every claim in it must be
 checkable against a migration, a gate or an Edge Function. **If the software changes, the policy
 changes in the same commit** - a policy that describes a system we no longer run is worse evidence
 than no policy at all.

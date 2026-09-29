@@ -23,7 +23,10 @@ Both, the same day: deactivate the `platform_admins` row **and** take the email 
 policy. Then revoke their Access sessions (Zero Trust → Access → Applications → *Crayora console*
 → Revoke existing tokens) - removing an email does not end a session already open.
 
-## When the console moves to its own domain
+## If the console ever gets its own domain
+
+Not planned: no domain is being bought (30 Sep 2026), and the `workers.dev` address is the
+console's address.
 
 The Access application protects `craysalon-console.crayoratech.workers.dev`. Add the new
 hostname to the same application **before** pointing DNS at the Worker, then turn the

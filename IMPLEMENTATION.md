@@ -112,7 +112,7 @@ The rest follow the patterns in `DESIGN.md` §6. These do not.
 
 | | |
 |---|---|
-| **Entry** | Cold open · QR deep link `https://join.craysalon.in/s/<code>` (code pre-filled) · Play Install Referrer |
+| **Entry** | Cold open · QR deep link `https://craysalon-join.crayoratech.workers.dev/s/<code>` (code pre-filled) · Play Install Referrer |
 | **Reads** | `app.resolve_join_code(code)` → `{display_name, branding}` — **anon**, rate-limited |
 | **Writes** | `app.start_join(code, phone)` → `join_intents` · `otp-send` → challenge · `otp-verify {challenge_id, code, consents}` → **binds, then** returns the session (ADR-36, ADR-39). There is no client-side bind call |
 | **States** | Idle · scanning (camera permission denied → manual entry) · resolving · **invalid code** · **salon not active** · rate-limited · OTP sent · OTP wrong (attempts left) · OTP expired · **already bound** · binding · bound |

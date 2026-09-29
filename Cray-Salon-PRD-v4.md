@@ -296,7 +296,7 @@ never readable again in the UI — the console shows only the last four characte
 - **Salon code** — short, human-typable, case-insensitive, from an unambiguous alphabet (no
   `0/O`, `1/I/L`). Example shape: `CRAY-7K4M2`. Globally unique. Printed large on collateral so
   a customer with a cracked camera can still type it.
-- **QR** — encodes a deep link (`https://join.craysalon.in/s/<code>`) that opens the app if
+- **QR** — encodes a deep link (`https://craysalon-join.crayoratech.workers.dev/s/<code>`) that opens the app if
   installed, otherwise the Play Store listing, carrying the code through install so the customer
   lands on the join screen with the code pre-filled.
 - Codes are **not guessable** and are rate-limited on lookup (§16). A code resolves publicly to

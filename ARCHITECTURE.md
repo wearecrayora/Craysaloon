@@ -583,10 +583,10 @@ it must stay safe, but no feature should be designed around it.
   `1/I/L`) — ~1.07×10<sup>9</sup> combinations, case-insensitive on input.
 - **Generation:** cryptographically random, uniqueness enforced by a unique index on
   `salons.join_code`, regenerated on collision.
-- **QR:** encodes `https://join.craysalon.in/s/<code>` — an Android App Link that opens the app
+- **QR:** encodes `https://craysalon-join.crayoratech.workers.dev/s/<code>` — an Android App Link that opens the app
   if installed, otherwise the Play listing, carrying the code through install (Play Install
   Referrer) so the join screen is pre-filled.
-- **The domain, built at M4 (`join/`):** a static site on its own Cloudflare Pages project, separate from the
+- **The domain, built at M4 (`join/`):** a static site on its own Cloudflare Worker (static assets only), separate from the
   console so nothing public sits behind the console's authentication or near its environment.
   `/s/<code>` shows the code in large type and links to Play with `referrer=code=CRAY-XXXXXX`;
   `/` names no salon and lists none. **`assetlinks.json` is generated, never committed**
@@ -1606,8 +1606,12 @@ surface.**
 ### 14.1 Shape
 
 **Hosting (changed 29 Sep 2026, from Vercel).** The console is built with **vinext** (Next.js's
-API on Vite) and served by **Cloudflare Workers**; the static `join.craysalon.in` site is on
-**Cloudflare Pages**. The console is not on Pages itself because it is server-rendered - server
+API on Vite) and served by **Cloudflare Workers**; the static join site is
+Cloudflare Workers static assets (what Cloudflare Pages has become).
+**There is no custom domain** (decided 30 Sep 2026): both run on Cloudflare's own `workers.dev`
+addresses, and the join origin `https://craysalon-join.crayoratech.workers.dev` is what every QR encodes. A domain
+bought later is **added** beside it, never swapped in - printed QRs keep the `workers.dev` origin,
+which stays live as long as the Worker exists. The console is not on Pages itself because it is server-rendered - server
 actions, route handlers, a Postgres connection, PDF generation - and Cloudflare's Pages adapter
 for Next.js (`next-on-pages`) is deprecated and would force every route onto the edge runtime.
 Workers is Cloudflare's supported path, in the same *Workers & Pages* product. Verified before the
@@ -1828,7 +1832,7 @@ licensing question, not a design question. Second: never add a code path that de
 /console               Next.js admin console (vinext on Cloudflare Workers)      [from M2]
 /packages
   /design-tokens       shared branding token schema — consumed by app AND console (§7.2)
-/join                  join.craysalon.in - static, Cloudflare Pages (§5.6)       [from M4]
+/join                  the join site - static, Cloudflare Workers assets (§5.6)  [from M4]
 /scripts               lint-gates.sh, secret-scan.sh, l10n-check.sh, build-apk.sh, db-push.sh
   /db                  run.mjs (migrate | test | sql | file), negative-control.mjs, env.mjs
   /join                assetlinks.mjs - generates the App Link fingerprint file

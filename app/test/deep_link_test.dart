@@ -38,7 +38,7 @@ void main() {
     final api = FakeCrayApi(salon: fakeSalon());
     await pump(tester, api);
 
-    links.add(Uri.parse('https://join.craysalon.in/s/CRAY-22335S'));
+    links.add(Uri.parse('https://craysalon-join.crayoratech.workers.dev/s/CRAY-22335S'));
     await tester.pumpAndSettle();
 
     expect(api.resolvedCodes, ['CRAY-22335S']);
@@ -54,7 +54,7 @@ void main() {
     await pump(tester, api);
 
     links.add(Uri.parse('https://example.com/s/CRAY-22335S'));
-    links.add(Uri.parse('https://join.craysalon.in/pricing'));
+    links.add(Uri.parse('https://craysalon-join.crayoratech.workers.dev/pricing'));
     await tester.pumpAndSettle();
 
     expect(api.resolvedCodes, isEmpty);
@@ -73,7 +73,7 @@ void main() {
     expect(find.text("You're joining Salon Alpha"), findsOneWidget);
 
     // Someone's poster link arrives now. It must not hijack the flow.
-    links.add(Uri.parse('https://join.craysalon.in/s/CRAY-BBBQQQ'));
+    links.add(Uri.parse('https://craysalon-join.crayoratech.workers.dev/s/CRAY-BBBQQQ'));
     await tester.pumpAndSettle();
 
     expect(api.resolvedCodes, ['CRAY-AAAQQQ']);

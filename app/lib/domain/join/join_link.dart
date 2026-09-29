@@ -2,7 +2,7 @@ import 'join_code.dart';
 
 /// The printed QR, and the link it encodes.
 ///
-/// Every QR in the salon's pack encodes `https://join.craysalon.in/s/<code>`
+/// Every QR in the salon's pack encodes `<origin>/s/<code>` ([origin])
 /// (`ARCHITECTURE.md` 5.6). The same string arrives two ways - scanned by the
 /// camera, or handed to the app as a deep link when the QR is opened by the
 /// phone's own scanner - so both go through here.
@@ -14,7 +14,17 @@ class JoinLink {
   /// unknown host is no more dangerous than one typed by hand. The check is
   /// here for clarity of intent - a scan of some unrelated URL should read as
   /// "that is not a salon code", not send someone into the join flow.
-  static const hosts = {'join.craysalon.in', 'craysalon.in', 'www.craysalon.in'};
+  static const hosts = {host};
+
+  /// Where the join site lives - Cloudflare's own address for the Worker.
+  ///
+  /// There is no custom domain (30 Sep 2026: none is being bought). The
+  /// workers.dev address is permanent for as long as the Worker exists, and
+  /// every printed QR encodes it, so a domain attached later must be ADDED to
+  /// [hosts], never swapped in: the cards already on salon counters keep this
+  /// one.
+  static const host = 'craysalon-join.crayoratech.workers.dev';
+  static const origin = 'https://$host';
 
   /// Pulls the salon code out of anything a scanner or the OS might hand us:
   /// the printed link, the same link with tracking parameters, a `?code=`
@@ -46,7 +56,7 @@ class JoinLink {
   }
 
   /// The canonical link for a code - what the console prints on the QR.
-  static String forCode(JoinCode code) => 'https://join.craysalon.in/s/${code.value}';
+  static String forCode(JoinCode code) => '$origin/s/${code.value}';
 
   /// A referral code riding along on the same link: `/s/<salon>?r=ABCDEF`.
   ///
@@ -70,5 +80,5 @@ class JoinLink {
 
   /// The link a customer shares: their salon, and their own code on the end.
   static String shareLink(JoinCode salon, String referral) =>
-      'https://join.craysalon.in/s/${salon.value}?r=$referral';
+      '$origin/s/${salon.value}?r=$referral';
 }

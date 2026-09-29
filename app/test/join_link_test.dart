@@ -8,7 +8,7 @@ void main() {
   group('the printed link', () {
     test('the canonical form the console prints', () {
       expect(
-        JoinLink.parse('https://join.craysalon.in/s/CRAY-22335S')?.value,
+        JoinLink.parse('https://craysalon-join.crayoratech.workers.dev/s/CRAY-22335S')?.value,
         'CRAY-22335S',
       );
     });
@@ -19,19 +19,19 @@ void main() {
     });
 
     test('a trailing slash, mixed-case host and extra segments still resolve', () {
-      expect(JoinLink.parse('https://JOIN.CRAYSALON.IN/s/cray-22335s/')?.value, 'CRAY-22335S');
+      expect(JoinLink.parse('https://CraySalon-Join.CRAYORATECH.workers.dev/s/cray-22335s/')?.value, 'CRAY-22335S');
     });
 
     test('tracking parameters are ignored', () {
       expect(
-        JoinLink.parse('https://join.craysalon.in/s/CRAY-22335S?utm_source=poster')?.value,
+        JoinLink.parse('https://craysalon-join.crayoratech.workers.dev/s/CRAY-22335S?utm_source=poster')?.value,
         'CRAY-22335S',
       );
     });
 
     test('?code= - how the Play Install Referrer carries it through an install', () {
       expect(
-        JoinLink.parse('https://join.craysalon.in/?code=CRAY-22335S')?.value,
+        JoinLink.parse('https://craysalon-join.crayoratech.workers.dev/?code=CRAY-22335S')?.value,
         'CRAY-22335S',
       );
     });
@@ -48,7 +48,7 @@ void main() {
     test('someone else\'s QR', () {
       expect(JoinLink.parse('https://example.com/s/CRAY-22335S'), isNull);
       // A lookalike host is not ours either.
-      expect(JoinLink.parse('https://join.craysalon.in.evil.test/s/CRAY-22335S'), isNull);
+      expect(JoinLink.parse('https://craysalon-join.crayoratech.workers.dev.evil.test/s/CRAY-22335S'), isNull);
     });
 
     test('a wifi or vcard QR, which is most of what a camera meets', () {
@@ -58,8 +58,8 @@ void main() {
     });
 
     test('our host, but not a code', () {
-      expect(JoinLink.parse('https://join.craysalon.in/'), isNull);
-      expect(JoinLink.parse('https://join.craysalon.in/s/NOTACODE1'), isNull);
+      expect(JoinLink.parse('https://craysalon-join.crayoratech.workers.dev/'), isNull);
+      expect(JoinLink.parse('https://craysalon-join.crayoratech.workers.dev/s/NOTACODE1'), isNull);
     });
   });
 }

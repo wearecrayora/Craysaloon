@@ -233,7 +233,7 @@ void main() {
 
     await tester.tap(find.text('Read the full privacy policy'));
     await tester.pumpAndSettle();
-    expect(link.opened.last.toString(), 'https://join.craysalon.in/privacy');
+    expect(link.opened.last.toString(), 'https://craysalon-join.crayoratech.workers.dev/privacy');
   });
 
   testWidgets('a salon with no privacy contact says so instead of inventing one',

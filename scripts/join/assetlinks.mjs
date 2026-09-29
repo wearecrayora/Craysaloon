@@ -1,5 +1,5 @@
 // Generates join/public/.well-known/assetlinks.json - the file that makes
-// https://join.craysalon.in/s/<code> an Android App Link.
+// https://craysalon-join.crayoratech.workers.dev/s/<code> an Android App Link.
 //
 //   node scripts/join/assetlinks.mjs --debug
 //   node scripts/join/assetlinks.mjs --fingerprint AA:BB:...:FF [--fingerprint ...]
@@ -115,6 +115,6 @@ console.log(`Wrote ${path.relative(ROOT, OUT)} with ${fingerprints.length} finge
 console.log(
   'After deploying, confirm Google can read it:\n' +
   '  https://digitalassetlinks.googleapis.com/v1/statements:list' +
-  '?source.web.site=https://join.craysalon.in' +
+  '?source.web.site=https://craysalon-join.crayoratech.workers.dev' +
   '&relation=delegate_permission/common.handle_all_urls',
 );

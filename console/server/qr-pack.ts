@@ -32,8 +32,16 @@ const MM = 72 / 25.4; // points per millimetre
 const INK = rgb(0, 0, 0);
 const SOFT = rgb(0.35, 0.35, 0.35);
 
+/**
+ * The join site: Cloudflare's own address for the Worker in join/. No custom
+ * domain exists, and every QR printed from here encodes this origin - so it is
+ * permanent. A domain attached later is added alongside in the app
+ * (app/lib/domain/join/join_link.dart), never swapped in.
+ */
+export const JOIN_ORIGIN = 'https://craysalon-join.crayoratech.workers.dev';
+
 export function joinUrl(code: string) {
-  return `https://join.craysalon.in/s/${code}`;
+  return `${JOIN_ORIGIN}/s/${code}`;
 }
 
 /**

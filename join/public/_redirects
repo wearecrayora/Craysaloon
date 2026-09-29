@@ -1,4 +1,4 @@
-# Cloudflare Pages. Every printed QR encodes https://join.craysalon.in/s/<code>
+# Cloudflare Pages. Every printed QR encodes https://craysalon-join.crayoratech.workers.dev/s/<code>
 # and those cards are on salon counters: this path shape is PERMANENT.
 # 200 = a rewrite, not a redirect - the address bar keeps /s/<code>, which s.html
 # reads the code from.

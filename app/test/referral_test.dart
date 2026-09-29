@@ -154,11 +154,11 @@ void main() {
   group('the link that carries a code', () {
     test('picks the referral out of a join link', () {
       expect(
-        JoinLink.referralFrom('https://join.craysalon.in/s/CRAY-22335S?r=MNPQ23'),
+        JoinLink.referralFrom('https://craysalon-join.crayoratech.workers.dev/s/CRAY-22335S?r=MNPQ23'),
         'MNPQ23',
       );
       expect(
-        JoinLink.referralFrom('https://join.craysalon.in/s/CRAY-22335S?ref=mnpq23'),
+        JoinLink.referralFrom('https://craysalon-join.crayoratech.workers.dev/s/CRAY-22335S?ref=mnpq23'),
         'MNPQ23',
       );
     });
@@ -167,11 +167,11 @@ void main() {
       // The salon still resolves; only the referral is dropped. A referral code
       // that fails to parse must never stop somebody joining.
       for (final link in [
-        'https://join.craysalon.in/s/CRAY-22335S',
-        'https://join.craysalon.in/s/CRAY-22335S?r=SHORT',
+        'https://craysalon-join.crayoratech.workers.dev/s/CRAY-22335S',
+        'https://craysalon-join.crayoratech.workers.dev/s/CRAY-22335S?r=SHORT',
         // O, I and L are not in the alphabet - they are the characters somebody
         // misreads a code as.
-        'https://join.craysalon.in/s/CRAY-22335S?r=MNPQ2O',
+        'https://craysalon-join.crayoratech.workers.dev/s/CRAY-22335S?r=MNPQ2O',
         'https://evil.example/s/CRAY-22335S?r=MNPQ23',
       ]) {
         expect(JoinLink.referralFrom(link), isNull, reason: link);
@@ -181,7 +181,7 @@ void main() {
     test('and builds the link a customer shares', () {
       expect(
         JoinLink.shareLink(JoinCode.tryParse('CRAY-22335S')!, 'MNPQ23'),
-        'https://join.craysalon.in/s/CRAY-22335S?r=MNPQ23',
+        'https://craysalon-join.crayoratech.workers.dev/s/CRAY-22335S?r=MNPQ23',
       );
     });
   });
