@@ -22,7 +22,7 @@ create extension if not exists pg_cron;
 -- Unschedule first so this file is idempotent and the cadence can be changed by
 -- editing one line rather than by remembering what is already there.
 select cron.unschedule(jobid)
-  from cron.job where jobname in ('cray-automations');
+  from cron.job where jobname in ('cray-automations', 'cray-nightly');
 
 -- Every minute (ARCHITECTURE 12.3: the escalation sweep runs every minute, and
 -- a booking confirmation's window is five). Bonus expiry and the expiry warning
@@ -32,6 +32,17 @@ select cron.schedule(
   'cray-automations',
   '* * * * *',
   $$select app.run_due_automations()$$
+);
+
+-- Automation E and the cohort refresh. 19:15 UTC is 00:45 IST: after midnight
+-- in the salons' own day, so "yesterday" has closed, and early enough that the
+-- owner opening the app with their morning tea sees last night's numbers.
+-- Each salon's work fails alone (app.run_nightly), and the reconciliation is
+-- idempotent - one drift alert per salon-day however often this fires.
+select cron.schedule(
+  'cray-nightly',
+  '15 19 * * *',
+  $$select app.run_nightly()$$
 );
 
 select jobname, schedule, active from cron.job order by jobname;
