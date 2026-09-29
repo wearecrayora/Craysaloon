@@ -9,6 +9,7 @@ import '../../core/format/money.dart';
 import '../../core/ui/cache_banner.dart';
 import '../../domain/records/records.dart';
 import '../../l10n/app_localizations.dart';
+import 'checkout_sheet.dart';
 import 'day_controller.dart';
 
 /// O1 - the day view. **The screen everything depends on.**
@@ -159,7 +160,27 @@ class _BookingTile extends ConsumerWidget {
               children: [
                 Icon(Icons.check_circle, size: 20, color: scheme.primary),
                 const SizedBox(width: 8),
-                Text(l10n.dayDone, style: text.labelLarge),
+                // "Paid" only when the SERVER says so. Never inferred from a tap.
+                Expanded(
+                  child: Text(
+                    switch (booking.paymentStatus) {
+                      'paid' => '${l10n.dayDone} · ${l10n.payPaid}',
+                      'partial' => '${l10n.dayDone} · ${l10n.payPartial}',
+                      _ => l10n.dayDone,
+                    },
+                    style: text.labelLarge,
+                  ),
+                ),
+                if (booking.awaitsPayment)
+                  OutlinedButton(
+                    // An explicit, FINITE minimum width. The theme gives buttons
+                    // Size.fromHeight(48) - infinite width - so a button inside a
+                    // Row without Expanded asserts at layout. The referral screen
+                    // hit the same trap.
+                    style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
+                    onPressed: () => CheckoutSheet.open(context, booking),
+                    child: Text(l10n.payTake),
+                  ),
               ],
             )
           else if (booking.status == 'cancelled')

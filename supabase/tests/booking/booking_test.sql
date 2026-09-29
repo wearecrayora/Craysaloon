@@ -10,7 +10,7 @@
 --   * an add-on that is not offered with the service is refused
 --   * a customer books only for themselves, and never completes their own visit
 
-select plan(41);
+select plan(44);
 
 insert into auth.users (id) values
   ('ffffffff-aaaa-4000-8000-00000000000f'),
@@ -389,6 +389,24 @@ select is(
   'even under a NEW action id, completing twice is a no-op - the state decides'
 );
 
+-- Checkout by booking ---------------------------------------------------------
+--
+-- The owner took the money at the counter while the wifi was down. The app
+-- queued "take payment for THIS BOOKING" behind the mark-complete, because it
+-- has no visit id until that syncs (0079, RULES 9.5).
+
+select is(
+  (public.checkout_booking('22222222-9999-4000-8000-00000000000a',
+                           (select (r ->> 'booking_id')::uuid from booked)) ->> 'payment_status'),
+  'paid',
+  'a completed booking can be paid for BY BOOKING - the server finds the visit');
+
+select is(
+  (public.checkout_booking('22222222-9999-4000-8000-00000000000a',
+                           (select (r ->> 'booking_id')::uuid from booked)) ->> 'already'),
+  'true',
+  'and the replay takes nothing twice');
+
 -- Cancelling ------------------------------------------------------------------
 
 create temp table late as
@@ -499,6 +517,23 @@ select throws_ok(
   '42501', null,
   'and cannot cancel someone else''s'
 );
+
+-- The section above ends as a CUSTOMER; this one is the owner at the counter.
+reset role;
+set local role authenticated;
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"ffffffff-aaaa-4000-8000-00000000000f",'
+  '"app_role":"owner",'
+  '"salon_id":"ffffffff-0000-4000-8000-000000000001"}',
+  true
+);
+
+select is(
+  (public.checkout_booking('22222222-9999-4000-8000-00000000000b',
+                           (select (r ->> 'booking_id')::uuid from late)) ->> 'reason'),
+  'not_completed',
+  'money cannot be taken for a visit that did not happen - into Needs attention');
 
 reset role;
 select * from finish();

@@ -829,4 +829,52 @@ class AppL10nEn extends AppL10n {
   @override
   String get dashDrift =>
       'Some past figures disagree with the records and are being checked.';
+
+  @override
+  String get payTake => 'Take payment';
+
+  @override
+  String get payPaid => 'Paid';
+
+  @override
+  String get payPartial => 'Part paid';
+
+  @override
+  String get paySheetTitle => 'Take payment';
+
+  @override
+  String get payUseWallet => 'Use the customer\'s wallet first';
+
+  @override
+  String paySplit(String wallet, String counter) {
+    return 'Wallet pays $wallet. Collect $counter.';
+  }
+
+  @override
+  String payCollectAll(String amount) {
+    return 'Collect $amount.';
+  }
+
+  @override
+  String get payNoQuote =>
+      'No connection, so the wallet balance cannot be checked. Collect the full amount, or wait until you are online to use the wallet.';
+
+  @override
+  String get payMethod => 'The rest by';
+
+  @override
+  String get payCash => 'Cash';
+
+  @override
+  String get payUpi => 'UPI';
+
+  @override
+  String get payCard => 'Card';
+
+  @override
+  String get payRecord => 'Record payment';
+
+  @override
+  String get payQueued =>
+      'Payment recorded. It will show as paid once it reaches the server.';
 }

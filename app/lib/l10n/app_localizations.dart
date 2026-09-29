@@ -1423,6 +1423,90 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Some past figures disagree with the records and are being checked.'**
   String get dashDrift;
+
+  /// No description provided for @payTake.
+  ///
+  /// In en, this message translates to:
+  /// **'Take payment'**
+  String get payTake;
+
+  /// No description provided for @payPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get payPaid;
+
+  /// No description provided for @payPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Part paid'**
+  String get payPartial;
+
+  /// No description provided for @paySheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Take payment'**
+  String get paySheetTitle;
+
+  /// No description provided for @payUseWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the customer\'s wallet first'**
+  String get payUseWallet;
+
+  /// Online only: the split comes from the server (0080).
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet pays {wallet}. Collect {counter}.'**
+  String paySplit(String wallet, String counter);
+
+  /// No description provided for @payCollectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect {amount}.'**
+  String payCollectAll(String amount);
+
+  /// Offline the app does not guess a split: a wrong guess records cash that was never collected.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection, so the wallet balance cannot be checked. Collect the full amount, or wait until you are online to use the wallet.'**
+  String get payNoQuote;
+
+  /// No description provided for @payMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'The rest by'**
+  String get payMethod;
+
+  /// No description provided for @payCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get payCash;
+
+  /// No description provided for @payUpi.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI'**
+  String get payUpi;
+
+  /// No description provided for @payCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get payCard;
+
+  /// No description provided for @payRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Record payment'**
+  String get payRecord;
+
+  /// Never say paid before the server does.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment recorded. It will show as paid once it reaches the server.'**
+  String get payQueued;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

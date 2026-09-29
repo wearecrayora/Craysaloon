@@ -824,6 +824,54 @@ class AppL10nHi extends AppL10n {
   @override
   String get dashDrift =>
       'कुछ पुराने आँकड़े रिकॉर्ड से मेल नहीं खाते और उनकी जाँच हो रही है।';
+
+  @override
+  String get payTake => 'भुगतान लें';
+
+  @override
+  String get payPaid => 'भुगतान हो गया';
+
+  @override
+  String get payPartial => 'आंशिक भुगतान';
+
+  @override
+  String get paySheetTitle => 'भुगतान लें';
+
+  @override
+  String get payUseWallet => 'पहले ग्राहक का वॉलेट इस्तेमाल करें';
+
+  @override
+  String paySplit(String wallet, String counter) {
+    return 'वॉलेट से $wallet। $counter लें।';
+  }
+
+  @override
+  String payCollectAll(String amount) {
+    return '$amount लें।';
+  }
+
+  @override
+  String get payNoQuote =>
+      'कनेक्शन नहीं है, इसलिए वॉलेट बैलेंस जाँचा नहीं जा सकता। पूरी राशि लें, या वॉलेट के लिए ऑनलाइन होने तक रुकें।';
+
+  @override
+  String get payMethod => 'बाकी भुगतान';
+
+  @override
+  String get payCash => 'नकद';
+
+  @override
+  String get payUpi => 'UPI';
+
+  @override
+  String get payCard => 'कार्ड';
+
+  @override
+  String get payRecord => 'भुगतान दर्ज करें';
+
+  @override
+  String get payQueued =>
+      'भुगतान दर्ज हो गया। सर्वर तक पहुँचने पर यह भुगतान हुआ दिखेगा।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -1653,4 +1701,52 @@ class AppL10nHiLatn extends AppL10nHi {
   @override
   String get dashDrift =>
       'Kuch purane aankde record se match nahi karte aur unki jaanch ho rahi hai.';
+
+  @override
+  String get payTake => 'Payment lein';
+
+  @override
+  String get payPaid => 'Payment ho gaya';
+
+  @override
+  String get payPartial => 'Aadha payment';
+
+  @override
+  String get paySheetTitle => 'Payment lein';
+
+  @override
+  String get payUseWallet => 'Pehle customer ka wallet use karein';
+
+  @override
+  String paySplit(String wallet, String counter) {
+    return 'Wallet se $wallet. $counter lein.';
+  }
+
+  @override
+  String payCollectAll(String amount) {
+    return '$amount lein.';
+  }
+
+  @override
+  String get payNoQuote =>
+      'Connection nahi hai, isliye wallet balance check nahi ho sakta. Poori amount lein, ya wallet ke liye online hone tak rukein.';
+
+  @override
+  String get payMethod => 'Baaki payment';
+
+  @override
+  String get payCash => 'Cash';
+
+  @override
+  String get payUpi => 'UPI';
+
+  @override
+  String get payCard => 'Card';
+
+  @override
+  String get payRecord => 'Payment darj karein';
+
+  @override
+  String get payQueued =>
+      'Payment darj ho gaya. Server tak pahunchne par yeh paid dikhega.';
 }

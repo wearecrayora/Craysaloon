@@ -421,7 +421,8 @@ class SupabaseCrayApi
       () => _client
           .from('bookings')
           .select('id,customer_id,starts_at,ends_at,status,total_paise,'
-              'customers(name),staff(name),booking_items(name_snapshot,kind)')
+              'customers(name),staff(name),booking_items(name_snapshot,kind),'
+              'visits(payment_status)')
           .gte('starts_at', start.toUtc().toIso8601String())
           .lt('starts_at', end.toUtc().toIso8601String())
           .order('starts_at'),
@@ -445,6 +446,12 @@ class SupabaseCrayApi
         customerName: _asMap(r['customers'])?['name'] as String?,
         staffName: _asMap(r['staff'])?['name'] as String?,
         serviceNames: services,
+        // One visit per booking; PostgREST returns the embed as a list.
+        paymentStatus: switch (r['visits']) {
+          [final Map<Object?, Object?> v, ...] => v['payment_status'] as String?,
+          final Map<Object?, Object?> v => v['payment_status'] as String?,
+          _ => null,
+        },
       );
     }).toList();
   }
@@ -535,6 +542,34 @@ class SupabaseCrayApi
     });
   }
 
+  @override
+  Future<CheckoutQuote> checkoutQuote(String bookingId) async {
+    final body = await _call('checkout_quote', {'p_booking_id': bookingId});
+    return CheckoutQuote(
+      duePaise: _int(body['due_paise']),
+      walletAvailablePaise: _int(body['wallet_available_paise']),
+      fromWalletPaise: _int(body['from_wallet_paise']),
+      fromCounterPaise: _int(body['from_counter_paise']),
+    );
+  }
+
+  @override
+  Future<void> checkout({
+    required String clientActionId,
+    required String bookingId,
+    bool useWallet = true,
+    String method = 'cash',
+  }) async {
+    // By BOOKING: offline, the app has no visit id - the mark-complete that
+    // creates one is queued ahead of this in the same outbox (0079).
+    await _call('checkout_booking', {
+      'p_client_action_id': clientActionId,
+      'p_booking_id': bookingId,
+      'p_use_wallet': useWallet,
+      'p_other_method': method,
+    });
+  }
+
   /// Calls one of the booking RPCs and turns `{ok:false, reason}` into an
   /// exception the outbox can classify. A reason is NOT a transport failure:
   /// retrying it would never help, and it belongs in "Needs attention".
@@ -546,7 +581,8 @@ class SupabaseCrayApi
       throw CrayApiException(switch (body['reason']) {
         'slot_taken' => CrayErrorKind.slotTaken,
         'salon_unavailable' => CrayErrorKind.salonUnavailable,
-        'already_completed' || 'not_completable' => CrayErrorKind.notCompletable,
+        'already_completed' || 'not_completable' || 'not_completed' =>
+          CrayErrorKind.notCompletable,
         _ => CrayErrorKind.server,
       });
     } on PostgrestException catch (e) {

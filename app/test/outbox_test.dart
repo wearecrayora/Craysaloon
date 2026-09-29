@@ -84,6 +84,31 @@ class FakeBookings implements SalonBookings {
   }) async {
     _maybeFail('cancel_booking', {'id': clientActionId, 'booking_id': bookingId});
   }
+
+  /// Null means "offline": the quote cannot be fetched.
+  CheckoutQuote? quote;
+
+  @override
+  Future<CheckoutQuote> checkoutQuote(String bookingId) async {
+    final q = quote;
+    if (q == null) throw const CrayApiException(CrayErrorKind.network);
+    return q;
+  }
+
+  @override
+  Future<void> checkout({
+    required String clientActionId,
+    required String bookingId,
+    bool useWallet = true,
+    String method = 'cash',
+  }) async {
+    _maybeFail('checkout_booking', {
+      'id': clientActionId,
+      'booking_id': bookingId,
+      'use_wallet': useWallet,
+      'method': method,
+    });
+  }
 }
 
 void main() {

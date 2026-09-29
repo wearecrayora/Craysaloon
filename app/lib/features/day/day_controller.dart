@@ -112,6 +112,28 @@ class DayController extends Notifier<DayState> {
     ref.invalidate(rejectedActionsProvider);
   }
 
+  /// Queued through the outbox. The row does NOT turn "paid" here: whether the
+  /// money arrived is the server's to say, and the day view only shows paid once
+  /// a refresh brings back `payment_status = paid` (RULES 9).
+  Future<void> checkout(BookingRow booking, {required bool useWallet, required String method}) async {
+    final repo = _repo;
+    if (repo == null) return;
+    await repo.checkout(booking.id, useWallet: useWallet, method: method);
+    _refreshCounts();
+    await refresh();
+  }
+
+  Future<CheckoutQuote?> quote(BookingRow booking) async {
+    final repo = _repo;
+    if (repo == null) return null;
+    try {
+      return await repo.checkoutQuote(booking.id);
+    } on CrayApiException {
+      // No connection, or the server refused. Either way: no number, no guess.
+      return null;
+    }
+  }
+
   Future<void> cancel(BookingRow booking, {String? reason}) async {
     final repo = _repo;
     if (repo == null) return;

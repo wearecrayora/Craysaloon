@@ -220,5 +220,19 @@
   "dashCohortTable": "Yahi aankde",
   "dashCohortMonth": "Jude",
   "dashCohortGroup": "Group",
-  "dashDrift": "Kuch purane aankde record se match nahi karte aur unki jaanch ho rahi hai."
+  "dashDrift": "Kuch purane aankde record se match nahi karte aur unki jaanch ho rahi hai.",
+  "payTake": "Payment lein",
+  "payPaid": "Payment ho gaya",
+  "payPartial": "Aadha payment",
+  "paySheetTitle": "Payment lein",
+  "payUseWallet": "Pehle customer ka wallet use karein",
+  "paySplit": "Wallet se {wallet}. {counter} lein.",
+  "payCollectAll": "{amount} lein.",
+  "payNoQuote": "Connection nahi hai, isliye wallet balance check nahi ho sakta. Poori amount lein, ya wallet ke liye online hone tak rukein.",
+  "payMethod": "Baaki payment",
+  "payCash": "Cash",
+  "payUpi": "UPI",
+  "payCard": "Card",
+  "payRecord": "Payment darj karein",
+  "payQueued": "Payment darj ho gaya. Server tak pahunchne par yeh paid dikhega."
 }

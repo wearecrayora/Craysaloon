@@ -749,5 +749,53 @@
   "dashDrift": "Some past figures disagree with the records and are being checked.",
   "@dashDrift": {
     "description": "Drift is SHOWN to the owner, not hidden (PRD 9.5)."
+  },
+  "payTake": "Take payment",
+  "@payTake": {},
+  "payPaid": "Paid",
+  "@payPaid": {},
+  "payPartial": "Part paid",
+  "@payPartial": {},
+  "paySheetTitle": "Take payment",
+  "@paySheetTitle": {},
+  "payUseWallet": "Use the customer's wallet first",
+  "@payUseWallet": {},
+  "paySplit": "Wallet pays {wallet}. Collect {counter}.",
+  "@paySplit": {
+    "description": "Online only: the split comes from the server (0080).",
+    "placeholders": {
+      "wallet": {
+        "type": "String"
+      },
+      "counter": {
+        "type": "String"
+      }
+    }
+  },
+  "payCollectAll": "Collect {amount}.",
+  "@payCollectAll": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payNoQuote": "No connection, so the wallet balance cannot be checked. Collect the full amount, or wait until you are online to use the wallet.",
+  "@payNoQuote": {
+    "description": "Offline the app does not guess a split: a wrong guess records cash that was never collected."
+  },
+  "payMethod": "The rest by",
+  "@payMethod": {},
+  "payCash": "Cash",
+  "@payCash": {},
+  "payUpi": "UPI",
+  "@payUpi": {},
+  "payCard": "Card",
+  "@payCard": {},
+  "payRecord": "Record payment",
+  "@payRecord": {},
+  "payQueued": "Payment recorded. It will show as paid once it reaches the server.",
+  "@payQueued": {
+    "description": "Never say paid before the server does."
   }
 }

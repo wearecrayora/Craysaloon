@@ -167,6 +167,7 @@ class BookingRow {
     this.customerName,
     this.staffName,
     this.serviceNames = '',
+    this.paymentStatus,
   });
 
   final String id;
@@ -181,7 +182,15 @@ class BookingRow {
   final String? staffName;
   final String serviceNames;
 
+  /// The visit's settlement: unpaid | partial | paid. Null until the booking
+  /// has become a visit. Comes from the SERVER - the app never decides that
+  /// money arrived (RULES 9: money does not move offline).
+  final String? paymentStatus;
+
   bool get isOpen => status == 'pending' || status == 'confirmed';
+
+  /// Done, and the money not yet taken. What the "Take payment" action is for.
+  bool get awaitsPayment => status == 'completed' && paymentStatus != 'paid';
 }
 
 class Slot {
@@ -199,6 +208,30 @@ class Slot {
 /// instruction twice - which offline guarantees it will - without doing the work
 /// twice. The server decides everything else: a race for the same chair, whether
 /// a booking can still be completed, whether this account may.
+/// What a checkout WOULD do, from the server, before anyone collects cash.
+///
+/// Online only, on purpose. Offline the wallet balance on the phone is a cached
+/// copy, and a split guessed from it could have the server record cash the
+/// owner never collected (0080). When this cannot be fetched, the screen says
+/// so and does not guess.
+class CheckoutQuote {
+  const CheckoutQuote({
+    required this.duePaise,
+    required this.walletAvailablePaise,
+    required this.fromWalletPaise,
+    required this.fromCounterPaise,
+  });
+
+  final int duePaise;
+  final int walletAvailablePaise;
+  final int fromWalletPaise;
+
+  /// What the owner collects in cash, UPI or card.
+  final int fromCounterPaise;
+
+  bool get alreadyPaid => duePaise == 0;
+}
+
 abstract interface class SalonBookings {
   Future<List<BookingRow>> bookingsOn(DateTime day);
 
@@ -233,4 +266,19 @@ abstract interface class SalonBookings {
     required String bookingId,
     String? reason,
   });
+
+  /// Settles the visit a booking became: the customer's wallet first, as far as
+  /// it goes, the rest by [method] at the counter. The AMOUNT is the server's,
+  /// from the visit - never a number the app sends (0069).
+  Future<void> checkout({
+    required String clientActionId,
+    required String bookingId,
+    bool useWallet = true,
+    String method = 'cash',
+  });
+
+  /// Online only. Throws [CrayApiException] with [CrayErrorKind.network] when
+  /// there is no connection - which the screen treats as "cannot check", never
+  /// as a zero balance.
+  Future<CheckoutQuote> checkoutQuote(String bookingId);
 }

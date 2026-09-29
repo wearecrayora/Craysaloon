@@ -155,6 +155,22 @@ class DayRepository {
     return actionId;
   }
 
+  /// Never cached and never queued: a quote read from a stale copy is exactly
+  /// the guess this exists to prevent (0080).
+  Future<CheckoutQuote> checkoutQuote(String bookingId) => remote.checkoutQuote(bookingId);
+
+  /// Queued, like mark-complete. RULES 9.5: an offline action records INTENT,
+  /// and the wallet debit runs server-side at sync. The phone never subtracts a
+  /// rupee from anybody's balance - it asks, and the server decides.
+  Future<void> checkout(String bookingId, {bool useWallet = true, String method = 'cash'}) async {
+    await outbox.enqueue(
+      salonId: salonId,
+      op: 'checkout_booking',
+      payload: {'booking_id': bookingId, 'use_wallet': useWallet, 'method': method},
+    );
+    await drain();
+  }
+
   Future<void> cancel(String bookingId, {String? reason}) async {
     await outbox.enqueue(
       salonId: salonId,
@@ -206,6 +222,13 @@ class DayRepository {
               clientActionId: action.clientActionId,
               bookingId: payload['booking_id']! as String,
               reason: payload['reason'] as String?,
+            );
+          case 'checkout_booking':
+            await remote.checkout(
+              clientActionId: action.clientActionId,
+              bookingId: payload['booking_id']! as String,
+              useWallet: (payload['use_wallet'] as bool?) ?? true,
+              method: (payload['method'] as String?) ?? 'cash',
             );
           default:
             await outbox.markRejected(action.clientActionId, 'unknown_op');
