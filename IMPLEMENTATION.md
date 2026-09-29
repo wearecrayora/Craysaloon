@@ -33,7 +33,7 @@
 
 | # | Route | Screen | M |
 |---|---|---|---|
-| C1 | `/home` | **Home** — balance, next-visit-due, Book CTA, active offer | 7 |
+| C1 | `/home` | **Home** — balance, next-visit-due, Book CTA, active offer · *built 2026-09-29: "your bill is ready" card first (pay sheet: wallet as far as it goes, then UPI through the salon's Razorpay, or "at the counter", which settles nothing), then today's booking with the **start code**, big and read digit by digit; pull to refresh* | 7 |
 | C2 | `/wallet` | **Wallet** — balance (never shown alone), paid/bonus separately, history. **Built** | 7 |
 | C3 | `/wallet/add` | **Add Money** — packs, **disclosure block above the pay button**, server-priced quote. **Built**, with Razorpay Checkout behind `PaymentSheet` against the salon's own key | 7 |
 | C4 | *(on C3)* | Payment result — sent / cancelled / failed, stated on the Add Money screen itself. A separate route would be a screen the customer lands on with nothing to do. **Never says "paid"**: the credit follows the webhook | 7 |
@@ -52,7 +52,7 @@
 
 | # | Route | Screen | M |
 |---|---|---|---|
-| O1 | `/day` | **Day view — mark-complete. The most important screen.** · *built 2026-09-27: one tap, 56dp, no dialog; works offline through the outbox; shows how many changes are waiting* | 5 |
+| O1 | `/day` | **Day view — mark-complete. The most important screen.** · *built 2026-09-27: one tap, 56dp, no dialog; works offline through the outbox; shows how many changes are waiting* · *2026-09-29: a booked row offers **Start** (the customer's code, checked online; "start without the code" when there is no app, no connection or the code is locked - queued, with the reason kept); mark-complete moved to the in-progress row, still one tap; "paying at the counter" shows when the customer said so* | 5 |
 | O2 | `/day/walk-in` | Add walk-in booking · *built 2026-09-27: add-ons start UNTICKED, times come from `available_slots`, and the message says "booked" or "will book when you are online" - never the wrong one* | 6 |
 | O3 | `/attention` | **Needs attention** — rejected offline actions · *built 2026-09-27: the reason in words (never a server string), retry reusing the same action id, and discard only ever by hand* | 6 |
 | O4 | `/customers` | Customer list — keyset paginated, searchable · *built 2026-09-27: `list_customers` (keyset, name prefix or whole number), cache-first with an "as of" label, 200% text scale asserted* | 5 |
@@ -422,6 +422,7 @@ Feature → surfaces → server calls → milestone. Use this to check nothing i
 | Catalogue §8.2 | O7–O9, K6 | table CRUD (RLS) | 5 |
 | Booking + add-ons §9.3 | C5–C9, O2 | `available_slots`, `create_booking` | 6 |
 | Mark-complete §4 | O1, S2 | `mark_visit_complete` → Automation A | 5–6 |
+| Start code + customer pays §9.2a | O1, C1 | `my_visits_today`, `start_service`, `my_bills`, `pay_bill_from_wallet`, `start_bill_payment` (via `create-payment-order`), `request_counter_payment`, `visit_completed` push | 6–7 |
 | Offline queue §15 | O1, O3 | outbox + `idempotency_keys` | 6 |
 | Wallet §9.1 | C1–C4, O5, O10 | `create-payment-order`, `rzp-webhook`, ledger callers | 7 |
 | Wallet correction §8.5 | K13 | `wallet_correct` | 7 |

@@ -168,6 +168,8 @@ class BookingRow {
     this.staffName,
     this.serviceNames = '',
     this.paymentStatus,
+    this.customerHasApp = false,
+    this.counterRequested = false,
   });
 
   final String id;
@@ -175,7 +177,7 @@ class BookingRow {
   final DateTime startsAt;
   final DateTime endsAt;
 
-  /// pending | confirmed | completed | cancelled | no_show
+  /// pending | confirmed | in_progress | completed | cancelled | no_show
   final String status;
   final int totalPaise;
   final String? customerName;
@@ -187,10 +189,67 @@ class BookingRow {
   /// money arrived (RULES 9: money does not move offline).
   final String? paymentStatus;
 
+  /// Booked and not yet begun: the row offers START, with the customer's code
+  /// when they have the app (0084).
   bool get isOpen => status == 'pending' || status == 'confirmed';
+
+  /// In the chair. The row offers mark-complete - still one tap (RULES 13).
+  bool get isInProgress => status == 'in_progress';
 
   /// Done, and the money not yet taken. What the "Take payment" action is for.
   bool get awaitsPayment => status == 'completed' && paymentStatus != 'paid';
+
+  /// Whether the customer can show a start code at all. Without the app there
+  /// is no code to read out, and the stylist starts without one - allowed, and
+  /// counted on the owner's dashboard (decision of 29 Sep 2026).
+  final bool customerHasApp;
+
+  /// The customer said they will pay at the counter. It settles nothing - staff
+  /// still take the money (decision of 29 Sep 2026); it only tells the counter.
+  final bool counterRequested;
+
+  /// The same row in a new state - what the screen shows the moment a tap
+  /// lands, before the server has answered.
+  BookingRow withStatus(String next) => BookingRow(
+        id: id,
+        customerId: customerId,
+        startsAt: startsAt,
+        endsAt: endsAt,
+        status: next,
+        totalPaise: totalPaise,
+        customerName: customerName,
+        staffName: staffName,
+        serviceNames: serviceNames,
+        paymentStatus: paymentStatus,
+        customerHasApp: customerHasApp,
+        counterRequested: counterRequested,
+      );
+}
+
+/// Why a start was refused. Each is a different sentence to the stylist, which
+/// is the only reason they are separate.
+enum StartRefusal {
+  /// Not the customer's code. [StartResult.attemptsLeft] says how many remain.
+  wrongCode,
+
+  /// Five wrong guesses. The code cannot be used now; start without it.
+  codeLocked,
+
+  /// The customer never opened this booking in their app, so no code exists.
+  noCodeIssued,
+
+  /// Already completed, cancelled, or a no-show.
+  notStartable,
+}
+
+class StartResult {
+  const StartResult.started() : refusal = null, attemptsLeft = null;
+  const StartResult.refused(StartRefusal this.refusal, {this.attemptsLeft});
+
+  final StartRefusal? refusal;
+  final int? attemptsLeft;
+
+  bool get started => refusal == null;
 }
 
 class Slot {
@@ -201,13 +260,6 @@ class Slot {
   final DateTime endsAt;
 }
 
-/// The day's work: what is booked, and the three writes that change it.
-///
-/// Every write takes a `clientActionId` the CALLER generates and reuses for
-/// every retry (`RULES.md` 9.3). That is what lets the app send the same
-/// instruction twice - which offline guarantees it will - without doing the work
-/// twice. The server decides everything else: a race for the same chair, whether
-/// a booking can still be completed, whether this account may.
 /// What a checkout WOULD do, from the server, before anyone collects cash.
 ///
 /// Online only, on purpose. Offline the wallet balance on the phone is a cached
@@ -232,6 +284,13 @@ class CheckoutQuote {
   bool get alreadyPaid => duePaise == 0;
 }
 
+/// The day's work: what is booked, and the writes that change it.
+///
+/// Every write takes a `clientActionId` the CALLER generates and reuses for
+/// every retry (`RULES.md` 9.3). That is what lets the app send the same
+/// instruction twice - which offline guarantees it will - without doing the work
+/// twice. The server decides everything else: a race for the same chair, whether
+/// a booking can still be completed, whether this account may.
 abstract interface class SalonBookings {
   Future<List<BookingRow>> bookingsOn(DateTime day);
 
@@ -281,4 +340,14 @@ abstract interface class SalonBookings {
   /// there is no connection - which the screen treats as "cannot check", never
   /// as a zero balance.
   Future<CheckoutQuote> checkoutQuote(String bookingId);
+
+  /// Starts a booked service. With [code], the server checks it against the
+  /// customer's; without, it starts anyway and records why (0084). Throws
+  /// [CrayApiException] with [CrayErrorKind.network] when there is no
+  /// connection - the caller then offers to start without the code.
+  Future<StartResult> startService({
+    required String clientActionId,
+    required String bookingId,
+    String? code,
+  });
 }

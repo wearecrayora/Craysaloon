@@ -1,11 +1,17 @@
 // create-payment-order
 //
-// The customer wants to add money. This creates the payment row, asks the
-// SALON's own Razorpay account for an order, and returns what the checkout sheet
-// needs - nothing else.
+// The customer wants to pay: either to ADD MONEY to their wallet, or to PAY A
+// BILL for a visit that has just been completed (0085). This creates the payment
+// row, asks the SALON's own Razorpay account for an order, and returns what the
+// checkout sheet needs - nothing else.
 //
-//   POST { client_action_id, amount_paise }  (with the customer's own JWT)
-//     -> 200 { payment_id, order_id, key_id, amount_paise, bonus_paise }
+//   POST { client_action_id, amount_paise }   top-up   (the customer's own JWT)
+//   POST { client_action_id, visit_id }       a bill   (the customer's own JWT)
+//     -> 200 { payment_id, order_id, key_id, amount_paise }
+//
+// A bill request carries NO amount: the server decides what is left to pay. The
+// payment row it creates carries the visit id, which is how the webhook knows to
+// settle the visit rather than credit the wallet.
 //
 // Two rules shape every line here:
 //
@@ -32,15 +38,26 @@ Deno.serve(async (req) => {
 
   let clientActionId: unknown;
   let amountPaise: unknown;
+  let visitId: unknown;
   try {
-    ({ client_action_id: clientActionId, amount_paise: amountPaise } = await req.json());
+    ({
+      client_action_id: clientActionId,
+      amount_paise: amountPaise,
+      visit_id: visitId,
+    } = await req.json());
   } catch {
     return json(400, { error: 'invalid_request' });
   }
   if (typeof clientActionId !== 'string' || !UUID.test(clientActionId)) {
     return json(400, { error: 'invalid_request' });
   }
-  if (typeof amountPaise !== 'number' || !Number.isInteger(amountPaise)) {
+
+  // A BILL names a visit and never an amount; a TOP-UP names an amount.
+  const isBill = typeof visitId === 'string';
+  if (isBill && !UUID.test(visitId as string)) {
+    return json(400, { error: 'invalid_request' });
+  }
+  if (!isBill && (typeof amountPaise !== 'number' || !Number.isInteger(amountPaise))) {
     // Paise are integers. A decimal here means somebody is sending rupees.
     return json(400, { error: 'invalid_amount' });
   }
@@ -56,10 +73,17 @@ Deno.serve(async (req) => {
     },
   );
 
-  const { data: started, error: startError } = await asCustomer.rpc('start_topup', {
-    p_client_action_id: clientActionId,
-    p_amount_paise: amountPaise,
-  });
+  // Both run as the CUSTOMER, so the database resolves who they are - and, for a
+  // bill, that the visit is theirs and how much of it is left to pay.
+  const { data: started, error: startError } = isBill
+    ? await asCustomer.rpc('start_bill_payment', {
+        p_client_action_id: clientActionId,
+        p_visit_id: visitId,
+      })
+    : await asCustomer.rpc('start_topup', {
+        p_client_action_id: clientActionId,
+        p_amount_paise: amountPaise,
+      });
 
   if (startError) return json(403, { error: 'not_allowed' });
   if (!started?.ok) {
@@ -70,7 +94,6 @@ Deno.serve(async (req) => {
   }
 
   const paymentId: string = started.payment_id;
-  const amount: number = started.amount_paise ?? amountPaise;
 
   // Everything below needs privileges the customer does not have: the salon's
   // credential, and the order link on the payment row.

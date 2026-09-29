@@ -671,6 +671,28 @@ constraint on `(salon_id, customer_id, service_id, cycle_key)` · [ ] booking st
 reminders for that cycle · [ ] opt-out honoured · [ ] push tried and **its acknowledgement
 awaited** before any paid WhatsApp (§12).
 
+### 9.2a Starting a visit, and the customer paying for it *(added 29 Sep 2026)*
+
+When a customer who booked arrives, their app shows a **4-digit start code** for today's booking.
+They read it to the stylist, who types it to **start** the service (`in_progress`). When the work
+is done the stylist taps **mark complete** — still one tap — and the customer is told "your bill is
+ready" by push. They pay from the app: **wallet** first as far as it goes, the rest by **UPI**
+through the salon's own Razorpay account, or they say they will pay **at the counter**.
+
+Decisions: the code is **required when possible** — when the customer has no app, there is no
+connection, or the code locked after five wrong guesses, the stylist starts **without** it; nobody
+is turned away, the reason is recorded, and the owner's dashboard counts every such start. **Cash
+is confirmed by staff**: the customer's "at the counter" tap only tells the counter; the bill is
+paid when staff take the money.
+
+**AC:** [ ] staff (owner included) can never read a start code · [ ] a wrong code is refused and
+five lock it; a replayed guess costs nothing · [ ] a start without the code records why and the
+owner sees it · [ ] an in-progress chair cannot be double-booked · [ ] "your bill is ready" goes
+by push only — **never** escalates to a channel the salon pays for · [ ] every amount the customer
+pays is the server's; the app sends a visit id, never a sum · [ ] a UPI payment for a bill settles
+the visit and credits **nothing** to the wallet · [ ] "at the counter" settles nothing · [ ] no
+customer can see or pay another customer's bill.
+
 ### 9.3 Booking Add-ons
 
 Relevant, transparent add-ons at booking time. **Never pre-selected**; total and duration update

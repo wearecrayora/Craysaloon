@@ -309,7 +309,13 @@ The most important component in the product.
 └────────────────────────────────────────────────┘
 ```
 
-- The `[✓]` is **mark-complete**. One tap. No confirm dialog.
+- The row moves through three states *(since 29 Sep 2026, 0084)*: **booked** → a 56dp **Start**
+  button, which opens the start sheet (the customer's 4-digit code; "start without the code" when
+  they have no app, there is no connection, or the code is locked) → **in progress** → the
+  **mark-complete** button → **done**, with "Take payment" until the server says paid.
+- The `[✓]` is **mark-complete**. One tap. No confirm dialog. It lives on the in-progress row.
+- The customer's start code is shown **big**, digit-spaced for the eye, and read digit by digit
+  to a screen reader — it is read aloud across a salon floor.
 - Feedback is **immediate and local** — the row settles into its completed state at once, whether
   or not the network responded. Offline is the normal case, not the exception.
 - A queued (unsynced) row carries a small sync indicator. It is **not** an error style — nothing is

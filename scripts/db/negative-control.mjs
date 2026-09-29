@@ -276,6 +276,49 @@ const CREDENTIAL_CANARY = `
 
 const CREDENTIAL_MUST_FAIL = [/no function a salon can call touches provider credentials/];
 
+// The start code (0084) proves one thing: the customer is in the chair. A
+// start_service that stops comparing the code still starts every service, so
+// nothing on the salon floor would notice. This is that function.
+const START_TEST = 'supabase/tests/booking/start_and_pay_test.sql';
+const START_CANARY = `
+  do $canary$
+  declare
+    v_def text;
+    v_new text;
+  begin
+    select pg_get_functiondef('public.start_service(uuid, uuid, text)'::regprocedure) into strict v_def;
+    v_new := replace(v_def, 'elsif btrim(p_code) <> v_code.code then', 'elsif false then');
+    if v_new = v_def then raise exception 'start canary: the code comparison moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+
+const START_MUST_FAIL = [/a wrong code is refused/];
+
+// A haircut paid by UPI is a payment for a haircut, not wallet credit (0085).
+// Before 0085 every captured payment was a top-up, so the old branch-free
+// capture is the natural thing to "restore" - and it would hand the customer
+// the bill back as spendable credit, with a bonus on top.
+const BILL_CREDIT_CANARY = `
+  do $canary$
+  declare
+    v_oid oid;
+    v_def text;
+    v_new text;
+  begin
+    select p.oid into strict v_oid from pg_proc p
+     where p.proname = 'record_payment_captured' and p.pronamespace = 'app'::regnamespace;
+    v_def := pg_get_functiondef(v_oid);
+    v_new := replace(v_def, 'if v_payment.visit_id is not null then', 'if false then');
+    if v_new = v_def then raise exception 'bill canary: the visit branch moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+
+const BILL_CREDIT_MUST_FAIL = [/credits NOTHING to the wallet/];
+
 
 class Rollback extends Error {
   constructor(lines) {
@@ -405,6 +448,18 @@ try {
       DASHBOARD_TEST,
       HEAL_CANARY,
       HEAL_MUST_FAIL,
+    ),
+    await check(
+      'start code / a start_service that accepts any code',
+      START_TEST,
+      START_CANARY,
+      START_MUST_FAIL,
+    ),
+    await check(
+      'bills / a captured bill payment that credits the wallet',
+      START_TEST,
+      BILL_CREDIT_CANARY,
+      BILL_CREDIT_MUST_FAIL,
     ),
   ];
 

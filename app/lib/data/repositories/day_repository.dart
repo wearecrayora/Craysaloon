@@ -155,6 +155,38 @@ class DayRepository {
     return actionId;
   }
 
+  /// Starts a service ONLINE, so the stylist hears "wrong code, 3 left" while the
+  /// customer is still standing there. A code cannot be checked offline and a
+  /// refusal must be answered at once - so this is never queued. Throws when
+  /// there is no connection; the screen then offers [startWithoutCode].
+  Future<StartResult> startNow(String bookingId, {String? code}) async {
+    final result = await remote.startService(
+      clientActionId: Outbox.newActionId(),
+      bookingId: bookingId,
+      code: code,
+    );
+    if (result.started) await _markStarted(bookingId);
+    return result;
+  }
+
+  /// Starts WITHOUT the code, queued like every owner action (RULES 13). The
+  /// server records why - no app, locked, or no connection - and the owner sees
+  /// it (0084, 0086). Nobody is turned away.
+  Future<void> startWithoutCode(String bookingId) async {
+    await outbox.enqueue(
+      salonId: salonId,
+      op: 'start_service',
+      payload: {'booking_id': bookingId},
+    );
+    // The row changes under the stylist's thumb; the queue catches up.
+    await _markStarted(bookingId);
+    await drain();
+  }
+
+  Future<void> _markStarted(String bookingId) =>
+      (cache.update(cache.cachedBookings)..where((t) => t.id.equals(bookingId)))
+          .write(const CachedBookingsCompanion(status: Value('in_progress')));
+
   /// Never cached and never queued: a quote read from a stale copy is exactly
   /// the guess this exists to prevent (0080).
   Future<CheckoutQuote> checkoutQuote(String bookingId) => remote.checkoutQuote(bookingId);
@@ -223,6 +255,18 @@ class DayRepository {
               bookingId: payload['booking_id']! as String,
               reason: payload['reason'] as String?,
             );
+          case 'start_service':
+            final result = await remote.startService(
+              clientActionId: action.clientActionId,
+              bookingId: payload['booking_id']! as String,
+            );
+            if (!result.started) {
+              // Without a code, a start is refused only when the booking cannot
+              // be started at all - completed or cancelled in the meantime.
+              await outbox.markRejected(action.clientActionId, 'not_startable');
+              rejected++;
+              continue;
+            }
           case 'checkout_booking':
             await remote.checkout(
               clientActionId: action.clientActionId,

@@ -9,6 +9,7 @@ import '../../core/theme/brand_tokens.dart';
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
 import '../notifications/push_registration.dart';
+import '../visit/visit_cards.dart';
 
 /// Injected so the offer can be tested without a launcher, and so iOS gets the
 /// same code path with a different answer (`RULES.md` 15b).
@@ -124,13 +125,25 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
         ],
       ),
       body: SafeArea(
-        child: ListView(
+        child: RefreshIndicator(
+          // A "your bill is ready" push can arrive while this screen is open;
+          // pulling down shows it.
+          onRefresh: () async {
+            ref.invalidate(visitsTodayProvider);
+            ref.invalidate(billsProvider);
+          },
+          child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             Text(l10n.joinedTitle(salonName), style: text.headlineSmall),
             const SizedBox(height: 8),
             Text(l10n.homeReady, style: text.bodyMedium),
             const SizedBox(height: 24),
+            // A bill to pay comes FIRST: it is the one thing on this screen with
+            // somebody waiting on it at the counter.
+            const BillsCard(),
+            // Today's booking and the code to read to the stylist (0084).
+            const TodayVisitsCard(),
             // The wallet is the retention loop's front door. It is a
             // destination, not a number on this screen: a balance shown here
             // would have to carry its own "only at this salon, not cash" line
@@ -186,6 +199,7 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
               ),
             ],
           ],
+          ),
         ),
       ),
     );

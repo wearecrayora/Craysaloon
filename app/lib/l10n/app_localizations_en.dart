@@ -877,4 +877,124 @@ class AppL10nEn extends AppL10n {
   @override
   String get payQueued =>
       'Payment recorded. It will show as paid once it reaches the server.';
+
+  @override
+  String get startTitle => 'Start';
+
+  @override
+  String get startAskForCode =>
+      'Ask the customer for the 4-digit code in their app.';
+
+  @override
+  String get startWithCode => 'Start with this code';
+
+  @override
+  String startWrongCode(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'That is not their code. $count tries left.',
+      one: 'That is not their code. 1 try left.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get startLocked =>
+      'Too many wrong tries, so this code is locked. Start without it - the owner will see why.';
+
+  @override
+  String get startNoCodeIssued =>
+      'They have not opened this booking in the app yet, so there is no code. Ask them to open it, or start without one.';
+
+  @override
+  String get startNotStartable =>
+      'This booking cannot be started - it has been completed or cancelled.';
+
+  @override
+  String get startOffline =>
+      'No connection, so the code cannot be checked. You can start without it - the owner will see why.';
+
+  @override
+  String get startNoAppExplained =>
+      'This customer does not have the app, so there is no code. Start without one - the owner will see it was started this way.';
+
+  @override
+  String get startWithoutExplained =>
+      'Starting without the code is allowed. It is recorded, with the reason, for the owner.';
+
+  @override
+  String get startWithoutCode => 'Start without the code';
+
+  @override
+  String get dayInProgress => 'In progress';
+
+  @override
+  String get payCounterRequested => 'Paying at the counter';
+
+  @override
+  String get visitToday => 'Your visit today';
+
+  @override
+  String get visitInProgress => 'Your service is in progress.';
+
+  @override
+  String get visitShowCode =>
+      'Show this code to your stylist when you sit down.';
+
+  @override
+  String visitCodeSemantics(String digits) {
+    return 'Your start code: $digits';
+  }
+
+  @override
+  String get billReady => 'Your bill is ready';
+
+  @override
+  String get billCounterSaid => 'You said you will pay at the counter.';
+
+  @override
+  String get billPay => 'Pay your bill';
+
+  @override
+  String billToPay(String amount) {
+    return 'To pay: $amount';
+  }
+
+  @override
+  String billFromWallet(String amount) {
+    return 'Pay $amount from your wallet';
+  }
+
+  @override
+  String billWalletCovers(String wallet, String rest) {
+    return 'Your wallet covers $wallet. The other $rest can be paid by UPI or at the counter.';
+  }
+
+  @override
+  String billByUpi(String amount) {
+    return 'Pay $amount by UPI';
+  }
+
+  @override
+  String get billAtCounter => 'I will pay at the counter';
+
+  @override
+  String get billAlreadyPaid => 'This bill is already paid.';
+
+  @override
+  String get billPaidFromWallet => 'Paid from your wallet.';
+
+  @override
+  String billWalletPartly(String rest) {
+    return 'Paid from your wallet. $rest left to pay - by UPI or at the counter.';
+  }
+
+  @override
+  String get billUpiSent =>
+      'Payment sent. Your bill will show as paid once the bank confirms it.';
+
+  @override
+  String get billCounterTold =>
+      'The counter knows. Your bill shows as paid once they take the money.';
 }

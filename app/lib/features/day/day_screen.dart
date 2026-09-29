@@ -10,6 +10,7 @@ import '../../core/ui/cache_banner.dart';
 import '../../domain/records/records.dart';
 import '../../l10n/app_localizations.dart';
 import 'checkout_sheet.dart';
+import 'start_sheet.dart';
 import 'day_controller.dart';
 
 /// O1 - the day view. **The screen everything depends on.**
@@ -166,6 +167,10 @@ class _BookingTile extends ConsumerWidget {
                     switch (booking.paymentStatus) {
                       'paid' => '${l10n.dayDone} · ${l10n.payPaid}',
                       'partial' => '${l10n.dayDone} · ${l10n.payPartial}',
+                      // The customer said "cash at the counter" in their app. It
+                      // settles nothing - this row still needs Take payment.
+                      _ when booking.counterRequested =>
+                        '${l10n.dayDone} · ${l10n.payCounterRequested}',
                       _ => l10n.dayDone,
                     },
                     style: text.labelLarge,
@@ -185,17 +190,32 @@ class _BookingTile extends ConsumerWidget {
             )
           else if (booking.status == 'cancelled')
             Text(l10n.dayCancelled, style: text.labelLarge)
+          else if (booking.isInProgress)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(l10n.dayInProgress, style: text.labelLarge),
+                const SizedBox(height: 8),
+                FilledButton(
+                  // Mark-complete is still ONE TAP, no dialog (DESIGN 6.4,
+                  // RULES 13) - it moved from the booked row to the in-progress
+                  // one when the start code arrived (0084).
+                  style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
+                  onPressed: () => ref.read(dayControllerProvider.notifier).complete(booking),
+                  child: Text(l10n.markComplete),
+                ),
+              ],
+            )
           else
             Row(
               children: [
                 Expanded(
                   child: FilledButton(
-                    // 56dp, not 48: this is THE button of the product, pressed
-                    // one-handed between customers (DESIGN 6.4).
+                    // Start, with the customer's code where they have the app
+                    // (0084). 56dp: pressed one-handed between customers.
                     style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
-                    onPressed: () =>
-                        ref.read(dayControllerProvider.notifier).complete(booking),
-                    child: Text(l10n.markComplete),
+                    onPressed: () => StartSheet.open(context, booking),
+                    child: Text(l10n.startTitle),
                   ),
                 ),
                 const SizedBox(width: 8),

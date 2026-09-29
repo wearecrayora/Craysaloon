@@ -1507,6 +1507,186 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Payment recorded. It will show as paid once it reaches the server.'**
   String get payQueued;
+
+  /// No description provided for @startTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get startTitle;
+
+  /// The code is shown only in the CUSTOMER's app. Staff can never read it (0084).
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the customer for the 4-digit code in their app.'**
+  String get startAskForCode;
+
+  /// No description provided for @startWithCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with this code'**
+  String get startWithCode;
+
+  /// No description provided for @startWrongCode.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{That is not their code. 1 try left.} other{That is not their code. {count} tries left.}}'**
+  String startWrongCode(int count);
+
+  /// No description provided for @startLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many wrong tries, so this code is locked. Start without it - the owner will see why.'**
+  String get startLocked;
+
+  /// No description provided for @startNoCodeIssued.
+  ///
+  /// In en, this message translates to:
+  /// **'They have not opened this booking in the app yet, so there is no code. Ask them to open it, or start without one.'**
+  String get startNoCodeIssued;
+
+  /// No description provided for @startNotStartable.
+  ///
+  /// In en, this message translates to:
+  /// **'This booking cannot be started - it has been completed or cancelled.'**
+  String get startNotStartable;
+
+  /// No description provided for @startOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection, so the code cannot be checked. You can start without it - the owner will see why.'**
+  String get startOffline;
+
+  /// No description provided for @startNoAppExplained.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer does not have the app, so there is no code. Start without one - the owner will see it was started this way.'**
+  String get startNoAppExplained;
+
+  /// Decision of 29 Sep 2026: nobody is turned away, and every exception is visible.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting without the code is allowed. It is recorded, with the reason, for the owner.'**
+  String get startWithoutExplained;
+
+  /// No description provided for @startWithoutCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Start without the code'**
+  String get startWithoutCode;
+
+  /// No description provided for @dayInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get dayInProgress;
+
+  /// The customer said so in their app. It settles nothing - Take payment still does.
+  ///
+  /// In en, this message translates to:
+  /// **'Paying at the counter'**
+  String get payCounterRequested;
+
+  /// No description provided for @visitToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Your visit today'**
+  String get visitToday;
+
+  /// No description provided for @visitInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Your service is in progress.'**
+  String get visitInProgress;
+
+  /// No description provided for @visitShowCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this code to your stylist when you sit down.'**
+  String get visitShowCode;
+
+  /// No description provided for @visitCodeSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Your start code: {digits}'**
+  String visitCodeSemantics(String digits);
+
+  /// No description provided for @billReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Your bill is ready'**
+  String get billReady;
+
+  /// No description provided for @billCounterSaid.
+  ///
+  /// In en, this message translates to:
+  /// **'You said you will pay at the counter.'**
+  String get billCounterSaid;
+
+  /// No description provided for @billPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay your bill'**
+  String get billPay;
+
+  /// No description provided for @billToPay.
+  ///
+  /// In en, this message translates to:
+  /// **'To pay: {amount}'**
+  String billToPay(String amount);
+
+  /// No description provided for @billFromWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount} from your wallet'**
+  String billFromWallet(String amount);
+
+  /// No description provided for @billWalletCovers.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wallet covers {wallet}. The other {rest} can be paid by UPI or at the counter.'**
+  String billWalletCovers(String wallet, String rest);
+
+  /// No description provided for @billByUpi.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount} by UPI'**
+  String billByUpi(String amount);
+
+  /// No description provided for @billAtCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'I will pay at the counter'**
+  String get billAtCounter;
+
+  /// No description provided for @billAlreadyPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'This bill is already paid.'**
+  String get billAlreadyPaid;
+
+  /// No description provided for @billPaidFromWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid from your wallet.'**
+  String get billPaidFromWallet;
+
+  /// No description provided for @billWalletPartly.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid from your wallet. {rest} left to pay - by UPI or at the counter.'**
+  String billWalletPartly(String rest);
+
+  /// Never say paid before the webhook does.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment sent. Your bill will show as paid once the bank confirms it.'**
+  String get billUpiSent;
+
+  /// Cash is confirmed by staff, never by the customer (decision of 29 Sep 2026).
+  ///
+  /// In en, this message translates to:
+  /// **'The counter knows. Your bill shows as paid once they take the money.'**
+  String get billCounterTold;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

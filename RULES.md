@@ -448,7 +448,14 @@ Credentials screen and never will.
 9.3 Every server RPC takes a `client_action_id`. `idempotency_keys(salon_id, key)` is unique; a
 replay returns the original result.
 
-9.4 Mark-complete is an idempotent state transition (`confirmed → completed`). Replays are no-ops.
+9.4 Mark-complete is an idempotent state transition (`confirmed | in_progress → completed`).
+Replays are no-ops. Completing a booking that was never started records it as a start without the
+code (0084).
+
+9.4a **Starting** a service with the customer's code is **online only** — the code is checked by
+the server, and staff can never read it. Starting **without** the code is a capture action like
+mark-complete: queued, offline-safe, and never silent — the server records why, and the owner
+sees every one. Do not add a path that starts a service and records no reason.
 
 9.5 An offline completion records **intent**. The wallet debit, loyalty award and package decrement
 run server-side at sync.

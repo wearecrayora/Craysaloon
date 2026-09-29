@@ -797,5 +797,120 @@
   "payQueued": "Payment recorded. It will show as paid once it reaches the server.",
   "@payQueued": {
     "description": "Never say paid before the server does."
+  },
+  "startTitle": "Start",
+  "@startTitle": {},
+  "startAskForCode": "Ask the customer for the 4-digit code in their app.",
+  "@startAskForCode": {
+    "description": "The code is shown only in the CUSTOMER's app. Staff can never read it (0084)."
+  },
+  "startWithCode": "Start with this code",
+  "@startWithCode": {},
+  "startWrongCode": "{count, plural, =1{That is not their code. 1 try left.} other{That is not their code. {count} tries left.}}",
+  "@startWrongCode": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startLocked": "Too many wrong tries, so this code is locked. Start without it - the owner will see why.",
+  "@startLocked": {},
+  "startNoCodeIssued": "They have not opened this booking in the app yet, so there is no code. Ask them to open it, or start without one.",
+  "@startNoCodeIssued": {},
+  "startNotStartable": "This booking cannot be started - it has been completed or cancelled.",
+  "@startNotStartable": {},
+  "startOffline": "No connection, so the code cannot be checked. You can start without it - the owner will see why.",
+  "@startOffline": {},
+  "startNoAppExplained": "This customer does not have the app, so there is no code. Start without one - the owner will see it was started this way.",
+  "@startNoAppExplained": {},
+  "startWithoutExplained": "Starting without the code is allowed. It is recorded, with the reason, for the owner.",
+  "@startWithoutExplained": {
+    "description": "Decision of 29 Sep 2026: nobody is turned away, and every exception is visible."
+  },
+  "startWithoutCode": "Start without the code",
+  "@startWithoutCode": {},
+  "dayInProgress": "In progress",
+  "@dayInProgress": {},
+  "payCounterRequested": "Paying at the counter",
+  "@payCounterRequested": {
+    "description": "The customer said so in their app. It settles nothing - Take payment still does."
+  },
+  "visitToday": "Your visit today",
+  "@visitToday": {},
+  "visitInProgress": "Your service is in progress.",
+  "@visitInProgress": {},
+  "visitShowCode": "Show this code to your stylist when you sit down.",
+  "@visitShowCode": {},
+  "visitCodeSemantics": "Your start code: {digits}",
+  "@visitCodeSemantics": {
+    "placeholders": {
+      "digits": {
+        "type": "String"
+      }
+    }
+  },
+  "billReady": "Your bill is ready",
+  "@billReady": {},
+  "billCounterSaid": "You said you will pay at the counter.",
+  "@billCounterSaid": {},
+  "billPay": "Pay your bill",
+  "@billPay": {},
+  "billToPay": "To pay: {amount}",
+  "@billToPay": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "billFromWallet": "Pay {amount} from your wallet",
+  "@billFromWallet": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "billWalletCovers": "Your wallet covers {wallet}. The other {rest} can be paid by UPI or at the counter.",
+  "@billWalletCovers": {
+    "placeholders": {
+      "wallet": {
+        "type": "String"
+      },
+      "rest": {
+        "type": "String"
+      }
+    }
+  },
+  "billByUpi": "Pay {amount} by UPI",
+  "@billByUpi": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "billAtCounter": "I will pay at the counter",
+  "@billAtCounter": {},
+  "billAlreadyPaid": "This bill is already paid.",
+  "@billAlreadyPaid": {},
+  "billPaidFromWallet": "Paid from your wallet.",
+  "@billPaidFromWallet": {},
+  "billWalletPartly": "Paid from your wallet. {rest} left to pay - by UPI or at the counter.",
+  "@billWalletPartly": {
+    "placeholders": {
+      "rest": {
+        "type": "String"
+      }
+    }
+  },
+  "billUpiSent": "Payment sent. Your bill will show as paid once the bank confirms it.",
+  "@billUpiSent": {
+    "description": "Never say paid before the webhook does."
+  },
+  "billCounterTold": "The counter knows. Your bill shows as paid once they take the money.",
+  "@billCounterTold": {
+    "description": "Cash is confirmed by staff, never by the customer (decision of 29 Sep 2026)."
   }
 }

@@ -8,6 +8,7 @@ import '../../domain/notifications/push_api.dart';
 import '../../domain/privacy/privacy.dart';
 import '../../domain/referral/referral.dart';
 import '../../domain/records/records.dart';
+import '../../domain/visit/visit.dart';
 import '../../domain/wallet/wallet.dart';
 
 /// The only file in the app that talks to Supabase (`RULES.md` 3.7 / GATE-1).
@@ -21,7 +22,7 @@ import '../../domain/wallet/wallet.dart';
 ///   error paths carry a kind, not a payload.
 class SupabaseCrayApi
     implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi, WalletApi,
-        PushApi, ReferralApi, DashboardApi {
+        PushApi, ReferralApi, DashboardApi, VisitApi {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -421,8 +422,8 @@ class SupabaseCrayApi
       () => _client
           .from('bookings')
           .select('id,customer_id,starts_at,ends_at,status,total_paise,'
-              'customers(name),staff(name),booking_items(name_snapshot,kind),'
-              'visits(payment_status)')
+              'customers(name,auth_user_id),staff(name),booking_items(name_snapshot,kind),'
+              'visits(payment_status,counter_payment_requested_at)')
           .gte('starts_at', start.toUtc().toIso8601String())
           .lt('starts_at', end.toUtc().toIso8601String())
           .order('starts_at'),
@@ -446,12 +447,10 @@ class SupabaseCrayApi
         customerName: _asMap(r['customers'])?['name'] as String?,
         staffName: _asMap(r['staff'])?['name'] as String?,
         serviceNames: services,
-        // One visit per booking; PostgREST returns the embed as a list.
-        paymentStatus: switch (r['visits']) {
-          [final Map<Object?, Object?> v, ...] => v['payment_status'] as String?,
-          final Map<Object?, Object?> v => v['payment_status'] as String?,
-          _ => null,
-        },
+        paymentStatus: _visitOf(r)?['payment_status'] as String?,
+        counterRequested: _visitOf(r)?['counter_payment_requested_at'] != null,
+        // Only WHETHER they have the app. The id itself is never kept.
+        customerHasApp: _asMap(r['customers'])?['auth_user_id'] != null,
       );
     }).toList();
   }
@@ -540,6 +539,45 @@ class SupabaseCrayApi
       'p_booking_id': bookingId,
       'p_reason': reason,
     });
+  }
+
+  /// One visit per booking; PostgREST returns the embed as a list.
+  static Map<Object?, Object?>? _visitOf(Map<String, Object?> row) => switch (row['visits']) {
+        [final Map<Object?, Object?> v, ...] => v,
+        final Map<Object?, Object?> v => v,
+        _ => null,
+      };
+
+  @override
+  Future<StartResult> startService({
+    required String clientActionId,
+    required String bookingId,
+    String? code,
+  }) async {
+    try {
+      final body = _asMap(await _client.rpc<dynamic>('start_service', params: {
+            'p_client_action_id': clientActionId,
+            'p_booking_id': bookingId,
+            'p_code': code,
+          })) ??
+          const {};
+      if (body['ok'] == true) return const StartResult.started();
+      // Refusals are ANSWERS, returned rather than thrown: the stylist needs to
+      // read "wrong code, 3 left", not a failure.
+      return StartResult.refused(
+        switch (body['reason']) {
+          'wrong_code' => StartRefusal.wrongCode,
+          'code_locked' => StartRefusal.codeLocked,
+          'no_code_issued' => StartRefusal.noCodeIssued,
+          _ => StartRefusal.notStartable,
+        },
+        attemptsLeft: body['attempts_left'] == null ? null : _int(body['attempts_left']),
+      );
+    } on PostgrestException catch (e) {
+      throw CrayApiException(e.code == '42501' ? CrayErrorKind.forbidden : _postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
   }
 
   @override
@@ -784,6 +822,117 @@ class SupabaseCrayApi
       keyId: body['key_id'] as String? ?? '',
       amountPaise: _int(body['amount_paise']),
     );
+  }
+
+  // -------------------------------------------------------------------------
+  // VisitApi (29 Sep 2026). The customer's start code and their own bill.
+  // Every call is keyed on the caller's own customer id in the database; the app
+  // names a visit, never an amount (0084, 0085).
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<List<TodayVisit>> visitsToday() async {
+    final list = await _jsonList('my_visits_today');
+    return [
+      for (final v in list)
+        TodayVisit(
+          bookingId: v['booking_id'] as String? ?? '',
+          startsAt: _time(v['starts_at']) ?? DateTime.now(),
+          status: v['status'] as String? ?? 'confirmed',
+          services: v['services'] as String? ?? '',
+          staff: v['staff'] as String?,
+          startCode: v['start_code'] as String?,
+        ),
+    ];
+  }
+
+  @override
+  Future<List<Bill>> bills() async {
+    final list = await _jsonList('my_bills');
+    return [
+      for (final b in list)
+        Bill(
+          visitId: b['visit_id'] as String? ?? '',
+          completedAt: _time(b['completed_at']) ?? DateTime.now(),
+          services: b['services'] as String? ?? '',
+          totalPaise: _int(b['total_paise']),
+          duePaise: _int(b['due_paise']),
+          counterRequested: b['counter_requested'] == true,
+        ),
+    ];
+  }
+
+  @override
+  Future<int> payBillFromWallet({required String clientActionId, required String visitId}) async {
+    final body = await _billCall('pay_bill_from_wallet', {
+      'p_client_action_id': clientActionId,
+      'p_visit_id': visitId,
+    });
+    return _int(body['remaining_paise']);
+  }
+
+  @override
+  Future<void> requestCounterPayment(String visitId) async {
+    await _billCall('request_counter_payment', {'p_visit_id': visitId});
+  }
+
+  @override
+  Future<TopupOrder> startBillPayment({
+    required String clientActionId,
+    required String visitId,
+  }) async {
+    // A bill names the VISIT and never an amount: the server decides what is
+    // left to pay (0085, create-payment-order).
+    final response = await _invoke('create-payment-order', {
+      'client_action_id': clientActionId,
+      'visit_id': visitId,
+    });
+    final body = _asMap(response.data) ?? const {};
+
+    if (response.status != 200) {
+      throw BillException(switch (body['error']) {
+        'already_paid' => BillProblem.alreadyPaid,
+        'no_such_bill' => BillProblem.notFound,
+        'payments_unavailable' => BillProblem.paymentsUnavailable,
+        _ => BillProblem.network,
+      });
+    }
+
+    return TopupOrder(
+      paymentId: body['payment_id'] as String? ?? '',
+      orderId: body['order_id'] as String? ?? '',
+      keyId: body['key_id'] as String? ?? '',
+      amountPaise: _int(body['amount_paise']),
+    );
+  }
+
+  Future<List<Map<String, Object?>>> _jsonList(String fn) async {
+    try {
+      final result = await _client.rpc<dynamic>(fn);
+      return [
+        for (final item in (result as List? ?? const [])) ?_asMap(item),
+      ];
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  Future<Map<String, Object?>> _billCall(String fn, Map<String, Object?> params) async {
+    try {
+      final body = _asMap(await _client.rpc<dynamic>(fn, params: params)) ?? const {};
+      if (body['ok'] == true) return body;
+      throw BillException(switch (body['reason']) {
+        'no_such_bill' => BillProblem.notFound,
+        'already_paid' => BillProblem.alreadyPaid,
+        _ => BillProblem.network,
+      });
+    } on BillException {
+      rethrow;
+    } catch (_) {
+      throw const BillException(BillProblem.network);
+    }
   }
 
   // -------------------------------------------------------------------------

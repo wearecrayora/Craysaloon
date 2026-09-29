@@ -413,6 +413,17 @@ caller 5 had no screen). In CI, with a canary.
 at login); the owner's daily summary push needs owner device registration; the owner cannot yet set
 bonus expiry in the app (O10), which RULES says is theirs.
 
+**Added 2026-09-29 - start code and the customer paying their own bill** (PRD §9.2a; 0083-0086;
+`booking/start_and_pay_test.sql`, 28 assertions + two canaries; 15 app tests). A booked customer
+reads a 4-digit code from their app and the stylist types it to start the service; mark-complete
+pushes "your bill is ready" (push only - it never escalates to a paid channel); the customer pays
+from the wallet as far as it goes, then by UPI through the salon's own Razorpay, or says "at the
+counter", which settles nothing - staff confirm cash. Starting without the code is allowed and
+never silent: the reason is kept and the owner's dashboard counts it. A new status is a new hole unless
+everything that lists statuses learns it: the double-booking constraint and `available_slots` both
+covered only pending and confirmed, so 0084 widens them - a chair with a customer in it is not free. **Not yet exercised against live Razorpay** - like top-ups, the UPI
+path runs end to end only once a salon's test keys and webhook secret are set in the console.
+
 ### Phase 4 — Crayora runs the business *(M11–M12)*
 
 **M11 — Billing.** Offline setup-fee recording, subscription state, Automation I, read-only grace,

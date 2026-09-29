@@ -872,6 +872,124 @@ class AppL10nHi extends AppL10n {
   @override
   String get payQueued =>
       'भुगतान दर्ज हो गया। सर्वर तक पहुँचने पर यह भुगतान हुआ दिखेगा।';
+
+  @override
+  String get startTitle => 'शुरू करें';
+
+  @override
+  String get startAskForCode => 'ग्राहक से उनके ऐप का 4 अंकों वाला कोड माँगें।';
+
+  @override
+  String get startWithCode => 'इस कोड से शुरू करें';
+
+  @override
+  String startWrongCode(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'यह उनका कोड नहीं है। $count कोशिशें बाकी।',
+      one: 'यह उनका कोड नहीं है। 1 कोशिश बाकी।',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get startLocked =>
+      'बहुत गलत कोशिशें हुईं, इसलिए कोड बंद है। बिना कोड शुरू करें - मालिक को कारण दिखेगा।';
+
+  @override
+  String get startNoCodeIssued =>
+      'उन्होंने ऐप में यह बुकिंग अभी नहीं खोली, इसलिए कोड नहीं है। खोलने को कहें, या बिना कोड शुरू करें।';
+
+  @override
+  String get startNotStartable =>
+      'यह बुकिंग शुरू नहीं हो सकती - यह पूरी या रद्द हो चुकी है।';
+
+  @override
+  String get startOffline =>
+      'कनेक्शन नहीं है, इसलिए कोड जाँचा नहीं जा सकता। बिना कोड शुरू कर सकते हैं - मालिक को कारण दिखेगा।';
+
+  @override
+  String get startNoAppExplained =>
+      'इस ग्राहक के पास ऐप नहीं है, इसलिए कोड नहीं है। बिना कोड शुरू करें - मालिक को दिखेगा।';
+
+  @override
+  String get startWithoutExplained =>
+      'बिना कोड शुरू करना ठीक है। यह कारण के साथ मालिक के लिए दर्ज होता है।';
+
+  @override
+  String get startWithoutCode => 'बिना कोड शुरू करें';
+
+  @override
+  String get dayInProgress => 'चल रहा है';
+
+  @override
+  String get payCounterRequested => 'काउंटर पर भुगतान';
+
+  @override
+  String get visitToday => 'आज की आपकी विज़िट';
+
+  @override
+  String get visitInProgress => 'आपकी सर्विस चल रही है।';
+
+  @override
+  String get visitShowCode => 'बैठने पर यह कोड अपने स्टाइलिस्ट को दिखाएँ।';
+
+  @override
+  String visitCodeSemantics(String digits) {
+    return 'आपका शुरुआती कोड: $digits';
+  }
+
+  @override
+  String get billReady => 'आपका बिल तैयार है';
+
+  @override
+  String get billCounterSaid => 'आपने काउंटर पर भुगतान करने को कहा है।';
+
+  @override
+  String get billPay => 'बिल भरें';
+
+  @override
+  String billToPay(String amount) {
+    return 'भुगतान: $amount';
+  }
+
+  @override
+  String billFromWallet(String amount) {
+    return 'वॉलेट से $amount भरें';
+  }
+
+  @override
+  String billWalletCovers(String wallet, String rest) {
+    return 'आपका वॉलेट $wallet देता है। बाकी $rest UPI से या काउंटर पर।';
+  }
+
+  @override
+  String billByUpi(String amount) {
+    return 'UPI से $amount भरें';
+  }
+
+  @override
+  String get billAtCounter => 'भुगतान काउंटर पर होगा';
+
+  @override
+  String get billAlreadyPaid => 'यह बिल पहले से भरा है।';
+
+  @override
+  String get billPaidFromWallet => 'वॉलेट से भुगतान हो गया।';
+
+  @override
+  String billWalletPartly(String rest) {
+    return 'वॉलेट से भुगतान हुआ। $rest बाकी - UPI से या काउंटर पर।';
+  }
+
+  @override
+  String get billUpiSent =>
+      'भुगतान भेज दिया गया। बैंक की पुष्टि होते ही बिल भरा हुआ दिखेगा।';
+
+  @override
+  String get billCounterTold =>
+      'काउंटर को पता है। पैसे लेने पर आपका बिल भरा हुआ दिखेगा।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -1749,4 +1867,123 @@ class AppL10nHiLatn extends AppL10nHi {
   @override
   String get payQueued =>
       'Payment darj ho gaya. Server tak pahunchne par yeh paid dikhega.';
+
+  @override
+  String get startTitle => 'Shuru karein';
+
+  @override
+  String get startAskForCode =>
+      'Customer se unke app ka 4 ankon wala code maangein.';
+
+  @override
+  String get startWithCode => 'Is code se shuru karein';
+
+  @override
+  String startWrongCode(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Yeh unka code nahi hai. $count koshishein baaki.',
+      one: 'Yeh unka code nahi hai. 1 koshish baaki.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get startLocked =>
+      'Bahut galat koshishein huin, isliye code band hai. Bina code shuru karein - owner ko kaaran dikhega.';
+
+  @override
+  String get startNoCodeIssued =>
+      'Unhone app mein yeh booking abhi nahi kholi, isliye code nahi hai. Kholne ko kahein, ya bina code shuru karein.';
+
+  @override
+  String get startNotStartable =>
+      'Yeh booking shuru nahi ho sakti - yeh poori ya cancel ho chuki hai.';
+
+  @override
+  String get startOffline =>
+      'Connection nahi hai, isliye code check nahi ho sakta. Bina code shuru kar sakte hain - owner ko kaaran dikhega.';
+
+  @override
+  String get startNoAppExplained =>
+      'Is customer ke paas app nahi hai, isliye code nahi hai. Bina code shuru karein - owner ko dikhega.';
+
+  @override
+  String get startWithoutExplained =>
+      'Bina code shuru karna theek hai. Yeh kaaran ke saath owner ke liye darj hota hai.';
+
+  @override
+  String get startWithoutCode => 'Bina code shuru karein';
+
+  @override
+  String get dayInProgress => 'Chal raha hai';
+
+  @override
+  String get payCounterRequested => 'Counter par payment';
+
+  @override
+  String get visitToday => 'Aaj ki aapki visit';
+
+  @override
+  String get visitInProgress => 'Aapki service chal rahi hai.';
+
+  @override
+  String get visitShowCode => 'Baithne par yeh code apne stylist ko dikhayein.';
+
+  @override
+  String visitCodeSemantics(String digits) {
+    return 'Aapka start code: $digits';
+  }
+
+  @override
+  String get billReady => 'Aapka bill taiyaar hai';
+
+  @override
+  String get billCounterSaid => 'Aapne counter par payment karne ko kaha hai.';
+
+  @override
+  String get billPay => 'Bill bharein';
+
+  @override
+  String billToPay(String amount) {
+    return 'Payment: $amount';
+  }
+
+  @override
+  String billFromWallet(String amount) {
+    return 'Wallet se $amount bharein';
+  }
+
+  @override
+  String billWalletCovers(String wallet, String rest) {
+    return 'Aapka wallet $wallet deta hai. Baaki $rest UPI se ya counter par.';
+  }
+
+  @override
+  String billByUpi(String amount) {
+    return 'UPI se $amount bharein';
+  }
+
+  @override
+  String get billAtCounter => 'Payment counter par hoga';
+
+  @override
+  String get billAlreadyPaid => 'Yeh bill pehle se bhara hai.';
+
+  @override
+  String get billPaidFromWallet => 'Wallet se payment ho gaya.';
+
+  @override
+  String billWalletPartly(String rest) {
+    return 'Wallet se payment hua. $rest baaki - UPI se ya counter par.';
+  }
+
+  @override
+  String get billUpiSent =>
+      'Payment bhej diya gaya. Bank ki confirmation ke baad bill bhara hua dikhega.';
+
+  @override
+  String get billCounterTold =>
+      'Counter ko pata hai. Paise lene par aapka bill bhara hua dikhega.';
 }

@@ -36,7 +36,14 @@ void main() {
 
   tearDown(() => cache.close());
 
-  BookingRow booking({String id = 'b1', String status = 'confirmed'}) {
+  // In progress by default: since the start code (0084), Mark complete lives on
+  // the in-progress row, and a booked row offers Start instead. Most of these
+  // tests are about mark-complete, so that is where they begin.
+  BookingRow booking({
+    String id = 'b1',
+    String status = 'in_progress',
+    bool customerHasApp = true,
+  }) {
     final start = DateTime.now().add(const Duration(hours: 2));
     return BookingRow(
       id: id,
@@ -47,6 +54,7 @@ void main() {
       totalPaise: 40000,
       customerName: 'Asha',
       serviceNames: 'Haircut',
+      customerHasApp: customerHasApp,
     );
   }
 
@@ -173,6 +181,108 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Nothing needs attention.'), findsOneWidget);
+  });
+
+  group('start (0084)', () {
+    testWidgets('a booked row offers Start, not Mark complete', (tester) async {
+      remote.dayRows = [booking(status: 'confirmed')];
+      await pump(tester);
+
+      expect(find.text('Start'), findsOneWidget);
+      expect(find.text('Mark complete'), findsNothing,
+          reason: 'a service that never started cannot be completed from here');
+    });
+
+    testWidgets("the customer's code starts it, and the row moves on at once", (tester) async {
+      remote.dayRows = [booking(status: 'confirmed')];
+      await pump(tester);
+
+      await tester.tap(find.text('Start'));
+      await tester.pumpAndSettle();
+      expect(find.text('Start with this code'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), '4821');
+      await tester.pump();
+      await tester.tap(find.text('Start with this code'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Start with this code'), findsNothing, reason: 'the sheet closed');
+      expect(find.text('In progress'), findsOneWidget);
+      expect(find.text('Mark complete'), findsOneWidget);
+      expect(remote.sent.single['code'], '4821');
+    });
+
+    testWidgets('a wrong code is answered while the customer is still there', (tester) async {
+      remote.dayRows = [booking(status: 'confirmed')];
+      remote.startAnswer = const StartResult.refused(StartRefusal.wrongCode, attemptsLeft: 2);
+      await pump(tester);
+
+      await tester.tap(find.text('Start'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '1111');
+      await tester.pump();
+      await tester.tap(find.text('Start with this code'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('That is not their code. 2 tries left.'), findsOneWidget);
+      expect(find.text('Start without the code'), findsNothing,
+          reason: 'one wrong guess is not a reason to skip the code');
+    });
+
+    testWidgets('a locked code offers to start without it', (tester) async {
+      remote.dayRows = [booking(status: 'confirmed')];
+      remote.startAnswer = const StartResult.refused(StartRefusal.codeLocked);
+      await pump(tester);
+
+      await tester.tap(find.text('Start'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '9999');
+      await tester.pump();
+      await tester.tap(find.text('Start with this code'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('this code is locked'), findsOneWidget);
+      expect(find.text('Start without the code'), findsOneWidget);
+    });
+
+    testWidgets('with no connection, nobody is turned away', (tester) async {
+      remote.dayRows = [booking(status: 'confirmed')];
+      remote.startAnswer = null; // offline, for a start that needs the server
+      await pump(tester);
+
+      await tester.tap(find.text('Start'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '4821');
+      await tester.pump();
+      await tester.tap(find.text('Start with this code'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('the code cannot be checked'), findsOneWidget);
+      await tester.tap(find.text('Start without the code'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('In progress'), findsOneWidget);
+      expect(remote.sent.single['op'], 'start_service');
+      expect(remote.sent.single['code'], isNull,
+          reason: 'started WITHOUT a code - the server records why');
+    });
+
+    testWidgets('a customer without the app is started without a code, and no box to type in',
+        (tester) async {
+      remote.dayRows = [booking(status: 'confirmed', customerHasApp: false)];
+      await pump(tester);
+
+      await tester.tap(find.text('Start'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextField), findsNothing);
+      expect(find.textContaining('does not have the app'), findsOneWidget);
+      await tester.tap(find.text('Start without the code'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('In progress'), findsOneWidget);
+      expect(find.text('Mark complete'), findsOneWidget);
+    });
   });
 
   testWidgets('an empty day says so rather than showing a spinner forever',

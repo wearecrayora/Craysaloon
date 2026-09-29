@@ -109,6 +109,24 @@ class FakeBookings implements SalonBookings {
       'method': method,
     });
   }
+
+  /// What the next start answers. Null means "offline" for an ONLINE start;
+  /// queued starts (no code) always reach the server in these tests.
+  StartResult? startAnswer = const StartResult.started();
+
+  @override
+  Future<StartResult> startService({
+    required String clientActionId,
+    required String bookingId,
+    String? code,
+  }) async {
+    final answer = startAnswer;
+    if (answer == null && code != null) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+    _maybeFail('start_service', {'id': clientActionId, 'booking_id': bookingId, 'code': code});
+    return answer ?? const StartResult.started();
+  }
 }
 
 void main() {

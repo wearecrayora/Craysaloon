@@ -842,8 +842,26 @@ alter table public.bookings
     salon_id with =,
     staff_id with =,
     tstzrange(starts_at, ends_at, '[)') with &&
-  ) where (status in ('pending','confirmed'));
+  ) where (status in ('pending','confirmed','in_progress'));
 ```
+
+`in_progress` joined the constraint and `app.available_slots` in 0084: a chair with a customer
+in it is not free.
+
+**Start code (0084).** `public.booking_start_codes` holds one 4-digit CSPRNG code per booking, RLS
+forced with **no policies** — only `my_visits_today()` (the customer, for their own booking) and
+`start_service()` (the check) reach it, both SECURITY DEFINER. Five wrong guesses lock it.
+Wrong guesses are counted on the code row; every answer, refusals included, is stored against
+its action id in `idempotency_keys`, so a replayed wrong guess costs nothing. `bookings.start_method` / `start_note` record how every service started.
+
+**The customer pays the bill (0085).** `pay_bill_from_wallet` spends through
+`app.wallet_debit_at_checkout` — still one of the five ledger callers, no new one.
+`start_bill_payment` creates a `payments` row carrying `visit_id`, for the **server's** remaining
+amount, and `record_payment_captured` branches on it: a visit payment settles the visit via
+`app.refresh_visit_payment_status` and credits **nothing**; only a top-up credits the wallet.
+`request_counter_payment` only sets a flag — cash is confirmed by staff at checkout.
+`visit_completed` is a push-only purpose: `app.escalation_window` returns NULL for it, and the
+batch claim never opens a paid rung for a purpose with no window (0086).
 
 Availability is one SQL function, `app.available_slots(salon_id, service_id, staff_id, date)` —
 *staff schedule − time off − existing bookings − salon holidays*, with duration =

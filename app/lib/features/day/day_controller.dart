@@ -81,28 +81,17 @@ class DayController extends Notifier<DayState> {
     final repo = _repo;
     if (repo == null) return;
 
-    state = state.copyWith(
-      bookings: [
-        for (final b in state.bookings)
-          if (b.id == booking.id)
-            BookingRow(
-              id: b.id,
-              customerId: b.customerId,
-              startsAt: b.startsAt,
-              endsAt: b.endsAt,
-              status: 'completed',
-              totalPaise: b.totalPaise,
-              customerName: b.customerName,
-              staffName: b.staffName,
-              serviceNames: b.serviceNames,
-            )
-          else
-            b,
-      ],
-    );
-
+    _show(booking.id, 'completed');
     await repo.markComplete(booking.id);
     _refreshCounts();
+  }
+
+  void _show(String bookingId, String status) {
+    state = state.copyWith(
+      bookings: [
+        for (final b in state.bookings) b.id == bookingId ? b.withStatus(status) : b,
+      ],
+    );
   }
 
   /// The counts are reads, so whoever changes the queue refreshes them.
@@ -110,6 +99,29 @@ class DayController extends Notifier<DayState> {
     ref.invalidate(pendingSyncProvider);
     ref.invalidate(needsAttentionProvider);
     ref.invalidate(rejectedActionsProvider);
+  }
+
+  /// Starts ONLINE with the customer's code, so a wrong one is answered while
+  /// they are still standing there. Throws [CrayApiException] (network) when
+  /// there is no connection - the sheet then offers [startWithoutCode].
+  Future<StartResult> start(BookingRow booking, {required String code}) async {
+    final repo = _repo;
+    if (repo == null) return const StartResult.refused(StartRefusal.notStartable);
+    final result = await repo.startNow(booking.id, code: code);
+    if (result.started) _show(booking.id, 'in_progress');
+    return result;
+  }
+
+  /// Without the code - no app, locked, or no connection. Queued; never
+  /// silent: the server records why and the owner sees it (0084, 0086).
+  Future<void> startWithoutCode(BookingRow booking) async {
+    final repo = _repo;
+    if (repo == null) return;
+    // Like mark-complete: the row changes under the stylist's thumb, and the
+    // queue catches up.
+    _show(booking.id, 'in_progress');
+    await repo.startWithoutCode(booking.id);
+    _refreshCounts();
   }
 
   /// Queued through the outbox. The row does NOT turn "paid" here: whether the
