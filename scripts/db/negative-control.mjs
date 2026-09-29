@@ -53,6 +53,7 @@ const MONEY_TEST = 'supabase/tests/money/ledger_test.sql';
 const ADMIN_TEST = 'supabase/tests/admin/admin_plane_test.sql';
 const REMINDER_TEST = 'supabase/tests/messaging/reminder_test.sql';
 const REFERRAL_TEST = 'supabase/tests/growth/referral_test.sql';
+const DASHBOARD_TEST = 'supabase/tests/metrics/dashboard_test.sql';
 
 // A new table naming a customer, protected the way EVERY tenant table was
 // protected until 0038: one permissive policy scoped to the salon. It looks
@@ -218,6 +219,29 @@ const SEAM_CANARY = `
 
 const SEAM_MUST_FAIL = [/marking a visit complete SCHEDULES THE REMINDER/];
 
+// PRD 9.5: reconciliation ALERTS on a mismatch rather than silently correcting.
+// The day an owner rings to say the bookings card is wrong, the obvious fix is
+// to make the nightly job overwrite the stored number with the right one. That
+// fix makes every future drift invisible - including the next 0075. This is it.
+const HEAL_CANARY = `
+  create or replace function app.reconcile_day(p_salon_id uuid, p_day date)
+  returns jsonb
+  language plpgsql
+  security definer
+  set search_path = ''
+  as $canary$
+  begin
+    insert into public.daily_salon_metrics (salon_id, day, bookings)
+    select p_salon_id, p_day, count(*)::integer from public.bookings b
+     where b.salon_id = p_salon_id and app.salon_day(p_salon_id, b.starts_at) = p_day
+    on conflict (salon_id, day) do update set bookings = excluded.bookings;
+    return jsonb_build_object('ok', true, 'drifted', false, 'drift', '{}'::jsonb);
+  end;
+  $canary$;
+`;
+
+const HEAL_MUST_FAIL = [/stored number is NOT healed/];
+
 // A function in app_admin that mutates a table and never writes audit_log -
 // exactly the mistake RULES 6.5 exists to prevent.
 const AUDIT_CANARY = `
@@ -375,6 +399,12 @@ try {
       BOOKING_TEST,
       SEAM_CANARY,
       SEAM_MUST_FAIL,
+    ),
+    await check(
+      'metrics / a reconciliation that heals drift instead of reporting it',
+      DASHBOARD_TEST,
+      HEAL_CANARY,
+      HEAL_MUST_FAIL,
     ),
   ];
 
