@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../app/providers.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/format/money.dart';
@@ -30,6 +32,15 @@ class DayScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.dayTitle),
         actions: [
+          // Owners and managers only: owner_dashboard refuses anyone else, and
+          // offering staff a button that answers "not allowed" is worse than no
+          // button at all.
+          if (ref.watch(canEditCatalogueProvider))
+            IconButton(
+              tooltip: l10n.dashTitle,
+              onPressed: () => context.push('/dashboard'),
+              icon: const Icon(Icons.insights_outlined),
+            ),
           if (attention > 0)
             IconButton(
               tooltip: l10n.needsAttention,

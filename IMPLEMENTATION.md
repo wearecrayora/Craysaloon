@@ -57,7 +57,7 @@
 | O3 | `/attention` | **Needs attention** — rejected offline actions · *built 2026-09-27: the reason in words (never a server string), retry reusing the same action id, and discard only ever by hand* | 6 |
 | O4 | `/customers` | Customer list — keyset paginated, searchable · *built 2026-09-27: `list_customers` (keyset, name prefix or whole number), cache-first with an "as of" label, 200% text scale asserted* | 5 |
 | O5 | `/customers/:id` | Customer detail — history, **balance read-only** · *built 2026-09-27; a test asserts the editing controls are ABSENT, not disabled* | 5 |
-| O6 | `/dashboard` | **Dashboard** — stat tiles + cohort chart | 10 |
+| O6 | `/dashboard` | **Dashboard** — stat tiles + cohort chart · *built 2026-09-29: one tap from the day view (owners and managers only); today computed from source so it cannot drift; spend and conversion in ONE card; an unripe cohort reads "not yet", never 0%; legend, direct labels, n and a table view; outstanding credit shown with no control and says so* | 10 |
 | O7 | `/catalogue/services` | Services CRUD · *built 2026-09-27. Add/edit for owner and manager only (0041 refuses anyone else in the database); price collected in rupees and sent as paise; hidden rather than deleted, because history keeps its own snapshot* | 5 |
 | O8 | `/catalogue/addons` | Add-ons CRUD + relevance | 5 |
 | O9 | `/staff` | Staff + working hours | 5 |

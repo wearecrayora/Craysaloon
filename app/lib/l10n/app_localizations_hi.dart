@@ -699,6 +699,131 @@ class AppL10nHi extends AppL10n {
   @override
   String get referClaimNotNew =>
       'रेफ़रल कोड पहली विज़िट के लिए होते हैं, और आप पहले आ चुके हैं।';
+
+  @override
+  String get dashTitle => 'डैशबोर्ड';
+
+  @override
+  String get dashToday => 'आज';
+
+  @override
+  String get dashRevenue => 'कमाई';
+
+  @override
+  String get dashCompleted => 'पूरी विज़िट';
+
+  @override
+  String get dashAvgBill => 'औसत बिल';
+
+  @override
+  String get dashNoAverage => '—';
+
+  @override
+  String get dashBookings => 'बुकिंग';
+
+  @override
+  String dashCancelledNoShow(int cancelled, int noShow) {
+    return '$cancelled रद्द · $noShow नहीं आए';
+  }
+
+  @override
+  String get dashThisMonth => 'इस महीने';
+
+  @override
+  String get dashNewRepeat => 'नए / लौटे';
+
+  @override
+  String get dashWalletCollected => 'वॉलेट टॉप-अप';
+
+  @override
+  String get dashOutstanding => 'ग्राहकों के पास क्रेडिट';
+
+  @override
+  String get dashOutstandingNote =>
+      'केवल दिखाया जाता है, बदला नहीं जा सकता। बैलेंस केवल टॉप-अप और विज़िट से बदलता है।';
+
+  @override
+  String get dashBinds => 'नए ग्राहक जुड़े';
+
+  @override
+  String get dashMessagingTitle => 'रिमाइंडर: खर्च और नतीजा';
+
+  @override
+  String get dashSpend => 'मैसेज पर खर्च';
+
+  @override
+  String dashRemindersSent(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count रिमाइंडर भेजे',
+      one: '1 रिमाइंडर भेजा',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dashReminderBookings(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'रिमाइंडर से $count बुकिंग',
+      one: 'रिमाइंडर से 1 बुकिंग',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dashPushSaved(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count मैसेज ऐप नोटिफिकेशन से मुफ़्त गए',
+      one: '1 मैसेज ऐप नोटिफिकेशन से मुफ़्त गया',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dashCohortTitle => 'क्या ग्राहक लौटते हैं?';
+
+  @override
+  String get dashCohortAxis => '% जो लौटे';
+
+  @override
+  String get dashCohortWallet => 'वॉलेट वाले';
+
+  @override
+  String get dashCohortNoWallet => 'बिना वॉलेट';
+
+  @override
+  String dashCohortWithin(int days) {
+    return '$days दिन में';
+  }
+
+  @override
+  String get dashCohortNotYet => 'अभी नहीं';
+
+  @override
+  String dashCohortN(int n) {
+    return 'n = $n';
+  }
+
+  @override
+  String get dashCohortEmpty => 'पहली विज़िट के बाद यहाँ समूह दिखेंगे।';
+
+  @override
+  String get dashCohortTable => 'यही आँकड़े';
+
+  @override
+  String get dashCohortMonth => 'जुड़े';
+
+  @override
+  String get dashCohortGroup => 'समूह';
+
+  @override
+  String get dashDrift =>
+      'कुछ पुराने आँकड़े रिकॉर्ड से मेल नहीं खाते और उनकी जाँच हो रही है।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -1403,4 +1528,129 @@ class AppL10nHiLatn extends AppL10nHi {
   @override
   String get referClaimNotNew =>
       'Referral code pehli visit ke liye hote hain, aur aap pehle aa chuke hain.';
+
+  @override
+  String get dashTitle => 'Dashboard';
+
+  @override
+  String get dashToday => 'Aaj';
+
+  @override
+  String get dashRevenue => 'Kamai';
+
+  @override
+  String get dashCompleted => 'Poori visits';
+
+  @override
+  String get dashAvgBill => 'Average bill';
+
+  @override
+  String get dashNoAverage => '—';
+
+  @override
+  String get dashBookings => 'Bookings';
+
+  @override
+  String dashCancelledNoShow(int cancelled, int noShow) {
+    return '$cancelled cancel · $noShow nahi aaye';
+  }
+
+  @override
+  String get dashThisMonth => 'Is mahine';
+
+  @override
+  String get dashNewRepeat => 'Naye / lautne wale';
+
+  @override
+  String get dashWalletCollected => 'Wallet top-up';
+
+  @override
+  String get dashOutstanding => 'Customers ke paas credit';
+
+  @override
+  String get dashOutstandingNote =>
+      'Sirf dikhaya jaata hai, badla nahi ja sakta. Balance sirf top-up aur visit se badalta hai.';
+
+  @override
+  String get dashBinds => 'Naye customer jude';
+
+  @override
+  String get dashMessagingTitle => 'Reminders: kharch aur nateeja';
+
+  @override
+  String get dashSpend => 'Message par kharch';
+
+  @override
+  String dashRemindersSent(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reminders bheje',
+      one: '1 reminder bheja',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dashReminderBookings(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Reminder se $count bookings',
+      one: 'Reminder se 1 booking',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dashPushSaved(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages app notification se free gaye',
+      one: '1 message app notification se free gaya',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dashCohortTitle => 'Kya customers wapas aate hain?';
+
+  @override
+  String get dashCohortAxis => '% jo lautey';
+
+  @override
+  String get dashCohortWallet => 'Wallet wale';
+
+  @override
+  String get dashCohortNoWallet => 'Bina wallet';
+
+  @override
+  String dashCohortWithin(int days) {
+    return '$days din mein';
+  }
+
+  @override
+  String get dashCohortNotYet => 'abhi nahi';
+
+  @override
+  String dashCohortN(int n) {
+    return 'n = $n';
+  }
+
+  @override
+  String get dashCohortEmpty => 'Pehli visit ke baad yahan groups dikhenge.';
+
+  @override
+  String get dashCohortTable => 'Yahi aankde';
+
+  @override
+  String get dashCohortMonth => 'Jude';
+
+  @override
+  String get dashCohortGroup => 'Group';
+
+  @override
+  String get dashDrift =>
+      'Kuch purane aankde record se match nahi karte aur unki jaanch ho rahi hai.';
 }

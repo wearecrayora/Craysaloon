@@ -702,4 +702,131 @@ class AppL10nEn extends AppL10n {
   @override
   String get referClaimNotNew =>
       'Referral codes are for a first visit, and you have already been in.';
+
+  @override
+  String get dashTitle => 'Dashboard';
+
+  @override
+  String get dashToday => 'Today';
+
+  @override
+  String get dashRevenue => 'Revenue';
+
+  @override
+  String get dashCompleted => 'Visits done';
+
+  @override
+  String get dashAvgBill => 'Average bill';
+
+  @override
+  String get dashNoAverage => '—';
+
+  @override
+  String get dashBookings => 'Bookings';
+
+  @override
+  String dashCancelledNoShow(int cancelled, int noShow) {
+    return '$cancelled cancelled · $noShow no-show';
+  }
+
+  @override
+  String get dashThisMonth => 'This month';
+
+  @override
+  String get dashNewRepeat => 'New / returning';
+
+  @override
+  String get dashWalletCollected => 'Wallet top-ups';
+
+  @override
+  String get dashOutstanding => 'Credit customers hold';
+
+  @override
+  String get dashOutstandingNote =>
+      'Shown, not adjustable. Balances change only through top-ups and visits.';
+
+  @override
+  String get dashBinds => 'New customers joined';
+
+  @override
+  String get dashMessagingTitle =>
+      'Reminders: what they cost and what they brought';
+
+  @override
+  String get dashSpend => 'Spent on messages';
+
+  @override
+  String dashRemindersSent(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reminders sent',
+      one: '1 reminder sent',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dashReminderBookings(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bookings from reminders',
+      one: '1 booking from reminders',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dashPushSaved(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages went free by app notification',
+      one: '1 message went free by app notification',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dashCohortTitle => 'Do customers come back?';
+
+  @override
+  String get dashCohortAxis => '% who returned';
+
+  @override
+  String get dashCohortWallet => 'Use the wallet';
+
+  @override
+  String get dashCohortNoWallet => 'No wallet';
+
+  @override
+  String dashCohortWithin(int days) {
+    return 'Within $days days';
+  }
+
+  @override
+  String get dashCohortNotYet => 'not yet';
+
+  @override
+  String dashCohortN(int n) {
+    return 'n = $n';
+  }
+
+  @override
+  String get dashCohortEmpty =>
+      'Cohorts appear once customers have had their first visit.';
+
+  @override
+  String get dashCohortTable => 'The same numbers';
+
+  @override
+  String get dashCohortMonth => 'Joined';
+
+  @override
+  String get dashCohortGroup => 'Group';
+
+  @override
+  String get dashDrift =>
+      'Some past figures disagree with the records and are being checked.';
 }

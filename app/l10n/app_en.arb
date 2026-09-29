@@ -635,5 +635,119 @@
   "referClaimAlready": "A friend's code has already been applied to your account.",
   "@referClaimAlready": {},
   "referClaimNotNew": "Referral codes are for a first visit, and you have already been in.",
-  "@referClaimNotNew": {}
+  "@referClaimNotNew": {},
+  "dashTitle": "Dashboard",
+  "@dashTitle": {},
+  "dashToday": "Today",
+  "@dashToday": {},
+  "dashRevenue": "Revenue",
+  "@dashRevenue": {},
+  "dashCompleted": "Visits done",
+  "@dashCompleted": {},
+  "dashAvgBill": "Average bill",
+  "@dashAvgBill": {},
+  "dashNoAverage": "—",
+  "@dashNoAverage": {
+    "description": "No visits yet today: an average of nothing is not zero."
+  },
+  "dashBookings": "Bookings",
+  "@dashBookings": {},
+  "dashCancelledNoShow": "{cancelled} cancelled · {noShow} no-show",
+  "@dashCancelledNoShow": {
+    "placeholders": {
+      "cancelled": {
+        "type": "int"
+      },
+      "noShow": {
+        "type": "int"
+      }
+    }
+  },
+  "dashThisMonth": "This month",
+  "@dashThisMonth": {},
+  "dashNewRepeat": "New / returning",
+  "@dashNewRepeat": {},
+  "dashWalletCollected": "Wallet top-ups",
+  "@dashWalletCollected": {},
+  "dashOutstanding": "Credit customers hold",
+  "@dashOutstanding": {},
+  "dashOutstandingNote": "Shown, not adjustable. Balances change only through top-ups and visits.",
+  "@dashOutstandingNote": {
+    "description": "PRD 9.5: the adjust-wallet action was removed. There is no control, API or permission."
+  },
+  "dashBinds": "New customers joined",
+  "@dashBinds": {},
+  "dashMessagingTitle": "Reminders: what they cost and what they brought",
+  "@dashMessagingTitle": {
+    "description": "Cost and conversion are shown TOGETHER, never apart (PRD 9.5)."
+  },
+  "dashSpend": "Spent on messages",
+  "@dashSpend": {},
+  "dashRemindersSent": "{count, plural, =1{1 reminder sent} other{{count} reminders sent}}",
+  "@dashRemindersSent": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashReminderBookings": "{count, plural, =1{1 booking from reminders} other{{count} bookings from reminders}}",
+  "@dashReminderBookings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashPushSaved": "{count, plural, =1{1 message went free by app notification} other{{count} messages went free by app notification}}",
+  "@dashPushSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashCohortTitle": "Do customers come back?",
+  "@dashCohortTitle": {},
+  "dashCohortAxis": "% who returned",
+  "@dashCohortAxis": {
+    "description": "DESIGN 9.4: the Y axis is a percentage and says so."
+  },
+  "dashCohortWallet": "Use the wallet",
+  "@dashCohortWallet": {},
+  "dashCohortNoWallet": "No wallet",
+  "@dashCohortNoWallet": {},
+  "dashCohortWithin": "Within {days} days",
+  "@dashCohortWithin": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "dashCohortNotYet": "not yet",
+  "@dashCohortNotYet": {
+    "description": "A cohort that has not had the full window has no rate. Never drawn as zero."
+  },
+  "dashCohortN": "n = {n}",
+  "@dashCohortN": {
+    "description": "A rate without an n is a claim without evidence (DESIGN 9.4).",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "dashCohortEmpty": "Cohorts appear once customers have had their first visit.",
+  "@dashCohortEmpty": {},
+  "dashCohortTable": "The same numbers",
+  "@dashCohortTable": {},
+  "dashCohortMonth": "Joined",
+  "@dashCohortMonth": {},
+  "dashCohortGroup": "Group",
+  "@dashCohortGroup": {},
+  "dashDrift": "Some past figures disagree with the records and are being checked.",
+  "@dashDrift": {
+    "description": "Drift is SHOWN to the owner, not hidden (PRD 9.5)."
+  }
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../domain/dashboard/dashboard.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/notifications/push_api.dart';
 import '../../domain/privacy/privacy.dart';
@@ -20,7 +21,7 @@ import '../../domain/wallet/wallet.dart';
 ///   error paths carry a kind, not a payload.
 class SupabaseCrayApi
     implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi, WalletApi,
-        PushApi, ReferralApi {
+        PushApi, ReferralApi, DashboardApi {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -820,6 +821,64 @@ class SupabaseCrayApi
       };
     } on PostgrestException catch (e) {
       throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // DashboardApi (M10). One call; today is computed from source on the server.
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<Dashboard> dashboard() async {
+    try {
+      final d = _asMap(await _client.rpc<dynamic>('owner_dashboard')) ?? const {};
+      final today = _asMap(d['today']) ?? const {};
+      final bookings = _asMap(d['bookings_today']) ?? const {};
+      final month = _asMap(d['month']) ?? const {};
+      final messaging = _asMap(d['messaging']) ?? const {};
+      final spend = _asMap(messaging['spend_by_channel']) ?? const {};
+
+      return Dashboard(
+        revenuePaise: _int(today['revenue_paise']),
+        completed: _int(today['completed']),
+        avgBillPaise: today['avg_bill_paise'] == null ? null : _int(today['avg_bill_paise']),
+        bookingsLive: _int(bookings['live']),
+        cancelled: _int(bookings['cancelled']),
+        noShow: _int(bookings['no_show']),
+        newCustomers: _int(month['new_customers']),
+        repeatCustomers: _int(month['repeat_customers']),
+        walletCollectedPaise: _int(month['wallet_collected_paise']),
+        outstandingCreditPaise: _int(d['outstanding_credit_paise']),
+        reminderBookings: _int(messaging['reminder_bookings']),
+        binds: _int(month['binds']),
+        spendByChannel: {for (final e in spend.entries) e.key: _int(e.value)},
+        remindersSent: _int(messaging['reminders_sent']),
+        ackedPushes: _int(messaging['acked_pushes']),
+        cohorts: [
+          for (final raw in (d['cohorts'] as List? ?? const []))
+            if (_asMap(raw) case final c?)
+              CohortRow(
+                month: DateTime.tryParse(c['month'] as String? ?? '') ?? DateTime(2000),
+                segment: c['segment'] as String? ?? '',
+                n: _int(c['n']),
+                // null stays null: an unripe cohort has no rate, and 0 would
+                // be a lie told in the most readable place on the screen.
+                d30: (c['d30'] as num?)?.toDouble(),
+                d60: (c['d60'] as num?)?.toDouble(),
+                d90: (c['d90'] as num?)?.toDouble(),
+              ),
+        ],
+        driftDays: [
+          for (final raw in (d['drift_days'] as List? ?? const []))
+            if (_asMap(raw)?['day'] case final String day) day,
+        ],
+      );
+    } on PostgrestException catch (e) {
+      throw CrayApiException(
+        e.code == '42501' ? CrayErrorKind.forbidden : _postgrestKind(e),
+      );
     } catch (_) {
       throw const CrayApiException(CrayErrorKind.network);
     }

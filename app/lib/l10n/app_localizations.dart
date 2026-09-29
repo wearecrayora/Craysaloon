@@ -1237,6 +1237,192 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Referral codes are for a first visit, and you have already been in.'**
   String get referClaimNotNew;
+
+  /// No description provided for @dashTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashTitle;
+
+  /// No description provided for @dashToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get dashToday;
+
+  /// No description provided for @dashRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue'**
+  String get dashRevenue;
+
+  /// No description provided for @dashCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Visits done'**
+  String get dashCompleted;
+
+  /// No description provided for @dashAvgBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Average bill'**
+  String get dashAvgBill;
+
+  /// No visits yet today: an average of nothing is not zero.
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get dashNoAverage;
+
+  /// No description provided for @dashBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get dashBookings;
+
+  /// No description provided for @dashCancelledNoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'{cancelled} cancelled · {noShow} no-show'**
+  String dashCancelledNoShow(int cancelled, int noShow);
+
+  /// No description provided for @dashThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get dashThisMonth;
+
+  /// No description provided for @dashNewRepeat.
+  ///
+  /// In en, this message translates to:
+  /// **'New / returning'**
+  String get dashNewRepeat;
+
+  /// No description provided for @dashWalletCollected.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet top-ups'**
+  String get dashWalletCollected;
+
+  /// No description provided for @dashOutstanding.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit customers hold'**
+  String get dashOutstanding;
+
+  /// PRD 9.5: the adjust-wallet action was removed. There is no control, API or permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown, not adjustable. Balances change only through top-ups and visits.'**
+  String get dashOutstandingNote;
+
+  /// No description provided for @dashBinds.
+  ///
+  /// In en, this message translates to:
+  /// **'New customers joined'**
+  String get dashBinds;
+
+  /// Cost and conversion are shown TOGETHER, never apart (PRD 9.5).
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders: what they cost and what they brought'**
+  String get dashMessagingTitle;
+
+  /// No description provided for @dashSpend.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent on messages'**
+  String get dashSpend;
+
+  /// No description provided for @dashRemindersSent.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 reminder sent} other{{count} reminders sent}}'**
+  String dashRemindersSent(int count);
+
+  /// No description provided for @dashReminderBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 booking from reminders} other{{count} bookings from reminders}}'**
+  String dashReminderBookings(int count);
+
+  /// No description provided for @dashPushSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 message went free by app notification} other{{count} messages went free by app notification}}'**
+  String dashPushSaved(int count);
+
+  /// No description provided for @dashCohortTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Do customers come back?'**
+  String get dashCohortTitle;
+
+  /// DESIGN 9.4: the Y axis is a percentage and says so.
+  ///
+  /// In en, this message translates to:
+  /// **'% who returned'**
+  String get dashCohortAxis;
+
+  /// No description provided for @dashCohortWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the wallet'**
+  String get dashCohortWallet;
+
+  /// No description provided for @dashCohortNoWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'No wallet'**
+  String get dashCohortNoWallet;
+
+  /// No description provided for @dashCohortWithin.
+  ///
+  /// In en, this message translates to:
+  /// **'Within {days} days'**
+  String dashCohortWithin(int days);
+
+  /// A cohort that has not had the full window has no rate. Never drawn as zero.
+  ///
+  /// In en, this message translates to:
+  /// **'not yet'**
+  String get dashCohortNotYet;
+
+  /// A rate without an n is a claim without evidence (DESIGN 9.4).
+  ///
+  /// In en, this message translates to:
+  /// **'n = {n}'**
+  String dashCohortN(int n);
+
+  /// No description provided for @dashCohortEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Cohorts appear once customers have had their first visit.'**
+  String get dashCohortEmpty;
+
+  /// No description provided for @dashCohortTable.
+  ///
+  /// In en, this message translates to:
+  /// **'The same numbers'**
+  String get dashCohortTable;
+
+  /// No description provided for @dashCohortMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined'**
+  String get dashCohortMonth;
+
+  /// No description provided for @dashCohortGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get dashCohortGroup;
+
+  /// Drift is SHOWN to the owner, not hidden (PRD 9.5).
+  ///
+  /// In en, this message translates to:
+  /// **'Some past figures disagree with the records and are being checked.'**
+  String get dashDrift;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

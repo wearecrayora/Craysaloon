@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/catalogue/catalogue_screens.dart';
+import '../features/dashboard/dashboard_screen.dart';
 import '../features/customers/customers_screen.dart';
 import '../features/day/attention_screen.dart';
 import '../features/day/day_screen.dart';
@@ -45,7 +46,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (session.isStaff) {
         // The owner's own routes only. '/' means "wherever this role starts".
         const staffRoutes = {
-          '/day', '/day/walk-in', '/attention',
+          '/day', '/day/walk-in', '/attention', '/dashboard',
           '/customers', '/catalogue/services', '/catalogue/addons', '/staff',
         };
         return staffRoutes.contains(location) ? null : '/day';
@@ -81,6 +82,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: '/day', builder: (_, _) => const DayScreen()),
           GoRoute(path: '/day/walk-in', builder: (_, _) => const WalkInScreen()),
           GoRoute(path: '/attention', builder: (_, _) => const AttentionScreen()),
+          GoRoute(path: '/dashboard', builder: (_, _) => const DashboardScreen()),
           GoRoute(path: '/customers', builder: (_, _) => const CustomersScreen()),
           GoRoute(path: '/catalogue/services', builder: (_, _) => const ServicesScreen()),
           GoRoute(path: '/catalogue/addons', builder: (_, _) => const AddOnsScreen()),
