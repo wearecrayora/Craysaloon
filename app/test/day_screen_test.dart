@@ -4,7 +4,9 @@ import 'package:craysalon/data/local/outbox.dart';
 import 'package:craysalon/data/repositories/day_repository.dart';
 import 'package:craysalon/domain/join/cray_api.dart';
 import 'package:craysalon/domain/records/records.dart';
+import 'package:craysalon/domain/salon/salon_account.dart';
 import 'package:craysalon/features/join/join_controller.dart';
+import 'package:craysalon/features/salon/salon_account.dart';
 import 'package:craysalon/main.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +60,7 @@ void main() {
     );
   }
 
-  Future<void> pump(WidgetTester tester) async {
+  Future<void> pump(WidgetTester tester, {SalonAccountApi? account}) async {
     tester.view.physicalSize = const Size(420, 900);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -76,6 +78,7 @@ void main() {
           dayRepositoryProvider.overrideWithValue(
             DayRepository(remote: remote, cache: cache, outbox: outbox, salonId: 'salon-a'),
           ),
+          if (account != null) salonAccountApiProvider.overrideWithValue(account),
         ],
         child: const CraySalonApp(),
       ),
@@ -285,6 +288,46 @@ void main() {
     });
   });
 
+  group('billing (0087)', () {
+    testWidgets('a lapsed salon is TOLD it is read-only, before a tap is refused',
+        (tester) async {
+      remote.dayRows = [booking()];
+      await pump(tester,
+          account: FakeAccount(SalonBilling(
+            state: 'grace',
+            readOnly: true,
+            graceEndsAt: DateTime(2026, 10, 7),
+          )));
+
+      expect(find.text('Read-only for now'), findsOneWidget);
+      expect(find.textContaining('Pay Crayora before Oct 7, 2026'), findsOneWidget);
+      // Reading still works: the day is on screen.
+      expect(find.text('Asha'), findsOneWidget);
+    });
+
+    testWidgets('a paid-up salon shows no banner', (tester) async {
+      remote.dayRows = [booking()];
+      await pump(tester, account: FakeAccount(const SalonBilling(state: 'active', readOnly: false)));
+      expect(find.text('Read-only for now'), findsNothing);
+    });
+
+    testWidgets('a feature outside the plan has no button', (tester) async {
+      remote.dayRows = [booking()];
+      await pump(tester,
+          account: FakeAccount(const SalonBilling(state: 'active', readOnly: false),
+              features: const {'referrals'}));
+      expect(find.byTooltip('Dashboard'), findsNothing);
+    });
+
+    testWidgets('and one inside it does', (tester) async {
+      remote.dayRows = [booking()];
+      await pump(tester,
+          account: FakeAccount(const SalonBilling(state: 'active', readOnly: false),
+              features: const {'dashboard', 'referrals'}));
+      expect(find.byTooltip('Dashboard'), findsOneWidget);
+    });
+  });
+
   testWidgets('an empty day says so rather than showing a spinner forever',
       (tester) async {
     remote.dayRows = const [];
@@ -322,4 +365,17 @@ void main() {
 
     expect(tester.takeException(), isNull);
   });
+}
+
+class FakeAccount implements SalonAccountApi {
+  FakeAccount(this.billing, {this.features = const {'dashboard', 'referrals'}});
+
+  final SalonBilling billing;
+  final Set<String> features;
+
+  @override
+  Future<SalonBilling> myBilling() async => billing;
+
+  @override
+  Future<Set<String>> myFeatures() async => features;
 }

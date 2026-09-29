@@ -271,18 +271,149 @@ export async function setSalonStatus(
       ${actorAdminId}::uuid, ${salonId}::uuid, ${status}, ${reason})`;
 }
 
-/** RULES 6.4 - collected offline; the reference is the only evidence. */
+/** RULES 6.4 - collected offline: amount, date and reference. The reference is the only evidence. */
 export async function recordSetupFee(
   actorAdminId: string,
   salonId: string,
   status: 'unpaid' | 'paid' | 'waived',
   reference: string | null,
   paidOn: string | null,
+  amountPaise: number | null = null,
 ) {
   const sql = client();
   await sql`
     select app_admin.record_setup_fee(
-      ${actorAdminId}::uuid, ${salonId}::uuid, ${status}, ${reference}, ${paidOn}::date)`;
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${status}, ${reference}, ${paidOn}::date,
+      ${amountPaise}::bigint)`;
+}
+
+// ---------------------------------------------------------------------------
+// Billing (M11, 0087). The DATABASE computes the state from renews_at; the
+// console only shows it, so it can never disagree with what RLS enforces.
+// ---------------------------------------------------------------------------
+
+export type BillingState = 'unbilled' | 'active' | 'grace' | 'suspended' | 'purge_due';
+export type Feature = 'dashboard' | 'referrals';
+
+export type BillingOverview = {
+  subscription: {
+    plan: 'starter' | 'growth' | 'pro';
+    monthly_price_paise: number;
+    billing_starts_on: string | null;
+    setup_fee_status: 'unpaid' | 'paid' | 'waived';
+    setup_fee_paise: number;
+    setup_fee_reference: string | null;
+    setup_fee_paid_on: string | null;
+  };
+  dates: {
+    state: BillingState;
+    renews_at: string | null;
+    grace_ends_at: string | null;
+    notice_60_at: string | null;
+    notice_80_at: string | null;
+    purge_after: string | null;
+  } | null;
+  writable: boolean;
+  payments: {
+    id: number;
+    amount_paise: number;
+    months: number;
+    period_start: string;
+    period_end: string;
+    reference: string;
+    paid_on: string;
+    recorded_by: string | null;
+  }[];
+  notices: { kind: string; due_at: string; cycle_renews_at: string }[];
+  features: Record<Feature, { plan: boolean; override: boolean | null; effective: boolean }>;
+};
+
+export async function getBillingOverview(
+  actorAdminId: string,
+  salonId: string,
+): Promise<BillingOverview | null> {
+  const sql = client();
+  const [row] = await sql<{ r: BillingOverview | null }[]>`
+    select app_admin.billing_overview(${actorAdminId}::uuid, ${salonId}::uuid) as r`;
+  return row?.r ?? null;
+}
+
+/** Plan, agreed price and the first due date. The due date is set once. */
+export async function setBilling(
+  actorAdminId: string,
+  salonId: string,
+  plan: 'starter' | 'growth' | 'pro',
+  monthlyPricePaise: number,
+  billingStartsOn: string | null,
+  reason: string | null,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.set_billing(${actorAdminId}::uuid, ${salonId}::uuid, ${plan},
+      ${monthlyPricePaise}::bigint, ${billingStartsOn}::date, ${reason})`;
+}
+
+/** Collected offline, like the setup fee. Moves renews_at on from where it was. */
+export async function recordSubscriptionPayment(
+  actorAdminId: string,
+  salonId: string,
+  amountPaise: number,
+  months: number,
+  reference: string,
+  paidOn: string | null,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.record_subscription_payment(${actorAdminId}::uuid, ${salonId}::uuid,
+      ${amountPaise}::bigint, ${months}::int, ${reference}, ${paidOn}::date)`;
+}
+
+/** A comp: time given away, so a reason is required and audited. */
+export async function extendSubscription(
+  actorAdminId: string,
+  salonId: string,
+  days: number,
+  reason: string,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.extend_subscription(${actorAdminId}::uuid, ${salonId}::uuid,
+      ${days}::int, ${reason})`;
+}
+
+/** A per-salon override of the plan; null clears it back to the plan. */
+export async function setFeatureFlag(
+  actorAdminId: string,
+  salonId: string,
+  flag: Feature,
+  enabled: boolean | null,
+  reason: string,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.set_feature_flag(${actorAdminId}::uuid, ${salonId}::uuid, ${flag},
+      ${enabled}::boolean, ${reason})`;
+}
+
+export type PlatformMetrics = {
+  salons: Record<string, number> | null;
+  billing: Partial<Record<BillingState, number>> | null;
+  mrr_paise: number;
+  activations_30d: number;
+  churned_30d: number;
+  subscription_revenue_30d_paise: number;
+  setup_fees_paise: number;
+  sends_30d: Record<string, number>;
+  median_hours_to_first_bind: number | null;
+  salons_never_bound: number;
+};
+
+export async function getPlatformMetrics(actorAdminId: string): Promise<PlatformMetrics> {
+  const sql = client();
+  const [row] = await sql<{ r: PlatformMetrics }[]>`
+    select app_admin.platform_metrics(${actorAdminId}::uuid) as r`;
+  if (!row) throw new Error('platform_metrics returned no row');
+  return row.r;
 }
 
 /**

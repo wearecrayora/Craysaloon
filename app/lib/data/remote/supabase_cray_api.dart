@@ -7,6 +7,7 @@ import '../../domain/join/cray_api.dart';
 import '../../domain/notifications/push_api.dart';
 import '../../domain/privacy/privacy.dart';
 import '../../domain/referral/referral.dart';
+import '../../domain/salon/salon_account.dart';
 import '../../domain/records/records.dart';
 import '../../domain/visit/visit.dart';
 import '../../domain/wallet/wallet.dart';
@@ -22,7 +23,7 @@ import '../../domain/wallet/wallet.dart';
 ///   error paths carry a kind, not a payload.
 class SupabaseCrayApi
     implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi, WalletApi,
-        PushApi, ReferralApi, DashboardApi, VisitApi {
+        PushApi, ReferralApi, DashboardApi, VisitApi, SalonAccountApi {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -829,6 +830,35 @@ class SupabaseCrayApi
   // Every call is keyed on the caller's own customer id in the database; the app
   // names a visit, never an amount (0084, 0085).
   // -------------------------------------------------------------------------
+
+  @override
+  Future<SalonBilling> myBilling() async {
+    try {
+      final row = _asMap(await _client.rpc<dynamic>('my_salon_billing')) ?? const {};
+      return SalonBilling(
+        state: row['state'] as String? ?? 'unbilled',
+        readOnly: row['read_only'] == true,
+        renewsAt: _time(row['renews_at']),
+        graceEndsAt: _time(row['grace_ends_at']),
+      );
+    } on PostgrestException catch (e) {
+      throw CrayApiException(e.code == '42501' ? CrayErrorKind.forbidden : _postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  @override
+  Future<Set<String>> myFeatures() async {
+    try {
+      final list = await _client.rpc<dynamic>('my_features');
+      return {for (final f in (list as List? ?? const [])) '$f'};
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
 
   @override
   Future<List<TodayVisit>> visitsToday() async {

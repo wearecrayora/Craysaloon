@@ -90,6 +90,9 @@ select is(
         -- identifiers in it (0081). A STABLE function cannot write, so listing
         -- it here lets no mutation through - the list exists for exactly this.
         'list_data_rights_requests',
+        -- Read-only and STABLE: the billing page and the platform numbers
+        -- (0087). A STABLE function cannot write.
+        'billing_overview', 'platform_metrics',
         -- Infrastructure: it changes grants, not tenant data, and is called
         -- from migrations rather than from the console (0020).
         'close_privileges'

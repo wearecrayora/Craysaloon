@@ -20,6 +20,10 @@ import {
   recordAsset,
   recordIntegrationTest,
   recordSetupFee,
+  recordSubscriptionPayment,
+  extendSubscription,
+  setBilling,
+  setFeatureFlag,
   setIntegrationSecret,
   setMessagingGrace,
   setMessagingTrial,
@@ -206,15 +210,112 @@ export async function setupFeeAction(_prev: ActionState, form: FormData): Promis
   const status = String(form.get('status') ?? '');
   const reference = String(form.get('reference') ?? '').trim() || null;
   const paidOn = String(form.get('paidOn') ?? '').trim() || null;
+  const amountText = String(form.get('amount') ?? '').trim();
+  const amountPaise = amountText === '' ? null : parseRupees(amountText);
 
   if (status !== 'unpaid' && status !== 'paid' && status !== 'waived') {
     return { error: 'Status must be unpaid, paid or waived.' };
   }
+  if (amountText !== '' && amountPaise === null) {
+    return { error: 'The amount is not a rupee amount.' };
+  }
 
   try {
-    await recordSetupFee(admin.id, salonId, status, reference, paidOn);
+    await recordSetupFee(admin.id, salonId, status, reference, paidOn, amountPaise);
     revalidatePath('/');
+    revalidatePath(`/salon/${salonId}/billing`);
     return { ok: 'Setup fee recorded.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+const PLANS = ['starter', 'growth', 'pro'] as const;
+
+export async function setBillingAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const plan = String(form.get('plan') ?? '') as (typeof PLANS)[number];
+  const price = parseRupees(String(form.get('price') ?? ''));
+  const startsOn = String(form.get('startsOn') ?? '').trim() || null;
+  const reason = String(form.get('reason') ?? '').trim() || null;
+
+  if (!PLANS.includes(plan)) return { error: 'Choose a plan.' };
+  if (price === null) return { error: 'The monthly price is not a rupee amount.' };
+
+  try {
+    await setBilling(admin.id, salonId, plan, price, startsOn, reason);
+    revalidatePath(`/salon/${salonId}/billing`);
+    return { ok: 'Billing saved.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function subscriptionPaymentAction(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const amount = parseRupees(String(form.get('amount') ?? ''));
+  const months = Number(form.get('months') ?? 0);
+  const reference = String(form.get('reference') ?? '').trim();
+  const paidOn = String(form.get('paidOn') ?? '').trim() || null;
+
+  if (amount === null || amount <= 0) return { error: 'Enter the amount received.' };
+  if (!Number.isInteger(months) || months < 1 || months > 24) {
+    return { error: 'A payment covers 1 to 24 months.' };
+  }
+  if (!reference) {
+    return { error: 'A reference is required - the money moved outside the system.' };
+  }
+
+  try {
+    await recordSubscriptionPayment(admin.id, salonId, amount, months, reference, paidOn);
+    revalidatePath(`/salon/${salonId}/billing`);
+    revalidatePath('/metrics');
+    return { ok: 'Payment recorded.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function extendAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const days = Number(form.get('days') ?? 0);
+  const reason = String(form.get('reason') ?? '').trim();
+
+  if (!Number.isInteger(days) || days < 1 || days > 90) {
+    return { error: 'An extension is 1 to 90 days.' };
+  }
+  if (!reason) return { error: 'A reason is required - this is revenue given away.' };
+
+  try {
+    await extendSubscription(admin.id, salonId, days, reason);
+    revalidatePath(`/salon/${salonId}/billing`);
+    return { ok: `Extended by ${days} day${days === 1 ? '' : 's'}.` };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function featureFlagAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const flag = String(form.get('flag') ?? '');
+  const value = String(form.get('value') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+
+  if (flag !== 'dashboard' && flag !== 'referrals') return { error: 'Unknown feature.' };
+  if (!reason) return { error: 'A reason is required, and audited.' };
+  const enabled = value === 'on' ? true : value === 'off' ? false : null;
+
+  try {
+    await setFeatureFlag(admin.id, salonId, flag, enabled, reason);
+    revalidatePath(`/salon/${salonId}/billing`);
+    return { ok: 'Saved.' };
   } catch (e) {
     return { error: message(e) };
   }

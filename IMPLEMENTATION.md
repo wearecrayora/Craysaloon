@@ -63,7 +63,7 @@
 | O9 | `/staff` | Staff + working hours | 5 |
 | O10 | `/settings/rules` | **Wallet bonus rule + bonus expiry**, reminder cycles, cancellation policy | 7 |
 | O11 | `/settings/hours` | Working hours, holidays | 5 |
-| O12 | `/billing` | Subscription status, plan, **messaging spend per channel beside reminder conversion** (never one without the other), marketing-escalation setting (SMS default / WhatsApp opt-in) | 11 |
+| O12 | `/billing` | Subscription status, plan, **messaging spend per channel beside reminder conversion** (never one without the other), marketing-escalation setting (SMS default / WhatsApp opt-in) · *2026-09-29, partly: a read-only banner on O1 says why nothing can be recorded, from `my_salon_billing` (plan and price for owners only); the full screen waits for the designs* | 11 |
 | O13 | `/salon` | Salon profile — display name, branding *(read-only)* | 4 |
 
 > **O5 shows a balance and cannot change it.** There is no adjust control, no endpoint, and no
@@ -94,12 +94,12 @@
 | K7 | `/salons/:id/credentials` | **Write-only** secrets + *Test connection*. *Built: Message Central is checked with Message Central before storing (no SMS); Razorpay/WhatsApp/RCS store write-only and stay `untested`* | 2 |
 | K8 | `/salons/:id/messaging` | WhatsApp template status, RCS agent status, send/ack rates **and cost per channel**, **OTP fallback count** | 8 |
 | K9 | `/salons/:id/qr` | QR pack — regenerate, download PDF | 2 |
-| K10 | `/salons/:id/billing` | Record offline setup fee · **activate** · subscription · dunning | 11 |
+| K10 | `/salon/:id/billing` | Record offline setup fee · **activate** · subscription · dunning · *built 2026-09-29: setup fee with its amount (activation now refuses without paid/waived), plan + agreed price + billing start, offline payments (reference required, append-only, extend from the old due date), comp extensions (reason), the computed state and its dates, the notices as calls to make, and the plan features with overrides (K15 lives here)* | 11 |
 | K11 | `/salons/:id/support` | **Support mode** — time-boxed, reason, masked PII | 12 |
 | K12 | `/customers/binding` | **Unbind / transfer** — super-admin only · exact-number lookup with a reason (audited) · unbind offered only with no history · transfer needs the destination, a typed reason, the balance **as disclosed** (must match) and a tick that the customer was told · *built 2026-09-15* | 4 |
 | K13 | `/customers/wallet-correct` | **The only human path to a balance** | 7 |
-| K14 | `/metrics` | MRR, churn, activation, push:WhatsApp, time-to-first-bind | 11 |
-| K15 | `/flags` | Per-salon feature flags | 11 |
+| K14 | `/metrics` | MRR, churn, activation, push:WhatsApp, time-to-first-bind · *built 2026-09-29 from `platform_metrics`: MRR counts paid-up salons only* | 11 |
+| K15 | `/flags` | Per-salon feature flags · *built 2026-09-29 on the salon's billing page, where the plan they override is shown beside them* | 11 |
 | K16 | `/audit` | Audit log — filter by salon, actor, action | 2 |
 
 ---
@@ -429,7 +429,7 @@ Feature → surfaces → server calls → milestone. Use this to check nothing i
 | Reminders §9.2 | push only | Automations A, C, K · `ack_notification` · ladder incl. RCS | 8 |
 | Refer & Earn §9.4 | C11 | `referral_release_reward` (D) | 9 |
 | Dashboard §9.5 | O6 | `daily_salon_metrics`, `retention_cohorts` (E) | 10 |
-| Billing §14 | O12, K10, K14 | Automation I | 11 |
+| Billing §14 | O1 banner, K10, K14 | `set_billing`, `record_subscription_payment`, `extend_subscription`, `set_feature_flag`, `billing_overview`, `platform_metrics`, `my_salon_billing`, `my_features`, Automation I (`run_billing_lifecycle`) | 11 |
 | DPDP §16A.4 | C13, K11 | `record_consent`, `request_data_export`, anonymise | 12 |
 
 ---

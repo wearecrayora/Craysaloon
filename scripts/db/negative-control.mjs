@@ -319,6 +319,26 @@ const BILL_CREDIT_CANARY = `
 
 const BILL_CREDIT_MUST_FAIL = [/credits NOTHING to the wallet/];
 
+// PRD 14: read-only grace is enforced in the database. The billing line in
+// salon_writable is one line, and "the owner says their customers can't book"
+// is exactly the day somebody deletes it. This canary is that deletion.
+const BILLING_TEST = 'supabase/tests/billing/billing_test.sql';
+const GRACE_CANARY = `
+  do $canary$
+  declare
+    v_def text;
+    v_new text;
+  begin
+    select pg_get_functiondef('app.salon_writable(uuid)'::regprocedure) into strict v_def;
+    v_new := replace(v_def, 'and app.billing_open(p_salon)', 'and true');
+    if v_new = v_def then raise exception 'grace canary: the billing line moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+
+const GRACE_MUST_FAIL = [/grace is READ-ONLY in the database/, /nobody NEW joins a lapsed salon/];
+
 
 class Rollback extends Error {
   constructor(lines) {
@@ -460,6 +480,12 @@ try {
       START_TEST,
       BILL_CREDIT_CANARY,
       BILL_CREDIT_MUST_FAIL,
+    ),
+    await check(
+      'billing / a salon_writable that ignores a lapsed subscription',
+      BILLING_TEST,
+      GRACE_CANARY,
+      GRACE_MUST_FAIL,
     ),
   ];
 

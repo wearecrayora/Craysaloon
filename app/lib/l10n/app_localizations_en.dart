@@ -1008,6 +1008,26 @@ class AppL10nEn extends AppL10n {
       'Your wallet has been used. How would you like to pay the rest?';
 
   @override
+  String get billingReadOnlyTitle => 'Read-only for now';
+
+  @override
+  String billingReadOnlyGrace(String date) {
+    return 'Your subscription payment is overdue, so nothing new can be recorded - bookings, starts or payments. Everything is still here to see. Pay Crayora before $date to avoid suspension.';
+  }
+
+  @override
+  String get billingReadOnlySuspended =>
+      'Your subscription is suspended, so nothing new can be recorded. Nothing has been deleted. Contact Crayora to pay and carry on.';
+
+  @override
+  String get billingReadOnlyStaff =>
+      'The salon can\'t record anything new for now - bookings, starts or payments. The owner is sorting it out.';
+
+  @override
+  String get billingReadOnlyOther =>
+      'This salon can\'t record changes right now. Contact Crayora.';
+
+  @override
   String get billAlreadyPaid => 'This bill is already paid.';
 
   @override

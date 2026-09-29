@@ -1001,6 +1001,26 @@ class AppL10nHi extends AppL10n {
       'आपका वॉलेट इस्तेमाल हो गया। बाकी का भुगतान कैसे करना चाहेंगे?';
 
   @override
+  String get billingReadOnlyTitle => 'अभी सिर्फ़ देखा जा सकता है';
+
+  @override
+  String billingReadOnlyGrace(String date) {
+    return 'आपकी सदस्यता का भुगतान बाकी है, इसलिए अभी कुछ नया दर्ज नहीं हो सकता - न बुकिंग, न शुरुआत, न भुगतान। सब कुछ देखा जा सकता है। निलंबन से बचने के लिए $date से पहले Crayora को भुगतान करें।';
+  }
+
+  @override
+  String get billingReadOnlySuspended =>
+      'आपकी सदस्यता निलंबित है, इसलिए कुछ नया दर्ज नहीं हो सकता। कुछ भी मिटाया नहीं गया है। भुगतान करके आगे बढ़ने के लिए Crayora से संपर्क करें।';
+
+  @override
+  String get billingReadOnlyStaff =>
+      'सैलून अभी कुछ नया दर्ज नहीं कर सकता - न बुकिंग, न शुरुआत, न भुगतान। मालिक इसे सुलझा रहे हैं।';
+
+  @override
+  String get billingReadOnlyOther =>
+      'यह सैलून अभी बदलाव दर्ज नहीं कर सकता। Crayora से संपर्क करें।';
+
+  @override
   String get billAlreadyPaid => 'यह बिल पहले से भरा है।';
 
   @override
@@ -2018,6 +2038,26 @@ class AppL10nHiLatn extends AppL10nHi {
   @override
   String get payRestHow =>
       'Aapka wallet use ho gaya. Baaki ka payment kaise karna chahenge?';
+
+  @override
+  String get billingReadOnlyTitle => 'Abhi sirf dekh sakte hain';
+
+  @override
+  String billingReadOnlyGrace(String date) {
+    return 'Aapki subscription ka payment baaki hai, isliye abhi kuch naya darj nahi ho sakta - na booking, na start, na payment. Sab kuch dekh sakte hain. Suspension se bachne ke liye $date se pehle Crayora ko payment karein.';
+  }
+
+  @override
+  String get billingReadOnlySuspended =>
+      'Aapki subscription suspended hai, isliye kuch naya darj nahi ho sakta. Kuch bhi delete nahi hua hai. Payment karke aage badhne ke liye Crayora se contact karein.';
+
+  @override
+  String get billingReadOnlyStaff =>
+      'Salon abhi kuch naya darj nahi kar sakta - na booking, na start, na payment. Owner ise suljha rahe hain.';
+
+  @override
+  String get billingReadOnlyOther =>
+      'Yeh salon abhi badlav darj nahi kar sakta. Crayora se contact karein.';
 
   @override
   String get billAlreadyPaid => 'Yeh bill pehle se bhara hai.';

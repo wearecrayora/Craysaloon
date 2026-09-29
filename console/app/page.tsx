@@ -18,6 +18,7 @@ export default async function Page() {
           <Link href="/provision">Provision a salon</Link>
           <Link href="/customers/binding">Customer binding</Link>
           <Link href="/data-rights">Data-rights requests</Link>
+          <Link href="/metrics">Metrics</Link>
           <span className="who">
             {admin.name} · {admin.email}
           </span>

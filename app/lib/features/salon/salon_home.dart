@@ -11,6 +11,7 @@ import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
 import '../notifications/push_registration.dart';
 import '../visit/visit_cards.dart';
+import 'salon_account.dart';
 
 /// Injected so the offer can be tested without a launcher, and so iOS gets the
 /// same code path with a different answer (`RULES.md` 15b).
@@ -180,11 +181,15 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
               onPressed: () => context.push('/wallet'),
               child: Text(l10n.walletTitle),
             ),
-            const SizedBox(height: 8),
-            OutlinedButton(
-              onPressed: () => context.push('/refer'),
-              child: Text(l10n.referTitle),
-            ),
+            // Only when the salon's plan carries it (0087). The server refuses
+            // the code either way; this just avoids a button that cannot work.
+            if (hasFeature(ref, 'referrals')) ...[
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () => context.push('/refer'),
+                child: Text(l10n.referTitle),
+              ),
+            ],
             if (_confirmation != null) ...[
               const SizedBox(height: 16),
               Text(_confirmation!, style: text.bodySmall),

@@ -1700,6 +1700,36 @@ abstract class AppL10n {
   /// **'Your wallet has been used. How would you like to pay the rest?'**
   String get payRestHow;
 
+  /// No description provided for @billingReadOnlyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Read-only for now'**
+  String get billingReadOnlyTitle;
+
+  /// Owner and manager only. The salon's vendor is named because the owner pays them; customers never see this.
+  ///
+  /// In en, this message translates to:
+  /// **'Your subscription payment is overdue, so nothing new can be recorded - bookings, starts or payments. Everything is still here to see. Pay Crayora before {date} to avoid suspension.'**
+  String billingReadOnlyGrace(String date);
+
+  /// No description provided for @billingReadOnlySuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Your subscription is suspended, so nothing new can be recorded. Nothing has been deleted. Contact Crayora to pay and carry on.'**
+  String get billingReadOnlySuspended;
+
+  /// No description provided for @billingReadOnlyStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'The salon can\'t record anything new for now - bookings, starts or payments. The owner is sorting it out.'**
+  String get billingReadOnlyStaff;
+
+  /// No description provided for @billingReadOnlyOther.
+  ///
+  /// In en, this message translates to:
+  /// **'This salon can\'t record changes right now. Contact Crayora.'**
+  String get billingReadOnlyOther;
+
   /// No description provided for @billAlreadyPaid.
   ///
   /// In en, this message translates to:

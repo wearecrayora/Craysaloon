@@ -64,7 +64,10 @@ select is(
         'otp_challenges',
         -- 0084: service start codes. Staff must NEVER read one, or typing it
         -- proves nothing - so no policy, and only two definer functions.
-        'booking_start_codes'
+        'booking_start_codes',
+        -- 0087: Crayora's own billing records. A salon's staff read their
+        -- state through my_salon_billing; only app_admin reads these.
+        'subscription_payments', 'billing_notices'
       )),
   0,
   'every tenant table has policies, or is a documented no-policy table'
@@ -80,7 +83,9 @@ select is(
                         'join_intents', 'salon_integrations',
                         'otp_challenges',
                         -- A policy here would let staff read a code (0084).
-                        'booking_start_codes')),
+                        'booking_start_codes',
+                        -- Crayora's revenue and lapse notices (0087).
+                        'subscription_payments', 'billing_notices')),
   0,
   'cross-tenant and secret tables have NO policies at all'
 );

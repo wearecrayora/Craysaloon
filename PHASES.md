@@ -433,6 +433,25 @@ console billing and platform metrics.
 *Read:* PRD §14, §16A.6 · ARCHITECTURE §13.2.
 *Done when:* read-only grace is enforced **in the database** · retention notices fire at day 60 and
 80 · plan entitlements are checked server-side.
+*Done 2026-09-29* (0087-0088; `billing/billing_test.sql`, 34 assertions + a canary; console
+`/salon/:id/billing` and `/metrics`; O1 read-only banner, 4 app tests). All three hold and are
+asserted. **Read-only grace** is one line in `salon_writable()`, computed from `renews_at`, so it
+starts at the due date with no job - an owner's insert is refused while every read, a customer's
+wallet, consent withdrawal and a captured Razorpay payment still work. The canary deletes that line
+and six assertions go red. **Notices** at day 60 and 80 of suspension (and grace, suspension and
+purge-due) are recorded once per lapse by Automation I in `run_nightly`. **Entitlements** are
+checked in the RPCs (`owner_dashboard`, `my_referral_code`, `claim_referral`) and mirrored to the
+app by `my_features()`. Two decisions worth knowing: billing **never changes `salons.status`**
+(RULES 6.3 - no timer suspends, no payment activates; a manual suspension survives a payment), and
+a lapsed salon's **own people can still log in** - the login check moved to `salon_open()`, and only
+a first join needs the salon writable. Activation now refuses an unpaid setup fee, which the
+console could not record at all before this milestone.
+
+**Still open:** there is no channel to the owner for the notices (a notice is a call Crayora
+makes; the app shows the state when opened) - owner push registration would close it · plan
+tiers are PRD §21 Q-A: every plan carries every feature until the pilot prices them · a mistaken
+subscription payment has no reversal action yet · the purge itself is M12 · the full O12 screen
+waits for the designs.
 
 **M12 — Compliance and observability.** DPDP export and anonymise, opt-out surfaces, per-salon
 grievance contact, Sentry across all three surfaces, backups **and a rehearsed restore**, support

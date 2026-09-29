@@ -258,7 +258,14 @@ no orphaned code.
 no payment event, no timer, no side effect of saving a form.
 
 6.4 The setup fee is collected **offline**. The console records amount, date, reference and who
-marked it paid. There is no payment integration for it.
+marked it paid. There is no payment integration for it. A salon cannot be activated until the fee
+is `paid`, or `waived` with a reason (0087).
+
+6.4a **A lapsed subscription is read-only, computed from dates** (0087). `salon_writable()` requires
+`billing_open()`; do not replace it with a job that flips `salons.status`, and do not add a write
+path that skips `salon_writable()`. Reads, consent withdrawal, a captured Razorpay payment and
+login for the salon's existing people stay open. Subscription payments are offline, append-only
+and need a reference, like the setup fee.
 
 6.5 **Every admin mutation goes through an `app_admin.*` function that writes `audit_log` in the
 same transaction.** A route handler cannot forget the audit because the write and the log are one

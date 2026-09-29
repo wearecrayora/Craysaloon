@@ -1553,6 +1553,23 @@ sold  ──(fee paid offline: cash / bank transfer)──> recorded in console
 - **No trial** — the setup fee is the commitment (PRD §14). A *messaging* trial (ADR-37) is not a
   billing trial: it covers OTP costs only and leaves the fee and the subscription untouched.
 - Read-only grace is enforced by `app.salon_writable()` (§5.3), not by hiding buttons.
+- **The billing state is computed from dates, not fired by a job (0087).** `subscriptions.renews_at`
+  is the end of the paid period; `app.billing_state()` derives `active → grace (renews_at) →
+  suspended (+7 d) → purge_due (+90 d)`, and `salon_writable()` requires `app.billing_open()`. So
+  writes stop at exactly the deadline even if no scheduler runs, and resume the moment a payment
+  moves `renews_at`. **Billing never changes `salons.status`**: RULES 6.3 forbids a timer or a
+  payment from activating, so status stays the operator's (a manual suspension survives a
+  payment). What stays open while lapsed: reads, consent withdrawal, Razorpay's webhook (money
+  already moved), and **login for people the salon already has** — `otp_finish_login` checks
+  `app.salon_open()` (active, not blocked), and only a *first join* also needs `salon_writable()`.
+  Automation I (`app.run_billing_lifecycle`, in `run_nightly`) records each notice —
+  `grace_started`, `suspended`, `retention_60`, `retention_80`, `purge_due` — once per lapse in
+  `billing_notices`. There is no owner channel yet, so a notice is a call for Crayora to make; the
+  owner's app shows the state (`my_salon_billing`) on the day view. **Purge due flags; it deletes
+  nothing** — purging is M12's deliberate act.
+- Subscription payments are recorded offline like the setup fee (`subscription_payments`,
+  append-only, reference required); a payment extends from the old `renews_at`, not from today.
+  Activation requires the setup fee `paid` or `waived` (with a reason).
 - **Retention splits in two (v2.3).** After 90 days and owner notices at day 60 and 80:
   - *Operational and personal data* — customers, bookings, photos, tokens, message history — is
     **purged**.
@@ -1568,7 +1585,11 @@ sold  ──(fee paid offline: cash / bank transfer)──> recorded in console
   settled by the salon** — the offboarding flow blocks on an explicit disposition, because a
   salon cannot keep money for services it will never provide.
 - Plan entitlements are checked server-side in the RPC layer *and* mirrored into `feature_flags`
-  for UI gating — the UI gate is a courtesy, the server gate is the control. Note that
+  for UI gating — the UI gate is a courtesy, the server gate is the control. *(0087:
+  `app.plan_features(plan)` + a per-salon `feature_flags` override = `app.salon_has_feature`;
+  gated today: `owner_dashboard` (`dashboard`), `my_referral_code` / `claim_referral`
+  (`referrals`); the app reads `my_features()`. Every plan carries every built feature until
+  PRD §21 Q-A is settled — setting tiers is a one-line change.)* Note that
   entitlements are now **feature-based only**; message allowances no longer differentiate plans
   (§12.4, PRD §21 Q-A).
 

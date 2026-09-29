@@ -120,6 +120,9 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
           <Link href={`/salon/${salon.id}/qr`} style={{ fontSize: 13, marginRight: 10 }}>
             QR pack
           </Link>
+          <Link href={`/salon/${salon.id}/billing`} style={{ fontSize: 13, marginRight: 10 }}>
+            Billing
+          </Link>
           <button type="button" className="secondary" onClick={() => setOpen((v) => !v)}>
             {open ? 'Close' : 'Manage'}
           </button>

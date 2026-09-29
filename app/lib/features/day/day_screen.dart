@@ -9,6 +9,7 @@ import '../../core/format/money.dart';
 import '../../core/ui/cache_banner.dart';
 import '../../domain/records/records.dart';
 import '../../l10n/app_localizations.dart';
+import '../salon/salon_account.dart';
 import 'checkout_sheet.dart';
 import 'start_sheet.dart';
 import 'day_controller.dart';
@@ -37,7 +38,8 @@ class DayScreen extends ConsumerWidget {
           // Owners and managers only: owner_dashboard refuses anyone else, and
           // offering staff a button that answers "not allowed" is worse than no
           // button at all.
-          if (ref.watch(canEditCatalogueProvider))
+          // And only when the salon's plan carries it (0087).
+          if (ref.watch(canEditCatalogueProvider) && hasFeature(ref, 'dashboard'))
             IconButton(
               tooltip: l10n.dashTitle,
               onPressed: () => context.push('/dashboard'),
@@ -62,6 +64,8 @@ class DayScreen extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
+            // Why nothing can be recorded, BEFORE a tap is refused (0087).
+            const ReadOnlyBanner(),
             if (state.fromCache) CacheBanner(refreshedAt: state.refreshedAt),
             if (pending > 0)
               Container(
@@ -83,7 +87,12 @@ class DayScreen extends ConsumerWidget {
               ),
             Expanded(
               child: RefreshIndicator(
-                onRefresh: () => ref.read(dayControllerProvider.notifier).refresh(),
+                onRefresh: () {
+                  // A payment recorded in the console lifts read-only at once;
+                  // pulling down is how the owner sees that.
+                  ref.invalidate(salonBillingProvider);
+                  return ref.read(dayControllerProvider.notifier).refresh();
+                },
                 child: state.loading && state.bookings.isEmpty
                     ? const Center(child: CircularProgressIndicator())
                     : state.bookings.isEmpty
