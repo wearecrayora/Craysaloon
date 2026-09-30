@@ -121,6 +121,9 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // The catalogue lives under More now (Claude Design O7).
+    await tester.tap(find.text('More').last);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Services').last);
     await tester.pumpAndSettle();
   }

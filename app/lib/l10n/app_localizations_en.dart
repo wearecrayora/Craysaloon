@@ -1349,4 +1349,151 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get docNoGst => 'No GST charged.';
+
+  @override
+  String get moreTitle => 'More';
+
+  @override
+  String get moreServicesSub => 'Prices, times, and what is on the menu';
+
+  @override
+  String get moreAddOnsSub => 'Extras customers can choose - never pre-ticked';
+
+  @override
+  String get moreTeamSub => 'Who works here';
+
+  @override
+  String get rulesTitle => 'Rules';
+
+  @override
+  String get moreRulesSub => 'Wallet bonus, Refer & Earn, reminders';
+
+  @override
+  String get hoursTitle => 'Hours';
+
+  @override
+  String get moreHoursSub => 'When the salon is open';
+
+  @override
+  String get billingTitle => 'Billing';
+
+  @override
+  String get moreBillingSub => 'Your plan with Crayora';
+
+  @override
+  String get profileTitle => 'Salon profile';
+
+  @override
+  String get moreProfileSub => 'Name, contact, GST and privacy contact';
+
+  @override
+  String get rulesFooter =>
+      'Crayora sets these with you. Ask your Crayora contact to change them.';
+
+  @override
+  String get rulesBonus => 'Bonus';
+
+  @override
+  String rulesBonusValue(String bonus, String every) {
+    return '$bonus for every $every';
+  }
+
+  @override
+  String get rulesNone => 'None';
+
+  @override
+  String get rulesSmallestTopup => 'Smallest top-up';
+
+  @override
+  String get rulesBonusLasts => 'Bonus lasts';
+
+  @override
+  String rulesDays(int days) {
+    return '$days days';
+  }
+
+  @override
+  String get rulesPaidCredit => 'Paid credit';
+
+  @override
+  String get rulesNeverExpires => 'Never expires';
+
+  @override
+  String get rulesReferrer => 'To the customer who invites';
+
+  @override
+  String get rulesFriend => 'To the friend who joins';
+
+  @override
+  String get rulesReferralWhen =>
+      'Released only after the friend\'s first visit is completed and paid.';
+
+  @override
+  String get rulesReminders => 'Reminders';
+
+  @override
+  String get rulesRemindAfter => 'Remind customers after';
+
+  @override
+  String get rulesCancellation => 'Cancellation policy';
+
+  @override
+  String get hoursFooter =>
+      'To change your hours or add a holiday, ask your Crayora contact.';
+
+  @override
+  String get hoursNotSet => 'Your hours are not recorded yet.';
+
+  @override
+  String get hoursClosed => 'Closed';
+
+  @override
+  String get billingActive => 'Active';
+
+  @override
+  String get billingGrace => 'Payment overdue - read-only';
+
+  @override
+  String get billingSuspended => 'Suspended';
+
+  @override
+  String get billingClosing => 'Closing';
+
+  @override
+  String get billingUnbilled => 'Not billed yet';
+
+  @override
+  String get billingFooter =>
+      'Crayora bills you for the app. Your customers\' payments go to your own account, never to Crayora.';
+
+  @override
+  String get billingPlan => 'Plan';
+
+  @override
+  String get billingStatus => 'Status';
+
+  @override
+  String get billingMonthly => 'Monthly';
+
+  @override
+  String get billingPaidUntil => 'Paid until';
+
+  @override
+  String get profileFooter =>
+      'Your logo, colours and fonts are set with Crayora. Ask your Crayora contact to change them.';
+
+  @override
+  String get profileLegalName => 'Legal name';
+
+  @override
+  String get profileAddress => 'Address';
+
+  @override
+  String get profileEmail => 'Email';
+
+  @override
+  String get profileNoGst => 'Not registered';
+
+  @override
+  String get profilePrivacyContact => 'Privacy contact';
 }

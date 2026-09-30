@@ -39,6 +39,12 @@ final salonFeaturesProvider = FutureProvider<Set<String>?>((ref) async {
   }
 });
 
+/// The salon's own details, for the owner's read-only More screens.
+final salonProfileProvider = FutureProvider<SalonProfile?>((ref) async {
+  final api = ref.watch(salonAccountApiProvider);
+  return api?.mySalon();
+});
+
 bool hasFeature(WidgetRef ref, String feature) {
   final features = ref.watch(salonFeaturesProvider).value;
   return features == null || features.contains(feature);

@@ -17,7 +17,7 @@
 -- test is running under a role that genuinely cannot bypass RLS, so removing
 -- the role switch fails loudly instead of silently.
 
-select plan(13);
+select plan(14);
 
 -- ---------------------------------------------------------------------------
 -- STRUCTURAL: every tenant table is protected
@@ -198,6 +198,16 @@ select is(public.my_branding(), null,
   'a caller bound to no salon gets no branding at all');
 
 reset role;
+
+-- A salon's own users read its business columns, never its plumbing (0096).
+select ok(
+  not has_column_privilege('authenticated', 'public.salons', 'webhook_token', 'select')
+  and not has_column_privilege('authenticated', 'public.salons', 'activated_by', 'select')
+  and not has_column_privilege('authenticated', 'public.salons', 'purged_by', 'select')
+  and not has_column_privilege('authenticated', 'public.salons', 'credit_settled_note', 'select')
+  and has_column_privilege('authenticated', 'public.salons', 'display_name', 'select'),
+  'the salon row shows its users the business, not the webhook token or who at Crayora acted'
+);
 
 -- The dispatcher's read takes a salon id, so it must be closed to everyone a
 -- token can make you: granted to authenticated it would describe any salon.

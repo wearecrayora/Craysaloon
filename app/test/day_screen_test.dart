@@ -370,13 +370,17 @@ void main() {
 }
 
 class FakeAccount implements SalonAccountApi {
-  FakeAccount(this.billing, {this.features = const {'dashboard', 'referrals'}});
+  FakeAccount(this.billing, {this.features = const {'dashboard', 'referrals'}, this.profile});
 
   final SalonBilling billing;
   final Set<String> features;
+  final SalonProfile? profile;
 
   @override
   Future<SalonBilling> myBilling() async => billing;
+
+  @override
+  Future<SalonProfile?> mySalon() async => profile;
 
   @override
   Future<Set<String>> myFeatures() async => features;

@@ -59,10 +59,10 @@
 | O7 | `/catalogue/services` | Services CRUD · *built 2026-09-27. Add/edit for owner and manager only (0041 refuses anyone else in the database); price collected in rupees and sent as paise; hidden rather than deleted, because history keeps its own snapshot* | 5 |
 | O8 | `/catalogue/addons` | Add-ons CRUD + relevance | 5 |
 | O9 | `/staff` | Staff + working hours | 5 |
-| O10 | `/settings/rules` | **Wallet bonus rule + bonus expiry**, reminder cycles, cancellation policy | 7 |
-| O11 | `/settings/hours` | Working hours, holidays | 5 |
-| O12 | `/billing` | Subscription status, plan, **messaging spend per channel beside reminder conversion** (never one without the other), marketing-escalation setting (SMS default / WhatsApp opt-in) · *2026-09-29, partly: a read-only banner on O1 says why nothing can be recorded, from `my_salon_billing` (plan and price for owners only); the full screen waits for the designs* | 11 |
-| O13 | `/salon` | Salon profile — display name, branding *(read-only)* | 4 |
+| O10 | `/more/rules` | **Wallet bonus rule + bonus expiry**, reminder cycles, cancellation policy · *30 Sep 2026: built READ-ONLY - bonus, smallest top-up, bonus lifetime, "paid credit never expires", referral rewards and when they release, reminder cycle, cancellation policy, from the keys the ledger actually reads. **Gap:** the owner cannot edit them yet - there is no owner-callable write path (only `app_admin.set_salon_rules`, the console). Building one needs an owner RPC with the same validation, audited* | 7 |
+| O11 | `/more/hours` | Working hours, holidays · *30 Sep 2026: built READ-ONLY; says "not recorded yet" when empty rather than showing a closed week. **Gap:** no owner write path and no holidays table* | 5 |
+| O12 | `/more/billing` | Subscription status, plan, **messaging spend per channel beside reminder conversion** (never one without the other), marketing-escalation setting (SMS default / WhatsApp opt-in) · *2026-09-29, partly: a read-only banner on O1 says why nothing can be recorded, from `my_salon_billing` (plan and price for owners only); the full screen waits for the designs* · *30 Sep 2026: the screen is built - plan, status, monthly price, paid-until, and "customer payments go to your own account". Messaging spend beside conversion is still owed* | 11 |
+| O13 | `/more/profile` | Salon profile — display name, branding *(read-only)* · *built 30 Sep 2026: name, legal name, address, phone, email, GSTIN and rate, privacy contact; the salon row is readable only on its business columns (0096)* | 4 |
 
 > **O5 shows a balance and cannot change it.** There is no adjust control, no endpoint, and no
 > permission (`RULES.md` §2). If a screen sketch contains one, the sketch is wrong.

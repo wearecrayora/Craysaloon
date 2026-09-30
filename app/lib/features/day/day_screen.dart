@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/providers.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/format/money.dart';
 import '../../core/ui/cache_banner.dart';
+import '../../core/ui/salon_mark.dart';
 import '../../domain/records/records.dart';
 import '../../l10n/app_localizations.dart';
 import '../salon/salon_account.dart';
@@ -33,18 +33,10 @@ class DayScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.dayTitle),
+        // The salon's own mark and name, as on every screen (Claude Design O1).
+        // The dashboard is a tab of its own now (OwnerShell).
+        title: const SalonTitle(),
         actions: [
-          // Owners and managers only: owner_dashboard refuses anyone else, and
-          // offering staff a button that answers "not allowed" is worse than no
-          // button at all.
-          // And only when the salon's plan carries it (0087).
-          if (ref.watch(canEditCatalogueProvider) && hasFeature(ref, 'dashboard'))
-            IconButton(
-              tooltip: l10n.dashTitle,
-              onPressed: () => context.push('/dashboard'),
-              icon: const Icon(Icons.insights_outlined),
-            ),
           if (attention > 0)
             IconButton(
               tooltip: l10n.needsAttention,

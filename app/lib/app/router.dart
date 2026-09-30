@@ -16,6 +16,8 @@ import '../features/day/day_screen.dart';
 import '../features/day/walk_in_screen.dart';
 import '../features/join/deep_link_listener.dart';
 import '../features/join/join_screen.dart';
+import '../features/owner/more_screens.dart';
+import '../features/salon/salon_account.dart' show hasFeature;
 import '../features/privacy/your_data_screen.dart';
 import '../features/referral/referral_screen.dart';
 import '../features/wallet/add_money_screen.dart';
@@ -70,6 +72,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           '/catalogue/services',
           '/catalogue/addons',
           '/staff',
+          '/more',
+          '/more/rules',
+          '/more/hours',
+          '/more/billing',
+          '/more/profile',
         };
         return staffRoutes.contains(location) ? null : '/day';
       }
@@ -158,33 +165,92 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: _page(const AddOnsScreen()),
           ),
           GoRoute(path: '/staff', pageBuilder: _page(const StaffScreen())),
+          GoRoute(path: '/more', pageBuilder: _page(const MoreScreen())),
+          GoRoute(path: '/more/rules', pageBuilder: _page(const RulesScreen())),
+          GoRoute(path: '/more/hours', pageBuilder: _page(const HoursScreen())),
+          GoRoute(
+            path: '/more/billing',
+            pageBuilder: _page(const BillingScreen()),
+          ),
+          GoRoute(
+            path: '/more/profile',
+            pageBuilder: _page(const ProfileScreen()),
+          ),
         ],
       ),
     ],
   );
 });
 
-/// The owner's shell. Five destinations, no drawer: a salon owner uses this
-/// between customers, with one hand, and a hidden menu is a menu that is not
-/// used.
-class OwnerShell extends StatelessWidget {
+/// The owner's shell: Today, Customers, Dashboard, More (Claude Design O1-O13).
+/// No drawer: a salon owner uses this between customers, with one hand, and a
+/// hidden menu is a menu that is not used. The catalogue and the team moved
+/// under More - they are set up once and tweaked, not used all day.
+///
+/// Dashboard is a tab only for someone who may open it: owner_dashboard refuses
+/// anyone else, and only a plan that carries it (0087).
+class OwnerShell extends ConsumerWidget {
   const OwnerShell({required this.child, super.key});
 
   final Widget child;
 
-  static const _destinations = [
-    '/day',
-    '/customers',
-    '/catalogue/services',
-    '/catalogue/addons',
-    '/staff',
-  ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppL10n.of(context);
     final location = GoRouterState.of(context).matchedLocation;
-    final index = _destinations.indexOf(location);
+    final dashboard =
+        ref.watch(canEditCatalogueProvider) && hasFeature(ref, 'dashboard');
+
+    final tabs = [
+      (
+        path: '/day',
+        dest: NavigationDestination(
+          icon: const Icon(Icons.today_outlined),
+          selectedIcon: const Icon(Icons.today),
+          // The tab is the DAY. Mark-complete is the action on it, not its
+          // name - labelling the tab with a verb told the owner to press it.
+          label: l10n.dayTitle,
+        ),
+      ),
+      (
+        path: '/customers',
+        dest: NavigationDestination(
+          icon: const Icon(Icons.people_outline),
+          selectedIcon: const Icon(Icons.people),
+          label: l10n.customersTitle,
+        ),
+      ),
+      if (dashboard)
+        (
+          path: '/dashboard',
+          dest: NavigationDestination(
+            icon: const Icon(Icons.insights_outlined),
+            selectedIcon: const Icon(Icons.insights),
+            label: l10n.dashTitle,
+          ),
+        ),
+      (
+        path: '/more',
+        dest: NavigationDestination(
+          icon: const Icon(Icons.more_horiz),
+          selectedIcon: const Icon(Icons.more_horiz),
+          label: l10n.moreTitle,
+        ),
+      ),
+    ];
+
+    // Where a screen belongs: the walk-in and Needs attention are part of the
+    // day; the catalogue, the team and the read-only pages live under More.
+    final section = switch (location) {
+      final l when l.startsWith('/day') || l == '/attention' => '/day',
+      final l
+          when l.startsWith('/catalogue') ||
+              l == '/staff' ||
+              l.startsWith('/more') =>
+        '/more',
+      final l => l,
+    };
+    final index = tabs.indexWhere((t) => t.path == section);
 
     // The shell paints its own mesh: it is not a page, so the per-page mesh
     // (core/theme/brand_theme.dart) never reaches the bar at the bottom.
@@ -193,36 +259,8 @@ class OwnerShell extends StatelessWidget {
         body: child,
         bottomNavigationBar: NavigationBar(
           selectedIndex: index < 0 ? 0 : index,
-          onDestinationSelected: (i) => context.go(_destinations[i]),
-          destinations: [
-            NavigationDestination(
-              icon: const Icon(Icons.today_outlined),
-              selectedIcon: const Icon(Icons.today),
-              // The tab is the DAY. Mark-complete is the action on it, not its
-              // name - labelling the tab with a verb told the owner to press it.
-              label: l10n.dayTitle,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.people_outline),
-              selectedIcon: const Icon(Icons.people),
-              label: l10n.customersTitle,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.content_cut_outlined),
-              selectedIcon: const Icon(Icons.content_cut),
-              label: l10n.catalogueServices,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.add_circle_outline),
-              selectedIcon: const Icon(Icons.add_circle),
-              label: l10n.catalogueAddOns,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.badge_outlined),
-              selectedIcon: const Icon(Icons.badge),
-              label: l10n.staffTitle,
-            ),
-          ],
+          onDestinationSelected: (i) => context.go(tabs[i].path),
+          destinations: [for (final t in tabs) t.dest],
         ),
       ),
     );

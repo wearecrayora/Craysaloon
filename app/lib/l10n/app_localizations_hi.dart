@@ -1341,6 +1341,154 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get docNoGst => 'कोई GST नहीं लगा।';
+
+  @override
+  String get moreTitle => 'और';
+
+  @override
+  String get moreServicesSub => 'कीमतें, समय, और मेन्यू में क्या है';
+
+  @override
+  String get moreAddOnsSub =>
+      'ग्राहक जो अतिरिक्त चुन सकते हैं - कभी पहले से चुने नहीं';
+
+  @override
+  String get moreTeamSub => 'यहाँ कौन काम करता है';
+
+  @override
+  String get rulesTitle => 'नियम';
+
+  @override
+  String get moreRulesSub => 'वॉलेट बोनस, रेफ़र करें, रिमाइंडर';
+
+  @override
+  String get hoursTitle => 'समय';
+
+  @override
+  String get moreHoursSub => 'सैलून कब खुला है';
+
+  @override
+  String get billingTitle => 'बिलिंग';
+
+  @override
+  String get moreBillingSub => 'Crayora के साथ आपका प्लान';
+
+  @override
+  String get profileTitle => 'सैलून प्रोफ़ाइल';
+
+  @override
+  String get moreProfileSub => 'नाम, संपर्क, GST और प्राइवेसी संपर्क';
+
+  @override
+  String get rulesFooter =>
+      'ये Crayora आपके साथ तय करता है। बदलने के लिए अपने Crayora संपर्क से कहें।';
+
+  @override
+  String get rulesBonus => 'बोनस';
+
+  @override
+  String rulesBonusValue(String bonus, String every) {
+    return 'हर $every पर $bonus';
+  }
+
+  @override
+  String get rulesNone => 'कोई नहीं';
+
+  @override
+  String get rulesSmallestTopup => 'सबसे छोटा टॉप-अप';
+
+  @override
+  String get rulesBonusLasts => 'बोनस कितने दिन चलता है';
+
+  @override
+  String rulesDays(int days) {
+    return '$days दिन';
+  }
+
+  @override
+  String get rulesPaidCredit => 'भुगतान किया गया क्रेडिट';
+
+  @override
+  String get rulesNeverExpires => 'कभी ख़त्म नहीं होता';
+
+  @override
+  String get rulesReferrer => 'बुलाने वाले ग्राहक को';
+
+  @override
+  String get rulesFriend => 'जुड़ने वाले दोस्त को';
+
+  @override
+  String get rulesReferralWhen =>
+      'दोस्त की पहली विज़िट पूरी होने और भुगतान होने के बाद ही मिलता है।';
+
+  @override
+  String get rulesReminders => 'रिमाइंडर';
+
+  @override
+  String get rulesRemindAfter => 'ग्राहकों को याद दिलाएँ';
+
+  @override
+  String get rulesCancellation => 'रद्द करने की नीति';
+
+  @override
+  String get hoursFooter =>
+      'समय बदलने या छुट्टी जोड़ने के लिए अपने Crayora संपर्क से कहें।';
+
+  @override
+  String get hoursNotSet => 'आपका समय अभी दर्ज नहीं है।';
+
+  @override
+  String get hoursClosed => 'बंद';
+
+  @override
+  String get billingActive => 'सक्रिय';
+
+  @override
+  String get billingGrace => 'भुगतान बकाया - केवल देखने के लिए';
+
+  @override
+  String get billingSuspended => 'निलंबित';
+
+  @override
+  String get billingClosing => 'बंद हो रहा है';
+
+  @override
+  String get billingUnbilled => 'अभी बिल नहीं हुआ';
+
+  @override
+  String get billingFooter =>
+      'Crayora आपसे ऐप का बिल लेता है। आपके ग्राहकों का भुगतान आपके अपने खाते में जाता है, Crayora को कभी नहीं।';
+
+  @override
+  String get billingPlan => 'प्लान';
+
+  @override
+  String get billingStatus => 'स्थिति';
+
+  @override
+  String get billingMonthly => 'मासिक';
+
+  @override
+  String get billingPaidUntil => 'कब तक भुगतान है';
+
+  @override
+  String get profileFooter =>
+      'आपका लोगो, रंग और फ़ॉन्ट Crayora के साथ तय होते हैं। बदलने के लिए अपने Crayora संपर्क से कहें।';
+
+  @override
+  String get profileLegalName => 'कानूनी नाम';
+
+  @override
+  String get profileAddress => 'पता';
+
+  @override
+  String get profileEmail => 'ईमेल';
+
+  @override
+  String get profileNoGst => 'पंजीकृत नहीं';
+
+  @override
+  String get profilePrivacyContact => 'प्राइवेसी संपर्क';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -2692,4 +2840,152 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get docNoGst => 'Koi GST nahi laga.';
+
+  @override
+  String get moreTitle => 'Aur';
+
+  @override
+  String get moreServicesSub => 'Keemat, time, aur menu mein kya hai';
+
+  @override
+  String get moreAddOnsSub =>
+      'Extras jo customer chun sakte hain - kabhi pehle se tick nahi';
+
+  @override
+  String get moreTeamSub => 'Yahan kaun kaam karta hai';
+
+  @override
+  String get rulesTitle => 'Rules';
+
+  @override
+  String get moreRulesSub => 'Wallet bonus, Refer & Earn, reminders';
+
+  @override
+  String get hoursTitle => 'Timings';
+
+  @override
+  String get moreHoursSub => 'Salon kab khula hai';
+
+  @override
+  String get billingTitle => 'Billing';
+
+  @override
+  String get moreBillingSub => 'Crayora ke saath aapka plan';
+
+  @override
+  String get profileTitle => 'Salon profile';
+
+  @override
+  String get moreProfileSub => 'Naam, contact, GST aur privacy contact';
+
+  @override
+  String get rulesFooter =>
+      'Yeh Crayora aapke saath set karta hai. Badalne ke liye apne Crayora contact se kahein.';
+
+  @override
+  String get rulesBonus => 'Bonus';
+
+  @override
+  String rulesBonusValue(String bonus, String every) {
+    return 'Har $every par $bonus';
+  }
+
+  @override
+  String get rulesNone => 'Koi nahi';
+
+  @override
+  String get rulesSmallestTopup => 'Sabse chhota top-up';
+
+  @override
+  String get rulesBonusLasts => 'Bonus kitne din chalta hai';
+
+  @override
+  String rulesDays(int days) {
+    return '$days din';
+  }
+
+  @override
+  String get rulesPaidCredit => 'Paid credit';
+
+  @override
+  String get rulesNeverExpires => 'Kabhi expire nahi hota';
+
+  @override
+  String get rulesReferrer => 'Invite karne wale customer ko';
+
+  @override
+  String get rulesFriend => 'Judne wale dost ko';
+
+  @override
+  String get rulesReferralWhen =>
+      'Dost ki pehli visit complete aur paid hone ke baad hi milta hai.';
+
+  @override
+  String get rulesReminders => 'Reminders';
+
+  @override
+  String get rulesRemindAfter => 'Customers ko yaad dilayein';
+
+  @override
+  String get rulesCancellation => 'Cancellation policy';
+
+  @override
+  String get hoursFooter =>
+      'Timings badalne ya chhutti jodne ke liye apne Crayora contact se kahein.';
+
+  @override
+  String get hoursNotSet => 'Aapki timings abhi record nahi hain.';
+
+  @override
+  String get hoursClosed => 'Band';
+
+  @override
+  String get billingActive => 'Active';
+
+  @override
+  String get billingGrace => 'Payment baaki - sirf dekhne ke liye';
+
+  @override
+  String get billingSuspended => 'Suspended';
+
+  @override
+  String get billingClosing => 'Band ho raha hai';
+
+  @override
+  String get billingUnbilled => 'Abhi bill nahi hua';
+
+  @override
+  String get billingFooter =>
+      'Crayora aapse app ka bill leta hai. Aapke customers ka payment aapke apne account mein jaata hai, Crayora ko kabhi nahi.';
+
+  @override
+  String get billingPlan => 'Plan';
+
+  @override
+  String get billingStatus => 'Status';
+
+  @override
+  String get billingMonthly => 'Monthly';
+
+  @override
+  String get billingPaidUntil => 'Kab tak paid hai';
+
+  @override
+  String get profileFooter =>
+      'Aapka logo, rang aur fonts Crayora ke saath set hote hain. Badalne ke liye apne Crayora contact se kahein.';
+
+  @override
+  String get profileLegalName => 'Legal naam';
+
+  @override
+  String get profileAddress => 'Pata';
+
+  @override
+  String get profileEmail => 'Email';
+
+  @override
+  String get profileNoGst => 'Registered nahi';
+
+  @override
+  String get profilePrivacyContact => 'Privacy contact';
 }

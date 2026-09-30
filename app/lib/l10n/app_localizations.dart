@@ -2311,6 +2311,282 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'No GST charged.'**
   String get docNoGst;
+
+  /// No description provided for @moreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get moreTitle;
+
+  /// No description provided for @moreServicesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Prices, times, and what is on the menu'**
+  String get moreServicesSub;
+
+  /// No description provided for @moreAddOnsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Extras customers can choose - never pre-ticked'**
+  String get moreAddOnsSub;
+
+  /// No description provided for @moreTeamSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Who works here'**
+  String get moreTeamSub;
+
+  /// No description provided for @rulesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rules'**
+  String get rulesTitle;
+
+  /// No description provided for @moreRulesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet bonus, Refer & Earn, reminders'**
+  String get moreRulesSub;
+
+  /// No description provided for @hoursTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours'**
+  String get hoursTitle;
+
+  /// No description provided for @moreHoursSub.
+  ///
+  /// In en, this message translates to:
+  /// **'When the salon is open'**
+  String get moreHoursSub;
+
+  /// No description provided for @billingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing'**
+  String get billingTitle;
+
+  /// No description provided for @moreBillingSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan with Crayora'**
+  String get moreBillingSub;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Salon profile'**
+  String get profileTitle;
+
+  /// No description provided for @moreProfileSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Name, contact, GST and privacy contact'**
+  String get moreProfileSub;
+
+  /// No description provided for @rulesFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Crayora sets these with you. Ask your Crayora contact to change them.'**
+  String get rulesFooter;
+
+  /// No description provided for @rulesBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus'**
+  String get rulesBonus;
+
+  /// No description provided for @rulesBonusValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{bonus} for every {every}'**
+  String rulesBonusValue(String bonus, String every);
+
+  /// No description provided for @rulesNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get rulesNone;
+
+  /// No description provided for @rulesSmallestTopup.
+  ///
+  /// In en, this message translates to:
+  /// **'Smallest top-up'**
+  String get rulesSmallestTopup;
+
+  /// No description provided for @rulesBonusLasts.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus lasts'**
+  String get rulesBonusLasts;
+
+  /// No description provided for @rulesDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String rulesDays(int days);
+
+  /// No description provided for @rulesPaidCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid credit'**
+  String get rulesPaidCredit;
+
+  /// No description provided for @rulesNeverExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Never expires'**
+  String get rulesNeverExpires;
+
+  /// No description provided for @rulesReferrer.
+  ///
+  /// In en, this message translates to:
+  /// **'To the customer who invites'**
+  String get rulesReferrer;
+
+  /// No description provided for @rulesFriend.
+  ///
+  /// In en, this message translates to:
+  /// **'To the friend who joins'**
+  String get rulesFriend;
+
+  /// No description provided for @rulesReferralWhen.
+  ///
+  /// In en, this message translates to:
+  /// **'Released only after the friend\'s first visit is completed and paid.'**
+  String get rulesReferralWhen;
+
+  /// No description provided for @rulesReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
+  String get rulesReminders;
+
+  /// No description provided for @rulesRemindAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind customers after'**
+  String get rulesRemindAfter;
+
+  /// No description provided for @rulesCancellation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation policy'**
+  String get rulesCancellation;
+
+  /// No description provided for @hoursFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'To change your hours or add a holiday, ask your Crayora contact.'**
+  String get hoursFooter;
+
+  /// No description provided for @hoursNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Your hours are not recorded yet.'**
+  String get hoursNotSet;
+
+  /// No description provided for @hoursClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get hoursClosed;
+
+  /// No description provided for @billingActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get billingActive;
+
+  /// No description provided for @billingGrace.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment overdue - read-only'**
+  String get billingGrace;
+
+  /// No description provided for @billingSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get billingSuspended;
+
+  /// No description provided for @billingClosing.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing'**
+  String get billingClosing;
+
+  /// No description provided for @billingUnbilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Not billed yet'**
+  String get billingUnbilled;
+
+  /// No description provided for @billingFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Crayora bills you for the app. Your customers\' payments go to your own account, never to Crayora.'**
+  String get billingFooter;
+
+  /// No description provided for @billingPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get billingPlan;
+
+  /// No description provided for @billingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get billingStatus;
+
+  /// No description provided for @billingMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get billingMonthly;
+
+  /// No description provided for @billingPaidUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid until'**
+  String get billingPaidUntil;
+
+  /// No description provided for @profileFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Your logo, colours and fonts are set with Crayora. Ask your Crayora contact to change them.'**
+  String get profileFooter;
+
+  /// No description provided for @profileLegalName.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal name'**
+  String get profileLegalName;
+
+  /// No description provided for @profileAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get profileAddress;
+
+  /// No description provided for @profileEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get profileEmail;
+
+  /// No description provided for @profileNoGst.
+  ///
+  /// In en, this message translates to:
+  /// **'Not registered'**
+  String get profileNoGst;
+
+  /// No description provided for @profilePrivacyContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy contact'**
+  String get profilePrivacyContact;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

@@ -22,6 +22,8 @@ import 'package:craysalon/data/repositories/day_repository.dart';
 import 'package:craysalon/domain/customer/customer.dart';
 import 'package:craysalon/domain/join/cray_api.dart';
 import 'package:craysalon/domain/records/records.dart';
+import 'package:craysalon/domain/salon/salon_account.dart';
+import 'package:craysalon/features/salon/salon_account.dart' show salonAccountApiProvider;
 import 'package:craysalon/features/join/deep_link_listener.dart';
 import 'package:craysalon/features/join/join_controller.dart';
 import 'package:craysalon/features/salon/salon_home.dart';
@@ -37,6 +39,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../day_screen_test.dart' show FakeAccount;
 import '../outbox_test.dart' show FakeBookings;
 import '../salon_home_test.dart' show FakeNotifications, FakeShortcut;
 import '../support/fake_cray_api.dart';
@@ -410,6 +413,20 @@ void main() {
             dayRepositoryProvider.overrideWithValue(
               DayRepository(remote: remote, cache: cache, outbox: outbox, salonId: 'salon-a'),
             ),
+            salonAccountApiProvider.overrideWithValue(FakeAccount(
+              const SalonBilling(state: 'active', readOnly: false, plan: 'Salon', monthlyPricePaise: 149900),
+              profile: const SalonProfile(
+                displayName: 'Studio Nine Salon',
+                legalName: 'Studio Nine Salon LLP',
+                address: 'Indiranagar, Bengaluru',
+                walletRule: {'topup_paise': 50000, 'bonus_paise': 5000, 'min_topup_paise': 10000},
+                rewardRule: {'referrer_paise': 10000, 'referred_paise': 5000},
+                reminderCycleDays: 30,
+                cancellationPolicy: 'Free to cancel up to 2 hours before. Closer than that, call us.',
+                grievanceName: 'Sunita Rao',
+                grievanceEmail: 'privacy@studionine.example',
+              ),
+            )),
           ],
           child: const CraySalonApp(),
         ),
@@ -417,5 +434,11 @@ void main() {
     );
     await tester.pumpAndSettle();
     await _save(tester, 'o1_today');
+    await tester.tap(find.text('More').last);
+    await tester.pumpAndSettle();
+    await _save(tester, 'o_more');
+    await tester.tap(find.text('Rules'));
+    await tester.pumpAndSettle();
+    await _save(tester, 'o10_rules');
   });
 }

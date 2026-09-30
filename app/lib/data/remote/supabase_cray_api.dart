@@ -1030,12 +1030,46 @@ class SupabaseCrayApi
         readOnly: row['read_only'] == true,
         renewsAt: _time(row['renews_at']),
         graceEndsAt: _time(row['grace_ends_at']),
+        plan: row['plan'] as String?,
+        monthlyPricePaise: (row['monthly_price_paise'] as num?)?.toInt(),
       );
     } on PostgrestException catch (e) {
       throw CrayApiException(e.code == '42501' ? CrayErrorKind.forbidden : _postgrestKind(e));
     } catch (_) {
       throw const CrayApiException(CrayErrorKind.network);
     }
+  }
+
+  @override
+  Future<SalonProfile?> mySalon() async {
+    // Only the columns 0096 grants: a select naming any other would be refused.
+    final rows = await _rows(
+      () => _client
+          .from('salons')
+          .select('display_name,legal_name,address,phone,email,gst_number,gst_rate_bp,'
+              'working_hours,wallet_rule,reward_rule,cancellation_policy,'
+              'default_reminder_cycle_days,grievance_name,grievance_email,grievance_phone')
+          .limit(1),
+    );
+    if (rows.isEmpty) return null;
+    final r = rows.first;
+    return SalonProfile(
+      displayName: r['display_name'] as String? ?? '',
+      legalName: r['legal_name'] as String?,
+      address: r['address'] as String?,
+      phone: r['phone'] as String?,
+      email: r['email'] as String?,
+      gstNumber: r['gst_number'] as String?,
+      gstRateBp: (r['gst_rate_bp'] as num?)?.toInt(),
+      workingHours: _asMap(r['working_hours']) ?? const {},
+      walletRule: _asMap(r['wallet_rule']) ?? const {},
+      rewardRule: _asMap(r['reward_rule']) ?? const {},
+      cancellationPolicy: r['cancellation_policy'] as String?,
+      reminderCycleDays: (r['default_reminder_cycle_days'] as num?)?.toInt(),
+      grievanceName: r['grievance_name'] as String?,
+      grievanceEmail: r['grievance_email'] as String?,
+      grievancePhone: r['grievance_phone'] as String?,
+    );
   }
 
   @override
