@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/booking/book_screen.dart';
+import '../features/booking/booking_detail_screen.dart';
 import '../features/catalogue/catalogue_screens.dart';
+import '../features/customer/customer_shell.dart';
+import '../features/customer/history_screen.dart';
+import '../features/customer/me_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/customers/customers_screen.dart';
 import '../features/day/attention_screen.dart';
@@ -74,11 +79,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         // measures withdrawal against how easy consent was (s.6(4)).
         const customerRoutes = {
           '/home',
+          '/book',
+          '/me',
+          '/visits',
           '/your-data',
           '/wallet',
           '/wallet/add',
           '/refer',
         };
+        if (location.startsWith('/booking/')) return null;
         return customerRoutes.contains(location) ? null : '/home';
       }
 
@@ -90,9 +99,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/join',
         pageBuilder: _page(const DeepLinkListener(child: JoinScreen())),
       ),
-      GoRoute(path: '/home', pageBuilder: _page(const SalonHome())),
+      // The customer shell: Home, Book, Wallet, Me (Claude Design C1/C5/C2/C12).
+      ShellRoute(
+        builder: (context, state, child) => CustomerShell(child: child),
+        routes: [
+          GoRoute(path: '/home', pageBuilder: _page(const SalonHome())),
+          GoRoute(path: '/book', pageBuilder: _page(const BookScreen())),
+          GoRoute(path: '/wallet', pageBuilder: _page(const WalletScreen())),
+          GoRoute(path: '/me', pageBuilder: _page(const MeScreen())),
+        ],
+      ),
       GoRoute(path: '/your-data', pageBuilder: _page(const YourDataScreen())),
-      GoRoute(path: '/wallet', pageBuilder: _page(const WalletScreen())),
+      GoRoute(path: '/visits', pageBuilder: _page(const HistoryScreen())),
+      GoRoute(
+        path: '/booking/:id',
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: BookingDetailScreen(id: state.pathParameters['id']!),
+        ),
+      ),
       GoRoute(path: '/wallet/add', pageBuilder: _page(const AddMoneyScreen())),
       GoRoute(path: '/refer', pageBuilder: _page(const ReferralScreen())),
       GoRoute(path: '/console-only', pageBuilder: _page(const _ConsoleOnly())),

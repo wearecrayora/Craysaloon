@@ -49,7 +49,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final context = tester.element(find.byType(Scaffold));
+    final context = tester.element(find.byType(Scaffold).first);
     ProviderScope.containerOf(context).read(resolvedBrandingProvider.notifier).wear(
           CachedBranding(
             salonId: 'salon-a',

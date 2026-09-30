@@ -11,6 +11,7 @@ class Service {
     required this.pricePaise,
     required this.durationMinutes,
     required this.active,
+    this.category,
   });
 
   final String id;
@@ -18,6 +19,10 @@ class Service {
   final int pricePaise;
   final int durationMinutes;
   final bool active;
+
+  /// "Hair", "Beard", ... - how the customer's booking list is grouped. Null
+  /// for a service the salon never put in one.
+  final String? category;
 }
 
 class AddOn {

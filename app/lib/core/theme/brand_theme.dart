@@ -48,6 +48,10 @@ ThemeData brandTheme(BrandTokens t) {
     onPrimaryContainer: t.onPrimaryContainer,
     secondary: t.accent,
     onSecondary: t.onAccent,
+    // FilledButton.tonal reads these: the soft brand container, as the
+    // design's secondary actions (Book now, Add money) - computed, not chosen.
+    secondaryContainer: t.primaryContainer,
+    onSecondaryContainer: t.onPrimaryContainer,
     error: t.danger,
     // The danger colour is fixed and dark enough for white in both modes.
     onError: const Color(0xFFFFFFFF),

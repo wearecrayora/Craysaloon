@@ -33,18 +33,15 @@
 
 | # | Route | Screen | M |
 |---|---|---|---|
-| C1 | `/home` | **Home** — balance, next-visit-due, Book CTA, active offer · *built 2026-09-29: when a bill arrives (push or on open) the app ASKS "How would you like to pay?" - Wallet / UPI (salon's Razorpay) / At the counter, nothing pre-selected, asked once per session and never after "at the counter"; a short wallet is spent in full (paid + bonus, bonus first, both shown) and the rest is asked about again; "at the counter" settles nothing. The bill card stays on home, then today's booking with the **start code**, big and read digit by digit; pull to refresh* | 7 |
+| C1 | `/home` | **Home** — *redesigned 30 Sep 2026 (Claude Design): salon mark + name, "Hi Asha", bill and today cards, the next booking or "due around" (from the scheduled reminder) or a first-visit card with a salon photo, balance **with its line**, Refer row. The customer shell is Home / Book / Wallet / Me. **No offers card** - there is no offers feature behind it.* · *built 2026-09-29: when a bill arrives (push or on open) the app ASKS "How would you like to pay?" - Wallet / UPI (salon's Razorpay) / At the counter, nothing pre-selected, asked once per session and never after "at the counter"; a short wallet is spent in full (paid + bonus, bonus first, both shown) and the rest is asked about again; "at the counter" settles nothing. The bill card stays on home, then today's booking with the **start code**, big and read digit by digit; pull to refresh* | 7 |
 | C2 | `/wallet` | **Wallet** — balance (never shown alone), paid/bonus separately, history. **Built** | 7 |
 | C3 | `/wallet/add` | **Add Money** — packs, **disclosure block above the pay button**, server-priced quote. **Built**, with Razorpay Checkout behind `PaymentSheet` against the salon's own key | 7 |
 | C4 | *(on C3)* | Payment result — sent / cancelled / failed, stated on the Add Money screen itself. A separate route would be a screen the customer lands on with nothing to do. **Never says "paid"**: the credit follows the webhook | 7 |
-| C5 | `/book/service` | Book ① service select | 6 |
-| C6 | `/book/addons` | Book ② **add-ons — never pre-selected** | 6 |
-| C7 | `/book/slot` | Book ③ barber + slot | 6 |
-| C8 | `/book/review` | Book ④ review, total, confirm | 6 |
-| C9 | `/booking/:id` | Booking detail — reschedule / cancel | 6 |
-| C10 | `/visits` | Visit history | 5 |
+| C5-C8 | `/book` | **Book, in four steps on one route** (built 30 Sep 2026, Claude Design): ① service, grouped by the salon's categories, nothing selected on open · ② **add-ons — never pre-ticked** (skipped when the salon has none) · ③ stylist (Anyone or named) + date strip + free times from `available_slots`, add-ons included · ④ review, total, "you pay after your visit", confirm. One action id per review, reused on retry; `slot_taken` returns to ③ with the time cleared. No customer id is sent - `create_booking` takes it from the token | 6 |
+| C9 | `/booking/:id` | Booking detail - status in fixed status colours, **cancel high on the screen, asked first** ("Keep it" is the filled choice). No reschedule button: rescheduling is cancel + book, and a one-tap reschedule would need a server path that does not exist | 6 |
+| C10 | `/visits` | Visit history - date, services (as named when booked), stylist, amount, **Paid / Not paid yet** (never a guessed method). Empty state with a salon photo. **Built** | 5 |
 | C11 | `/refer` | **Refer & Earn** — code, share link, pending/earned counts. The reward condition is stated ABOVE the code. **Built** | 9 |
-| C12 | `/settings` | Settings — language, notifications | 4 |
+| C12 | `/me` | **Me** - name, phone masked (`+91 98xxx x4821`), language (sheet), visit history, your data, "App by Crayora" (the only Crayora mention). Read-only: no path to change the bound phone. **Built** | 4 |
 | C13 | `/your-data` | **Your data** — consent per purpose, ask for a copy, ask for erasure, the salon's privacy contact. **Built (M7)**, not M12: withdrawal must be as easy as consent, and consent ships in M4 | 7 |
 | C14 | `/feedback/:visitId` | Post-visit rating *(Tier 2)* | 14+ |
 

@@ -1040,4 +1040,229 @@ class AppL10nEn extends AppL10n {
   @override
   String get billCounterTold =>
       'The counter knows. Your bill shows as paid once they take the money.';
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navBook => 'Book';
+
+  @override
+  String get navMe => 'Me';
+
+  @override
+  String homeGreeting(String name) {
+    return 'Hi $name';
+  }
+
+  @override
+  String get homeGreetingNoName => 'Welcome back';
+
+  @override
+  String homeNextDueService(String service, String date) {
+    return 'Your next $service is due around $date';
+  }
+
+  @override
+  String homeNextDue(String date) {
+    return 'Your next visit is due around $date';
+  }
+
+  @override
+  String get homeBookNow => 'Book now';
+
+  @override
+  String get homeNextBooking => 'Your next booking';
+
+  @override
+  String get homeWalletUnavailable =>
+      'Your balance could not be loaded. Pull down to try again.';
+
+  @override
+  String get walletView => 'View wallet';
+
+  @override
+  String get referSubtitle => 'Invite a friend, both earn credit';
+
+  @override
+  String bookStep(int step, int total) {
+    return 'Step $step of $total';
+  }
+
+  @override
+  String get bookChooseService => 'Choose a service';
+
+  @override
+  String get bookOther => 'Other';
+
+  @override
+  String get bookNoServices => 'No services are open for booking right now.';
+
+  @override
+  String get bookAddOnsTitle => 'Anything to add?';
+
+  @override
+  String get bookAddOnsHint => 'Optional. Nothing is added unless you tick it.';
+
+  @override
+  String get bookStylistTime => 'Stylist and time';
+
+  @override
+  String get bookStylist => 'Stylist';
+
+  @override
+  String get bookAnyone => 'Anyone';
+
+  @override
+  String get bookDate => 'Date';
+
+  @override
+  String get bookNoTimes => 'No free times on this day.';
+
+  @override
+  String get bookTimesFailed =>
+      'Free times could not be loaded. Check your connection.';
+
+  @override
+  String get bookTotal => 'Total';
+
+  @override
+  String bookMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get bookContinue => 'Continue';
+
+  @override
+  String get bookReview => 'Review your booking';
+
+  @override
+  String get bookService => 'Service';
+
+  @override
+  String get bookAddOns => 'Add-ons';
+
+  @override
+  String get bookNone => 'None';
+
+  @override
+  String get bookDateTime => 'Date and time';
+
+  @override
+  String get bookTakesAbout => 'Takes about';
+
+  @override
+  String get bookPayAfter =>
+      'You pay after your visit - from your wallet, by UPI or at the counter.';
+
+  @override
+  String get bookChangeHint =>
+      'You can cancel this booking in the app until it starts.';
+
+  @override
+  String get bookConfirm => 'Confirm booking';
+
+  @override
+  String get bookSlotTaken => 'That time was just taken. Please pick another.';
+
+  @override
+  String get bookFailed =>
+      'Could not book. Check your connection and try again.';
+
+  @override
+  String bookDone(String date) {
+    return 'Booked. See you on $date.';
+  }
+
+  @override
+  String get bookingTitle => 'Your booking';
+
+  @override
+  String get bookingBooked => 'Booked';
+
+  @override
+  String get bookingInProgress => 'In the chair';
+
+  @override
+  String get bookingCancelledStatus => 'Cancelled';
+
+  @override
+  String get bookingCancel => 'Cancel booking';
+
+  @override
+  String get bookingCancelAsk => 'Cancel this booking?';
+
+  @override
+  String get bookingCancelBody =>
+      'The time goes back to the salon. Nothing has been paid, so nothing is refunded.';
+
+  @override
+  String get bookingKeep => 'Keep it';
+
+  @override
+  String get bookingCancelled => 'Booking cancelled.';
+
+  @override
+  String get bookingCancelFailed =>
+      'Could not cancel. Check your connection and try again.';
+
+  @override
+  String get bookingNotFound => 'This booking could not be found.';
+
+  @override
+  String withStylist(String name) {
+    return 'with $name';
+  }
+
+  @override
+  String get historyTitle => 'Visit history';
+
+  @override
+  String get historyEmpty => 'No visits yet. Your first one will show here.';
+
+  @override
+  String get historyPaid => 'Paid';
+
+  @override
+  String get historyUnpaid => 'Not paid yet';
+
+  @override
+  String get historyFailed => 'Your visits could not be loaded.';
+
+  @override
+  String get meTitle => 'Me';
+
+  @override
+  String get meName => 'Name';
+
+  @override
+  String get mePhone => 'Phone';
+
+  @override
+  String get meLanguage => 'Language';
+
+  @override
+  String get meHistorySub => 'What you had, and when';
+
+  @override
+  String get meYourDataSub => 'Copy, erase, and who to ask';
+
+  @override
+  String get meAppBy => 'App by Crayora';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageHindi => 'हिन्दी';
+
+  @override
+  String get languageHinglish => 'Hinglish';
+
+  @override
+  String get bookingMissed => 'Missed';
+
+  @override
+  String get homeFirstVisit => 'Book your first visit';
 }

@@ -962,5 +962,200 @@
   "billCounterTold": "The counter knows. Your bill shows as paid once they take the money.",
   "@billCounterTold": {
     "description": "Cash is confirmed by staff, never by the customer (decision of 29 Sep 2026)."
-  }
+  },
+  "navHome": "Home",
+  "@navHome": {},
+  "navBook": "Book",
+  "@navBook": {},
+  "navMe": "Me",
+  "@navMe": {},
+  "homeGreeting": "Hi {name}",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreetingNoName": "Welcome back",
+  "@homeGreetingNoName": {},
+  "homeNextDueService": "Your next {service} is due around {date}",
+  "@homeNextDueService": {
+    "description": "From the salon's own reminder schedule - the same date the reminder goes out.",
+    "placeholders": {
+      "service": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeNextDue": "Your next visit is due around {date}",
+  "@homeNextDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeBookNow": "Book now",
+  "@homeBookNow": {},
+  "homeNextBooking": "Your next booking",
+  "@homeNextBooking": {},
+  "homeWalletUnavailable": "Your balance could not be loaded. Pull down to try again.",
+  "@homeWalletUnavailable": {
+    "description": "Money is never shown stale; offline, the home screen says so instead."
+  },
+  "walletView": "View wallet",
+  "@walletView": {},
+  "referSubtitle": "Invite a friend, both earn credit",
+  "@referSubtitle": {},
+  "bookStep": "Step {step} of {total}",
+  "@bookStep": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "bookChooseService": "Choose a service",
+  "@bookChooseService": {},
+  "bookOther": "Other",
+  "@bookOther": {},
+  "bookNoServices": "No services are open for booking right now.",
+  "@bookNoServices": {},
+  "bookAddOnsTitle": "Anything to add?",
+  "@bookAddOnsTitle": {},
+  "bookAddOnsHint": "Optional. Nothing is added unless you tick it.",
+  "@bookAddOnsHint": {
+    "description": "Add-ons are never pre-selected (RULES)."
+  },
+  "bookStylistTime": "Stylist and time",
+  "@bookStylistTime": {},
+  "bookStylist": "Stylist",
+  "@bookStylist": {},
+  "bookAnyone": "Anyone",
+  "@bookAnyone": {},
+  "bookDate": "Date",
+  "@bookDate": {},
+  "bookNoTimes": "No free times on this day.",
+  "@bookNoTimes": {},
+  "bookTimesFailed": "Free times could not be loaded. Check your connection.",
+  "@bookTimesFailed": {},
+  "bookTotal": "Total",
+  "@bookTotal": {},
+  "bookMinutes": "{minutes} min",
+  "@bookMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "bookContinue": "Continue",
+  "@bookContinue": {},
+  "bookReview": "Review your booking",
+  "@bookReview": {},
+  "bookService": "Service",
+  "@bookService": {},
+  "bookAddOns": "Add-ons",
+  "@bookAddOns": {},
+  "bookNone": "None",
+  "@bookNone": {},
+  "bookDateTime": "Date and time",
+  "@bookDateTime": {},
+  "bookTakesAbout": "Takes about",
+  "@bookTakesAbout": {},
+  "bookPayAfter": "You pay after your visit - from your wallet, by UPI or at the counter.",
+  "@bookPayAfter": {
+    "description": "True to the product: nothing is paid before a visit."
+  },
+  "bookChangeHint": "You can cancel this booking in the app until it starts.",
+  "@bookChangeHint": {},
+  "bookConfirm": "Confirm booking",
+  "@bookConfirm": {},
+  "bookSlotTaken": "That time was just taken. Please pick another.",
+  "@bookSlotTaken": {},
+  "bookFailed": "Could not book. Check your connection and try again.",
+  "@bookFailed": {},
+  "bookDone": "Booked. See you on {date}.",
+  "@bookDone": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingTitle": "Your booking",
+  "@bookingTitle": {},
+  "bookingBooked": "Booked",
+  "@bookingBooked": {},
+  "bookingInProgress": "In the chair",
+  "@bookingInProgress": {},
+  "bookingCancelledStatus": "Cancelled",
+  "@bookingCancelledStatus": {},
+  "bookingCancel": "Cancel booking",
+  "@bookingCancel": {},
+  "bookingCancelAsk": "Cancel this booking?",
+  "@bookingCancelAsk": {},
+  "bookingCancelBody": "The time goes back to the salon. Nothing has been paid, so nothing is refunded.",
+  "@bookingCancelBody": {},
+  "bookingKeep": "Keep it",
+  "@bookingKeep": {},
+  "bookingCancelled": "Booking cancelled.",
+  "@bookingCancelled": {},
+  "bookingCancelFailed": "Could not cancel. Check your connection and try again.",
+  "@bookingCancelFailed": {},
+  "bookingNotFound": "This booking could not be found.",
+  "@bookingNotFound": {},
+  "withStylist": "with {name}",
+  "@withStylist": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "historyTitle": "Visit history",
+  "@historyTitle": {},
+  "historyEmpty": "No visits yet. Your first one will show here.",
+  "@historyEmpty": {},
+  "historyPaid": "Paid",
+  "@historyPaid": {},
+  "historyUnpaid": "Not paid yet",
+  "@historyUnpaid": {},
+  "historyFailed": "Your visits could not be loaded.",
+  "@historyFailed": {},
+  "meTitle": "Me",
+  "@meTitle": {},
+  "meName": "Name",
+  "@meName": {},
+  "mePhone": "Phone",
+  "@mePhone": {},
+  "meLanguage": "Language",
+  "@meLanguage": {},
+  "meHistorySub": "What you had, and when",
+  "@meHistorySub": {},
+  "meYourDataSub": "Copy, erase, and who to ask",
+  "@meYourDataSub": {},
+  "meAppBy": "App by Crayora",
+  "@meAppBy": {
+    "description": "The only place Crayora is named in the customer app."
+  },
+  "languageEnglish": "English",
+  "@languageEnglish": {},
+  "languageHindi": "हिन्दी",
+  "@languageHindi": {},
+  "languageHinglish": "Hinglish",
+  "@languageHinglish": {},
+  "bookingMissed": "Missed",
+  "@bookingMissed": {
+    "description": "A booking marked no-show. Not \"cancelled\": nobody cancelled it."
+  },
+  "homeFirstVisit": "Book your first visit",
+  "@homeFirstVisit": {}
 }

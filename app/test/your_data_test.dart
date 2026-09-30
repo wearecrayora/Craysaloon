@@ -61,7 +61,7 @@ void main() {
 
     // The customer is home. Wear the salon's branding first, so the notice has
     // a salon to name - after binding this comes from the cache, not the wire.
-    final context = tester.element(find.byType(Scaffold));
+    final context = tester.element(find.byType(Scaffold).first);
     ProviderScope.containerOf(context).read(resolvedBrandingProvider.notifier).wear(
           CachedBranding(
             salonId: 'salon-a',

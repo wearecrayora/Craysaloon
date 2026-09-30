@@ -1033,6 +1033,230 @@ class AppL10nHi extends AppL10n {
   @override
   String get billCounterTold =>
       'काउंटर को पता है। पैसे लेने पर आपका बिल भरा हुआ दिखेगा।';
+
+  @override
+  String get navHome => 'होम';
+
+  @override
+  String get navBook => 'बुक करें';
+
+  @override
+  String get navMe => 'मैं';
+
+  @override
+  String homeGreeting(String name) {
+    return 'नमस्ते $name';
+  }
+
+  @override
+  String get homeGreetingNoName => 'फिर से स्वागत है';
+
+  @override
+  String homeNextDueService(String service, String date) {
+    return 'आपकी अगली $service लगभग $date को होनी है';
+  }
+
+  @override
+  String homeNextDue(String date) {
+    return 'आपकी अगली विज़िट लगभग $date को है';
+  }
+
+  @override
+  String get homeBookNow => 'अभी बुक करें';
+
+  @override
+  String get homeNextBooking => 'आपकी अगली बुकिंग';
+
+  @override
+  String get homeWalletUnavailable =>
+      'आपका बैलेंस लोड नहीं हो सका। दोबारा कोशिश के लिए नीचे खींचें।';
+
+  @override
+  String get walletView => 'वॉलेट देखें';
+
+  @override
+  String get referSubtitle => 'दोस्त को बुलाएँ, दोनों को क्रेडिट';
+
+  @override
+  String bookStep(int step, int total) {
+    return 'चरण $step / $total';
+  }
+
+  @override
+  String get bookChooseService => 'सेवा चुनें';
+
+  @override
+  String get bookOther => 'अन्य';
+
+  @override
+  String get bookNoServices => 'अभी बुकिंग के लिए कोई सेवा उपलब्ध नहीं है।';
+
+  @override
+  String get bookAddOnsTitle => 'कुछ और जोड़ें?';
+
+  @override
+  String get bookAddOnsHint => 'वैकल्पिक। जब तक आप न चुनें, कुछ नहीं जुड़ता।';
+
+  @override
+  String get bookStylistTime => 'स्टाइलिस्ट और समय';
+
+  @override
+  String get bookStylist => 'स्टाइलिस्ट';
+
+  @override
+  String get bookAnyone => 'कोई भी';
+
+  @override
+  String get bookDate => 'तारीख';
+
+  @override
+  String get bookNoTimes => 'इस दिन कोई समय खाली नहीं है।';
+
+  @override
+  String get bookTimesFailed =>
+      'खाली समय लोड नहीं हो सके। अपना कनेक्शन जाँचें।';
+
+  @override
+  String get bookTotal => 'कुल';
+
+  @override
+  String bookMinutes(int minutes) {
+    return '$minutes मिनट';
+  }
+
+  @override
+  String get bookContinue => 'आगे बढ़ें';
+
+  @override
+  String get bookReview => 'अपनी बुकिंग जाँचें';
+
+  @override
+  String get bookService => 'सेवा';
+
+  @override
+  String get bookAddOns => 'ऐड-ऑन';
+
+  @override
+  String get bookNone => 'कोई नहीं';
+
+  @override
+  String get bookDateTime => 'तारीख और समय';
+
+  @override
+  String get bookTakesAbout => 'लगभग समय';
+
+  @override
+  String get bookPayAfter => 'भुगतान विज़िट के बाद - वॉलेट, UPI या काउंटर पर।';
+
+  @override
+  String get bookChangeHint =>
+      'शुरू होने तक आप यह बुकिंग ऐप में रद्द कर सकते हैं।';
+
+  @override
+  String get bookConfirm => 'बुकिंग पक्की करें';
+
+  @override
+  String get bookSlotTaken =>
+      'यह समय अभी-अभी किसी और ने ले लिया। कृपया दूसरा चुनें।';
+
+  @override
+  String get bookFailed => 'बुकिंग नहीं हो सकी। कनेक्शन जाँचकर फिर कोशिश करें।';
+
+  @override
+  String bookDone(String date) {
+    return 'बुक हो गया। $date को मिलते हैं।';
+  }
+
+  @override
+  String get bookingTitle => 'आपकी बुकिंग';
+
+  @override
+  String get bookingBooked => 'बुक है';
+
+  @override
+  String get bookingInProgress => 'सेवा जारी है';
+
+  @override
+  String get bookingCancelledStatus => 'रद्द';
+
+  @override
+  String get bookingCancel => 'बुकिंग रद्द करें';
+
+  @override
+  String get bookingCancelAsk => 'यह बुकिंग रद्द करें?';
+
+  @override
+  String get bookingCancelBody =>
+      'समय सैलून को वापस मिल जाएगा। कुछ भुगतान नहीं हुआ है, इसलिए कुछ लौटाना नहीं है।';
+
+  @override
+  String get bookingKeep => 'रहने दें';
+
+  @override
+  String get bookingCancelled => 'बुकिंग रद्द हो गई।';
+
+  @override
+  String get bookingCancelFailed =>
+      'रद्द नहीं हो सकी। कनेक्शन जाँचकर फिर कोशिश करें।';
+
+  @override
+  String get bookingNotFound => 'यह बुकिंग नहीं मिली।';
+
+  @override
+  String withStylist(String name) {
+    return '$name के साथ';
+  }
+
+  @override
+  String get historyTitle => 'विज़िट इतिहास';
+
+  @override
+  String get historyEmpty => 'अभी तक कोई विज़िट नहीं। पहली विज़िट यहाँ दिखेगी।';
+
+  @override
+  String get historyPaid => 'भुगतान हो गया';
+
+  @override
+  String get historyUnpaid => 'अभी भुगतान नहीं हुआ';
+
+  @override
+  String get historyFailed => 'आपकी विज़िट लोड नहीं हो सकीं।';
+
+  @override
+  String get meTitle => 'मैं';
+
+  @override
+  String get meName => 'नाम';
+
+  @override
+  String get mePhone => 'फ़ोन';
+
+  @override
+  String get meLanguage => 'भाषा';
+
+  @override
+  String get meHistorySub => 'आपने क्या करवाया, और कब';
+
+  @override
+  String get meYourDataSub => 'कॉपी, मिटाना, और किससे पूछें';
+
+  @override
+  String get meAppBy => 'ऐप: Crayora';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageHindi => 'हिन्दी';
+
+  @override
+  String get languageHinglish => 'Hinglish';
+
+  @override
+  String get bookingMissed => 'छूट गई';
+
+  @override
+  String get homeFirstVisit => 'अपनी पहली विज़िट बुक करें';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -2072,4 +2296,232 @@ class AppL10nHiLatn extends AppL10nHi {
   @override
   String get billCounterTold =>
       'Counter ko pata hai. Paise lene par aapka bill bhara hua dikhega.';
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navBook => 'Book';
+
+  @override
+  String get navMe => 'Main';
+
+  @override
+  String homeGreeting(String name) {
+    return 'Namaste $name';
+  }
+
+  @override
+  String get homeGreetingNoName => 'Phir se swagat hai';
+
+  @override
+  String homeNextDueService(String service, String date) {
+    return 'Aapka agla $service lagbhag $date ko hona hai';
+  }
+
+  @override
+  String homeNextDue(String date) {
+    return 'Aapki agli visit lagbhag $date ko hai';
+  }
+
+  @override
+  String get homeBookNow => 'Abhi book karein';
+
+  @override
+  String get homeNextBooking => 'Aapki agli booking';
+
+  @override
+  String get homeWalletUnavailable =>
+      'Aapka balance load nahi hua. Dobara try karne ke liye neeche kheenchein.';
+
+  @override
+  String get walletView => 'Wallet dekhein';
+
+  @override
+  String get referSubtitle => 'Dost ko bulaayein, dono ko credit';
+
+  @override
+  String bookStep(int step, int total) {
+    return 'Step $step / $total';
+  }
+
+  @override
+  String get bookChooseService => 'Service chunein';
+
+  @override
+  String get bookOther => 'Aur';
+
+  @override
+  String get bookNoServices => 'Abhi booking ke liye koi service nahi hai.';
+
+  @override
+  String get bookAddOnsTitle => 'Kuch aur jodein?';
+
+  @override
+  String get bookAddOnsHint =>
+      'Optional. Jab tak aap tick na karein, kuch nahi judta.';
+
+  @override
+  String get bookStylistTime => 'Stylist aur time';
+
+  @override
+  String get bookStylist => 'Stylist';
+
+  @override
+  String get bookAnyone => 'Koi bhi';
+
+  @override
+  String get bookDate => 'Tareekh';
+
+  @override
+  String get bookNoTimes => 'Is din koi time khaali nahi hai.';
+
+  @override
+  String get bookTimesFailed =>
+      'Khaali time load nahi hue. Apna connection check karein.';
+
+  @override
+  String get bookTotal => 'Total';
+
+  @override
+  String bookMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get bookContinue => 'Aage badhein';
+
+  @override
+  String get bookReview => 'Apni booking check karein';
+
+  @override
+  String get bookService => 'Service';
+
+  @override
+  String get bookAddOns => 'Add-ons';
+
+  @override
+  String get bookNone => 'Koi nahi';
+
+  @override
+  String get bookDateTime => 'Tareekh aur time';
+
+  @override
+  String get bookTakesAbout => 'Lagbhag time';
+
+  @override
+  String get bookPayAfter =>
+      'Payment visit ke baad - wallet, UPI ya counter par.';
+
+  @override
+  String get bookChangeHint =>
+      'Shuru hone tak aap yeh booking app mein cancel kar sakte hain.';
+
+  @override
+  String get bookConfirm => 'Booking pakki karein';
+
+  @override
+  String get bookSlotTaken =>
+      'Yeh time abhi kisi aur ne le liya. Doosra chunein.';
+
+  @override
+  String get bookFailed =>
+      'Booking nahi hui. Connection check karke dobara try karein.';
+
+  @override
+  String bookDone(String date) {
+    return 'Book ho gaya. $date ko milte hain.';
+  }
+
+  @override
+  String get bookingTitle => 'Aapki booking';
+
+  @override
+  String get bookingBooked => 'Booked';
+
+  @override
+  String get bookingInProgress => 'Chal raha hai';
+
+  @override
+  String get bookingCancelledStatus => 'Cancelled';
+
+  @override
+  String get bookingCancel => 'Booking cancel karein';
+
+  @override
+  String get bookingCancelAsk => 'Yeh booking cancel karein?';
+
+  @override
+  String get bookingCancelBody =>
+      'Time salon ko wapas mil jayega. Kuch pay nahi hua, isliye kuch refund nahi.';
+
+  @override
+  String get bookingKeep => 'Rehne dein';
+
+  @override
+  String get bookingCancelled => 'Booking cancel ho gayi.';
+
+  @override
+  String get bookingCancelFailed =>
+      'Cancel nahi hui. Connection check karke dobara try karein.';
+
+  @override
+  String get bookingNotFound => 'Yeh booking nahi mili.';
+
+  @override
+  String withStylist(String name) {
+    return '$name ke saath';
+  }
+
+  @override
+  String get historyTitle => 'Visit history';
+
+  @override
+  String get historyEmpty =>
+      'Abhi tak koi visit nahi. Pehli visit yahan dikhegi.';
+
+  @override
+  String get historyPaid => 'Paid';
+
+  @override
+  String get historyUnpaid => 'Abhi payment nahi hua';
+
+  @override
+  String get historyFailed => 'Aapki visits load nahi hui.';
+
+  @override
+  String get meTitle => 'Main';
+
+  @override
+  String get meName => 'Naam';
+
+  @override
+  String get mePhone => 'Phone';
+
+  @override
+  String get meLanguage => 'Bhasha';
+
+  @override
+  String get meHistorySub => 'Aapne kya karwaya, aur kab';
+
+  @override
+  String get meYourDataSub => 'Copy, mitana, aur kisse poochein';
+
+  @override
+  String get meAppBy => 'App by Crayora';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageHindi => 'हिन्दी';
+
+  @override
+  String get languageHinglish => 'Hinglish';
+
+  @override
+  String get bookingMissed => 'Miss ho gayi';
+
+  @override
+  String get homeFirstVisit => 'Apni pehli visit book karein';
 }

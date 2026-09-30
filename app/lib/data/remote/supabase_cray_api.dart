@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../domain/customer/customer.dart';
 import '../../domain/dashboard/dashboard.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/notifications/push_api.dart';
@@ -23,7 +24,7 @@ import '../../domain/wallet/wallet.dart';
 ///   error paths carry a kind, not a payload.
 class SupabaseCrayApi
     implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi, WalletApi,
-        PushApi, ReferralApi, DashboardApi, VisitApi, SalonAccountApi {
+        PushApi, ReferralApi, DashboardApi, VisitApi, SalonAccountApi, CustomerApi {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -229,7 +230,7 @@ class SupabaseCrayApi
     final rows = await _rows(
       () => _client
           .from('services')
-          .select('id,name,price_paise,duration_minutes,active')
+          .select('id,name,category,price_paise,duration_minutes,active')
           .order('active', ascending: false)
           .order('name'),
     );
@@ -240,6 +241,7 @@ class SupabaseCrayApi
               pricePaise: _int(r['price_paise']),
               durationMinutes: _int(r['duration_minutes']),
               active: r['active'] as bool? ?? true,
+              category: r['category'] as String?,
             ))
         .toList();
   }
@@ -351,6 +353,113 @@ class SupabaseCrayApi
               finalAmountPaise: _int(r['final_amount_paise']),
             ))
         .toList();
+  }
+
+  // -------------------------------------------------------------------------
+  // CustomerApi (redesign, 30 Sep 2026). The customer's own rows. No filter
+  // here names the customer: the restrictive customer_scope policy on every
+  // one of these tables is what narrows them (RULES 3.8a).
+  // -------------------------------------------------------------------------
+
+  static const _bookingSelect =
+      'id,starts_at,ends_at,status,total_paise,staff(name),booking_items(kind,name_snapshot)';
+
+  @override
+  Future<CustomerProfile?> me() async {
+    final rows = await _rows(() => _client.from('customers').select('name,phone').limit(1));
+    if (rows.isEmpty) return null;
+    return CustomerProfile(
+      name: rows.first['name'] as String?,
+      phone: rows.first['phone'] as String?,
+    );
+  }
+
+  @override
+  Future<NextDue?> nextDue() async {
+    final rows = await _rows(
+      () => _client
+          .from('reminders')
+          .select('scheduled_for,services(name)')
+          .eq('status', 'scheduled')
+          .gte('scheduled_for', DateTime.now().toUtc().toIso8601String())
+          .order('scheduled_for')
+          .limit(1),
+    );
+    if (rows.isEmpty) return null;
+    final due = _time(rows.first['scheduled_for']);
+    if (due == null) return null;
+    return NextDue(dueOn: due, serviceName: _asMap(rows.first['services'])?['name'] as String?);
+  }
+
+  @override
+  Future<List<UpcomingBooking>> upcoming() async {
+    final rows = await _rows(
+      () => _client
+          .from('bookings')
+          .select(_bookingSelect)
+          .inFilter('status', ['pending', 'confirmed', 'in_progress'])
+          .gte('ends_at', DateTime.now().toUtc().toIso8601String())
+          .order('starts_at')
+          .limit(10),
+    );
+    return rows.map(_upcoming).whereType<UpcomingBooking>().toList();
+  }
+
+  @override
+  Future<UpcomingBooking?> booking(String id) async {
+    final rows = await _rows(
+      () => _client.from('bookings').select(_bookingSelect).eq('id', id).limit(1),
+    );
+    return rows.isEmpty ? null : _upcoming(rows.first);
+  }
+
+  @override
+  Future<List<PastVisit>> history({int limit = 30}) async {
+    final rows = await _rows(
+      () => _client
+          .from('visits')
+          .select('id,completed_at,final_amount_paise,payment_status,staff(name),'
+              'bookings(booking_items(kind,name_snapshot))')
+          .order('completed_at', ascending: false)
+          .limit(limit),
+    );
+    return rows
+        .map((r) => PastVisit(
+              id: r['id'] as String,
+              completedAt: _time(r['completed_at']) ?? DateTime.now(),
+              amountPaise: _int(r['final_amount_paise']),
+              paid: r['payment_status'] == 'paid',
+              staffName: _asMap(r['staff'])?['name'] as String?,
+              serviceNames: _itemNames(_asMap(r['bookings'])?['booking_items']),
+            ))
+        .toList();
+  }
+
+  UpcomingBooking? _upcoming(Map<String, Object?> r) {
+    final starts = _time(r['starts_at']);
+    final ends = _time(r['ends_at']);
+    if (starts == null || ends == null) return null;
+    return UpcomingBooking(
+      id: r['id'] as String,
+      startsAt: starts,
+      endsAt: ends,
+      status: r['status'] as String? ?? 'confirmed',
+      totalPaise: _int(r['total_paise']),
+      staffName: _asMap(r['staff'])?['name'] as String?,
+      serviceNames: _itemNames(r['booking_items']),
+    );
+  }
+
+  /// "Haircut + Head massage": the service first, then add-ons, as the names
+  /// were WHEN BOOKED (name_snapshot) - a renamed service does not rewrite
+  /// somebody's history.
+  static String _itemNames(Object? items) {
+    final list = (items is List ? items : const [])
+        .whereType<Map<Object?, Object?>>()
+        .map((m) => m.cast<String, Object?>())
+        .toList()
+      ..sort((a, b) => (a['kind'] == 'service' ? 0 : 1).compareTo(b['kind'] == 'service' ? 0 : 1));
+    return list.map((m) => m['name_snapshot'] as String? ?? '').where((n) => n.isNotEmpty).join(' + ');
   }
 
   /// Runs a read and turns transport failures into the app's own error kinds.

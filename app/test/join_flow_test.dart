@@ -76,9 +76,9 @@ void main() {
     final api = FakeCrayApi(salon: fakeSalon());
     await pump(tester, api);
 
-    final before = Theme.of(tester.element(find.byType(Scaffold))).colorScheme.primary;
+    final before = Theme.of(tester.element(find.byType(Scaffold).first)).colorScheme.primary;
     await enterCode(tester, 'CRAY-22335S');
-    final after = Theme.of(tester.element(find.byType(Scaffold))).colorScheme.primary;
+    final after = Theme.of(tester.element(find.byType(Scaffold).first)).colorScheme.primary;
 
     expect(before, isNot(const Color(0xFF1F6F5C)));
     expect(after, const Color(0xFF1F6F5C), reason: 'the login screen is already the salon\'s');

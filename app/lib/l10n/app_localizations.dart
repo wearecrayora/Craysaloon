@@ -1753,6 +1753,414 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'The counter knows. Your bill shows as paid once they take the money.'**
   String get billCounterTold;
+
+  /// No description provided for @navHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// No description provided for @navBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get navBook;
+
+  /// No description provided for @navMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Me'**
+  String get navMe;
+
+  /// No description provided for @homeGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi {name}'**
+  String homeGreeting(String name);
+
+  /// No description provided for @homeGreetingNoName.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get homeGreetingNoName;
+
+  /// From the salon's own reminder schedule - the same date the reminder goes out.
+  ///
+  /// In en, this message translates to:
+  /// **'Your next {service} is due around {date}'**
+  String homeNextDueService(String service, String date);
+
+  /// No description provided for @homeNextDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Your next visit is due around {date}'**
+  String homeNextDue(String date);
+
+  /// No description provided for @homeBookNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Book now'**
+  String get homeBookNow;
+
+  /// No description provided for @homeNextBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Your next booking'**
+  String get homeNextBooking;
+
+  /// Money is never shown stale; offline, the home screen says so instead.
+  ///
+  /// In en, this message translates to:
+  /// **'Your balance could not be loaded. Pull down to try again.'**
+  String get homeWalletUnavailable;
+
+  /// No description provided for @walletView.
+  ///
+  /// In en, this message translates to:
+  /// **'View wallet'**
+  String get walletView;
+
+  /// No description provided for @referSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite a friend, both earn credit'**
+  String get referSubtitle;
+
+  /// No description provided for @bookStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {total}'**
+  String bookStep(int step, int total);
+
+  /// No description provided for @bookChooseService.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a service'**
+  String get bookChooseService;
+
+  /// No description provided for @bookOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get bookOther;
+
+  /// No description provided for @bookNoServices.
+  ///
+  /// In en, this message translates to:
+  /// **'No services are open for booking right now.'**
+  String get bookNoServices;
+
+  /// No description provided for @bookAddOnsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Anything to add?'**
+  String get bookAddOnsTitle;
+
+  /// Add-ons are never pre-selected (RULES).
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. Nothing is added unless you tick it.'**
+  String get bookAddOnsHint;
+
+  /// No description provided for @bookStylistTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Stylist and time'**
+  String get bookStylistTime;
+
+  /// No description provided for @bookStylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Stylist'**
+  String get bookStylist;
+
+  /// No description provided for @bookAnyone.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone'**
+  String get bookAnyone;
+
+  /// No description provided for @bookDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get bookDate;
+
+  /// No description provided for @bookNoTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'No free times on this day.'**
+  String get bookNoTimes;
+
+  /// No description provided for @bookTimesFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Free times could not be loaded. Check your connection.'**
+  String get bookTimesFailed;
+
+  /// No description provided for @bookTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get bookTotal;
+
+  /// No description provided for @bookMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String bookMinutes(int minutes);
+
+  /// No description provided for @bookContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get bookContinue;
+
+  /// No description provided for @bookReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your booking'**
+  String get bookReview;
+
+  /// No description provided for @bookService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get bookService;
+
+  /// No description provided for @bookAddOns.
+  ///
+  /// In en, this message translates to:
+  /// **'Add-ons'**
+  String get bookAddOns;
+
+  /// No description provided for @bookNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get bookNone;
+
+  /// No description provided for @bookDateTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Date and time'**
+  String get bookDateTime;
+
+  /// No description provided for @bookTakesAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'Takes about'**
+  String get bookTakesAbout;
+
+  /// True to the product: nothing is paid before a visit.
+  ///
+  /// In en, this message translates to:
+  /// **'You pay after your visit - from your wallet, by UPI or at the counter.'**
+  String get bookPayAfter;
+
+  /// No description provided for @bookChangeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can cancel this booking in the app until it starts.'**
+  String get bookChangeHint;
+
+  /// No description provided for @bookConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm booking'**
+  String get bookConfirm;
+
+  /// No description provided for @bookSlotTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'That time was just taken. Please pick another.'**
+  String get bookSlotTaken;
+
+  /// No description provided for @bookFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not book. Check your connection and try again.'**
+  String get bookFailed;
+
+  /// No description provided for @bookDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked. See you on {date}.'**
+  String bookDone(String date);
+
+  /// No description provided for @bookingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your booking'**
+  String get bookingTitle;
+
+  /// No description provided for @bookingBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get bookingBooked;
+
+  /// No description provided for @bookingInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In the chair'**
+  String get bookingInProgress;
+
+  /// No description provided for @bookingCancelledStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get bookingCancelledStatus;
+
+  /// No description provided for @bookingCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel booking'**
+  String get bookingCancel;
+
+  /// No description provided for @bookingCancelAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this booking?'**
+  String get bookingCancelAsk;
+
+  /// No description provided for @bookingCancelBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The time goes back to the salon. Nothing has been paid, so nothing is refunded.'**
+  String get bookingCancelBody;
+
+  /// No description provided for @bookingKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep it'**
+  String get bookingKeep;
+
+  /// No description provided for @bookingCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking cancelled.'**
+  String get bookingCancelled;
+
+  /// No description provided for @bookingCancelFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cancel. Check your connection and try again.'**
+  String get bookingCancelFailed;
+
+  /// No description provided for @bookingNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This booking could not be found.'**
+  String get bookingNotFound;
+
+  /// No description provided for @withStylist.
+  ///
+  /// In en, this message translates to:
+  /// **'with {name}'**
+  String withStylist(String name);
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit history'**
+  String get historyTitle;
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No visits yet. Your first one will show here.'**
+  String get historyEmpty;
+
+  /// No description provided for @historyPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get historyPaid;
+
+  /// No description provided for @historyUnpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Not paid yet'**
+  String get historyUnpaid;
+
+  /// No description provided for @historyFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your visits could not be loaded.'**
+  String get historyFailed;
+
+  /// No description provided for @meTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Me'**
+  String get meTitle;
+
+  /// No description provided for @meName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get meName;
+
+  /// No description provided for @mePhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get mePhone;
+
+  /// No description provided for @meLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get meLanguage;
+
+  /// No description provided for @meHistorySub.
+  ///
+  /// In en, this message translates to:
+  /// **'What you had, and when'**
+  String get meHistorySub;
+
+  /// No description provided for @meYourDataSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy, erase, and who to ask'**
+  String get meYourDataSub;
+
+  /// The only place Crayora is named in the customer app.
+  ///
+  /// In en, this message translates to:
+  /// **'App by Crayora'**
+  String get meAppBy;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @languageHindi.
+  ///
+  /// In en, this message translates to:
+  /// **'हिन्दी'**
+  String get languageHindi;
+
+  /// No description provided for @languageHinglish.
+  ///
+  /// In en, this message translates to:
+  /// **'Hinglish'**
+  String get languageHinglish;
+
+  /// A booking marked no-show. Not "cancelled": nobody cancelled it.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed'**
+  String get bookingMissed;
+
+  /// No description provided for @homeFirstVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Book your first visit'**
+  String get homeFirstVisit;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

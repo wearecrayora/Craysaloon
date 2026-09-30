@@ -19,6 +19,7 @@ import 'package:craysalon/data/local/branding_store.dart';
 import 'package:craysalon/data/local/cache_db.dart';
 import 'package:craysalon/data/local/outbox.dart';
 import 'package:craysalon/data/repositories/day_repository.dart';
+import 'package:craysalon/domain/customer/customer.dart';
 import 'package:craysalon/domain/join/cray_api.dart';
 import 'package:craysalon/domain/records/records.dart';
 import 'package:craysalon/features/join/join_controller.dart';
@@ -38,6 +39,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../outbox_test.dart' show FakeBookings;
 import '../salon_home_test.dart' show FakeNotifications, FakeShortcut;
 import '../support/fake_cray_api.dart';
+import '../support/fake_customer_api.dart';
 import '../visit_test.dart' show FakeVisitApi;
 import '../wallet_test.dart' show FakeSheet, FakeWalletApi;
 
@@ -229,6 +231,100 @@ void main() {
     final v = FakeVisitApi()..today = [FakeVisitApi().visit(code: '4821')];
     await customer(tester, v, mode: ThemeMode.dark);
     await _save(tester, 'c1_home_dark');
+  });
+
+  Future<void> shopper(WidgetTester tester, FakeCustomerApi api, {ThemeMode? mode}) async {
+    phone(tester);
+    await tester.pumpWidget(
+      RepaintBoundary(
+        key: const Key('capture'),
+        child: ProviderScope(
+          overrides: [
+            crayApiProvider.overrideWithValue(api),
+            sessionProvider.overrideWithValue(api.session),
+            initialBrandingProvider.overrideWithValue(branding()),
+            homeShortcutProvider.overrideWithValue(FakeShortcut(supported: false)),
+            salonNotificationsProvider.overrideWithValue(FakeNotifications()),
+            walletApiProvider.overrideWithValue(FakeWalletApi()),
+            paymentSheetProvider.overrideWithValue(FakeSheet()),
+          ],
+          child: mode == ThemeMode.dark
+              ? const MediaQuery(
+                  data: MediaQueryData(platformBrightness: Brightness.dark),
+                  child: CraySalonApp(),
+                )
+              : const CraySalonApp(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  FakeCustomerApi asha() => FakeCustomerApi()
+    ..due = NextDue(dueOn: DateTime(2026, 10, 14), serviceName: 'Haircut');
+
+  capture('C1 home - redesign', (tester) async {
+    await shopper(tester, asha());
+    await _save(tester, 'c1_home_v2');
+  });
+
+  capture('C1 home - redesign, dark', (tester) async {
+    await shopper(tester, asha(), mode: ThemeMode.dark);
+    await _save(tester, 'c1_home_v2_dark');
+  });
+
+  capture('C1 home - brand-new customer', (tester) async {
+    await shopper(tester, FakeCustomerApi());
+    await _save(tester, 'c1_home_new');
+  });
+
+  capture('C5-C8 booking', (tester) async {
+    await shopper(tester, asha());
+    await tester.tap(find.text('Book').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Haircut'));
+    await tester.pumpAndSettle();
+    await _save(tester, 'c5_service');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Head massage'));
+    await tester.pumpAndSettle();
+    await _save(tester, 'c6_addons');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
+    await tester.pumpAndSettle();
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    await tester.tap(find.text('${tomorrow.day}').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Suresh'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('10:00 AM'));
+    await tester.pumpAndSettle();
+    await _save(tester, 'c7_time');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
+    await tester.pumpAndSettle();
+    await _save(tester, 'c8_review');
+    await tester.tap(find.widgetWithText(FilledButton, 'Confirm booking'));
+    await tester.pumpAndSettle();
+    await _save(tester, 'c9_detail');
+  });
+
+  capture('C10 history and C12 me', (tester) async {
+    final api = asha()
+      ..visitsList = [
+        PastVisit(id: 'v1', completedAt: DateTime(2026, 9, 12), amountPaise: 60000, paid: true,
+            serviceNames: 'Haircut', staffName: 'Suresh'),
+        PastVisit(id: 'v2', completedAt: DateTime(2026, 8, 14), amountPaise: 100000, paid: true,
+            serviceNames: 'Haircut + Beard trim', staffName: 'Priya'),
+        PastVisit(id: 'v3', completedAt: DateTime(2026, 7, 18), amountPaise: 60000, paid: false,
+            serviceNames: 'Haircut', staffName: 'Suresh'),
+      ];
+    await shopper(tester, api);
+    await tester.tap(find.text('Me').last);
+    await tester.pumpAndSettle();
+    await _save(tester, 'c12_me');
+    await tester.tap(find.text('Visit history'));
+    await tester.pumpAndSettle();
+    await _save(tester, 'c10_history');
   });
 
   capture('O1 today - every row state', (tester) async {

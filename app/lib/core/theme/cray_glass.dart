@@ -21,6 +21,8 @@ class CrayGlass extends ThemeExtension<CrayGlass> {
     required this.radius,
     required this.radiusChip,
     required this.radiusSheet,
+    required this.ink,
+    required this.success,
   });
 
   factory CrayGlass.fromTokens(BrandTokens t) => CrayGlass(
@@ -37,6 +39,8 @@ class CrayGlass extends ThemeExtension<CrayGlass> {
         radius: t.radiusBase,
         radiusChip: t.radiusChip,
         radiusSheet: t.radiusSheet,
+        ink: t.brandInk,
+        success: t.success,
       );
 
   final Color card;
@@ -52,6 +56,13 @@ class CrayGlass extends ThemeExtension<CrayGlass> {
   final double radius;
   final double radiusChip;
   final double radiusSheet;
+
+  /// Brand-coloured TEXT: the brand's ink, computed at publish to clear 4.5:1
+  /// on the surface. `primary` is for fills; text in `primary` is not proven.
+  final Color ink;
+
+  /// The fixed status green - never themed (DESIGN 3.4).
+  final Color success;
 
   /// Falls back to a transparent, square chassis in a theme built without the
   /// extension (a bare MaterialApp in a widget test), rather than throwing.
@@ -74,6 +85,8 @@ class CrayGlass extends ThemeExtension<CrayGlass> {
       radius: 12,
       radiusChip: 8,
       radiusSheet: 18,
+      ink: theme.colorScheme.primary,
+      success: theme.colorScheme.primary,
     );
   }
 
@@ -104,6 +117,8 @@ class CrayGlass extends ThemeExtension<CrayGlass> {
       radius: d(radius, other.radius),
       radiusChip: d(radiusChip, other.radiusChip),
       radiusSheet: d(radiusSheet, other.radiusSheet),
+      ink: c(ink, other.ink),
+      success: c(success, other.success),
     );
   }
 }
