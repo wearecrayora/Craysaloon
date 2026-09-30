@@ -115,6 +115,20 @@ async function runTests(sql) {
       for (const line of lines) console.log(`  ${line}`);
       const bad = lines.filter((l) => /^not ok/.test(l));
       if (bad.length) failed += bad.length;
+      // A plan that does not match the run is a failure, not a comment. pgTAP
+      // only PRINTS "Looks like you planned N but ran M" - and for months this
+      // runner ignored it, so five gates carried stale plans (found 30 Sep
+      // 2026). Under-running is the dangerous case: an assertion that silently
+      // stopped running would have left the gate green.
+      const mismatch = lines.find((l) => /Looks like you planned \d+ tests? but ran \d+/.test(l));
+      if (mismatch) {
+        console.error(`  PLAN MISMATCH: ${mismatch.replace(/^#\s*/, '')}`);
+        failed++;
+      }
+      if (!lines.some((l) => /^1\.\.\d+/.test(l))) {
+        console.error('  NO PLAN: a test file must declare how many assertions it runs');
+        failed++;
+      }
     } catch (error) {
       console.error(`  ERROR: ${error.message}`);
       failed++;

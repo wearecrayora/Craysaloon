@@ -11,7 +11,7 @@
 --   * the salon comes from the URL token, never from the body
 --   * there is still exactly ONE function that reads a decrypted credential
 
-select plan(22);
+select plan(24);
 
 -- ---------------------------------------------------------------------------
 -- The credential door

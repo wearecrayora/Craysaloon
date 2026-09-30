@@ -15,7 +15,7 @@
 --                   the other.
 --   * behavioural - the escalations themselves, attempted as each role.
 
-select plan(24);
+select plan(23);
 
 -- ---------------------------------------------------------------------------
 -- Catalogue: nothing tenant-writable is left role-blind

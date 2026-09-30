@@ -7,7 +7,7 @@
 -- FOR EACH ROW trigger never fired and the probe proved nothing. A statement
 -- that succeeds against zero rows is not evidence.
 
-select plan(63);
+select plan(73);
 
 select set_config('app.phone_hash_pepper', 'money-test-pepper', true);
 

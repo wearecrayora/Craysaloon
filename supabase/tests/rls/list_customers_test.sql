@@ -8,7 +8,7 @@
 -- So the first assertion here is about the function's own definition, and the
 -- rest are about what it returns to whom.
 
-select plan(13);
+select plan(14);
 
 -- ---------------------------------------------------------------------------
 -- The definition itself

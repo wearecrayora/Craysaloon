@@ -13,7 +13,7 @@
 -- happen: the sweep runs every minute, so the release must pay ONCE however
 -- many times it is called.
 
-select plan(20);
+select plan(21);
 
 select set_config('app.phone_hash_pepper', 'referral-test-pepper', true);
 
