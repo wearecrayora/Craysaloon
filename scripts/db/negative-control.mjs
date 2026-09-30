@@ -380,6 +380,26 @@ const SUPPORT_CANARY = `
 
 const SUPPORT_MUST_FAIL = [/not visible without a support session/, /when the time box ends/];
 
+// A top-up receipt numbered in the TAX INVOICE series. The one thing RULES
+// 11.12 forbids outright: a receipt labelled or numbered as a tax invoice turns
+// a voucher into a taxable supply on paper (PRD 16A.3).
+const DOCUMENTS_TEST = 'supabase/tests/money/documents_test.sql';
+const DOCUMENTS_CANARY = `
+  do $canary$
+  declare
+    v_def text;
+    v_new text;
+  begin
+    select pg_get_functiondef('app.issue_receipt(uuid)'::regprocedure) into strict v_def;
+    v_new := replace(v_def, '''RCT''', '''INV''');
+    if v_new = v_def then raise exception 'documents canary: the receipt series moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+
+const DOCUMENTS_MUST_FAIL = [/a top-up gets receipt RCT/];
+
 
 class Rollback extends Error {
   constructor(lines) {
@@ -539,6 +559,12 @@ try {
       OFFBOARDING_TEST,
       SUPPORT_CANARY,
       SUPPORT_MUST_FAIL,
+    ),
+    await check(
+      'documents / a top-up receipt numbered as a tax invoice',
+      DOCUMENTS_TEST,
+      DOCUMENTS_CANARY,
+      DOCUMENTS_MUST_FAIL,
     ),
   ];
 

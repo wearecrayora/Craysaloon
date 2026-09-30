@@ -435,6 +435,63 @@ class SupabaseCrayApi
         .toList();
   }
 
+  @override
+  Future<List<SalonDocument>> documents() async {
+    final receipts = await _rows(
+      () => _client
+          .from('receipts')
+          .select('number,issued_at,paid_paise,bonus_paise')
+          .order('issued_at', ascending: false)
+          .limit(50),
+    );
+    final invoices = await _rows(
+      () => _client
+          .from('invoices')
+          .select('kind,number,issued_at,visit_id,lines,total_paise,taxable_paise,cgst_paise,'
+              'sgst_paise,gst_rate_bp,gstin,sac,wallet_paid_paise,bonus_paise,other_paise')
+          .order('issued_at', ascending: false)
+          .limit(50),
+    );
+
+    final docs = <SalonDocument>[
+      for (final r in receipts)
+        SalonDocument(
+          kind: DocumentKind.receipt,
+          number: r['number'] as String? ?? '',
+          issuedAt: _time(r['issued_at']) ?? DateTime.now(),
+          totalPaise: _int(r['paid_paise']),
+          bonusPaise: _int(r['bonus_paise']),
+        ),
+      for (final r in invoices)
+        SalonDocument(
+          kind: r['kind'] == 'tax_invoice' ? DocumentKind.taxInvoice : DocumentKind.billOfSupply,
+          number: r['number'] as String? ?? '',
+          issuedAt: _time(r['issued_at']) ?? DateTime.now(),
+          visitId: r['visit_id'] as String?,
+          totalPaise: _int(r['total_paise']),
+          taxablePaise: _int(r['taxable_paise']),
+          cgstPaise: _int(r['cgst_paise']),
+          sgstPaise: _int(r['sgst_paise']),
+          gstRateBp: (r['gst_rate_bp'] as num?)?.toInt(),
+          gstin: r['gstin'] as String?,
+          sac: r['sac'] as String?,
+          walletPaidPaise: _int(r['wallet_paid_paise']),
+          bonusPaise: _int(r['bonus_paise']),
+          otherPaise: _int(r['other_paise']),
+          lines: [
+            for (final l in (r['lines'] is List ? r['lines'] as List : const []))
+              if (l is Map)
+                DocumentLine(
+                  kind: l['kind'] as String? ?? 'service',
+                  name: l['name'] as String?,
+                  pricePaise: _int(l['price_paise']),
+                ),
+          ],
+        ),
+    ]..sort((a, b) => b.issuedAt.compareTo(a.issuedAt));
+    return docs;
+  }
+
   UpcomingBooking? _upcoming(Map<String, Object?> r) {
     final starts = _time(r['starts_at']);
     final ends = _time(r['ends_at']);

@@ -69,7 +69,11 @@ select is(
         -- state through my_salon_billing; only app_admin reads these.
         'subscription_payments', 'billing_notices',
         -- 0089: who looked at which salon's customers, for how long, and why.
-        'support_sessions'
+        'support_sessions',
+        -- 0094: the last receipt/invoice number issued. Only the two issuing
+        -- functions touch it; a tenant who could write it could skip or
+        -- reuse a statutory invoice number.
+        'document_series'
       )),
   0,
   'every tenant table has policies, or is a documented no-policy table'
@@ -89,7 +93,9 @@ select is(
                         -- Crayora's revenue and lapse notices (0087).
                         'subscription_payments', 'billing_notices',
                         -- Support-mode sessions (0089).
-                        'support_sessions')),
+                        'support_sessions',
+                        -- Invoice numbering (0094).
+                        'document_series')),
   0,
   'cross-tenant and secret tables have NO policies at all'
 );

@@ -7,6 +7,7 @@ import { requireAdmin } from '@/server/auth';
 import { JOIN_ORIGIN, renderQrPack } from '@/server/qr-pack';
 import { putBrandObject, putObject, signedUrl } from '@/server/r2';
 import { logoKey, logoProblem, sha256Hex, sniffLogo } from '@/lib/logo';
+import { GST_RATES_BP } from '@/lib/gst';
 import { checkMessageCentralCredentials } from '@/server/message-central-check';
 import { parseRupees } from '@/lib/money';
 import {
@@ -33,6 +34,7 @@ import {
   extendSubscription,
   setBilling,
   setFeatureFlag,
+  setSalonGst,
   setIntegrationSecret,
   setMessagingGrace,
   setMessagingTrial,
@@ -305,6 +307,42 @@ export async function extendAction(_prev: ActionState, form: FormData): Promise<
     await extendSubscription(admin.id, salonId, days, reason);
     revalidatePath(`/salon/${salonId}/billing`);
     return { ok: `Extended by ${days} day${days === 1 ? '' : 's'}.` };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+/**
+ * GST registration. Both or neither: a GSTIN with a rate makes every paid visit
+ * a tax invoice; clearing both makes them bills of supply. The rate is never
+ * defaulted - it is a CA's answer, not the console's (0094).
+ */
+export async function salonGstAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const gstin = String(form.get('gstNumber') ?? '').trim().toUpperCase();
+  const rateRaw = String(form.get('rate') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+
+  if (!reason) return { error: 'A reason is required, and audited - name the CA advice.' };
+  const rateBp = rateRaw === '' ? null : Number(rateRaw);
+  if (rateBp !== null && !(GST_RATES_BP as readonly number[]).includes(rateBp)) {
+    return { error: 'Choose a GST rate from the list.' };
+  }
+  if ((gstin === '') !== (rateBp === null)) {
+    return {
+      error: 'Registered means a GSTIN AND a rate; unregistered means neither. Fill both or clear both.',
+    };
+  }
+
+  try {
+    await setSalonGst(admin.id, salonId, gstin || null, rateBp, reason);
+    revalidatePath(`/salon/${salonId}/billing`);
+    return {
+      ok: gstin
+        ? `Registered. Paid visits now get tax invoices at ${rateBp! / 100}%.`
+        : 'Unregistered. Paid visits now get bills of supply, with no GST.',
+    };
   } catch (e) {
     return { error: message(e) };
   }

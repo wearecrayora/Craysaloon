@@ -88,7 +88,68 @@ class PastVisit {
   final String? staffName;
 }
 
+/// One line of what was done, as named and priced when booked (0094).
+class DocumentLine {
+  const DocumentLine({required this.kind, required this.pricePaise, this.name});
+
+  /// `service`, `add_on`, or `adjustment` (the settled amount differed).
+  final String kind;
+  final String? name;
+  final int pricePaise;
+}
+
+enum DocumentKind { receipt, taxInvoice, billOfSupply }
+
+/// A receipt (a wallet top-up) or the service document for a paid visit - a
+/// tax invoice from a GST-registered salon, a bill of supply otherwise (0094).
+/// Issued by the database; the app only shows it.
+class SalonDocument {
+  const SalonDocument({
+    required this.kind,
+    required this.number,
+    required this.issuedAt,
+    required this.totalPaise,
+    this.lines = const [],
+    this.taxablePaise = 0,
+    this.cgstPaise = 0,
+    this.sgstPaise = 0,
+    this.gstRateBp,
+    this.gstin,
+    this.sac,
+    this.walletPaidPaise = 0,
+    this.bonusPaise = 0,
+    this.otherPaise = 0,
+    this.visitId,
+  });
+
+  final DocumentKind kind;
+  final String number;
+  final DateTime issuedAt;
+
+  /// For a receipt: the amount paid in. For a visit: what the visit came to.
+  final int totalPaise;
+  final List<DocumentLine> lines;
+  final int taxablePaise;
+  final int cgstPaise;
+  final int sgstPaise;
+  final int? gstRateBp;
+  final String? gstin;
+  final String? sac;
+
+  /// Visit: how it was paid. Receipt: [bonusPaise] is the bonus credit that
+  /// came with the top-up.
+  final int walletPaidPaise;
+  final int bonusPaise;
+  final int otherPaise;
+  final String? visitId;
+
+  bool get isReceipt => kind == DocumentKind.receipt;
+}
+
 abstract interface class CustomerApi {
+  /// Receipts and invoices together, newest first.
+  Future<List<SalonDocument>> documents();
+
   Future<CustomerProfile?> me();
 
   Future<NextDue?> nextDue();

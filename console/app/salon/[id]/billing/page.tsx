@@ -5,10 +5,12 @@ import {
   getBillingOverview,
   getOffboardingFacts,
   getSalon,
+  getSalonGst,
   type BillingState,
 } from '@/server/admin-db';
 import { formatPaise } from '@/lib/money';
 import { BillingForms } from './forms';
+import { GstForm } from './gst';
 import { Offboarding } from './offboarding';
 
 export const dynamic = 'force-dynamic';
@@ -43,6 +45,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (!billing) notFound();
 
   const facts = await getOffboardingFacts(id);
+  const gst = await getSalonGst(id);
   const state = billing.dates?.state ?? 'unbilled';
   const lapsed = state === 'grace' || state === 'suspended' || state === 'purge_due';
 
@@ -142,6 +145,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         )}
 
         <BillingForms salonId={id} billing={billing} salonStatus={salon.status} />
+        <GstForm salonId={id} gstNumber={gst?.gst_number ?? null} rateBp={gst?.gst_rate_bp ?? null} />
 
         {admin.isSuper && facts && (state === 'suspended' || state === 'purge_due' || facts.purged_at) && (
           <Offboarding

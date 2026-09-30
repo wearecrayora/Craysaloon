@@ -1161,5 +1161,71 @@
   "joinIntro": "Your salon's app opens once you join. The code is on the card at the counter.",
   "@joinIntro": {},
   "homeBookAgain": "Book your next visit",
-  "@homeBookAgain": {}
+  "@homeBookAgain": {},
+  "docsTitle": "Receipts and invoices",
+  "@docsTitle": {},
+  "docsSub": "For every top-up and every paid visit",
+  "@docsSub": {},
+  "docsEmpty": "Nothing yet. A receipt appears when you add money, and a bill when you pay for a visit.",
+  "@docsEmpty": {},
+  "docsFailed": "Your receipts and invoices could not be loaded.",
+  "@docsFailed": {},
+  "docReceipt": "Receipt",
+  "@docReceipt": {},
+  "docReceiptNote": "This is a receipt for credit added to your wallet. It is not a tax invoice.",
+  "@docReceiptNote": {
+    "description": "RULES 11.12: a top-up receipt is never labelled a tax invoice."
+  },
+  "docTaxInvoice": "Tax invoice",
+  "@docTaxInvoice": {},
+  "docBillOfSupply": "Bill of supply",
+  "@docBillOfSupply": {},
+  "docNumber": "Number",
+  "@docNumber": {},
+  "docDate": "Date",
+  "@docDate": {},
+  "docAmountPaid": "Amount paid",
+  "@docAmountPaid": {},
+  "docBonusAdded": "Bonus credit added",
+  "@docBonusAdded": {},
+  "docAdjustment": "Adjustment",
+  "@docAdjustment": {},
+  "docTaxable": "Taxable value",
+  "@docTaxable": {},
+  "docCgst": "CGST {rate}",
+  "@docCgst": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "docSgst": "SGST {rate}",
+  "@docSgst": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "docTotal": "Total",
+  "@docTotal": {},
+  "docGstin": "GSTIN {gstin}",
+  "@docGstin": {
+    "placeholders": {
+      "gstin": {
+        "type": "String"
+      }
+    }
+  },
+  "docPaidWith": "Paid with",
+  "@docPaidWith": {},
+  "docPaidWallet": "Wallet",
+  "@docPaidWallet": {},
+  "docPaidBonus": "Bonus credit",
+  "@docPaidBonus": {},
+  "docPaidOther": "UPI or at the counter",
+  "@docPaidOther": {},
+  "docNoGst": "No GST charged.",
+  "@docNoGst": {}
 }

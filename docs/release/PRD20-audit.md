@@ -26,7 +26,7 @@ Legend: ✅ proven by a gate · 🔧 gap - to build · 👤 needs a person to do
 | No wallet-adjustment control or endpoint for owner/manager | ✅ | `money/ledger_test` (only five ledger callers, none owner-callable) + negative control; O5 test asserts the control is *absent* |
 | Add Money shows bonus, bonus expiry, "paid never expires", "this salon only", "no cash withdrawal" before payment | ✅ | `app/test/wallet_test.dart` "the disclosure block is ABOVE the pay button" |
 | No setting, column or code path can expire paid credit | ✅ | `wallet_lots_paid_never_expires` constraint; `ledger_test` refuses expiring a paid lot |
-| **A top-up produces a receipt, not a tax invoice; GST appears on the service invoice** | 🔧 ⚖️ | **Not built. There is no invoices or receipts table.** Build: a top-up receipt, a per-salon per-financial-year numbered service invoice at settlement, GST shown only for a GST-registered salon. ⚖️ CA confirms format, rate and the unregistered-salon case |
+| A top-up produces a receipt, not a tax invoice; GST appears on the service invoice | ✅ ⚖️ | Built 30 Sep 2026 (0094/0095): a top-up gets a receipt (RCT series, "not a tax invoice" on it); a paid visit gets a tax invoice (INV, GST carved out, CGST/SGST) from a registered salon or a bill of supply (BOS) otherwise; numbered per salon per series per FY (IST), gapless; append-only, never purged; issued by deferred triggers at commit on every payment path. `money/documents_test.sql` (26) + a negative control (a receipt numbered as a tax invoice). App: Me → Receipts and invoices; a paid visit opens its bill. Console: GST registration per salon, audited. **⚖️ Before the first live tax invoice a CA confirms: the rate (not defaulted - salon services reportedly 5% without ITC since 22 Sep 2025), that menu prices are GST-inclusive, and the bonus at redemption (the invoice taxes full value and records the bonus apart).** Not yet: PDF copies in R2, and Crayora's own GST invoice to the salon for its fees |
 | Suspend/purge offers export, requires credit settled, purges personal, retains financial | ✅ | `privacy/offboarding_test.sql` (32) + two negative controls |
 | Concurrent wallet debits cannot overdraw | ✅ | `ledger_test` "concurrent spending cannot overdraw (the row lock decides)" |
 | Bonus spent before paid | ✅ | `ledger_test` bonus-first assertion; `start_and_pay_test` "both lots were spent" |
@@ -84,7 +84,7 @@ Legend: ✅ proven by a gate · 🔧 gap - to build · 👤 needs a person to do
 
 ## Summary
 
-- ✅ proven: 35 · 🔧 to build: **1** (receipts and invoices; branding refresh and push branding built 30 Sep 2026) ·
+- ✅ proven: 36 · 🔧 to build: **0** (receipts and invoices, branding refresh and push branding all built 30 Sep 2026) ·
   👤 once, by a person: 6 · ⚖️ CA: invoice format · ➖ two, with reasons
 - Build order: branding refresh and push branding first (small, customer-visible); invoices next
   (the largest, and the CA's answer shapes it).

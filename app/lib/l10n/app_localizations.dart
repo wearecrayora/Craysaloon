@@ -2173,6 +2173,144 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Book your next visit'**
   String get homeBookAgain;
+
+  /// No description provided for @docsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipts and invoices'**
+  String get docsTitle;
+
+  /// No description provided for @docsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'For every top-up and every paid visit'**
+  String get docsSub;
+
+  /// No description provided for @docsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing yet. A receipt appears when you add money, and a bill when you pay for a visit.'**
+  String get docsEmpty;
+
+  /// No description provided for @docsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your receipts and invoices could not be loaded.'**
+  String get docsFailed;
+
+  /// No description provided for @docReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt'**
+  String get docReceipt;
+
+  /// RULES 11.12: a top-up receipt is never labelled a tax invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a receipt for credit added to your wallet. It is not a tax invoice.'**
+  String get docReceiptNote;
+
+  /// No description provided for @docTaxInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax invoice'**
+  String get docTaxInvoice;
+
+  /// No description provided for @docBillOfSupply.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill of supply'**
+  String get docBillOfSupply;
+
+  /// No description provided for @docNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get docNumber;
+
+  /// No description provided for @docDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get docDate;
+
+  /// No description provided for @docAmountPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount paid'**
+  String get docAmountPaid;
+
+  /// No description provided for @docBonusAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus credit added'**
+  String get docBonusAdded;
+
+  /// No description provided for @docAdjustment.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjustment'**
+  String get docAdjustment;
+
+  /// No description provided for @docTaxable.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxable value'**
+  String get docTaxable;
+
+  /// No description provided for @docCgst.
+  ///
+  /// In en, this message translates to:
+  /// **'CGST {rate}'**
+  String docCgst(String rate);
+
+  /// No description provided for @docSgst.
+  ///
+  /// In en, this message translates to:
+  /// **'SGST {rate}'**
+  String docSgst(String rate);
+
+  /// No description provided for @docTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get docTotal;
+
+  /// No description provided for @docGstin.
+  ///
+  /// In en, this message translates to:
+  /// **'GSTIN {gstin}'**
+  String docGstin(String gstin);
+
+  /// No description provided for @docPaidWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid with'**
+  String get docPaidWith;
+
+  /// No description provided for @docPaidWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get docPaidWallet;
+
+  /// No description provided for @docPaidBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus credit'**
+  String get docPaidBonus;
+
+  /// No description provided for @docPaidOther.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI or at the counter'**
+  String get docPaidOther;
+
+  /// No description provided for @docNoGst.
+  ///
+  /// In en, this message translates to:
+  /// **'No GST charged.'**
+  String get docNoGst;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

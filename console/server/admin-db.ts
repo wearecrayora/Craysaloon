@@ -395,6 +395,33 @@ export async function setFeatureFlag(
       ${enabled}::boolean, ${reason})`;
 }
 
+export type SalonGst = { gst_number: string | null; gst_rate_bp: number | null };
+
+export async function getSalonGst(salonId: string): Promise<SalonGst | null> {
+  const sql = client();
+  const [row] = await sql<SalonGst[]>`
+    select gst_number, gst_rate_bp from public.salons where id = ${salonId}::uuid`;
+  return row ?? null;
+}
+
+/**
+ * Registers a salon for GST (a GSTIN and a rate, both) or unregisters it
+ * (neither). From here on its paid visits get tax invoices - or bills of supply.
+ * Audited, with a reason; the database validates the GSTIN's shape (0094).
+ */
+export async function setSalonGst(
+  actorAdminId: string,
+  salonId: string,
+  gstNumber: string | null,
+  rateBp: number | null,
+  reason: string,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.set_salon_gst(${actorAdminId}::uuid, ${salonId}::uuid, ${gstNumber},
+      ${rateBp}::int, ${reason})`;
+}
+
 export type PlatformMetrics = {
   salons: Record<string, number> | null;
   billing: Partial<Record<BillingState, number>> | null;

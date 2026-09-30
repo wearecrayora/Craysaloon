@@ -6,6 +6,7 @@ import '../features/booking/book_screen.dart';
 import '../features/booking/booking_detail_screen.dart';
 import '../features/catalogue/catalogue_screens.dart';
 import '../features/customer/customer_shell.dart';
+import '../features/customer/documents_screen.dart';
 import '../features/customer/history_screen.dart';
 import '../features/customer/me_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
@@ -82,6 +83,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           '/book',
           '/me',
           '/visits',
+          '/documents',
           '/your-data',
           '/wallet',
           '/wallet/add',
@@ -111,6 +113,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/your-data', pageBuilder: _page(const YourDataScreen())),
       GoRoute(path: '/visits', pageBuilder: _page(const HistoryScreen())),
+      GoRoute(path: '/documents', pageBuilder: _page(const DocumentsScreen())),
       GoRoute(
         path: '/booking/:id',
         pageBuilder: (context, state) => MaterialPage(

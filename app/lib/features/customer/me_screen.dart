@@ -27,8 +27,8 @@ class MeScreen extends ConsumerWidget {
     final languageName = locale == kHindi
         ? l10n.languageHindi
         : locale == kHinglish
-            ? l10n.languageHinglish
-            : l10n.languageEnglish;
+        ? l10n.languageHinglish
+        : l10n.languageEnglish;
 
     return Scaffold(
       appBar: AppBar(title: const SalonTitle()),
@@ -39,7 +39,8 @@ class MeScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           if (profile?.name case final name? when name.trim().isNotEmpty)
             _Field(label: l10n.meName, value: name),
-          if (profile?.maskedPhone case final phone?) _Field(label: l10n.mePhone, value: phone),
+          if (profile?.maskedPhone case final phone?)
+            _Field(label: l10n.mePhone, value: phone),
           const SizedBox(height: 12),
           _Row(
             icon: Icons.translate,
@@ -52,6 +53,12 @@ class MeScreen extends ConsumerWidget {
             title: l10n.historyTitle,
             subtitle: l10n.meHistorySub,
             onTap: () => context.push('/visits'),
+          ),
+          _Row(
+            icon: Icons.receipt_long_outlined,
+            title: l10n.docsTitle,
+            subtitle: l10n.docsSub,
+            onTap: () => context.push('/documents'),
           ),
           _Row(
             icon: Icons.shield_outlined,
@@ -121,7 +128,12 @@ class _Field extends StatelessWidget {
 }
 
 class _Row extends StatelessWidget {
-  const _Row({required this.icon, required this.title, required this.subtitle, required this.onTap});
+  const _Row({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
 
   final IconData icon;
   final String title;
@@ -137,7 +149,9 @@ class _Row extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: 56),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
+          border: Border(
+            bottom: BorderSide(color: Theme.of(context).dividerColor),
+          ),
         ),
         child: Row(
           children: [

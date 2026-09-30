@@ -297,6 +297,89 @@ void main() {
     });
   });
 
+  group('receipts and invoices (0094)', () {
+    FakeCustomerApi withDocs() => FakeCustomerApi()
+      ..visitsList = [
+        PastVisit(
+          id: 'v1',
+          completedAt: DateTime(2026, 9, 12),
+          amountPaise: 45000,
+          paid: true,
+          serviceNames: 'Haircut',
+        ),
+      ]
+      ..documentList = [
+        SalonDocument(
+          kind: DocumentKind.taxInvoice,
+          number: 'INV/2627/00001',
+          issuedAt: DateTime(2026, 9, 12),
+          visitId: 'v1',
+          totalPaise: 45000,
+          taxablePaise: 42857,
+          cgstPaise: 1071,
+          sgstPaise: 1072,
+          gstRateBp: 500,
+          gstin: '29ABCDE1234F1Z5',
+          walletPaidPaise: 40000,
+          bonusPaise: 5000,
+          lines: const [DocumentLine(kind: 'service', name: 'Haircut', pricePaise: 45000)],
+        ),
+        SalonDocument(
+          kind: DocumentKind.receipt,
+          number: 'RCT/2627/00001',
+          issuedAt: DateTime(2026, 9, 1),
+          totalPaise: 50000,
+          bonusPaise: 5000,
+        ),
+      ];
+
+    Future<void> openDocs(WidgetTester tester) async {
+      await tester.tap(find.text('Me').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Receipts and invoices'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('a top-up is a RECEIPT, and says it is not a tax invoice', (tester) async {
+      await pump(tester, withDocs());
+      await openDocs(tester);
+
+      await tester.tap(find.text('Receipt'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Number: RCT/2627/00001'), findsOneWidget);
+      expect(find.text('This is a receipt for credit added to your wallet. It is not a tax invoice.'),
+          findsOneWidget);
+      expect(find.text('Bonus credit added'), findsOneWidget);
+      expect(find.text('CGST 2.5%'), findsNothing);
+    });
+
+    testWidgets('a paid visit opens its tax invoice: GST as issued, to the paisa', (tester) async {
+      await pump(tester, withDocs());
+      await tester.tap(find.text('Me').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Visit history'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Haircut'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Tax invoice'), findsOneWidget);
+      expect(find.text('GSTIN 29ABCDE1234F1Z5'), findsOneWidget);
+      expect(find.text('CGST 2.5%'), findsOneWidget);
+      expect(find.text('₹10.71'), findsOneWidget);
+      expect(find.text('₹10.72'), findsOneWidget);
+      expect(find.text('₹428.57'), findsOneWidget);
+      // How it was paid, with the bonus apart.
+      expect(find.text('Bonus credit'), findsOneWidget);
+    });
+
+    testWidgets('no documents yet says when they will come', (tester) async {
+      await pump(tester, FakeCustomerApi());
+      await openDocs(tester);
+      expect(find.textContaining('A receipt appears when you add money'), findsOneWidget);
+    });
+  });
+
   group('C10 history and C12 me', () {
     testWidgets('history says paid or not - never a guessed method', (tester) async {
       final api = FakeCustomerApi()

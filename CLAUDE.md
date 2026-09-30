@@ -134,15 +134,19 @@ Each feature passes its PRD acceptance criteria, the milestone gates in `PHASES.
 per-screen checklist in `IMPLEMENTATION.md` §7.
 
 **Hard CI gates:** the catalogue-driven cross-tenant leak test, the binding-exclusivity test, the
-money test, the index-scope test, the admin-plane test, the join-flow test, the bind-flow test, the **customer-scope test**, the **write-scope test**, the **customer-list test**, the **booking test**, the **data-rights test**, the **reminder test**, the **referral test**, the **dashboard test**, the **start-and-pay test**, the **billing test**, the **offboarding test**, the OTP test and the messaging-access test — plus their **negative controls**,
+money test, the index-scope test, the admin-plane test, the join-flow test, the bind-flow test, the **customer-scope test**, the **write-scope test**, the **customer-list test**, the **booking test**, the **data-rights test**, the **reminder test**, the **referral test**, the **dashboard test**, the **start-and-pay test**, the **billing test**, the **offboarding test**, the **documents test**, the OTP test and the messaging-access test — plus their **negative controls**,
 which create - on purpose - an unprotected table, an unaudited `app_admin` function, an
 owner-callable payment-key function, a customer table protected only by `salon_id`, a dropped
 one-reminder-per-cycle index, an escalation sweep that ignores the ack, a `start_service` that
 accepts any code, a bill payment that credits the wallet, a `salon_writable` that ignores a
-lapsed subscription, a purge that keeps the closed salon's bindings and a support view that needs
-no session, and require
+lapsed subscription, a purge that keeps the closed salon's bindings, a support view that needs
+no session and a top-up receipt numbered as a tax invoice, and require
 the matching gate to go red. Never skipped, never deleted, never narrowed to pass. A gate that has
 only ever been seen passing is not known to be a gate.
+
+**A pgTAP plan must match the run** (`scripts/db/run.mjs`, since 30 Sep 2026). pgTAP only
+*prints* "planned N but ran M"; the runner now fails on it, and on a file with no plan. Five gates
+had drifted. Adding an assertion means bumping `plan(n)` in the same edit.
 
 **Every function must be reachable** (`scripts/db/orphan-check.mjs`). Four times in M7-M10 a
 function was correct, gated, and called by nothing - reminders never sent, the wallet never spent,

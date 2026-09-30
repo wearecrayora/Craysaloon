@@ -33,6 +33,11 @@ final bookingDetailProvider =
   return api?.booking(id);
 });
 
+final documentsProvider = FutureProvider<List<SalonDocument>>((ref) async {
+  final api = ref.watch(customerApiProvider);
+  return await api?.documents() ?? const [];
+});
+
 final historyProvider = FutureProvider<List<PastVisit>>((ref) async {
   final api = ref.watch(customerApiProvider);
   return await api?.history() ?? const [];

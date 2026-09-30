@@ -1272,4 +1272,81 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get homeBookAgain => 'Book your next visit';
+
+  @override
+  String get docsTitle => 'Receipts and invoices';
+
+  @override
+  String get docsSub => 'For every top-up and every paid visit';
+
+  @override
+  String get docsEmpty =>
+      'Nothing yet. A receipt appears when you add money, and a bill when you pay for a visit.';
+
+  @override
+  String get docsFailed => 'Your receipts and invoices could not be loaded.';
+
+  @override
+  String get docReceipt => 'Receipt';
+
+  @override
+  String get docReceiptNote =>
+      'This is a receipt for credit added to your wallet. It is not a tax invoice.';
+
+  @override
+  String get docTaxInvoice => 'Tax invoice';
+
+  @override
+  String get docBillOfSupply => 'Bill of supply';
+
+  @override
+  String get docNumber => 'Number';
+
+  @override
+  String get docDate => 'Date';
+
+  @override
+  String get docAmountPaid => 'Amount paid';
+
+  @override
+  String get docBonusAdded => 'Bonus credit added';
+
+  @override
+  String get docAdjustment => 'Adjustment';
+
+  @override
+  String get docTaxable => 'Taxable value';
+
+  @override
+  String docCgst(String rate) {
+    return 'CGST $rate';
+  }
+
+  @override
+  String docSgst(String rate) {
+    return 'SGST $rate';
+  }
+
+  @override
+  String get docTotal => 'Total';
+
+  @override
+  String docGstin(String gstin) {
+    return 'GSTIN $gstin';
+  }
+
+  @override
+  String get docPaidWith => 'Paid with';
+
+  @override
+  String get docPaidWallet => 'Wallet';
+
+  @override
+  String get docPaidBonus => 'Bonus credit';
+
+  @override
+  String get docPaidOther => 'UPI or at the counter';
+
+  @override
+  String get docNoGst => 'No GST charged.';
 }

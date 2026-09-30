@@ -53,6 +53,11 @@ class FakeCustomerApi extends FakeCrayApi implements CustomerApi, SalonReads, Sa
   /// Errors for the next createBooking calls, in order; empty = succeed.
   final List<CrayApiException> bookErrors = [];
 
+  List<SalonDocument> documentList = [];
+
+  @override
+  Future<List<SalonDocument>> documents() async => documentList;
+
   @override
   Future<CustomerProfile?> me() async => profile;
 

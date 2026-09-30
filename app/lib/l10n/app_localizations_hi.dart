@@ -1264,6 +1264,83 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get homeBookAgain => 'अपनी अगली विज़िट बुक करें';
+
+  @override
+  String get docsTitle => 'रसीदें और बिल';
+
+  @override
+  String get docsSub => 'हर टॉप-अप और हर भुगतान की गई विज़िट के लिए';
+
+  @override
+  String get docsEmpty =>
+      'अभी कुछ नहीं। पैसे जोड़ने पर रसीद और विज़िट का भुगतान करने पर बिल यहाँ दिखेगा।';
+
+  @override
+  String get docsFailed => 'आपकी रसीदें और बिल लोड नहीं हो सके।';
+
+  @override
+  String get docReceipt => 'रसीद';
+
+  @override
+  String get docReceiptNote =>
+      'यह आपके वॉलेट में जोड़े गए क्रेडिट की रसीद है। यह टैक्स इनवॉइस नहीं है।';
+
+  @override
+  String get docTaxInvoice => 'टैक्स इनवॉइस';
+
+  @override
+  String get docBillOfSupply => 'बिल ऑफ़ सप्लाई';
+
+  @override
+  String get docNumber => 'संख्या';
+
+  @override
+  String get docDate => 'तारीख';
+
+  @override
+  String get docAmountPaid => 'भुगतान की गई राशि';
+
+  @override
+  String get docBonusAdded => 'जोड़ा गया बोनस क्रेडिट';
+
+  @override
+  String get docAdjustment => 'समायोजन';
+
+  @override
+  String get docTaxable => 'कर योग्य मूल्य';
+
+  @override
+  String docCgst(String rate) {
+    return 'CGST $rate';
+  }
+
+  @override
+  String docSgst(String rate) {
+    return 'SGST $rate';
+  }
+
+  @override
+  String get docTotal => 'कुल';
+
+  @override
+  String docGstin(String gstin) {
+    return 'GSTIN $gstin';
+  }
+
+  @override
+  String get docPaidWith => 'भुगतान का तरीका';
+
+  @override
+  String get docPaidWallet => 'वॉलेट';
+
+  @override
+  String get docPaidBonus => 'बोनस क्रेडिट';
+
+  @override
+  String get docPaidOther => 'UPI या काउंटर पर';
+
+  @override
+  String get docNoGst => 'कोई GST नहीं लगा।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -2538,4 +2615,81 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get homeBookAgain => 'Apni agli visit book karein';
+
+  @override
+  String get docsTitle => 'Receipts aur invoices';
+
+  @override
+  String get docsSub => 'Har top-up aur har paid visit ke liye';
+
+  @override
+  String get docsEmpty =>
+      'Abhi kuch nahi. Paise jodne par receipt aur visit ka payment karne par bill yahan dikhega.';
+
+  @override
+  String get docsFailed => 'Aapki receipts aur invoices load nahi hui.';
+
+  @override
+  String get docReceipt => 'Receipt';
+
+  @override
+  String get docReceiptNote =>
+      'Yeh aapke wallet mein jode gaye credit ki receipt hai. Yeh tax invoice nahi hai.';
+
+  @override
+  String get docTaxInvoice => 'Tax invoice';
+
+  @override
+  String get docBillOfSupply => 'Bill of supply';
+
+  @override
+  String get docNumber => 'Number';
+
+  @override
+  String get docDate => 'Tareekh';
+
+  @override
+  String get docAmountPaid => 'Paid amount';
+
+  @override
+  String get docBonusAdded => 'Bonus credit joda gaya';
+
+  @override
+  String get docAdjustment => 'Adjustment';
+
+  @override
+  String get docTaxable => 'Taxable value';
+
+  @override
+  String docCgst(String rate) {
+    return 'CGST $rate';
+  }
+
+  @override
+  String docSgst(String rate) {
+    return 'SGST $rate';
+  }
+
+  @override
+  String get docTotal => 'Total';
+
+  @override
+  String docGstin(String gstin) {
+    return 'GSTIN $gstin';
+  }
+
+  @override
+  String get docPaidWith => 'Payment kaise hua';
+
+  @override
+  String get docPaidWallet => 'Wallet';
+
+  @override
+  String get docPaidBonus => 'Bonus credit';
+
+  @override
+  String get docPaidOther => 'UPI ya counter par';
+
+  @override
+  String get docNoGst => 'Koi GST nahi laga.';
 }
