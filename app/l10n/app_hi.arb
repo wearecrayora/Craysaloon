@@ -343,5 +343,7 @@
   "languageHindi": "हिन्दी",
   "languageHinglish": "Hinglish",
   "bookingMissed": "छूट गई",
-  "homeFirstVisit": "अपनी पहली विज़िट बुक करें"
+  "homeFirstVisit": "अपनी पहली विज़िट बुक करें",
+  "joinIntro": "जुड़ते ही आपके सैलून का ऐप खुल जाएगा। कोड काउंटर पर रखे कार्ड पर है।",
+  "homeBookAgain": "अपनी अगली विज़िट बुक करें"
 }

@@ -84,6 +84,23 @@ void main() {
       );
     });
 
+    testWidgets('only somebody who never came is told it would be their first visit',
+        (tester) async {
+      await pump(tester, FakeCustomerApi());
+      expect(find.text('Book your first visit'), findsOneWidget);
+    });
+
+    testWidgets('a returning customer with no reminder is invited back, not welcomed',
+        (tester) async {
+      final api = FakeCustomerApi()
+        ..visitsList = [
+          PastVisit(id: 'v1', completedAt: DateTime(2026, 9, 12), amountPaise: 60000, paid: true),
+        ];
+      await pump(tester, api);
+      expect(find.text('Book your next visit'), findsOneWidget);
+      expect(find.text('Book your first visit'), findsNothing);
+    });
+
     testWidgets('no offers card: there is no offers feature behind one', (tester) async {
       await pump(tester, FakeCustomerApi());
       expect(find.text('Offer'), findsNothing);

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/ui/glass.dart';
+import '../../core/ui/salon_mark.dart';
 import '../../domain/join/cray_api.dart';
 import '../privacy/consent_notice.dart';
 import '../../l10n/app_localizations.dart';
@@ -22,27 +24,107 @@ class JoinScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(joinControllerProvider);
+    final onCode = state.step == JoinStep.code;
+    final reduced = MediaQuery.disableAnimationsOf(context);
 
     return Scaffold(
-      appBar: AppBar(
-        // Once the salon is known, the bar carries ITS name and keeps it: this
-        // is the salon's app from here on (DESIGN 2.1). The step's own heading
-        // lives in the body, so nothing is said twice.
-        title: Text(state.salon?.displayName ?? AppL10n.of(context).joinTitle),
-      ),
+      // The code step is Crayora-neutral and carries its own hero. From the
+      // confirmation on, the bar carries the SALON's mark and name and keeps
+      // them: this is the salon's app from here (DESIGN 2.1). The step's own
+      // heading lives in the body, so nothing is said twice.
+      appBar: onCode
+          ? null
+          : AppBar(title: const SalonTitle(), automaticallyImplyLeading: false),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: switch (state.step) {
-            JoinStep.code => const _CodeStep(),
-            JoinStep.confirm => const _ConfirmStep(),
-            JoinStep.phone => const _PhoneStep(),
-            JoinStep.otp => const _OtpStep(),
-            JoinStep.done => const _DoneStep(),
-          },
+        top: !onCode,
+        // Steps cross-fade with a short rise (DESIGN 7.2); with reduced motion
+        // they simply change.
+        child: AnimatedSwitcher(
+          duration: reduced ? Duration.zero : const Duration(milliseconds: 240),
+          switchInCurve: const Cubic(0.2, 0, 0, 1),
+          switchOutCurve: Curves.easeOut,
+          transitionBuilder: (child, animation) => FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween(
+                begin: const Offset(0, 0.02),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            ),
+          ),
+          child: KeyedSubtree(
+            key: ValueKey(state.step),
+            child: switch (state.step) {
+              JoinStep.code => const _CodeStep(),
+              JoinStep.confirm => const _Padded(_ConfirmStep()),
+              JoinStep.phone => const _Padded(_PhoneStep()),
+              JoinStep.otp => const _Padded(_OtpStep()),
+              JoinStep.done => const _Padded(_DoneStep()),
+            },
+          ),
         ),
       ),
     );
+  }
+}
+
+class _Padded extends StatelessWidget {
+  const _Padded(this.child);
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) =>
+      Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 16), child: child);
+}
+
+/// A salon photo - a salon space, never a person (DESIGN 10) - optionally
+/// fading into the mesh. Used where the salon is not yet, or only just, known;
+/// the salon's own photos replace it when it has some.
+class _Photo extends StatelessWidget {
+  const _Photo({
+    required this.asset,
+    required this.height,
+    this.fade = true,
+    this.radius,
+  });
+
+  final String asset;
+  final double height;
+  final bool fade;
+  final double? radius;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget image = Image.asset(
+      asset,
+      height: height,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      excludeFromSemantics: true,
+    );
+    if (fade) {
+      // An alpha mask, not a colour overlay: it fades into whatever mesh is
+      // behind, in either mode, without naming a colour.
+      image = ShaderMask(
+        blendMode: BlendMode.dstIn,
+        shaderCallback: (rect) => const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.white, Colors.white, Colors.transparent],
+          stops: [0, 0.55, 1],
+        ).createShader(rect),
+        child: image,
+      );
+    }
+    if (radius != null) {
+      image = ClipRRect(
+        borderRadius: BorderRadius.circular(radius!),
+        child: image,
+      );
+    }
+    return image;
   }
 }
 
@@ -89,7 +171,8 @@ class _Problem extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: scheme.error),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: scheme.error),
             ),
           ),
         ],
@@ -119,55 +202,86 @@ class _CodeStepState extends ConsumerState<_CodeStep> {
     final l10n = AppL10n.of(context);
     final state = ref.watch(joinControllerProvider);
 
+    final text = Theme.of(context).textTheme;
+
     return ListView(
+      padding: const EdgeInsets.only(bottom: 24),
       children: [
-        // Scanning is the fast path; typing is the one that always works. Both
-        // are offered, and a refused camera lands back here rather than in a
-        // dead end (IMPLEMENTATION U2).
-        FilledButton.icon(
-          onPressed: state.busy
-              ? null
-              : () async {
-                  final code = await QrScanSheet.open(context);
-                  if (code == null || !context.mounted) return;
-                  _controller.text = code.value;
-                  await ref.read(joinControllerProvider.notifier).submitCode(code.value);
-                },
-          icon: const Icon(Icons.qr_code_scanner),
-          label: Text(l10n.joinScanButton),
+        const _Photo(asset: 'assets/images/salon_bright.jpg', height: 260),
+        _gutter(
+          Appear(child: Text(l10n.joinTitle, style: text.headlineMedium)),
         ),
-        const SizedBox(height: 24),
-        Text(l10n.joinEnterCode, style: Theme.of(context).textTheme.labelMedium),
         const SizedBox(height: 8),
-        TextField(
-          controller: _controller,
-          autofocus: true,
-          textCapitalization: TextCapitalization.characters,
-          textInputAction: TextInputAction.go,
-          decoration: InputDecoration(hintText: l10n.joinCodeHint),
-          // Uppercase as they type: the code is printed in uppercase, and a
-          // lowercase echo makes people think they typed it wrong.
-          inputFormatters: [_Upper()],
-          onSubmitted: (value) =>
-              ref.read(joinControllerProvider.notifier).submitCode(value),
-        ),
-        _Problem(state.problem),
+        _gutter(Text(l10n.joinIntro, style: text.bodyMedium)),
         const SizedBox(height: 24),
-        FilledButton(
-          onPressed: state.busy
-              ? null
-              : () => ref.read(joinControllerProvider.notifier).submitCode(_controller.text),
-          child: Text(state.busy ? '…' : l10n.joinContinue),
+        _gutter(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Scanning is the fast path; typing is the one that always works. Both
+              // are offered, and a refused camera lands back here rather than in a
+              // dead end (IMPLEMENTATION U2).
+              FilledButton.icon(
+                onPressed: state.busy
+                    ? null
+                    : () async {
+                        final code = await QrScanSheet.open(context);
+                        if (code == null || !context.mounted) return;
+                        _controller.text = code.value;
+                        await ref
+                            .read(joinControllerProvider.notifier)
+                            .submitCode(code.value);
+                      },
+                icon: const Icon(Icons.qr_code_scanner),
+                label: Text(l10n.joinScanButton),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                l10n.joinEnterCode,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _controller,
+                autofocus: true,
+                textCapitalization: TextCapitalization.characters,
+                textInputAction: TextInputAction.go,
+                decoration: InputDecoration(hintText: l10n.joinCodeHint),
+                // Uppercase as they type: the code is printed in uppercase, and a
+                // lowercase echo makes people think they typed it wrong.
+                inputFormatters: [_Upper()],
+                onSubmitted: (value) =>
+                    ref.read(joinControllerProvider.notifier).submitCode(value),
+              ),
+              _Problem(state.problem),
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: state.busy
+                    ? null
+                    : () => ref
+                          .read(joinControllerProvider.notifier)
+                          .submitCode(_controller.text),
+                child: Text(state.busy ? '…' : l10n.joinContinue),
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
+
+  static Widget _gutter(Widget child) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: child,
+  );
 }
 
 class _Upper extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue old, TextEditingValue value) =>
-      value.copyWith(text: value.text.toUpperCase());
+  TextEditingValue formatEditUpdate(
+    TextEditingValue old,
+    TextEditingValue value,
+  ) => value.copyWith(text: value.text.toUpperCase());
 }
 
 class _ConfirmStep extends ConsumerWidget {
@@ -182,22 +296,44 @@ class _ConfirmStep extends ConsumerWidget {
 
     return ListView(
       children: [
+        const _Photo(
+          asset: 'assets/images/salon_mirrors.jpg',
+          height: 150,
+          fade: false,
+          radius: 20,
+        ),
+        const SizedBox(height: 20),
+        // The salon's own mark, the moment it is known: this is where the app
+        // becomes theirs.
+        const Appear(
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SalonMark(size: 72),
+          ),
+        ),
+        const SizedBox(height: 16),
         Text(
           l10n.joinConfirmTitle(salon.displayName),
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 12),
         // The licensing boundary, said plainly before anyone commits: credit is
         // redeemable only at the issuing salon (RULES 2).
-        Text(l10n.joinConfirmBody, style: Theme.of(context).textTheme.bodyMedium),
+        Text(
+          l10n.joinConfirmBody,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
         const SizedBox(height: 32),
         FilledButton(
-          onPressed: () => ref.read(joinControllerProvider.notifier).confirmSalon(),
+          onPressed: () =>
+              ref.read(joinControllerProvider.notifier).confirmSalon(),
           child: Text(l10n.joinContinue),
         ),
         const SizedBox(height: 8),
-        OutlinedButton(
-          onPressed: () => ref.read(joinControllerProvider.notifier).backToCode(),
+        TextButton(
+          style: TextButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+          onPressed: () =>
+              ref.read(joinControllerProvider.notifier).backToCode(),
           child: Text(l10n.joinNotThisSalon),
         ),
       ],
@@ -260,7 +396,10 @@ class _PhoneStepState extends ConsumerState<_PhoneStep> {
         const SizedBox(height: 16),
         // Service messages ARE the service: they are stated, not asked for.
         // Marketing is asked for, separately, and starts off (RULES 11).
-        Text(l10n.phoneServiceNote, style: Theme.of(context).textTheme.bodySmall),
+        Text(
+          l10n.phoneServiceNote,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
         CheckboxListTile(
           value: state.promotional,
           onChanged: (v) => notifier.setPromotional(v ?? false),
@@ -278,7 +417,9 @@ class _PhoneStepState extends ConsumerState<_PhoneStep> {
         _Problem(state.problem),
         const SizedBox(height: 24),
         FilledButton(
-          onPressed: state.busy ? null : () => notifier.submitPhone(_controller.text),
+          onPressed: state.busy
+              ? null
+              : () => notifier.submitPhone(_controller.text),
           child: Text(state.busy ? '…' : l10n.joinStart),
         ),
       ],
@@ -332,7 +473,8 @@ class _OtpStepState extends ConsumerState<_OtpStep> {
 
     // A wrong code with attempts left says how many; the generic text would
     // leave someone guessing whether the app or the code is broken.
-    final attemptsMessage = state.problem == JoinProblem.wrongCode && state.attemptsLeft != null
+    final attemptsMessage =
+        state.problem == JoinProblem.wrongCode && state.attemptsLeft != null
         ? l10n.otpWrongCode('${state.attemptsLeft}')
         : null;
 
@@ -352,6 +494,12 @@ class _OtpStepState extends ConsumerState<_OtpStep> {
           textInputAction: TextInputAction.go,
           // Android autofills the code from the SMS when the format matches.
           autofillHints: const [AutofillHints.oneTimeCode],
+          // Big, spaced, tabular: read off an SMS and typed on a bus.
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            letterSpacing: 12,
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(8),
@@ -360,7 +508,10 @@ class _OtpStepState extends ConsumerState<_OtpStep> {
         ),
         const SizedBox(height: 8),
         if (_left > 0)
-          Text(l10n.otpExpiresIn(_left), style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            l10n.otpExpiresIn(_left),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         _Problem(state.problem, message: attemptsMessage),
         const SizedBox(height: 24),
         FilledButton(
@@ -403,13 +554,23 @@ class _DoneStep extends ConsumerWidget {
 
     return ListView(
       children: [
+        const SizedBox(height: 24),
+        const Appear(
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SalonMark(size: 64),
+          ),
+        ),
+        const SizedBox(height: 20),
         Text(
           l10n.joinedTitle(salon?.displayName ?? ''),
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 12),
         Text(
-          state.outcome == LoginOutcome.staff ? l10n.joinedStaff : l10n.joinedBody,
+          state.outcome == LoginOutcome.staff
+              ? l10n.joinedStaff
+              : l10n.joinedBody,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],

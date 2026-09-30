@@ -307,7 +307,13 @@ class _NextCard extends ConsumerWidget {
     if (!due.hasValue) return const SizedBox.shrink();
     final nextDue = due.value;
 
-    if (nextDue == null) return const _FirstVisitCard();
+    if (nextDue == null) {
+      // No reminder scheduled. Somebody who has been before is invited back;
+      // only somebody who never has is told it would be their first visit.
+      final history = ref.watch(historyProvider);
+      if (!history.hasValue) return const SizedBox.shrink();
+      return _FirstVisitCard(returning: history.value!.isNotEmpty);
+    }
 
     final date = ml.formatShortMonthDay(nextDue.dueOn);
     final service = nextDue.serviceName?.toLowerCase();
@@ -348,7 +354,9 @@ class _NextCard extends ConsumerWidget {
 }
 
 class _FirstVisitCard extends StatelessWidget {
-  const _FirstVisitCard();
+  const _FirstVisitCard({required this.returning});
+
+  final bool returning;
 
   @override
   Widget build(BuildContext context) {
@@ -377,7 +385,7 @@ class _FirstVisitCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    l10n.homeFirstVisit,
+                    returning ? l10n.homeBookAgain : l10n.homeFirstVisit,
                     style: text.titleMedium?.copyWith(color: g.ink),
                   ),
                   const SizedBox(height: 12),

@@ -1265,4 +1265,11 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get homeFirstVisit => 'Book your first visit';
+
+  @override
+  String get joinIntro =>
+      'Your salon\'s app opens once you join. The code is on the card at the counter.';
+
+  @override
+  String get homeBookAgain => 'Book your next visit';
 }

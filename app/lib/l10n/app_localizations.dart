@@ -2161,6 +2161,18 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Book your first visit'**
   String get homeFirstVisit;
+
+  /// No description provided for @joinIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Your salon\'s app opens once you join. The code is on the card at the counter.'**
+  String get joinIntro;
+
+  /// No description provided for @homeBookAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Book your next visit'**
+  String get homeBookAgain;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

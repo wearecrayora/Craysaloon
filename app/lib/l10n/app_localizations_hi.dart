@@ -1257,6 +1257,13 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get homeFirstVisit => 'अपनी पहली विज़िट बुक करें';
+
+  @override
+  String get joinIntro =>
+      'जुड़ते ही आपके सैलून का ऐप खुल जाएगा। कोड काउंटर पर रखे कार्ड पर है।';
+
+  @override
+  String get homeBookAgain => 'अपनी अगली विज़िट बुक करें';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -2524,4 +2531,11 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get homeFirstVisit => 'Apni pehli visit book karein';
+
+  @override
+  String get joinIntro =>
+      'Judte hi aapke salon ka app khul jayega. Code counter par rakhe card par hai.';
+
+  @override
+  String get homeBookAgain => 'Apni agli visit book karein';
 }

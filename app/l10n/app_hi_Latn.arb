@@ -343,5 +343,7 @@
   "languageHindi": "हिन्दी",
   "languageHinglish": "Hinglish",
   "bookingMissed": "Miss ho gayi",
-  "homeFirstVisit": "Apni pehli visit book karein"
+  "homeFirstVisit": "Apni pehli visit book karein",
+  "joinIntro": "Judte hi aapke salon ka app khul jayega. Code counter par rakhe card par hai.",
+  "homeBookAgain": "Apni agli visit book karein"
 }

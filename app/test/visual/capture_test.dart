@@ -22,6 +22,7 @@ import 'package:craysalon/data/repositories/day_repository.dart';
 import 'package:craysalon/domain/customer/customer.dart';
 import 'package:craysalon/domain/join/cray_api.dart';
 import 'package:craysalon/domain/records/records.dart';
+import 'package:craysalon/features/join/deep_link_listener.dart';
 import 'package:craysalon/features/join/join_controller.dart';
 import 'package:craysalon/features/salon/salon_home.dart';
 import 'package:craysalon/features/visit/visit_cards.dart';
@@ -127,7 +128,7 @@ Future<void> _loadFonts() async {
 
   final poppins = Platform.environment['VISUAL_FONT'] ?? r'C:\Windows\Fonts\segoeui.ttf';
   final poppinsBold = Platform.environment['VISUAL_FONT_BOLD'] ?? r'C:\Windows\Fonts\seguisb.ttf';
-  for (final family in ['Poppins', 'Noto Sans Devanagari', 'Roboto']) {
+  for (final family in ['Poppins', 'Inter', 'Noto Sans Devanagari', 'Roboto']) {
     await load(family, poppins);
     await load(family, poppinsBold);
   }
@@ -138,6 +139,9 @@ Future<void> _loadFonts() async {
 }
 
 Future<void> _save(WidgetTester tester, String name) async {
+  // Asset images decode off the test clock: give them real time, then a frame.
+  await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 300)));
+  await tester.pump();
   final boundary = tester.renderObject<RenderRepaintBoundary>(find.byKey(const Key('capture')));
   final image = await tester.runAsync(() => boundary.toImage(pixelRatio: 2));
   final bytes = await tester.runAsync(() => image!.toByteData(format: ui.ImageByteFormat.png));
@@ -325,6 +329,40 @@ void main() {
     await tester.tap(find.text('Visit history'));
     await tester.pumpAndSettle();
     await _save(tester, 'c10_history');
+  });
+
+  capture('U2-U4 join', (tester) async {
+    phone(tester);
+    final api = FakeCrayApi(
+      salon: SalonSummary(
+        salonId: 'salon-a',
+        displayName: 'Studio Nine Salon',
+        brandingVersion: 7,
+        branding: designBranding(),
+        grievance: const GrievanceContact(name: 'Sunita Rao', email: 'privacy@studionine.example'),
+      ),
+    );
+    await tester.pumpWidget(
+      RepaintBoundary(
+        key: const Key('capture'),
+        child: ProviderScope(
+          overrides: [
+            crayApiProvider.overrideWithValue(api),
+            appLinkStreamProvider.overrideWithValue(const Stream.empty()),
+          ],
+          child: const CraySalonApp(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _save(tester, 'u2_code');
+    await tester.enterText(find.byType(TextField), 'CRAY-7KQ2MX');
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    await _save(tester, 'u3_confirm');
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    await _save(tester, 'u4_phone');
   });
 
   capture('O1 today - every row state', (tester) async {
