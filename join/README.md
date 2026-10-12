@@ -71,11 +71,13 @@ refunds. Regions were read from the systems themselves (Supabase ap-south-1, R2 
 2. **Have a lawyer read it.** It is accurate about what the software does - every claim can be
    checked against a migration, a gate or an Edge Function - but accuracy is not the same as
    legal sufficiency.
-3. **A Hindi copy of the page.** The in-app notice is already in `en`/`hi`/`hi_Latn`; this page
-   is English, and says so in Hindi at the top.
+**Hindi (12 Oct 2026):** `public/privacy-hi.html`, at `/privacy-hi` - the whole policy, same
+sections and anchors (`#delete` works in both). The two pages link to each other, and the app
+opens the Hindi one for Hindi (Devanagari) readers and the English one for English and Hinglish.
+**Change both in the same commit.**
 
-`scripts/lint-gates.sh` (GATE-9) fails the build if a `[SQUARE-BRACKET]` placeholder ever
-reappears in it.
+`scripts/lint-gates.sh` (GATE-9) fails the build if the Hindi page is missing, or a
+`[SQUARE-BRACKET]` placeholder ever reappears in either.
 
 **When the software changes, this page changes in the same commit.** If it says photos need
 separate consent, or that credentials cannot be read back, those are statements about the

@@ -23,6 +23,13 @@ import 'support/fake_cray_api.dart';
 /// build that puts every salon using it in breach - and the salon is the one the
 /// penalty lands on (DPDP ss.6(4), 8, 11, 12(3), 13).
 void main() {
+  test('the policy opens in the reader\'s script: Hindi gets Hindi, Hinglish gets English', () {
+    const base = 'https://craysalon-join.crayoratech.workers.dev';
+    expect(privacyPolicyUrlFor(kEnglish).toString(), '$base/privacy');
+    expect(privacyPolicyUrlFor(kHindi).toString(), '$base/privacy-hi');
+    expect(privacyPolicyUrlFor(kHinglish).toString(), '$base/privacy');
+  });
+
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   late FakePrivacyApi privacy;

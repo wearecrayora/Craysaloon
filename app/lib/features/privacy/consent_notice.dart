@@ -81,7 +81,7 @@ class ConsentNotice extends ConsumerWidget {
               const SizedBox(height: 12),
               _LinkLine(
                 label: l10n.noticePolicyLink,
-                url: privacyPolicyUrl,
+                url: privacyPolicyUrlFor(Localizations.localeOf(context)),
                 style: text.bodyMedium?.copyWith(color: scheme.primary),
               ),
             ],

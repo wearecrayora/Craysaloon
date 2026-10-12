@@ -1,3 +1,5 @@
+import 'dart:ui' show Locale;
+
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../domain/join/join_link.dart';
@@ -33,3 +35,11 @@ class UrlLauncherExternalLink implements ExternalLink {
 /// The published policy. One URL, in one place: it is printed on the Play
 /// listing and linked from the join site, and three copies would drift.
 final Uri privacyPolicyUrl = Uri.parse('${JoinLink.origin}/privacy');
+
+/// The policy in the reader's language: Hindi in Devanagari gets the Hindi page
+/// (DPDP Rules 2025 - the notice in a Scheduled language at the person's
+/// option); Hinglish is read in Latin script, so it gets the English one.
+Uri privacyPolicyUrlFor(Locale locale) =>
+    locale.languageCode == 'hi' && locale.scriptCode != 'Latn'
+    ? Uri.parse('${JoinLink.origin}/privacy-hi')
+    : privacyPolicyUrl;

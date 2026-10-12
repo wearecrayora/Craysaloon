@@ -129,13 +129,19 @@ fi
 printf '\n[GATE-9] the published privacy policy carries no placeholder\n'
 # join/public/privacy.html is live. A "[CRAYORA REGISTERED NAME]" on a published
 # policy is evidence the obligation was noticed and skipped (join/README.md).
-POLICY=join/public/privacy.html
-HOLES=$(grep -noE '\[[A-Z][A-Z -]+\]' "$POLICY" || true)
-if [ -n "$HOLES" ]; then
-  note "placeholders in $POLICY: $(echo "$HOLES" | tr '\n' ' ')"
+# Both languages: the Hindi copy is the notice in a Scheduled language (DPDP
+# Rules 2025), so it must exist, and carry no placeholder either.
+if [ ! -f join/public/privacy-hi.html ]; then
+  note "join/public/privacy-hi.html is missing - the policy must be offered in Hindi too"
   fail=1
 else
-  note "ok"
+  HOLES=$(grep -noE '\[[A-Z][A-Z -]+\]' join/public/privacy.html join/public/privacy-hi.html || true)
+  if [ -n "$HOLES" ]; then
+    note "placeholders in the published policy: $(echo "$HOLES" | tr '\n' ' ')"
+    fail=1
+  else
+    note "ok (English and Hindi)"
+  fi
 fi
 
 printf '\n%s\n' "$([ $fail -eq 0 ] && echo 'ALL GATES PASS' || echo 'GATES FAILED')"
