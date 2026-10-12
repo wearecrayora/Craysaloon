@@ -356,3 +356,52 @@ abstract interface class SalonBookings {
     String? code,
   });
 }
+
+/// One working shift: a stylist, a weekday (0 = Sunday, as Postgres counts),
+/// and a start and end as "HH:MM" in the salon's own time. A day with a lunch
+/// break is two shifts (0098).
+class Shift {
+  const Shift({required this.staffId, required this.day, required this.starts, required this.ends});
+
+  final String staffId;
+  final int day;
+  final String starts;
+  final String ends;
+}
+
+/// Time off - for one stylist, or, with no [staffId], the whole salon closed
+/// (a holiday). Either way no booking is offered inside it (0098).
+class TimeOff {
+  const TimeOff({
+    required this.id,
+    required this.startsAt,
+    required this.endsAt,
+    this.staffId,
+    this.reason,
+  });
+
+  final String id;
+  final String? staffId;
+  final DateTime startsAt;
+  final DateTime endsAt;
+  final String? reason;
+
+  bool get wholeSalon => staffId == null;
+}
+
+/// Stylist hours and time off: what decides which times customers can book.
+/// Reads for any staff role; writes for owners and managers - the database
+/// decides both (0098).
+abstract interface class SalonHoursApi {
+  Future<List<Shift>> shifts();
+
+  /// Time off that has not ended yet, soonest first.
+  Future<List<TimeOff>> timeOff();
+
+  /// Replaces [staffId]'s whole week. Throws [CrayApiException].
+  Future<void> setStaffWeek(String staffId, List<Shift> week);
+
+  Future<void> addTimeOff({String? staffId, required DateTime startsAt, required DateTime endsAt, String? reason});
+
+  Future<void> removeTimeOff(String id);
+}

@@ -1297,7 +1297,7 @@
   "@rulesRemindAfter": {},
   "rulesCancellation": "Cancellation policy",
   "@rulesCancellation": {},
-  "hoursFooter": "To change your hours or add a holiday, ask your Crayora contact.",
+  "hoursFooter": "Customers can book only inside a stylist's working hours, and never on a holiday.",
   "@hoursFooter": {},
   "hoursNotSet": "Your hours are not recorded yet.",
   "@hoursNotSet": {},
@@ -1352,5 +1352,65 @@
     }
   },
   "rulesSaveFailed": "Could not save. Check your connection and try again.",
-  "@rulesSaveFailed": {}
+  "@rulesSaveFailed": {},
+  "hoursBookable": "When customers can book",
+  "@hoursBookable": {},
+  "hoursNoneSet": "No stylist has working hours yet, so customers cannot book. Set each stylist's week under Team.",
+  "@hoursNoneSet": {
+    "description": "The state every salon was in before 0098: with no stylist hours, available_slots offers nothing."
+  },
+  "hoursSetUnderTeam": "Set hours in Team",
+  "@hoursSetUnderTeam": {},
+  "hoursHolidays": "Holidays and time off",
+  "@hoursHolidays": {},
+  "hoursNoHolidays": "No holidays or time off coming up.",
+  "@hoursNoHolidays": {},
+  "hoursAddHoliday": "Add a holiday",
+  "@hoursAddHoliday": {},
+  "hoursSalonClosed": "Salon closed",
+  "@hoursSalonClosed": {},
+  "hoursRemove": "Remove",
+  "@hoursRemove": {},
+  "hoursHolidayReason": "Reason (optional)",
+  "@hoursHolidayReason": {},
+  "hoursHolidayAdd": "Close the salon",
+  "@hoursHolidayAdd": {},
+  "hoursHolidayAdded": "Holiday added. No bookings will be offered then.",
+  "@hoursHolidayAdded": {},
+  "hoursSaveFailed": "Could not save. Check your connection and try again.",
+  "@hoursSaveFailed": {},
+  "staffHoursTitle": "Working hours",
+  "@staffHoursTitle": {},
+  "staffHoursNone": "No hours set - cannot be booked",
+  "@staffHoursNone": {},
+  "staffHoursFor": "{name}'s week",
+  "@staffHoursFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "staffHoursNote": "Customers can book this stylist only in these hours.",
+  "@staffHoursNote": {},
+  "staffHoursDayOff": "Day off",
+  "@staffHoursDayOff": {},
+  "staffHoursSave": "Save hours",
+  "@staffHoursSave": {},
+  "staffHoursSaved": "Saved. Customers can book {name} in these hours.",
+  "@staffHoursSaved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "staffHoursInvalid": "On {day} the end must come after the start.",
+  "@staffHoursInvalid": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  }
 }

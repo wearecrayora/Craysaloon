@@ -436,50 +436,6 @@ class RulesScreen extends StatelessWidget {
   }
 }
 
-/// O11 - opening hours, as recorded for the salon.
-class HoursScreen extends StatelessWidget {
-  const HoursScreen({super.key});
-
-  /// The console stores hours per day; this reads the shapes it can meet -
-  /// ["10:00","20:00"], {"open":..,"close":..}, or null/false for closed -
-  /// and shows anything else as written rather than guessing.
-  static String describe(Object? value, String closed) => switch (value) {
-    null || false => closed,
-    [final String a, final String b] => '$a – $b',
-    {'open': final Object a, 'close': final Object b} => '$a – $b',
-    final String s when s.trim().isEmpty => closed,
-    _ => '$value',
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppL10n.of(context);
-    return _WithProfile(
-      builder: (context, p) {
-        return _ReadOnlyPage(
-          title: l10n.hoursTitle,
-          footer: l10n.hoursFooter,
-          children: [
-            if (p.workingHours.isEmpty)
-              Text(
-                l10n.hoursNotSet,
-                style: Theme.of(context).textTheme.bodyLarge,
-              )
-            else
-              for (final e in p.workingHours.entries)
-                _Field(
-                  e.key.isEmpty
-                      ? e.key
-                      : e.key[0].toUpperCase() + e.key.substring(1),
-                  describe(e.value, l10n.hoursClosed),
-                ),
-          ],
-        );
-      },
-    );
-  }
-}
-
 /// O12 - what the salon pays Crayora, and when. Owners and managers only; the
 /// server does not send the price to anyone else (0087).
 class BillingScreen extends ConsumerWidget {

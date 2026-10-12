@@ -24,7 +24,8 @@ import '../../domain/wallet/wallet.dart';
 ///   error paths carry a kind, not a payload.
 class SupabaseCrayApi
     implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi, WalletApi,
-        PushApi, ReferralApi, DashboardApi, VisitApi, SalonAccountApi, CustomerApi {
+        PushApi, ReferralApi, DashboardApi, VisitApi, SalonAccountApi, CustomerApi,
+        SalonHoursApi {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -1038,6 +1039,81 @@ class SupabaseCrayApi
     } catch (_) {
       throw const CrayApiException(CrayErrorKind.network);
     }
+  }
+
+  // -------------------------------------------------------------------------
+  // SalonHoursApi (0098). Reads go through RLS (staff roles only); writes
+  // through the three owner/manager functions, which validate and refuse.
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<List<Shift>> shifts() async {
+    final rows = await _rows(
+      () => _client
+          .from('staff_schedules')
+          .select('staff_id,day_of_week,starts_at,ends_at')
+          .order('day_of_week')
+          .order('starts_at'),
+    );
+    String hm(Object? t) => (t as String? ?? '').length >= 5 ? (t as String).substring(0, 5) : '';
+    return rows
+        .map((r) => Shift(
+              staffId: r['staff_id'] as String,
+              day: _int(r['day_of_week']),
+              starts: hm(r['starts_at']),
+              ends: hm(r['ends_at']),
+            ))
+        .toList();
+  }
+
+  @override
+  Future<List<TimeOff>> timeOff() async {
+    final rows = await _rows(
+      () => _client
+          .from('staff_time_off')
+          .select('id,staff_id,starts_at,ends_at,reason')
+          .gte('ends_at', DateTime.now().toUtc().toIso8601String())
+          .order('starts_at'),
+    );
+    return rows
+        .map((r) => TimeOff(
+              id: r['id'] as String,
+              staffId: r['staff_id'] as String?,
+              startsAt: _time(r['starts_at']) ?? DateTime.now(),
+              endsAt: _time(r['ends_at']) ?? DateTime.now(),
+              reason: r['reason'] as String?,
+            ))
+        .toList();
+  }
+
+  @override
+  Future<void> setStaffWeek(String staffId, List<Shift> week) async {
+    await _call('set_staff_week', {
+      'p_staff_id': staffId,
+      'p_week': [
+        for (final s in week) {'day': s.day, 'starts': s.starts, 'ends': s.ends},
+      ],
+    });
+  }
+
+  @override
+  Future<void> addTimeOff({
+    String? staffId,
+    required DateTime startsAt,
+    required DateTime endsAt,
+    String? reason,
+  }) async {
+    await _call('add_time_off', {
+      'p_staff_id': staffId,
+      'p_starts': startsAt.toUtc().toIso8601String(),
+      'p_ends': endsAt.toUtc().toIso8601String(),
+      'p_reason': reason,
+    });
+  }
+
+  @override
+  Future<void> removeTimeOff(String id) async {
+    await _call('remove_time_off', {'p_id': id});
   }
 
   @override

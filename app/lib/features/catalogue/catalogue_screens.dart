@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app/providers.dart';
 import '../../core/format/money.dart';
@@ -8,6 +9,7 @@ import '../../data/repositories/records_repository.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/records/records.dart';
 import '../../l10n/app_localizations.dart';
+import '../owner/hours_screens.dart' show shiftsProvider;
 import 'catalogue_form.dart';
 
 /// O7, O8, O9 - the menu and the team.
@@ -141,6 +143,9 @@ class StaffScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppL10n.of(context);
+    // Who can be booked at all: a stylist with no week has no bookable time
+    // (0098), and the owner should see that here, not hear it from a customer.
+    final shifts = ref.watch(shiftsProvider).value;
 
     return _CatalogueList<StaffMember>(
       title: l10n.staffTitle,
@@ -149,7 +154,15 @@ class StaffScreen extends ConsumerWidget {
       rowBuilder: (context, member) => _CatalogueRow(
         name: member.name,
         active: member.active,
+        detail: shifts != null && member.active && !shifts.any((s) => s.staffId == member.id)
+            ? l10n.staffHoursNone
+            : null,
         onTap: () => _edit(context, ref, member),
+        action: IconButton(
+          tooltip: l10n.staffHoursTitle,
+          icon: const Icon(Icons.schedule),
+          onPressed: () => context.push('/staff/${member.id}/hours'),
+        ),
       ),
     );
   }
@@ -269,6 +282,7 @@ class _CatalogueRow extends ConsumerWidget {
     this.detail,
     this.amountPaise,
     this.onTap,
+    this.action,
   });
 
   final String name;
@@ -276,6 +290,9 @@ class _CatalogueRow extends ConsumerWidget {
   final String? detail;
   final int? amountPaise;
   final VoidCallback? onTap;
+
+  /// A second thing to do with the row - e.g. a stylist's working hours.
+  final Widget? action;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -297,7 +314,7 @@ class _CatalogueRow extends ConsumerWidget {
               ],
             ),
       trailing: amountPaise == null
-          ? null
+          ? (canEdit ? action : null)
           : Text(
               rupees(amountPaise!),
               style: text.titleMedium?.copyWith(fontFeatures: moneyFeatures),

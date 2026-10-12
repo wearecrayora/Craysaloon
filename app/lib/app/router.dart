@@ -16,6 +16,7 @@ import '../features/day/day_screen.dart';
 import '../features/day/walk_in_screen.dart';
 import '../features/join/deep_link_listener.dart';
 import '../features/join/join_screen.dart';
+import '../features/owner/hours_screens.dart';
 import '../features/owner/more_screens.dart';
 import '../features/salon/salon_account.dart' show hasFeature;
 import '../features/privacy/your_data_screen.dart';
@@ -78,6 +79,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           '/more/billing',
           '/more/profile',
         };
+        if (location.startsWith('/staff/')) return null;
         return staffRoutes.contains(location) ? null : '/day';
       }
 
@@ -165,6 +167,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: _page(const AddOnsScreen()),
           ),
           GoRoute(path: '/staff', pageBuilder: _page(const StaffScreen())),
+          GoRoute(
+            path: '/staff/:id/hours',
+            pageBuilder: (context, state) => MaterialPage(
+              key: state.pageKey,
+              child: StaffHoursScreen(staffId: state.pathParameters['id']!),
+            ),
+          ),
           GoRoute(path: '/more', pageBuilder: _page(const MoreScreen())),
           GoRoute(path: '/more/rules', pageBuilder: _page(const RulesScreen())),
           GoRoute(path: '/more/hours', pageBuilder: _page(const HoursScreen())),

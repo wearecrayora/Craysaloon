@@ -1440,7 +1440,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get hoursFooter =>
-      'To change your hours or add a holiday, ask your Crayora contact.';
+      'Customers can book only inside a stylist\'s working hours, and never on a holiday.';
 
   @override
   String get hoursNotSet => 'Your hours are not recorded yet.';
@@ -1516,4 +1516,74 @@ class AppL10nEn extends AppL10n {
   @override
   String get rulesSaveFailed =>
       'Could not save. Check your connection and try again.';
+
+  @override
+  String get hoursBookable => 'When customers can book';
+
+  @override
+  String get hoursNoneSet =>
+      'No stylist has working hours yet, so customers cannot book. Set each stylist\'s week under Team.';
+
+  @override
+  String get hoursSetUnderTeam => 'Set hours in Team';
+
+  @override
+  String get hoursHolidays => 'Holidays and time off';
+
+  @override
+  String get hoursNoHolidays => 'No holidays or time off coming up.';
+
+  @override
+  String get hoursAddHoliday => 'Add a holiday';
+
+  @override
+  String get hoursSalonClosed => 'Salon closed';
+
+  @override
+  String get hoursRemove => 'Remove';
+
+  @override
+  String get hoursHolidayReason => 'Reason (optional)';
+
+  @override
+  String get hoursHolidayAdd => 'Close the salon';
+
+  @override
+  String get hoursHolidayAdded =>
+      'Holiday added. No bookings will be offered then.';
+
+  @override
+  String get hoursSaveFailed =>
+      'Could not save. Check your connection and try again.';
+
+  @override
+  String get staffHoursTitle => 'Working hours';
+
+  @override
+  String get staffHoursNone => 'No hours set - cannot be booked';
+
+  @override
+  String staffHoursFor(String name) {
+    return '$name\'s week';
+  }
+
+  @override
+  String get staffHoursNote =>
+      'Customers can book this stylist only in these hours.';
+
+  @override
+  String get staffHoursDayOff => 'Day off';
+
+  @override
+  String get staffHoursSave => 'Save hours';
+
+  @override
+  String staffHoursSaved(String name) {
+    return 'Saved. Customers can book $name in these hours.';
+  }
+
+  @override
+  String staffHoursInvalid(String day) {
+    return 'On $day the end must come after the start.';
+  }
 }

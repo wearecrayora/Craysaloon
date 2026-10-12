@@ -421,6 +421,27 @@ const EXPIRY_CANARY = `
 
 const EXPIRY_MUST_FAIL = [/KEEPS the owner's expiry/];
 
+// Salon holidays ignored by the slot query again - the bug 0098 closed: time
+// off with no stylist ("the whole salon closed") blocked nothing.
+const HOURS_TEST = 'supabase/tests/booking/hours_test.sql';
+const HOURS_CANARY = `
+  do $canary$
+  declare
+    v_def text;
+    v_new text;
+  begin
+    select pg_get_functiondef(p.oid) into strict v_def
+      from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+     where n.nspname = 'app' and p.proname = 'available_slots';
+    v_new := replace(v_def, '(t.staff_id = c.staff_id or t.staff_id is null)', 't.staff_id = c.staff_id');
+    if v_new = v_def then raise exception 'hours canary: the holiday match moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+
+const HOURS_MUST_FAIL = [/a SALON holiday closes every chair/];
+
 
 class Rollback extends Error {
   constructor(lines) {
@@ -592,6 +613,12 @@ try {
       EXPIRY_TEST,
       EXPIRY_CANARY,
       EXPIRY_MUST_FAIL,
+    ),
+    await check(
+      "hours / a salon holiday that blocks no booking",
+      HOURS_TEST,
+      HOURS_CANARY,
+      HOURS_MUST_FAIL,
     ),
   ];
 

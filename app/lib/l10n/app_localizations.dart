@@ -2477,7 +2477,7 @@ abstract class AppL10n {
   /// No description provided for @hoursFooter.
   ///
   /// In en, this message translates to:
-  /// **'To change your hours or add a holiday, ask your Crayora contact.'**
+  /// **'Customers can book only inside a stylist\'s working hours, and never on a holiday.'**
   String get hoursFooter;
 
   /// No description provided for @hoursNotSet.
@@ -2617,6 +2617,126 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Could not save. Check your connection and try again.'**
   String get rulesSaveFailed;
+
+  /// No description provided for @hoursBookable.
+  ///
+  /// In en, this message translates to:
+  /// **'When customers can book'**
+  String get hoursBookable;
+
+  /// The state every salon was in before 0098: with no stylist hours, available_slots offers nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'No stylist has working hours yet, so customers cannot book. Set each stylist\'s week under Team.'**
+  String get hoursNoneSet;
+
+  /// No description provided for @hoursSetUnderTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Set hours in Team'**
+  String get hoursSetUnderTeam;
+
+  /// No description provided for @hoursHolidays.
+  ///
+  /// In en, this message translates to:
+  /// **'Holidays and time off'**
+  String get hoursHolidays;
+
+  /// No description provided for @hoursNoHolidays.
+  ///
+  /// In en, this message translates to:
+  /// **'No holidays or time off coming up.'**
+  String get hoursNoHolidays;
+
+  /// No description provided for @hoursAddHoliday.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a holiday'**
+  String get hoursAddHoliday;
+
+  /// No description provided for @hoursSalonClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Salon closed'**
+  String get hoursSalonClosed;
+
+  /// No description provided for @hoursRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get hoursRemove;
+
+  /// No description provided for @hoursHolidayReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (optional)'**
+  String get hoursHolidayReason;
+
+  /// No description provided for @hoursHolidayAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Close the salon'**
+  String get hoursHolidayAdd;
+
+  /// No description provided for @hoursHolidayAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Holiday added. No bookings will be offered then.'**
+  String get hoursHolidayAdded;
+
+  /// No description provided for @hoursSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save. Check your connection and try again.'**
+  String get hoursSaveFailed;
+
+  /// No description provided for @staffHoursTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Working hours'**
+  String get staffHoursTitle;
+
+  /// No description provided for @staffHoursNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No hours set - cannot be booked'**
+  String get staffHoursNone;
+
+  /// No description provided for @staffHoursFor.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s week'**
+  String staffHoursFor(String name);
+
+  /// No description provided for @staffHoursNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers can book this stylist only in these hours.'**
+  String get staffHoursNote;
+
+  /// No description provided for @staffHoursDayOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Day off'**
+  String get staffHoursDayOff;
+
+  /// No description provided for @staffHoursSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save hours'**
+  String get staffHoursSave;
+
+  /// No description provided for @staffHoursSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved. Customers can book {name} in these hours.'**
+  String staffHoursSaved(String name);
+
+  /// No description provided for @staffHoursInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'On {day} the end must come after the start.'**
+  String staffHoursInvalid(String day);
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

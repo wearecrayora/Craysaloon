@@ -2,9 +2,12 @@ import 'package:craysalon/app/providers.dart';
 import 'package:craysalon/data/local/cache_db.dart';
 import 'package:craysalon/data/local/outbox.dart';
 import 'package:craysalon/data/repositories/day_repository.dart';
+import 'package:craysalon/data/repositories/records_repository.dart';
 import 'package:craysalon/domain/join/cray_api.dart';
+import 'package:craysalon/domain/records/records.dart';
 import 'package:craysalon/domain/salon/salon_account.dart';
 import 'package:craysalon/features/join/join_controller.dart';
+import 'package:craysalon/features/owner/hours_screens.dart';
 import 'package:craysalon/features/owner/more_screens.dart';
 import 'package:craysalon/features/salon/salon_account.dart';
 import 'package:craysalon/main.dart';
@@ -49,6 +52,8 @@ void main() {
     FakeAccount? account,
     String role = 'owner',
     SalonProfile? salon = profile,
+    FakeHours? hours,
+    List<StaffMember>? staff,
   }) async {
     tester.view.physicalSize = const Size(420, 1200);
     tester.view.devicePixelRatio = 1.0;
@@ -60,6 +65,9 @@ void main() {
       ProviderScope(
         overrides: [
           crayApiProvider.overrideWithValue(FakeCrayApi()),
+          if (hours != null) salonHoursApiProvider.overrideWithValue(hours),
+          if (staff != null)
+            staffProvider.overrideWith((ref) async => Cached(staff, fromCache: false)),
           sessionProvider.overrideWithValue(
             AppSession(appRole: role, salonId: 'salon-a'),
           ),
@@ -161,7 +169,7 @@ void main() {
     },
   );
 
-  testWidgets('hours not recorded say so, rather than showing a closed week', (
+  testWidgets('with no stylist hours, Hours says nobody can book - and where to fix it', (
     tester,
   ) async {
     await pump(tester);
@@ -170,18 +178,67 @@ void main() {
     await tester.tap(find.text('Hours'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Your hours are not recorded yet.'), findsOneWidget);
-    expect(find.text('Closed'), findsNothing);
+    expect(find.textContaining('customers cannot book'), findsOneWidget);
+    expect(find.text('Set hours in Team'), findsOneWidget);
   });
 
-  test('the hours reader takes the shapes the console can store', () {
-    expect(HoursScreen.describe(['10:00', '20:00'], 'Closed'), '10:00 – 20:00');
-    expect(
-      HoursScreen.describe({'open': '09:00', 'close': '21:00'}, 'Closed'),
-      '09:00 – 21:00',
-    );
-    expect(HoursScreen.describe(null, 'Closed'), 'Closed');
-    expect(HoursScreen.describe(false, 'Closed'), 'Closed');
+  testWidgets('Hours shows when each day can actually be booked, and the holidays', (
+    tester,
+  ) async {
+    final hours = FakeHours()
+      ..shiftList = const [
+        Shift(staffId: 'st-1', day: 1, starts: '10:00', ends: '13:00'),
+        Shift(staffId: 'st-2', day: 1, starts: '12:00', ends: '20:00'),
+      ]
+      ..offList = [
+        TimeOff(
+          id: 'h1',
+          startsAt: DateTime(2026, 11, 8),
+          endsAt: DateTime(2026, 11, 9),
+          reason: 'Diwali',
+        ),
+      ];
+    await pump(tester, hours: hours);
+    await tester.tap(tab('More'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Hours'));
+    await tester.pumpAndSettle();
+
+    // Monday: earliest start to latest end across the stylists.
+    expect(find.text('10:00 AM – 8:00 PM'), findsOneWidget);
+    expect(find.text('Closed'), findsNWidgets(6));
+    expect(find.text('Salon closed'), findsOneWidget);
+    expect(find.textContaining('Diwali'), findsOneWidget);
+
+    await tester.tap(find.text('Remove'));
+    await tester.pumpAndSettle();
+    expect(hours.removed, ['h1']);
+  });
+
+  testWidgets("the owner sets a stylist's week from Team", (tester) async {
+    final hours = FakeHours();
+    await pump(tester, hours: hours, staff: const [StaffMember(id: 'st-1', name: 'Suresh', active: true)]);
+    await tester.tap(tab('More'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Team'));
+    await tester.pumpAndSettle();
+
+    // A stylist with no week cannot be booked, and the row says so.
+    expect(find.text('No hours set - cannot be booked'), findsOneWidget);
+    await tester.tap(find.byTooltip('Working hours'));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Suresh's week"), findsOneWidget);
+    // Monday on, at the default 10:00-20:00.
+    await tester.tap(find.byType(Switch).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save hours'));
+    await tester.pumpAndSettle();
+
+    expect(hours.weeks, hasLength(1));
+    final week = hours.weeks.single;
+    expect(week.$1, 'st-1');
+    expect(week.$2.map((s) => '${s.day} ${s.starts}-${s.ends}'), ['1 10:00-20:00']);
   });
 
   testWidgets(
@@ -267,4 +324,35 @@ void main() {
     );
     expect(account.expirySet, isEmpty);
   });
+}
+
+/// Stylist hours and time off, as the server would keep them (0098).
+class FakeHours implements SalonHoursApi {
+  List<Shift> shiftList = const [];
+  List<TimeOff> offList = const [];
+  final List<(String, List<Shift>)> weeks = [];
+  final List<String> removed = [];
+
+  @override
+  Future<List<Shift>> shifts() async => shiftList;
+
+  @override
+  Future<List<TimeOff>> timeOff() async => offList.where((t) => !removed.contains(t.id)).toList();
+
+  @override
+  Future<void> setStaffWeek(String staffId, List<Shift> week) async {
+    weeks.add((staffId, week));
+    shiftList = [...shiftList.where((s) => s.staffId != staffId), ...week];
+  }
+
+  @override
+  Future<void> addTimeOff({
+    String? staffId,
+    required DateTime startsAt,
+    required DateTime endsAt,
+    String? reason,
+  }) async {}
+
+  @override
+  Future<void> removeTimeOff(String id) async => removed.add(id);
 }

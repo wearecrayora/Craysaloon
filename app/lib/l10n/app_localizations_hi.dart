@@ -1433,7 +1433,7 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get hoursFooter =>
-      'समय बदलने या छुट्टी जोड़ने के लिए अपने Crayora संपर्क से कहें।';
+      'ग्राहक सिर्फ़ किसी स्टाइलिस्ट के काम के समय में बुक कर सकते हैं, छुट्टी के दिन कभी नहीं।';
 
   @override
   String get hoursNotSet => 'आपका समय अभी दर्ज नहीं है।';
@@ -1509,6 +1509,76 @@ class AppL10nHi extends AppL10n {
   @override
   String get rulesSaveFailed =>
       'सहेजा नहीं जा सका। कनेक्शन जाँचकर फिर कोशिश करें।';
+
+  @override
+  String get hoursBookable => 'ग्राहक कब बुक कर सकते हैं';
+
+  @override
+  String get hoursNoneSet =>
+      'अभी किसी स्टाइलिस्ट का काम का समय तय नहीं है, इसलिए ग्राहक बुक नहीं कर सकते। टीम में हर स्टाइलिस्ट का हफ़्ता तय करें।';
+
+  @override
+  String get hoursSetUnderTeam => 'टीम में समय तय करें';
+
+  @override
+  String get hoursHolidays => 'छुट्टियाँ और अवकाश';
+
+  @override
+  String get hoursNoHolidays => 'आगे कोई छुट्टी या अवकाश नहीं है।';
+
+  @override
+  String get hoursAddHoliday => 'छुट्टी जोड़ें';
+
+  @override
+  String get hoursSalonClosed => 'सैलून बंद';
+
+  @override
+  String get hoursRemove => 'हटाएँ';
+
+  @override
+  String get hoursHolidayReason => 'कारण (वैकल्पिक)';
+
+  @override
+  String get hoursHolidayAdd => 'सैलून बंद करें';
+
+  @override
+  String get hoursHolidayAdded =>
+      'छुट्टी जुड़ गई। उस समय कोई बुकिंग नहीं दिखाई जाएगी।';
+
+  @override
+  String get hoursSaveFailed =>
+      'सहेजा नहीं जा सका। कनेक्शन जाँचकर फिर कोशिश करें।';
+
+  @override
+  String get staffHoursTitle => 'काम का समय';
+
+  @override
+  String get staffHoursNone => 'समय तय नहीं - बुक नहीं हो सकते';
+
+  @override
+  String staffHoursFor(String name) {
+    return '$name का हफ़्ता';
+  }
+
+  @override
+  String get staffHoursNote =>
+      'ग्राहक इस स्टाइलिस्ट को सिर्फ़ इसी समय में बुक कर सकते हैं।';
+
+  @override
+  String get staffHoursDayOff => 'छुट्टी';
+
+  @override
+  String get staffHoursSave => 'समय सहेजें';
+
+  @override
+  String staffHoursSaved(String name) {
+    return 'सहेजा गया। ग्राहक $name को इस समय में बुक कर सकते हैं।';
+  }
+
+  @override
+  String staffHoursInvalid(String day) {
+    return '$day को समाप्ति का समय शुरुआत के बाद होना चाहिए।';
+  }
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -2952,7 +3022,7 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get hoursFooter =>
-      'Timings badalne ya chhutti jodne ke liye apne Crayora contact se kahein.';
+      'Customer sirf kisi stylist ke kaam ke time mein book kar sakte hain, chhutti ke din kabhi nahi.';
 
   @override
   String get hoursNotSet => 'Aapki timings abhi record nahi hain.';
@@ -3028,4 +3098,74 @@ class AppL10nHiLatn extends AppL10nHi {
   @override
   String get rulesSaveFailed =>
       'Save nahi hua. Connection check karke dobara try karein.';
+
+  @override
+  String get hoursBookable => 'Customer kab book kar sakte hain';
+
+  @override
+  String get hoursNoneSet =>
+      'Abhi kisi stylist ka kaam ka time set nahi hai, isliye customer book nahi kar sakte. Team mein har stylist ka hafta set karein.';
+
+  @override
+  String get hoursSetUnderTeam => 'Team mein time set karein';
+
+  @override
+  String get hoursHolidays => 'Chhuttiyan aur time off';
+
+  @override
+  String get hoursNoHolidays => 'Aage koi chhutti ya time off nahi hai.';
+
+  @override
+  String get hoursAddHoliday => 'Chhutti jodein';
+
+  @override
+  String get hoursSalonClosed => 'Salon band';
+
+  @override
+  String get hoursRemove => 'Hatayein';
+
+  @override
+  String get hoursHolidayReason => 'Kaaran (optional)';
+
+  @override
+  String get hoursHolidayAdd => 'Salon band karein';
+
+  @override
+  String get hoursHolidayAdded =>
+      'Chhutti jud gayi. Us samay koi booking nahi dikhegi.';
+
+  @override
+  String get hoursSaveFailed =>
+      'Save nahi hua. Connection check karke dobara try karein.';
+
+  @override
+  String get staffHoursTitle => 'Kaam ka time';
+
+  @override
+  String get staffHoursNone => 'Time set nahi - book nahi ho sakte';
+
+  @override
+  String staffHoursFor(String name) {
+    return '$name ka hafta';
+  }
+
+  @override
+  String get staffHoursNote =>
+      'Customer is stylist ko sirf isi time mein book kar sakte hain.';
+
+  @override
+  String get staffHoursDayOff => 'Chhutti';
+
+  @override
+  String get staffHoursSave => 'Time save karein';
+
+  @override
+  String staffHoursSaved(String name) {
+    return 'Save ho gaya. Customer $name ko is time mein book kar sakte hain.';
+  }
+
+  @override
+  String staffHoursInvalid(String day) {
+    return '$day ko end time start ke baad hona chahiye.';
+  }
 }
