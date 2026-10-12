@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { requireAdmin } from '@/server/auth';
 import { getSalon, getGrievanceContact } from '@/server/admin-db';
 import { GrievanceForm } from './form';
+import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,18 +17,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <>
-      <header className="bar">
-        <div className="wrap">
-          <strong>Crayora Console</strong>
-          <Link href="/">Salons</Link>
-          <Link href={`/salon/${id}/credentials`}>Credentials</Link>
-          <span className="who">
-            {admin.name} · {admin.email}
-          </span>
-        </div>
-      </header>
 
-      <main className="wrap">
+      <ConsoleShell admin={admin} salon={salon} active="privacy">
         <h1>Privacy contact — {salon.display_name}</h1>
         <p className="hint">
           Under the DPDP Act the <strong>salon</strong> is the Data Fiduciary - it decides why its
@@ -61,7 +52,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         )}
 
         <GrievanceForm salonId={id} current={current} />
-      </main>
+      </ConsoleShell>
     </>
   );
 }

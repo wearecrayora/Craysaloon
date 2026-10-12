@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireAdmin } from '@/server/auth';
 import { ProvisionForm } from './form';
+import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,16 +9,7 @@ export default async function Page() {
   const admin = await requireAdmin();
   return (
     <>
-      <header className="bar">
-        <div className="wrap">
-          <strong>Crayora Console</strong>
-          <Link href="/">Salons</Link>
-          <span className="who">
-            {admin.name} · {admin.email}
-          </span>
-        </div>
-      </header>
-      <main className="wrap">
+      <ConsoleShell admin={admin} active="provision">
         <h1>Provision a salon</h1>
         <p className="hint">
           One transaction. If anything fails, nothing is created — no salon, no join code, no
@@ -25,7 +17,7 @@ export default async function Page() {
           deliberate action.
         </p>
         <ProvisionForm />
-      </main>
+      </ConsoleShell>
     </>
   );
 }

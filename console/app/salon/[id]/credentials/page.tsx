@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { requireAdmin } from '@/server/auth';
 import { getSalon, getWebhookToken, listIntegrations } from '@/server/admin-db';
 import { CredentialForm } from './form';
+import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,18 +40,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <>
-      <header className="bar">
-        <div className="wrap">
-          <strong>Crayora Console</strong>
-          <Link href="/">Salons</Link>
-          <Link href={`/salon/${id}/branding`}>Branding</Link>
-          <span className="who">
-            {admin.name} · {admin.email}
-          </span>
-        </div>
-      </header>
 
-      <main className="wrap">
+      <ConsoleShell admin={admin} salon={salon} active="credentials">
         <h1>Credentials — {salon.display_name}</h1>
         <p className="hint">
           Every message and every rupee moves through the salon’s own provider accounts. These are
@@ -103,7 +94,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             blurb={LABEL[row.provider]?.what ?? ''}
           />
         ))}
-      </main>
+      </ConsoleShell>
     </>
   );
 }

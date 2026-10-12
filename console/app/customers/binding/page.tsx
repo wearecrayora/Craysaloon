@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireAdmin } from '@/server/auth';
 import { listTransferDestinations } from '@/server/admin-db';
 import { BindingDesk } from './desk';
+import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,17 +17,8 @@ export default async function Page() {
 
   return (
     <>
-      <header className="bar">
-        <div className="wrap">
-          <strong>Crayora Console</strong>
-          <Link href="/">Salons</Link>
-          <span className="who">
-            {admin.name} · {admin.email}
-          </span>
-        </div>
-      </header>
 
-      <main className="wrap">
+      <ConsoleShell admin={admin} active="binding">
         <h1>Customer binding</h1>
         <p className="hint">
           Each phone number belongs to exactly one salon. Only Crayora can change that, and only
@@ -46,7 +38,7 @@ export default async function Page() {
             database refuses it whatever this screen shows. Pass the request to a super-admin.
           </div>
         )}
-      </main>
+      </ConsoleShell>
     </>
   );
 }

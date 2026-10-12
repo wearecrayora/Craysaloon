@@ -3,6 +3,7 @@ import { requireAdmin } from '@/server/auth';
 import { listDataRightsRequests } from '@/server/admin-db';
 import { ErasureForm } from './erasure-form';
 import { AccessForm } from './access-form';
+import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,18 +29,8 @@ export default async function Page() {
 
   return (
     <>
-      <header className="bar">
-        <div className="wrap">
-          <strong>Crayora Console</strong>
-          <Link href="/">Salons</Link>
-          <Link href="/customers/binding">Customer binding</Link>
-          <span className="who">
-            {admin.name} · {admin.email}
-          </span>
-        </div>
-      </header>
 
-      <main className="wrap">
+      <ConsoleShell admin={admin} active="data-rights">
         <h1>Data-rights requests</h1>
         <p className="hint">
           Customers ask from the app, under <strong>Your data</strong>. The salon owes an answer
@@ -77,7 +68,7 @@ export default async function Page() {
             </div>
           ))
         )}
-      </main>
+      </ConsoleShell>
     </>
   );
 }

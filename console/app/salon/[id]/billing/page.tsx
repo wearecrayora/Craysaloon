@@ -12,6 +12,7 @@ import { formatPaise } from '@/lib/money';
 import { BillingForms } from './forms';
 import { GstForm } from './gst';
 import { Offboarding } from './offboarding';
+import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,18 +52,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <>
-      <header className="bar">
-        <div className="wrap">
-          <strong>Crayora Console</strong>
-          <Link href="/">Salons</Link>
-          <Link href="/metrics">Metrics</Link>
-          <span className="who">
-            {admin.name} · {admin.email}
-          </span>
-        </div>
-      </header>
 
-      <main className="wrap">
+      <ConsoleShell admin={admin} salon={salon} active="billing">
         <h1>Billing — {salon.display_name}</h1>
         <p className="hint">
           Everything here is collected <strong>offline</strong> - cash or bank transfer - and
@@ -194,7 +185,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           the amount and the months before saving: a payment recorded twice moves the paid-until
           date twice.
         </p>
-      </main>
+      </ConsoleShell>
     </>
   );
 }

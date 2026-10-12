@@ -3,6 +3,7 @@ import { requireAdmin } from '@/server/auth';
 import { listSalons } from '@/server/admin-db';
 import { formatPaise } from '@/lib/money';
 import { SalonRow } from './salon-row';
+import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,20 +13,8 @@ export default async function Page() {
 
   return (
     <>
-      <header className="bar">
-        <div className="wrap">
-          <strong>Crayora Console</strong>
-          <Link href="/provision">Provision a salon</Link>
-          <Link href="/customers/binding">Customer binding</Link>
-          <Link href="/data-rights">Data-rights requests</Link>
-          <Link href="/metrics">Metrics</Link>
-          <span className="who">
-            {admin.name} · {admin.email}
-          </span>
-        </div>
-      </header>
 
-      <main className="wrap">
+      <ConsoleShell admin={admin} active="salons">
         <h1>Salons</h1>
         <p className="hint">
           {salons.length === 0
@@ -54,7 +43,7 @@ export default async function Page() {
             </table>
           </div>
         )}
-      </main>
+      </ConsoleShell>
     </>
   );
 }

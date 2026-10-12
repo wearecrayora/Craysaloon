@@ -9,6 +9,7 @@ import {
 } from '@/server/admin-db';
 import { formatPaise } from '@/lib/money';
 import { EndSession, StartSession, Unmask } from './forms';
+import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,16 +44,6 @@ export default async function Page({
 
   return (
     <>
-      <header className="bar">
-        <div className="wrap">
-          <strong>Crayora Console</strong>
-          <Link href="/">Salons</Link>
-          <Link href={`/salon/${id}/billing`}>Billing</Link>
-          <span className="who">
-            {admin.name} · {admin.email}
-          </span>
-        </div>
-      </header>
 
       {mine && (
         <div className="error" style={{ margin: 0, borderRadius: 0, textAlign: 'center' }}>
@@ -61,7 +52,7 @@ export default async function Page({
         </div>
       )}
 
-      <main className="wrap">
+      <ConsoleShell admin={admin} salon={salon} active="support">
         <h1>Support — {salon.display_name}</h1>
         <p className="hint">
           Customer data is visible only inside a session you start with a reason, for at most two
@@ -139,7 +130,7 @@ export default async function Page({
             </table>
           </div>
         )}
-      </main>
+      </ConsoleShell>
     </>
   );
 }

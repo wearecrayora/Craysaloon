@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireAdmin } from '@/server/auth';
 import { getPlatformMetrics } from '@/server/admin-db';
 import { formatPaise } from '@/lib/money';
+import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,17 +31,8 @@ export default async function Page() {
 
   return (
     <>
-      <header className="bar">
-        <div className="wrap">
-          <strong>Crayora Console</strong>
-          <Link href="/">Salons</Link>
-          <span className="who">
-            {admin.name} · {admin.email}
-          </span>
-        </div>
-      </header>
 
-      <main className="wrap">
+      <ConsoleShell admin={admin} active="metrics">
         <h1>Platform</h1>
         <p className="hint">
           Computed live from the database. Revenue counts only salons paid up today; a salon in
@@ -109,7 +101,7 @@ export default async function Page() {
             </tbody>
           </table>
         </div>
-      </main>
+      </ConsoleShell>
     </>
   );
 }

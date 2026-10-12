@@ -4,6 +4,7 @@ import { requireAdmin } from '@/server/auth';
 import { getSalon } from '@/server/admin-db';
 import { latestUnder, signedUrl } from '@/server/r2';
 import { QrPackForm } from './form';
+import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,19 +21,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <>
-      <header className="bar">
-        <div className="wrap">
-          <strong>Crayora Console</strong>
-          <Link href="/">Salons</Link>
-          <Link href={`/salon/${id}/branding`}>Branding</Link>
-          <Link href={`/salon/${id}/catalogue`}>Catalogue</Link>
-          <span className="who">
-            {admin.name} · {admin.email}
-          </span>
-        </div>
-      </header>
 
-      <main className="wrap">
+      <ConsoleShell admin={admin} salon={salon} active="qr">
         <h1>QR pack — {salon.display_name}</h1>
         <p className="hint">
           Three printable pieces in one PDF: a counter card (A5), a mirror sticker (100 mm), and a
@@ -65,7 +55,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         </div>
 
         <QrPackForm salonId={id} regenerate={!!latestKey} />
-      </main>
+      </ConsoleShell>
     </>
   );
 }

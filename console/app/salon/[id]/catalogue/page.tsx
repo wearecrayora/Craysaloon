@@ -11,6 +11,7 @@ import {
 } from '@/server/admin-db';
 import { AddOnLinks } from './addon-links';
 import { AddOns, RulesForm, Services, Staff } from './editors';
+import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,19 +31,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <>
-      <header className="bar">
-        <div className="wrap">
-          <strong>Crayora Console</strong>
-          <Link href="/">Salons</Link>
-          <Link href={`/salon/${id}/branding`}>Branding</Link>
-          <Link href={`/salon/${id}/credentials`}>Credentials</Link>
-          <span className="who">
-            {admin.name} · {admin.email}
-          </span>
-        </div>
-      </header>
 
-      <main className="wrap">
+      <ConsoleShell admin={admin} salon={salon} active="catalogue">
         <h1>Catalogue &amp; rules — {salon.display_name}</h1>
         <p className="hint">
           Everything here is editable afterwards, by design — provisioning does not demand a
@@ -54,7 +44,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <AddOnLinks salonId={id} services={services} addOns={addOns} links={links} />
         <Staff salonId={id} rows={staff} />
         <RulesForm salonId={id} rules={rules} />
-      </main>
+      </ConsoleShell>
     </>
   );
 }

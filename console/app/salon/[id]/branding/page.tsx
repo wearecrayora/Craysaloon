@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { requireAdmin } from '@/server/auth';
 import { getBranding, getSalon } from '@/server/admin-db';
 import { Studio } from './studio';
+import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,16 +16,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <>
-      <header className="bar">
-        <div className="wrap">
-          <strong>Crayora Console</strong>
-          <Link href="/">Salons</Link>
-          <span className="who">
-            {admin.name} · {admin.email}
-          </span>
-        </div>
-      </header>
-      <main className="wrap" style={{ maxWidth: 1100 }}>
+      <ConsoleShell admin={admin} salon={salon} active="branding">
         <h1>Branding — {salon.display_name}</h1>
         <p className="hint">
           The operator picks four colours; everything else is computed at publish. Publishing
@@ -36,7 +28,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           displayName={salon.display_name}
           initial={branding?.tokens ?? null}
         />
-      </main>
+      </ConsoleShell>
     </>
   );
 }
