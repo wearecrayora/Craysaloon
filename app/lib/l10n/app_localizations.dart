@@ -2387,7 +2387,7 @@ abstract class AppL10n {
   /// No description provided for @rulesFooter.
   ///
   /// In en, this message translates to:
-  /// **'Crayora sets these with you. Ask your Crayora contact to change them.'**
+  /// **'You set how long bonus credit lasts. Crayora sets the other rules with you - ask your Crayora contact to change them.'**
   String get rulesFooter;
 
   /// No description provided for @rulesBonus.
@@ -2587,6 +2587,36 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Privacy contact'**
   String get profilePrivacyContact;
+
+  /// No description provided for @rulesNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never expires'**
+  String get rulesNever;
+
+  /// No description provided for @rulesExpiryAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'How long should bonus credit last?'**
+  String get rulesExpiryAsk;
+
+  /// RULES 5.3.4: captured at issue, so a change never touches credit already given.
+  ///
+  /// In en, this message translates to:
+  /// **'This applies to bonus given from now on. Bonus already given keeps the date it came with. Paid credit never expires.'**
+  String get rulesExpiryNote;
+
+  /// No description provided for @rulesExpirySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved. New bonus: {lasts}.'**
+  String rulesExpirySaved(String lasts);
+
+  /// No description provided for @rulesSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save. Check your connection and try again.'**
+  String get rulesSaveFailed;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

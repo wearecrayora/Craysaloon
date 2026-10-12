@@ -1252,7 +1252,7 @@
   "@profileTitle": {},
   "moreProfileSub": "Name, contact, GST and privacy contact",
   "@moreProfileSub": {},
-  "rulesFooter": "Crayora sets these with you. Ask your Crayora contact to change them.",
+  "rulesFooter": "You set how long bonus credit lasts. Crayora sets the other rules with you - ask your Crayora contact to change them.",
   "@rulesFooter": {},
   "rulesBonus": "Bonus",
   "@rulesBonus": {},
@@ -1334,5 +1334,23 @@
   "profileNoGst": "Not registered",
   "@profileNoGst": {},
   "profilePrivacyContact": "Privacy contact",
-  "@profilePrivacyContact": {}
+  "@profilePrivacyContact": {},
+  "rulesNever": "Never expires",
+  "@rulesNever": {},
+  "rulesExpiryAsk": "How long should bonus credit last?",
+  "@rulesExpiryAsk": {},
+  "rulesExpiryNote": "This applies to bonus given from now on. Bonus already given keeps the date it came with. Paid credit never expires.",
+  "@rulesExpiryNote": {
+    "description": "RULES 5.3.4: captured at issue, so a change never touches credit already given."
+  },
+  "rulesExpirySaved": "Saved. New bonus: {lasts}.",
+  "@rulesExpirySaved": {
+    "placeholders": {
+      "lasts": {
+        "type": "String"
+      }
+    }
+  },
+  "rulesSaveFailed": "Could not save. Check your connection and try again.",
+  "@rulesSaveFailed": {}
 }

@@ -382,6 +382,15 @@ class FakeAccount implements SalonAccountApi {
   @override
   Future<SalonProfile?> mySalon() async => profile;
 
+  final List<int> expirySet = [];
+  CrayApiException? expiryError;
+
+  @override
+  Future<void> setBonusExpiry(int days) async {
+    if (expiryError != null) throw expiryError!;
+    expirySet.add(days);
+  }
+
   @override
   Future<Set<String>> myFeatures() async => features;
 }

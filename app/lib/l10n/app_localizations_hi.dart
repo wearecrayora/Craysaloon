@@ -1382,7 +1382,7 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get rulesFooter =>
-      'ये Crayora आपके साथ तय करता है। बदलने के लिए अपने Crayora संपर्क से कहें।';
+      'बोनस क्रेडिट कितने दिन चले, यह आप तय करते हैं। बाकी नियम Crayora आपके साथ तय करता है - बदलने के लिए अपने Crayora संपर्क से कहें।';
 
   @override
   String get rulesBonus => 'बोनस';
@@ -1490,6 +1490,25 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get profilePrivacyContact => 'प्राइवेसी संपर्क';
+
+  @override
+  String get rulesNever => 'कभी ख़त्म नहीं होता';
+
+  @override
+  String get rulesExpiryAsk => 'बोनस क्रेडिट कितने दिन चले?';
+
+  @override
+  String get rulesExpiryNote =>
+      'यह अब से दिए जाने वाले बोनस पर लागू होगा। पहले दिया गया बोनस अपनी तारीख़ रखेगा। भुगतान किया गया क्रेडिट कभी ख़त्म नहीं होता।';
+
+  @override
+  String rulesExpirySaved(String lasts) {
+    return 'सहेजा गया। नया बोनस: $lasts।';
+  }
+
+  @override
+  String get rulesSaveFailed =>
+      'सहेजा नहीं जा सका। कनेक्शन जाँचकर फिर कोशिश करें।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -2882,7 +2901,7 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get rulesFooter =>
-      'Yeh Crayora aapke saath set karta hai. Badalne ke liye apne Crayora contact se kahein.';
+      'Bonus credit kitne din chale, yeh aap tay karte hain. Baaki rules Crayora aapke saath set karta hai - badalne ke liye apne Crayora contact se kahein.';
 
   @override
   String get rulesBonus => 'Bonus';
@@ -2990,4 +3009,23 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get profilePrivacyContact => 'Privacy contact';
+
+  @override
+  String get rulesNever => 'Kabhi expire nahi hota';
+
+  @override
+  String get rulesExpiryAsk => 'Bonus credit kitne din chale?';
+
+  @override
+  String get rulesExpiryNote =>
+      'Yeh ab se diye jaane wale bonus par lagu hoga. Pehle diya gaya bonus apni date rakhega. Paid credit kabhi expire nahi hota.';
+
+  @override
+  String rulesExpirySaved(String lasts) {
+    return 'Save ho gaya. Naya bonus: $lasts.';
+  }
+
+  @override
+  String get rulesSaveFailed =>
+      'Save nahi hua. Connection check karke dobara try karein.';
 }

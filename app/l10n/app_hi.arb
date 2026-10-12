@@ -381,7 +381,7 @@
   "moreBillingSub": "Crayora के साथ आपका प्लान",
   "profileTitle": "सैलून प्रोफ़ाइल",
   "moreProfileSub": "नाम, संपर्क, GST और प्राइवेसी संपर्क",
-  "rulesFooter": "ये Crayora आपके साथ तय करता है। बदलने के लिए अपने Crayora संपर्क से कहें।",
+  "rulesFooter": "बोनस क्रेडिट कितने दिन चले, यह आप तय करते हैं। बाकी नियम Crayora आपके साथ तय करता है - बदलने के लिए अपने Crayora संपर्क से कहें।",
   "rulesBonus": "बोनस",
   "rulesBonusValue": "हर {every} पर {bonus}",
   "rulesNone": "कोई नहीं",
@@ -414,5 +414,10 @@
   "profileAddress": "पता",
   "profileEmail": "ईमेल",
   "profileNoGst": "पंजीकृत नहीं",
-  "profilePrivacyContact": "प्राइवेसी संपर्क"
+  "profilePrivacyContact": "प्राइवेसी संपर्क",
+  "rulesNever": "कभी ख़त्म नहीं होता",
+  "rulesExpiryAsk": "बोनस क्रेडिट कितने दिन चले?",
+  "rulesExpiryNote": "यह अब से दिए जाने वाले बोनस पर लागू होगा। पहले दिया गया बोनस अपनी तारीख़ रखेगा। भुगतान किया गया क्रेडिट कभी ख़त्म नहीं होता।",
+  "rulesExpirySaved": "सहेजा गया। नया बोनस: {lasts}।",
+  "rulesSaveFailed": "सहेजा नहीं जा सका। कनेक्शन जाँचकर फिर कोशिश करें।"
 }

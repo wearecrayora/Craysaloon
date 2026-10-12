@@ -381,7 +381,7 @@
   "moreBillingSub": "Crayora ke saath aapka plan",
   "profileTitle": "Salon profile",
   "moreProfileSub": "Naam, contact, GST aur privacy contact",
-  "rulesFooter": "Yeh Crayora aapke saath set karta hai. Badalne ke liye apne Crayora contact se kahein.",
+  "rulesFooter": "Bonus credit kitne din chale, yeh aap tay karte hain. Baaki rules Crayora aapke saath set karta hai - badalne ke liye apne Crayora contact se kahein.",
   "rulesBonus": "Bonus",
   "rulesBonusValue": "Har {every} par {bonus}",
   "rulesNone": "Koi nahi",
@@ -414,5 +414,10 @@
   "profileAddress": "Pata",
   "profileEmail": "Email",
   "profileNoGst": "Registered nahi",
-  "profilePrivacyContact": "Privacy contact"
+  "profilePrivacyContact": "Privacy contact",
+  "rulesNever": "Kabhi expire nahi hota",
+  "rulesExpiryAsk": "Bonus credit kitne din chale?",
+  "rulesExpiryNote": "Yeh ab se diye jaane wale bonus par lagu hoga. Pehle diya gaya bonus apni date rakhega. Paid credit kabhi expire nahi hota.",
+  "rulesExpirySaved": "Save ho gaya. Naya bonus: {lasts}.",
+  "rulesSaveFailed": "Save nahi hua. Connection check karke dobara try karein."
 }

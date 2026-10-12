@@ -1041,6 +1041,11 @@ class SupabaseCrayApi
   }
 
   @override
+  Future<void> setBonusExpiry(int days) async {
+    await _call('set_bonus_expiry', {'p_days': days});
+  }
+
+  @override
   Future<SalonProfile?> mySalon() async {
     // Only the columns 0096 grants: a select naming any other would be refused.
     final rows = await _rows(

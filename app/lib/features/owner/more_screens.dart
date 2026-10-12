@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/providers.dart';
 import '../../core/format/money.dart';
+import '../../core/theme/cray_glass.dart';
+import '../../domain/join/cray_api.dart';
 import '../../core/ui/glass.dart';
 import '../../core/ui/salon_mark.dart';
 import '../../domain/salon/salon_account.dart';
@@ -236,6 +238,132 @@ int? _paise(Map<String, Object?> rule, String key) =>
 String _percent(int bp) =>
     '${(bp / 100).toStringAsFixed(bp % 100 == 0 ? 0 : 1)}%';
 
+/// How long bonus credit lasts: shown to everyone, CHANGED only by the owner
+/// (0097). A change applies to bonus given from now on - credit already given
+/// keeps the date it was issued with, and the sheet says so before saving.
+class _BonusExpiryRow extends ConsumerStatefulWidget {
+  const _BonusExpiryRow({required this.days});
+
+  final int days;
+
+  @override
+  ConsumerState<_BonusExpiryRow> createState() => _BonusExpiryRowState();
+}
+
+class _BonusExpiryRowState extends ConsumerState<_BonusExpiryRow> {
+  static const _choices = [30, 60, 90, 180, 365, 0];
+  bool _saving = false;
+
+  String _label(AppL10n l10n, int days) =>
+      days == 0 ? l10n.rulesNever : l10n.rulesDays(days);
+
+  Future<void> _change() async {
+    final l10n = AppL10n.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final picked = await showModalBottomSheet<int>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.rulesExpiryAsk,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.rulesExpiryNote,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            for (final d in _choices)
+              ListTile(
+                minTileHeight: 56,
+                title: Text(_label(l10n, d)),
+                trailing: d == widget.days ? const Icon(Icons.check) : null,
+                onTap: () => Navigator.of(context).pop(d),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (picked == null || picked == widget.days || !mounted) return;
+    final api = ref.read(salonAccountApiProvider);
+    if (api == null) return;
+    setState(() => _saving = true);
+    try {
+      await api.setBonusExpiry(picked);
+      ref.invalidate(salonProfileProvider);
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.rulesExpirySaved(_label(l10n, picked)))),
+      );
+    } on CrayApiException catch (e) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            e.kind == CrayErrorKind.salonUnavailable
+                ? l10n.billingReadOnlyOther
+                : l10n.rulesSaveFailed,
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final text = Theme.of(context).textTheme;
+    final owner = ref.watch(sessionProvider)?.appRole == 'owner';
+
+    final row = Container(
+      constraints: const BoxConstraints(minHeight: 48),
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Theme.of(context).dividerColor),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(child: Text(l10n.rulesBonusLasts, style: text.bodyMedium)),
+          Text(_label(l10n, widget.days), style: text.titleMedium),
+          if (owner) ...[
+            const SizedBox(width: 8),
+            _saving
+                ? const SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(
+                    Icons.edit_outlined,
+                    size: 20,
+                    color: CrayGlass.of(context).ink,
+                  ),
+          ],
+        ],
+      ),
+    );
+
+    if (!owner) return row;
+    return Semantics(
+      button: true,
+      label: l10n.rulesExpiryAsk,
+      child: Pressable(onTap: _saving ? null : _change, child: row),
+    );
+  }
+}
+
 /// O10 - the salon's rules, as the money and the reminders actually apply
 /// them: the same keys the ledger and the referral release read.
 class RulesScreen extends StatelessWidget {
@@ -267,8 +395,9 @@ class RulesScreen extends StatelessWidget {
               _Field(l10n.rulesBonus, l10n.rulesNone),
             if (minimum != null)
               _Field(l10n.rulesSmallestTopup, rupees(minimum)),
-            if (expiry != null)
-              _Field(l10n.rulesBonusLasts, l10n.rulesDays(expiry)),
+            // The one rule the OWNER sets, here (RULES 5.3.3). 180 days when
+            // never set - the same default the ledger applies (wallet_bonus_for).
+            _BonusExpiryRow(days: expiry ?? 180),
             // Paid credit never expires - there is no field for it (RULES 7).
             _Field(l10n.rulesPaidCredit, l10n.rulesNeverExpires),
             if (referrer != null || friend != null) ...[

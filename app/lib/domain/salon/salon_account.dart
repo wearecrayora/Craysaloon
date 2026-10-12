@@ -76,6 +76,11 @@ abstract interface class SalonAccountApi {
 
   Future<SalonProfile?> mySalon();
 
+  /// The OWNER sets how long bonus credit lasts: 0 = never, else 30-730 days.
+  /// Captured onto each bonus lot at issue - credit already given keeps its
+  /// date (RULES 5.3.3-5.3.4, 0097). Throws [CrayApiException].
+  Future<void> setBonusExpiry(int days);
+
   /// The features this salon has. Hiding a button is a courtesy: the server
   /// refuses the call either way.
   Future<Set<String>> myFeatures();

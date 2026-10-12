@@ -1389,7 +1389,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get rulesFooter =>
-      'Crayora sets these with you. Ask your Crayora contact to change them.';
+      'You set how long bonus credit lasts. Crayora sets the other rules with you - ask your Crayora contact to change them.';
 
   @override
   String get rulesBonus => 'Bonus';
@@ -1497,4 +1497,23 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get profilePrivacyContact => 'Privacy contact';
+
+  @override
+  String get rulesNever => 'Never expires';
+
+  @override
+  String get rulesExpiryAsk => 'How long should bonus credit last?';
+
+  @override
+  String get rulesExpiryNote =>
+      'This applies to bonus given from now on. Bonus already given keeps the date it came with. Paid credit never expires.';
+
+  @override
+  String rulesExpirySaved(String lasts) {
+    return 'Saved. New bonus: $lasts.';
+  }
+
+  @override
+  String get rulesSaveFailed =>
+      'Could not save. Check your connection and try again.';
 }

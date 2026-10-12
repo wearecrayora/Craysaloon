@@ -400,6 +400,27 @@ const DOCUMENTS_CANARY = `
 
 const DOCUMENTS_MUST_FAIL = [/a top-up gets receipt RCT/];
 
+// The console's rules save forgetting the owner's bonus expiry again - the
+// reset to 180 days that 0097 closed.
+const EXPIRY_TEST = 'supabase/tests/money/bonus_expiry_test.sql';
+const EXPIRY_CANARY = `
+  do $canary$
+  declare
+    v_def text;
+    v_new text;
+  begin
+    select pg_get_functiondef('app_admin.set_salon_rules(uuid, uuid, jsonb)'::regprocedure)
+      into strict v_def;
+    v_new := replace(v_def, '''bonus_expiry_days'', wallet_rule -> ''bonus_expiry_days''',
+                            '''bonus_expiry_days'', null::jsonb');
+    if v_new = v_def then raise exception 'expiry canary: the merge moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+
+const EXPIRY_MUST_FAIL = [/KEEPS the owner's expiry/];
+
 
 class Rollback extends Error {
   constructor(lines) {
@@ -565,6 +586,12 @@ try {
       DOCUMENTS_TEST,
       DOCUMENTS_CANARY,
       DOCUMENTS_MUST_FAIL,
+    ),
+    await check(
+      "bonus expiry / a console rules save that resets the owner's expiry",
+      EXPIRY_TEST,
+      EXPIRY_CANARY,
+      EXPIRY_MUST_FAIL,
     ),
   ];
 

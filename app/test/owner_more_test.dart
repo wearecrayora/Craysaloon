@@ -46,6 +46,7 @@ void main() {
 
   Future<void> pump(
     WidgetTester tester, {
+    FakeAccount? account,
     String role = 'owner',
     SalonProfile? salon = profile,
   }) async {
@@ -73,15 +74,16 @@ void main() {
             ),
           ),
           salonAccountApiProvider.overrideWithValue(
-            FakeAccount(
-              const SalonBilling(
-                state: 'active',
-                readOnly: false,
-                plan: 'Salon',
-                monthlyPricePaise: 149900,
-              ),
-              profile: salon,
-            ),
+            account ??
+                FakeAccount(
+                  const SalonBilling(
+                    state: 'active',
+                    readOnly: false,
+                    plan: 'Salon',
+                    monthlyPricePaise: 149900,
+                  ),
+                  profile: salon,
+                ),
           ),
         ],
         child: const CraySalonApp(),
@@ -144,14 +146,18 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(RulesScreen), findsOneWidget);
-    expect(find.byType(BackButton), findsOneWidget, reason: 'a page opened from More has a way back');
+      expect(
+        find.byType(BackButton),
+        findsOneWidget,
+        reason: 'a page opened from More has a way back',
+      );
       expect(find.text('₹50 for every ₹500'), findsOneWidget);
       expect(find.text('₹100'), findsWidgets);
       expect(find.text('Never expires'), findsOneWidget);
       expect(find.text('30 days'), findsOneWidget);
       // Read-only, and says who changes it: no field here pretends to be editable.
       expect(find.byType(TextField), findsNothing);
-      expect(find.textContaining('Ask your Crayora contact'), findsOneWidget);
+      expect(find.textContaining('ask your Crayora contact'), findsOneWidget);
     },
   );
 
@@ -207,5 +213,58 @@ void main() {
       find.text('Sunita Rao · privacy@studionine.example'),
       findsOneWidget,
     );
+  });
+
+  Future<void> openRules(WidgetTester tester) async {
+    await tester.tap(tab('More'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Rules'));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets(
+    'the OWNER sets how long bonus lasts - and is told old bonus keeps its date',
+    (tester) async {
+      final account = FakeAccount(
+        const SalonBilling(state: 'active', readOnly: false),
+        profile: profile,
+      );
+      await pump(tester, account: account);
+      await openRules(tester);
+
+      // Never set: the ledger's own default, shown as such.
+      expect(find.text('180 days'), findsOneWidget);
+      await tester.tap(find.text('Bonus lasts'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining('Bonus already given keeps the date it came with'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('90 days'));
+      await tester.pumpAndSettle();
+
+      expect(account.expirySet, [90]);
+      expect(find.text('Saved. New bonus: 90 days.'), findsOneWidget);
+    },
+  );
+
+  testWidgets('a manager sees the expiry but cannot change it', (tester) async {
+    final account = FakeAccount(
+      const SalonBilling(state: 'active', readOnly: false),
+      profile: profile,
+    );
+    await pump(tester, role: 'manager', account: account);
+    await openRules(tester);
+
+    expect(find.text('180 days'), findsOneWidget);
+    expect(find.byIcon(Icons.edit_outlined), findsNothing);
+    await tester.tap(find.text('Bonus lasts'));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('How long should bonus credit last'),
+      findsNothing,
+    );
+    expect(account.expirySet, isEmpty);
   });
 }
