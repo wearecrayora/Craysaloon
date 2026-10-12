@@ -16,6 +16,7 @@ and the runbook is a bug - fix it the same day.
 | [mistaken-binding.md](mistaken-binding.md) | A customer is bound to the wrong salon |
 | [credential-rotation.md](credential-rotation.md) | A key leaked, a person left, or it is launch day |
 | [provider-outage.md](provider-outage.md) | Message Central, Razorpay or FCM is down |
+| [release-build.md](release-build.md) | Building and signing the Play release, and checking it holds no secret |
 | [stuck-dispatch.md](stuck-dispatch.md) | Reminders or "bill ready" pushes are not going out |
 | [wallet-drift.md](wallet-drift.md) | A balance, or a dashboard number, looks wrong |
 

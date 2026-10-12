@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -21,8 +23,33 @@ if (file("google-services.json").exists()) {
     logger.lifecycle("google-services.json absent - building WITHOUT push (FCM disabled).")
 }
 
+// The UPLOAD key, for Play (M13). android/key.properties and the keystore it
+// names are gitignored and never leave the release machine: lose the keystore
+// and the app can never be updated under this package name; leak it and anyone
+// can. Shape (docs/runbooks/release-build.md):
+//   storeFile=/absolute/path/to/upload-keystore.jks
+//   storePassword=...
+//   keyAlias=upload
+//   keyPassword=...
+val keyProperties = Properties().apply {
+    val f = rootProject.file("key.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val hasUploadKey = keyProperties.getProperty("storeFile") != null
+
 android {
     namespace = "com.crayora.craysalon"
+
+    signingConfigs {
+        if (hasUploadKey) {
+            create("upload") {
+                storeFile = file(keyProperties.getProperty("storeFile"))
+                storePassword = keyProperties.getProperty("storePassword")
+                keyAlias = keyProperties.getProperty("keyAlias")
+                keyPassword = keyProperties.getProperty("keyPassword")
+            }
+        }
+    }
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -48,9 +75,16 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // The upload key when it is on this machine. Without it the build
+            // still works for local testing, signed with the DEBUG key - which
+            // Play refuses, and scripts/build-apk.sh refuses to produce for
+            // release. Never a silent fallback: the log says which key.
+            signingConfig = if (hasUploadKey) {
+                signingConfigs.getByName("upload")
+            } else {
+                logger.warn("key.properties absent - release build is DEBUG-signed (not for Play).")
+                signingConfigs.getByName("debug")
+            }
 
             // Inert while minification is off, and deliberately in place before
             // it is turned on: Razorpay is reached by reflection, so R8 would

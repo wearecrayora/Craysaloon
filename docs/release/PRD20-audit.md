@@ -75,7 +75,7 @@ Legend: ✅ proven by a gate · 🔧 gap - to build · 👤 needs a person to do
 
 | Item | Status | Evidence / what remains |
 |---|---|---|
-| No secret keys in the APK or console client bundle | ✅ / 👤 | `secret-scan.sh` over the console bundle (clean); **the release APK must be built and scanned** - part of the Play build |
+| No secret keys in the APK or console client bundle | ✅ / 👤 | `secret-scan.sh` over the console bundle (clean). **12 Oct 2026:** a release APK was built and passed `scripts/scan-artifact.sh` - no credential shapes, none of the 7 secret values in `.env`; the scanner's negative control (a planted fake secret) fails as it should. `build-apk.sh` now scans every release artifact and refuses a debug-signed release. **👤** the Play build itself needs the upload key (`docs/runbooks/release-build.md`) |
 | Per-salon secrets unreadable after save | ✅ | `admin_plane_test` (exactly one decrypting reader) + negative control |
 | WhatsApp templates Meta-approved before that salon's WhatsApp rung | 👤 | As above |
 | DPDP export and anonymise work; anonymise preserves ledger and binding | ✅ | `data_rights_test` (25), `offboarding_test` + negative controls |
