@@ -109,7 +109,8 @@ class AppL10nEn extends AppL10n {
       'Booking, payment and reminder messages are part of the service.';
 
   @override
-  String get phoneConsentPromotional => 'Also send me offers from this salon';
+  String get phoneConsentPromotional =>
+      'Also send me offers, and a reminder when I\'m due for a visit';
 
   @override
   String get phoneConsentWhatsapp => 'Offers on WhatsApp too';
@@ -474,7 +475,7 @@ class AppL10nEn extends AppL10n {
       'Part of the service. To stop these, ask for your account to be deleted.';
 
   @override
-  String get consentPromotionalTitle => 'Offers from this salon';
+  String get consentPromotionalTitle => 'Offers and visit reminders';
 
   @override
   String get consentWhatsappTitle => 'Offers on WhatsApp';
@@ -517,7 +518,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get erasureConfirmBody =>
-      'Your name, number and birthday are removed, and you are logged out. Payments and wallet records stay without your name — the salon has to keep its books by law. This cannot be undone.';
+      'Your name, number and birthday are removed, and you are logged out. Payments and wallet records stay without your name — the salon has to keep its books by law. Any wallet credit left can no longer be used, and is not paid out as cash, so spend it first. This cannot be undone.';
 
   @override
   String get erasureConfirmAction => 'Yes, ask for deletion';

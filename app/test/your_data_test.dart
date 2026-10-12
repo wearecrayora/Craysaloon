@@ -106,7 +106,7 @@ void main() {
       (tester) async {
     await pump(tester);
 
-    await tester.tap(find.text('Offers from this salon'));
+    await tester.tap(find.text('Offers and visit reminders'));
     await tester.pumpAndSettle();
 
     // s.6(4): as easy as consent was. Consent was a tick box, so withdrawal is
@@ -136,7 +136,7 @@ void main() {
     privacy.failWrites = true;
     await pump(tester);
 
-    await tester.tap(find.text('Offers from this salon'));
+    await tester.tap(find.text('Offers and visit reminders'));
     await tester.pumpAndSettle();
 
     final switches = tester.widgetList<SwitchListTile>(find.byType(SwitchListTile)).toList();
@@ -186,6 +186,9 @@ void main() {
       find.textContaining('Payments and wallet records stay without your name'),
       findsOneWidget,
     );
+    // Credit cannot be cashed out and is unusable once the account is gone:
+    // said BEFORE, so it can be spent first (privacy policy, "Deleting").
+    expect(find.textContaining('spend it first'), findsOneWidget);
     expect(privacy.requested, isEmpty, reason: 'nothing is asked for until it is confirmed');
 
     await tester.tap(find.text('Yes, ask for deletion'));

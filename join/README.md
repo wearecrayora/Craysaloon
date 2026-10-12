@@ -55,29 +55,31 @@ and those cards are on salon counters. **The origin and the path shape are now p
 URL the Play listing points at, the URL the in-app consent notice links to, and the document a
 customer is entitled to under DPDP s.5. It is linked from `/` and from `/s/<code>`.
 
-**The page is already reachable** (the site is live). **Two things must happen before this URL
-is given to Play, linked from a printed card, or a salon goes live:**
+**Rewritten 12 Oct 2026** to current best practice and filled in: a layered summary and contents,
+the basis for each use (service, consent, law), what is collected and why, account deletion with
+and without the app (a Google Play requirement), retention, every sub-processor and where it is,
+children, security, breach clocks, and contacts. Three claims in the earlier draft were wrong and
+were fixed: due-for-a-visit reminders are PROMOTIONAL (consent-gated, 0066), not service
+messages; logs are NOT yet held to a 180-day period in India (stated as it is); and there are no
+refunds. Regions were read from the systems themselves (Supabase ap-south-1, R2 APAC).
 
-1. **Fill the placeholders.** Every `[SQUARE-BRACKET]` item is one of Crayora's own registered
-   details — legal name, registered address, the named privacy contact and its email. Grep for
-   `[` before deploying:
+**Still owed before a salon goes live:**
 
-   ```
-   grep -n "\[[A-Z ]\+\]" join/public/privacy.html
-   ```
+1. **Confirm Crayora's contact.** The page names `crayoratech@gmail.com` - the Crayoratech
+   account address - as the escalation and no-app deletion contact, and "Crayora, India" as the
+   maker. Replace both if Crayora has a registered company name and a dedicated privacy inbox.
+2. **Have a lawyer read it.** It is accurate about what the software does - every claim can be
+   checked against a migration, a gate or an Edge Function - but accuracy is not the same as
+   legal sufficiency.
+3. **A Hindi copy of the page.** The in-app notice is already in `en`/`hi`/`hi_Latn`; this page
+   is English, and says so in Hindi at the top.
 
-   No hits means it is ready. A published policy naming nobody is worse than no policy: it is
-   evidence that the obligation was noticed and skipped.
-
-2. **Have a lawyer read it.** It is written to be accurate about what the software does — every
-   claim in it can be checked against a migration, a gate or an Edge Function — but accuracy is
-   not the same as legal sufficiency, and Crayora's own corporate details are not something code
-   review can verify.
+`scripts/lint-gates.sh` (GATE-9) fails the build if a `[SQUARE-BRACKET]` placeholder ever
+reappears in it.
 
 **When the software changes, this page changes in the same commit.** If it says photos need
 separate consent, or that credentials cannot be read back, those are statements about the
-system that a regulator is entitled to test. Hindi and Hinglish translations are still owed
-(the app ships `en`/`hi`/`hi_Latn`).
+system that a regulator is entitled to test.
 
 ## assetlinks.json — why it is not committed
 

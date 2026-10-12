@@ -4,23 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy — Cray Salon</title>
-<meta name="description" content="What the Cray Salon app collects, who holds it, and how to get it corrected or deleted.">
+<meta name="description" content="What the Cray Salon app collects, who holds it, how long it is kept, and how to see, correct or delete it.">
 <!--
-  The published privacy policy (DPDP Act 2023 s.5; Google Play Data Safety).
+  The published privacy policy (DPDP Act 2023 s.5, DPDP Rules 2025; Google Play
+  User Data and Data Safety; Google Play account deletion).
 
-  Two rules govern every edit to this file:
+  Rules for every edit to this file:
 
-  1. It describes what the SYSTEM ACTUALLY DOES. Every claim below is one that
-     could be checked against a migration, a gate or an Edge Function. If a
-     claim here stops being true, this page is wrong before the code is - fix
-     it in the same change, not later.
-  2. It is read on a phone, on salon wifi, by someone who did not come here to
-     read a legal document. No framework, no fonts, no analytics, no trackers.
-     Nothing on this page phones home; reading it is not itself an event.
+  1. It describes what the SYSTEM ACTUALLY DOES. Every claim below can be checked
+     against a migration, a gate or an Edge Function, and was, on 12 Oct 2026:
+     database region from the Supabase API (ap-south-1), file storage from the
+     R2 buckets (APAC), reminders treated as promotional (0066), requests due in
+     30 days (0051), receipts/invoices (0094), salon-row columns (0096). If a
+     claim stops being true, this page is wrong before the code is - fix it in
+     the same change.
+  2. It says what is NOT done yet, rather than implying it: log retention
+     (COMPLIANCE.md) is stated as it is.
+  3. It is read on a phone, on salon wifi, by someone who did not come to read a
+     legal document. No framework, no fonts, no analytics, no trackers, no
+     cookies. Reading it is not itself an event.
 
-  PLACEHOLDERS: the [SQUARE-BRACKET] items are Crayora's own registered
-  details, and a lawyer should read this page before it is published. See
-  join/README.md.
+  A lawyer should still read it before the first live salon (join/README.md).
 -->
 <style>
   :root {
@@ -38,6 +42,7 @@
     }
   }
   * { box-sizing: border-box; }
+  html { scroll-padding-top: 16px; }
   body {
     margin: 0; padding: 32px 20px 64px;
     font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -52,7 +57,7 @@
   }
   h3 { font-size: 16px; margin: 24px 0 4px; }
   p, li { margin: 0 0 12px; }
-  ul { padding-left: 20px; }
+  ul, ol { padding-left: 20px; }
   li { margin-bottom: 8px; }
   a { color: inherit; text-decoration-color: var(--ink-soft); text-underline-offset: 3px; }
   .meta { color: var(--ink-soft); font-size: 14px; margin: 0 0 24px; }
@@ -63,6 +68,9 @@
   }
   .card > :last-child { margin-bottom: 0; }
   .card h2 { border: 0; padding: 0; margin: 0 0 8px; font-size: 17px; }
+  nav.toc ol { columns: 2; column-gap: 24px; font-size: 15px; margin: 0; }
+  nav.toc li { margin-bottom: 4px; break-inside: avoid; }
+  @media (max-width: 480px) { nav.toc ol { columns: 1; } }
   table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; font-size: 15px; }
   th, td { text-align: left; vertical-align: top; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule); }
   th { font-weight: 600; }
@@ -73,6 +81,7 @@
   @media print {
     body { padding: 0; font-size: 11pt; }
     h2 { page-break-after: avoid; }
+    nav.toc { display: none; }
   }
 </style>
 </head>
@@ -80,8 +89,8 @@
 <main>
 
 <h1>Privacy at Cray Salon</h1>
-<p class="meta">Last updated 28 September 2026. This page covers the Cray&nbsp;Salon app and the
-   service behind it.</p>
+<p class="meta">Effective 12 October 2026. This page covers the Cray&nbsp;Salon app and the service
+   behind it. <span lang="hi">यह सूचना ऐप में हिन्दी में भी उपलब्ध है।</span></p>
 
 <p class="lede">Cray Salon is used by one salon at a time. When you scan a salon&rsquo;s QR code and
    log in, you are joining <strong>that salon</strong> &mdash; and your details, your visits and
@@ -93,32 +102,52 @@
     <li>Your salon decides what it collects about you and why. It is who you ask about your data.</li>
     <li>Crayora builds and runs the software for your salon. We handle your data only to make the
         app work, on your salon&rsquo;s instructions.</li>
-    <li>We do not sell your data, and we do not share it with other salons, ever.</li>
-    <li>Marketing messages are off unless you turn them on, and you can turn them off at any time
-        in <strong>Your data</strong> in the app.</li>
-    <li>You can ask for a copy of your data, ask for it to be corrected, or ask for it to be
-        deleted. Money records stay, but with your name removed.</li>
+    <li>We do not sell your data, we do not use it for advertising, and we never share it with
+        other salons.</li>
+    <li>Offers <em>and</em> &ldquo;you are due for a visit&rdquo; reminders are off unless you
+        switch them on, and one tap in <strong>Your data</strong> in the app switches them off.</li>
+    <li>You can get a copy of your data, correct it, or have it deleted. Money records stay, with
+        your name removed, because tax law requires it.</li>
   </ul>
 </div>
 
-<h2>Who holds your data</h2>
+<nav class="toc" aria-label="On this page">
+  <ol>
+    <li><a href="#who">Who holds your data</a></li>
+    <li><a href="#what">What is collected, and why</a></li>
+    <li><a href="#basis">On what basis</a></li>
+    <li><a href="#never">What we never do</a></li>
+    <li><a href="#messages">The messages you get</a></li>
+    <li><a href="#rights">Your rights</a></li>
+    <li><a href="#delete">Deleting your account</a></li>
+    <li><a href="#retention">How long things are kept</a></li>
+    <li><a href="#where">Where your data is</a></li>
+    <li><a href="#children">Children</a></li>
+    <li><a href="#security">How it is protected</a></li>
+    <li><a href="#breach">If something goes wrong</a></li>
+    <li><a href="#changes">Changes to this page</a></li>
+    <li><a href="#contact">Who to contact</a></li>
+  </ol>
+</nav>
+
+<h2 id="who">Who holds your data</h2>
 
 <p><strong>Your salon is the Data Fiduciary.</strong> Under India&rsquo;s Digital Personal Data
    Protection Act, 2023, the Data Fiduciary is whoever decides why and how your personal data is
    handled. That is the salon you joined: it decides to keep your visit history, to remind you when
-   a haircut is due, and to run its own loyalty scheme. Its name and its privacy contact are shown
-   to you in the app <em>before</em> you log in &mdash; on the screen where you are asked to
-   agree.</p>
+   a service is due, and to run its own wallet and referral offers. Its name and its privacy contact
+   &mdash; a named person, with an email or a phone number &mdash; are shown to you in the app
+   <em>before</em> you log in, on the screen where you are asked to agree.</p>
 
-<p><strong>Crayora is the Data Processor.</strong> We are [CRAYORA REGISTERED NAME], of
-   [REGISTERED ADDRESS], and we make Cray Salon. We store and process your data on behalf of the
-   salon and under a contract with it. We do not decide what your salon collects, we do not use
-   your data for our own purposes, and we do not build any profile of you across salons.</p>
+<p><strong>Crayora is the Data Processor.</strong> Crayora makes Cray Salon. We store and process
+   your data on behalf of your salon and under our agreement with it. We do not decide what your
+   salon collects, we do not use your data for our own purposes, and we do not build any profile
+   of you across salons.</p>
 
-<p>In practice that means: ask your salon first. If your salon does not answer within 30 days, or
-   you are not satisfied, escalate to us &mdash; the addresses are at the bottom of this page.</p>
+<p>In practice: ask your salon first. If it does not answer within 30 days, or you are not
+   satisfied, write to us &mdash; see <a href="#contact">Who to contact</a>.</p>
 
-<h2>What is collected, and why</h2>
+<h2 id="what">What is collected, and why</h2>
 
 <div class="wrap-table">
 <table>
@@ -128,47 +157,47 @@
   <tbody>
     <tr>
       <td><strong>Your mobile number</strong></td>
-      <td>It is how you log in &mdash; a one-time code is sent to it &mdash; and it is how the salon
+      <td>It is how you log in &mdash; a one-time code is sent to it &mdash; and how the salon
           identifies you at the counter.</td>
       <td>No. Without it there is no account. You can ask for the account to be deleted instead.</td>
     </tr>
     <tr>
       <td><strong>Your name</strong></td>
-      <td>So the salon knows who is booked and who is at the chair.</td>
-      <td>No, while you have an account.</td>
+      <td>So the salon knows who is booked and who is in the chair.</td>
+      <td>No, while you have an account. You can correct it at any time.</td>
     </tr>
     <tr>
-      <td><strong>Date of birth</strong></td>
-      <td>Only to send a birthday offer, if your salon runs one.</td>
-      <td><strong>Yes.</strong> It is optional. Leave it blank, or ask the salon to clear it.</td>
+      <td><strong>Birthday and anniversary</strong></td>
+      <td>Only for an occasion offer, if your salon runs one.</td>
+      <td><strong>Yes.</strong> Optional. Leave them blank, or ask the salon to clear them.</td>
     </tr>
     <tr>
-      <td><strong>Your visits</strong> &mdash; services taken, staff, date, amount</td>
-      <td>Your history, your wallet balance, your loyalty points, and reminders about when you are
-          next due.</td>
+      <td><strong>Bookings and visits</strong> &mdash; services, stylist, date, amount</td>
+      <td>Your bookings, your history, your loyalty points, and knowing when you are next due.</td>
       <td>No, while you have an account. These are also the salon&rsquo;s business records.</td>
     </tr>
     <tr>
-      <td><strong>Wallet and payments</strong></td>
-      <td>Top-ups, spends and balances. Payments are handled by Razorpay and settle into your
-          <em>salon&rsquo;s own</em> account &mdash; never into Crayora&rsquo;s.</td>
-      <td>No, for money you have actually moved. We never see your card or UPI details; Razorpay
-          does.</td>
+      <td><strong>Wallet, payments, receipts and invoices</strong></td>
+      <td>Top-ups, spends and balances; a receipt for each top-up and an invoice or bill for each
+          paid visit. Payments are handled by Razorpay and settle into your <em>salon&rsquo;s
+          own</em> account &mdash; never into Crayora&rsquo;s. Receipts and invoices do not carry
+          your name.</td>
+      <td>No, for money you have actually moved. Nobody at the salon or at Crayora sees your card
+          or UPI details; Razorpay does.</td>
     </tr>
     <tr>
       <td><strong>Your phone&rsquo;s notification token</strong></td>
-      <td>So the app can send you a reminder or a booking confirmation without an SMS.</td>
+      <td>So the app can tell you about a booking or a bill without an SMS.</td>
       <td><strong>Yes.</strong> Turn notifications off for the app and it stops being used; it is
           deleted when your account is erased.</td>
     </tr>
     <tr>
-      <td><strong>Marketing consent</strong></td>
-      <td>Offers and campaigns from your salon, by app notification, WhatsApp or SMS.</td>
-      <td><strong>Yes &mdash; it is off unless you switch it on,</strong> and you can switch it back
-          off in the app at any time.</td>
+      <td><strong>Your choices</strong> &mdash; offers, WhatsApp, photos</td>
+      <td>A record of what you agreed to, and when, so it can be honoured and proved.</td>
+      <td>These <em>are</em> your choices. Each one is separate, and off until you switch it on.</td>
     </tr>
     <tr>
-      <td><strong>Photos</strong> (before/after, if your salon takes them)</td>
+      <td><strong>Photos</strong> (before/after, if your salon uses them)</td>
       <td>To show you what was done last time.</td>
       <td><strong>Yes.</strong> Separate consent, off by default, withdrawable.</td>
     </tr>
@@ -183,101 +212,129 @@
 
 <h3>A note on your mobile number</h3>
 <p>Your number is stored twice, deliberately: once as the number itself, so the salon can call you,
-   and once as a <strong>salted one-way fingerprint</strong> that cannot be turned back into a
+   and once as a <strong>keyed one-way fingerprint</strong> that cannot be turned back into a
    number. The fingerprint is what enforces the rule that one number belongs to one salon. It is
-   also what survives if you ask to be erased &mdash; see below.</p>
+   also what survives if you ask to be erased &mdash; see <a href="#delete">below</a>.</p>
 
-<h2>What we never do</h2>
+<p>We never ask for your contacts, your location, your photo gallery, or access to anything else
+   on your phone. The camera is used only if you choose to scan a salon&rsquo;s QR code, and nothing
+   it sees is kept.</p>
+
+<h2 id="basis">On what basis</h2>
+<ul>
+  <li><strong>To run the service you signed up for</strong> &mdash; your account, bookings, visits,
+      wallet, payments, receipts and service messages. You gave these details to your salon for
+      exactly this, which the Act allows without a separate consent (s.7(a)).</li>
+  <li><strong>Your consent</strong> &mdash; offers and due-for-a-visit reminders, WhatsApp, and
+      photos. Each is asked for separately, and each can be withdrawn as easily as it was given
+      (s.6(4)). Withdrawing one never affects the others, or the service itself.</li>
+  <li><strong>The law</strong> &mdash; keeping financial records for as long as tax law requires,
+      and answering lawful requests from authorities.</li>
+</ul>
+<p>Nothing about you is decided automatically: there is no scoring, profiling or automated
+   decision that affects what you are offered or charged.</p>
+
+<h2 id="never">What we never do</h2>
 <ul>
   <li><strong>We never sell your data</strong>, and we never rent, trade or share it for anyone
       else&rsquo;s advertising.</li>
   <li><strong>No salon can see another salon&rsquo;s customers.</strong> This is enforced by the
-      database itself, not by our good intentions, and it is tested automatically on every single
-      change we make. A test that deliberately creates a leak has to fail the build, or the build
-      does not ship.</li>
-  <li><strong>Other customers of your salon cannot see you.</strong> Same mechanism: your rows are
-      yours.</li>
+      database itself, not by our good intentions, and it is tested automatically on every change
+      we make. A test that deliberately creates a leak has to fail the build, or the build does
+      not ship.</li>
+  <li><strong>Other customers of your salon cannot see you</strong>, and you cannot see them. Same
+      mechanism: your rows are yours.</li>
   <li><strong>We do not track you across apps or websites.</strong> There is no advertising SDK, no
-      analytics SDK and no social login in the app. This page has none either.</li>
-  <li><strong>We do not read your salon&rsquo;s payment or messaging credentials back.</strong>
-      There is no screen and no interface anywhere that can show one &mdash; not to the salon, and
-      not to us.</li>
+      analytics SDK and no social login in the app. This page has none either, and sets no
+      cookies.</li>
+  <li><strong>Nobody reads your salon&rsquo;s payment or messaging credentials back.</strong> There
+      is no screen and no interface anywhere that can show one &mdash; not to the salon, and not to
+      us.</li>
 </ul>
 
-<h2>The messages you get</h2>
+<h2 id="messages">The messages you get</h2>
 
-<p>There are two kinds, and they are treated differently.</p>
+<p><strong>Service messages</strong> are about something you did: your login code, a booking
+   confirmed or changed, a bill ready to pay, money added to your wallet. They are part of the
+   service and come while your account exists. If you want them to stop, ask for the account to be
+   deleted.</p>
 
-<p><strong>Service messages</strong> tell you about something you did: a booking confirmed, a visit
-   completed, money added to your wallet, a reminder that your next appointment is due. These are
-   the service itself. They cannot be switched off while your account exists &mdash; if you want
-   them to stop, ask for the account to be deleted. We keep them to what is necessary.</p>
+<p><strong>Promotional messages</strong> are offers, campaigns, and reminders that you are due for
+   your next visit. These need your consent, they are off until you give it, and withdrawing it is
+   one tap in <strong>Your data</strong>, taking effect at once. WhatsApp is asked for separately:
+   agreeing to offers is never agreeing to WhatsApp.</p>
 
-<p><strong>Promotional messages</strong> are offers and campaigns. These need your consent, they are
-   off until you give it, and withdrawing it is one tap in <strong>Your data</strong> in the app.
-   Withdrawal takes effect immediately. WhatsApp and photo consents are asked for separately, and
-   agreeing to one is never agreeing to another.</p>
+<p>Your salon reaches you through an app notification first. Only if that does not arrive does it
+   fall back to WhatsApp (if you agreed to it) or SMS &mdash; which the salon pays for, so it does
+   not do it lightly.</p>
 
-<p>Where possible your salon reaches you through an app notification rather than SMS or WhatsApp,
-   which is cheaper for the salon and quieter for you.</p>
+<h2 id="rights">Your rights, and how to use them</h2>
 
-<h2>Your rights, and how to use them</h2>
-
-<p>The DPDP Act gives you these. In the app they live on one screen:
-   <strong>Your data</strong>.</p>
+<p>The DPDP Act gives you these. In the app they are on one screen: <strong>Your data</strong>
+   (from the shield on the home screen, or <strong>Me&nbsp;&rarr;&nbsp;Your data</strong>).</p>
 
 <ul>
   <li><strong>Know what is held about you</strong> and who it has been shared with &mdash; ask for a
       copy (s.11).</li>
-  <li><strong>Correct or complete it</strong> if it is wrong (s.12). You can edit your own profile
-      in the app, or ask the salon.</li>
-  <li><strong>Have it erased</strong> (s.12(3)) &mdash; see the next section for exactly what that
-      means.</li>
-  <li><strong>Withdraw consent</strong> as easily as you gave it (s.6(4)). The toggles are in the
+  <li><strong>Correct or complete it</strong> if it is wrong (s.12). Tell your salon&rsquo;s privacy
+      contact &mdash; shown under <strong>Your data</strong> &mdash; and it is corrected.</li>
+  <li><strong>Have it erased</strong> (s.12(3)) &mdash; see <a href="#delete">exactly what that
+      means</a>.</li>
+  <li><strong>Withdraw consent</strong> as easily as you gave it (s.6(4)). The switches are in the
       app and take effect at once.</li>
   <li><strong>Complain</strong> to your salon&rsquo;s named privacy contact, and get an answer
       (s.13).</li>
-  <li><strong>Nominate someone</strong> to exercise these rights for you if you die or become
-      incapable (s.14). Ask your salon&rsquo;s privacy contact.</li>
+  <li><strong>Nominate someone</strong> to exercise these rights for you if you die or become unable
+      to (s.14). Ask your salon&rsquo;s privacy contact.</li>
 </ul>
 
-<p>Requests are answered <strong>within 30 days</strong>. If a request has to be refused or limited
-   &mdash; for example, financial records the law requires the salon to keep &mdash; you are told
-   that, and told why. A silent refusal is not an answer.</p>
+<p>Every request is answered <strong>within 30 days</strong>, and the app shows you the date it is
+   due. If a request has to be refused or limited &mdash; for example, financial records the law
+   requires the salon to keep &mdash; you are told so, and told why. A silent refusal is not an
+   answer.</p>
 
-<h3>What erasure actually does</h3>
-<p>We do not pretend to delete things we cannot delete. When your erasure request is carried
-   out:</p>
+<h2 id="delete">Deleting your account</h2>
+
+<p><strong>In the app:</strong> open <strong>Your data</strong> and choose to have your data
+   deleted. The screen tells you what will be removed and what must be kept <em>before</em> you
+   confirm.</p>
+<p><strong>Without the app:</strong> write to your salon&rsquo;s privacy contact, or to us at the
+   address under <a href="#contact">Who to contact</a>, from the number&rsquo;s owner, naming the
+   salon. We will confirm it is you before acting.</p>
+
+<p>We do not pretend to delete things we cannot delete. When an erasure is carried out:</p>
 <ul>
-  <li>Your <strong>name, mobile number and date of birth are removed</strong>, and the link between
-      your account and your login is cut. Your notification tokens are deleted.</li>
-  <li>Your <strong>financial records stay</strong> &mdash; top-ups, spends, refunds &mdash; but they
-      now point at someone nobody can name. These are the salon&rsquo;s books; tax law requires them
-      to be kept, and we are not allowed to delete them.</li>
+  <li>Your <strong>name, mobile number, birthday and anniversary are removed</strong>, and the link
+      between your account and your login is cut. Your notification tokens are deleted. You can no
+      longer log in to that salon.</li>
+  <li>Your <strong>financial records stay</strong> &mdash; top-ups, spends, receipts and invoices
+      &mdash; but they now point at someone nobody can name. These are the salon&rsquo;s books; tax
+      law requires them to be kept, and they may not be deleted.</li>
   <li>The <strong>one-way fingerprint of your number stays</strong>. It is not readable as a number,
       and it is the only thing that keeps &ldquo;one number, one salon&rdquo; true after you are
-      gone. Without it, an erased account could quietly become two.</li>
+      gone.</li>
+  <li><strong>Wallet credit</strong> cannot be withdrawn as cash and is lost with the account.
+      Spend it, or ask the salon about it, before you ask for deletion.</li>
 </ul>
 
-<h2>How long things are kept</h2>
+<h2 id="retention">How long things are kept</h2>
 
 <div class="wrap-table">
 <table>
   <tbody>
     <tr>
-      <td><strong>Financial records</strong><br>wallet, payments, invoices</td>
+      <td><strong>Financial records</strong><br>wallet, payments, receipts, invoices</td>
       <td><strong>8 years</strong> from the end of the financial year, because Indian tax and
-          company law requires books of account to be retained. Kept even after erasure, in
-          anonymised form.</td>
+          company law require books of account to be kept. Kept after erasure, in anonymised
+          form.</td>
     </tr>
     <tr>
-      <td><strong>Consent history</strong></td>
-      <td>Kept as a record for as long as the account exists, and afterwards as proof of what was
-          agreed and when. It is an append-only log: withdrawing consent adds a line, it never
-          rewrites one.</td>
+      <td><strong>Your choices</strong> (consent history)</td>
+      <td>For as long as the account exists, and afterwards as proof of what was agreed and when.
+          Withdrawing adds a line; it never rewrites one.</td>
     </tr>
     <tr>
-      <td><strong>Your profile and visit history</strong></td>
+      <td><strong>Your profile, bookings and visit history</strong></td>
       <td>While you are a customer of the salon. Removed or anonymised when you ask, or when the
           salon stops using Cray Salon.</td>
     </tr>
@@ -286,91 +343,108 @@
       <td>Until the app is removed, notifications are switched off, or the account is erased.</td>
     </tr>
     <tr>
-      <td><strong>Security and access logs</strong></td>
-      <td>180 days, held in India, as the CERT-In directions require.</td>
+      <td><strong>Server and security logs</strong></td>
+      <td>Kept by our hosting provider in Mumbai, for its standard period. We are moving these to a
+          fixed 180-day period in India, as CERT-In expects, before the service is offered to the
+          public.</td>
+    </tr>
+    <tr>
+      <td><strong>Crash reports</strong></td>
+      <td>The crash-reporting provider&rsquo;s standard period, no longer than 90 days.</td>
     </tr>
   </tbody>
 </table>
 </div>
 
-<h2>Where your data is, and who else touches it</h2>
+<h2 id="where">Where your data is, and who else touches it</h2>
 
-<p>Your salon&rsquo;s data is stored on our behalf by the companies below. Each one is under
-   contract, each gets only what it needs, and none of them may use your data for their own
+<p>Your salon&rsquo;s data is stored and processed on our behalf by the companies below. Each one is
+   bound by contract, each gets only what it needs, and none of them may use your data for its own
    purposes.</p>
 
 <div class="wrap-table">
 <table>
   <thead><tr><th>Who</th><th>What they do</th><th>Where</th></tr></thead>
   <tbody>
-    <tr><td><strong>Supabase</strong></td><td>The database and the servers the app talks to</td><td>India / Asia-Pacific</td></tr>
-    <tr><td><strong>Cloudflare R2</strong></td><td>Files &mdash; salon logos, photos, invoices</td><td>Asia-Pacific</td></tr>
+    <tr><td><strong>Supabase</strong></td><td>The database and the servers the app talks to</td><td>India (Mumbai)</td></tr>
+    <tr><td><strong>Cloudflare</strong></td><td>Files (salon logos, photos, invoices), this website, and the Crayora console</td><td>Asia-Pacific; this page is served from the nearest Cloudflare location</td></tr>
     <tr><td><strong>Razorpay</strong></td><td>Payments, into your salon&rsquo;s own account</td><td>India</td></tr>
-    <tr><td><strong>Message Central</strong></td><td>Sends the login code and SMS</td><td>India</td></tr>
+    <tr><td><strong>Message Central</strong></td><td>Sends the login code, SMS and WhatsApp messages</td><td>India</td></tr>
+    <tr><td><strong>Meta (WhatsApp)</strong></td><td>Delivers WhatsApp messages, only if you agreed to them</td><td>Outside India</td></tr>
     <tr><td><strong>Google (Firebase)</strong></td><td>Delivers app notifications to your phone</td><td>Outside India</td></tr>
     <tr><td><strong>Sentry</strong></td><td>Crash reports when the app fails</td><td>Outside India</td></tr>
   </tbody>
 </table>
 </div>
 
-<p>Two of those are outside India, and we would rather say so than leave it implied. Notifications
-   go through Google&rsquo;s global service &mdash; that is how notifications work on Android. Crash
-   reports go to Sentry, and carry technical detail about a failure, not your visit history. India
-   currently permits such transfers except to countries the government restricts; if that changes,
-   this page changes with it.</p>
+<p>Some of these are outside India, and we would rather say so than leave it implied.
+   Notifications pass through Google&rsquo;s global service &mdash; that is how notifications work
+   on a phone. WhatsApp messages pass through Meta. Crash reports carry technical detail about a
+   failure, not your visit history. Indian law currently permits these transfers except to
+   countries the government restricts; if that changes, this page changes with it.</p>
 
-<h2>Children</h2>
+<p>Your data may also be disclosed when the law requires it &mdash; to a court, the police or a
+   regulator acting under a lawful order. Where we are allowed to, we tell your salon first.</p>
+
+<h2 id="children">Children</h2>
 <p>Cray Salon is for adults booking their own appointments. A salon must not create an account for
-   anyone under 18 without <strong>verifiable consent from a parent or guardian</strong>, and must
-   not use a child&rsquo;s data for tracking or targeted advertising &mdash; the DPDP Act forbids
-   both. If you believe a child&rsquo;s details are held here, write to the addresses below and they
+   anyone under 18 without <strong>verifiable consent from a parent or guardian</strong>, and no one
+   may use a child&rsquo;s data for tracking, behavioural monitoring or targeted advertising &mdash;
+   the DPDP Act forbids it. If you believe a child&rsquo;s details are held here, write to us and they
    will be removed.</p>
 
-<h2>How your data is protected</h2>
+<h2 id="security">How your data is protected</h2>
 <ul>
   <li><strong>Separation is enforced by the database</strong>, not by application code that could
       forget. Every table carries the salon it belongs to, and the rules are switched on and forced
       &mdash; no query, however written, can return another salon&rsquo;s rows.</li>
+  <li><strong>Everything travels encrypted</strong> between your phone and our servers, and is
+      encrypted at rest by our hosting providers.</li>
   <li><strong>Provider credentials are write-only.</strong> A salon&rsquo;s payment and messaging
       keys can be set and replaced, never read back, by anyone.</li>
-  <li><strong>Money moves through one path.</strong> Wallet and loyalty records can only be added
-      to, never edited or deleted; a correction is a new line that says what it corrects. No salon
-      owner, manager or staff member has any way to adjust a balance by hand.</li>
-  <li><strong>Logging in requires a code sent to your number.</strong> Console access for Crayora
-      staff requires a second factor, and every administrative action is recorded against a named
-      person.</li>
+  <li><strong>Money moves through one path.</strong> Wallet records, receipts and invoices can only
+      be added to, never edited or deleted. No salon owner, manager or staff member has any way to
+      adjust a balance by hand.</li>
+  <li><strong>Logging in requires a code sent to your number.</strong> Crayora&rsquo;s console sits
+      behind an access gate and its own two-factor login, and every administrative action is
+      recorded against a named person. Looking at a salon&rsquo;s customers for support needs a
+      stated reason and ends automatically.</li>
   <li><strong>We test for leaks on purpose.</strong> Our build deliberately creates a broken table,
       an unprotected function and an open payment path, and fails if the safety checks do not catch
-      them. A check that has only ever been seen passing is not known to work.</li>
+      them.</li>
 </ul>
 
-<h2>If something goes wrong</h2>
+<h2 id="breach">If something goes wrong</h2>
 <p>If personal data here is exposed, lost or accessed without authority, we tell your salon
-   immediately, we report to CERT-In <strong>within 6 hours</strong> as the directions require, the
-   Data Protection Board is informed without delay and in full <strong>within 72 hours</strong>, and
-   <strong>you are told directly</strong> &mdash; what happened, what it means for you, what has
-   been done, and what you should do. You will not learn about it from somewhere else.</p>
+   immediately, we report to CERT-In <strong>within 6 hours</strong>, the Data Protection Board is
+   informed without delay and in full <strong>within 72 hours</strong>, and <strong>you are told
+   directly</strong> &mdash; what happened, what it means for you, what has been done, and what you
+   should do. You will not learn about it from somewhere else.</p>
 
-<h2>Changes to this page</h2>
-<p>If what we do changes, this page changes with it, and the date at the top moves. Changes that
-   affect what you agreed to are not applied quietly: you will be asked again in the app.</p>
+<h2 id="changes">Changes to this page</h2>
+<p>If what we do changes, this page changes with it and the date at the top moves. A change that
+   affects something you agreed to is never applied quietly: you will be asked again in the
+   app.</p>
 
-<h2>Who to contact</h2>
+<h2 id="contact">Who to contact</h2>
 
-<p><strong>Your salon, first.</strong> Its privacy contact &mdash; a named person, with an email or
-   a phone number &mdash; is shown in the app on the screen where you joined, and under
-   <strong>Your data</strong>. Your salon has 30 days to answer.</p>
+<p><strong>Your salon, first.</strong> Its privacy contact &mdash; a named person, with an email or a
+   phone number &mdash; is in the app, on the screen where you joined and under
+   <strong>Your data</strong>. Your salon answers within 30 days.</p>
 
-<p><strong>Crayora, for escalation and for anything about the platform itself:</strong><br>
-   [PRIVACY CONTACT NAME], [PRIVACY EMAIL]<br>
-   [CRAYORA REGISTERED NAME], [REGISTERED ADDRESS]</p>
+<p><strong>Crayora</strong>, if your salon does not answer, for deleting an account without the app,
+   or for anything about the platform itself:<br>
+   Privacy, Crayora &mdash; <a href="mailto:crayoratech@gmail.com?subject=Cray%20Salon%20privacy">crayoratech@gmail.com</a><br>
+   Please name your salon. Never send us your login code: nobody at Crayora or at your salon will
+   ever ask for it.</p>
 
 <p><strong>The Data Protection Board of India</strong>, if you are not satisfied with either answer.
-   You have the right to complain to it directly.</p>
+   You have the right to complain to it.</p>
 
 <footer>
-  <p>Cray Salon is made by [CRAYORA REGISTERED NAME]. This page is served from
-     <code>craysalon-join.crayoratech.workers.dev</code> and carries no trackers, cookies or analytics.</p>
+  <p>Cray Salon is made by Crayora, India. This page is served from
+     <code>craysalon-join.crayoratech.workers.dev</code> and carries no trackers, cookies or
+     analytics.</p>
   <p><a href="/">Cray Salon</a></p>
 </footer>
 

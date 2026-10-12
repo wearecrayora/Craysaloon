@@ -126,5 +126,17 @@ else
   note "ok (absent - generated at deploy time)"
 fi
 
+printf '\n[GATE-9] the published privacy policy carries no placeholder\n'
+# join/public/privacy.html is live. A "[CRAYORA REGISTERED NAME]" on a published
+# policy is evidence the obligation was noticed and skipped (join/README.md).
+POLICY=join/public/privacy.html
+HOLES=$(grep -noE '\[[A-Z][A-Z -]+\]' "$POLICY" || true)
+if [ -n "$HOLES" ]; then
+  note "placeholders in $POLICY: $(echo "$HOLES" | tr '\n' ' ')"
+  fail=1
+else
+  note "ok"
+fi
+
 printf '\n%s\n' "$([ $fail -eq 0 ] && echo 'ALL GATES PASS' || echo 'GATES FAILED')"
 exit $fail

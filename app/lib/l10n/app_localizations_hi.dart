@@ -109,7 +109,8 @@ class AppL10nHi extends AppL10n {
       'बुकिंग, पेमेंट और रिमाइंडर के मैसेज सेवा का हिस्सा हैं।';
 
   @override
-  String get phoneConsentPromotional => 'इस सैलून के ऑफ़र भी भेजें';
+  String get phoneConsentPromotional =>
+      'इस सैलून के ऑफ़र, और विज़िट का समय होने पर रिमाइंडर भी भेजें';
 
   @override
   String get phoneConsentWhatsapp => 'ऑफ़र WhatsApp पर भी';
@@ -471,7 +472,7 @@ class AppL10nHi extends AppL10n {
       'यह सेवा का हिस्सा है। इन्हें रोकने के लिए अपना खाता मिटाने के लिए कहें।';
 
   @override
-  String get consentPromotionalTitle => 'इस सैलून के ऑफ़र';
+  String get consentPromotionalTitle => 'ऑफ़र और विज़िट रिमाइंडर';
 
   @override
   String get consentWhatsappTitle => 'WhatsApp पर ऑफ़र';
@@ -515,7 +516,7 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get erasureConfirmBody =>
-      'आपका नाम, नंबर और जन्मदिन हटा दिए जाएंगे और आप लॉग आउट हो जाएंगे। पेमेंट और वॉलेट के रिकॉर्ड आपके नाम के बिना रहेंगे — सैलून को कानूनन अपने हिसाब-किताब रखने होते हैं। यह वापस नहीं हो सकता।';
+      'आपका नाम, नंबर और जन्मदिन हटा दिए जाएंगे और आप लॉग आउट हो जाएंगे। पेमेंट और वॉलेट के रिकॉर्ड आपके नाम के बिना रहेंगे — सैलून को कानूनन अपने हिसाब-किताब रखने होते हैं। वॉलेट में बचा क्रेडिट इसके बाद इस्तेमाल नहीं हो सकेगा और नकद नहीं मिलेगा, इसलिए पहले उसे इस्तेमाल कर लें। यह वापस नहीं हो सकता।';
 
   @override
   String get erasureConfirmAction => 'हाँ, मिटाने के लिए कहें';
@@ -1597,7 +1598,8 @@ class AppL10nHiLatn extends AppL10nHi {
       'Booking, payment aur reminder ke message service ka hissa hain.';
 
   @override
-  String get phoneConsentPromotional => 'Is salon ke offers bhi bhejiye';
+  String get phoneConsentPromotional =>
+      'Is salon ke offers, aur visit ka time hone par reminder bhi bhejiye';
 
   @override
   String get phoneConsentWhatsapp => 'Offers WhatsApp par bhi';
@@ -1965,7 +1967,7 @@ class AppL10nHiLatn extends AppL10nHi {
       'Yeh service ka hissa hai. Inhe rokne ke liye apna account mitane ke liye kahein.';
 
   @override
-  String get consentPromotionalTitle => 'Is salon ke offers';
+  String get consentPromotionalTitle => 'Offers aur visit reminders';
 
   @override
   String get consentWhatsappTitle => 'WhatsApp par offers';
@@ -2009,7 +2011,7 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get erasureConfirmBody =>
-      'Aapka naam, number aur birthday hata diye jaayenge aur aap log out ho jaayenge. Payment aur wallet ke record aapke naam ke bina rahenge — salon ko kanoonan apne hisaab-kitaab rakhne hote hain. Yeh wapas nahi ho sakta.';
+      'Aapka naam, number aur birthday hata diye jaayenge aur aap log out ho jaayenge. Payment aur wallet ke record aapke naam ke bina rahenge — salon ko kanoonan apne hisaab-kitaab rakhne hote hain. Wallet mein bacha credit iske baad use nahi ho payega aur cash nahi milega, isliye pehle use kar lein. Yeh wapas nahi ho sakta.';
 
   @override
   String get erasureConfirmAction => 'Haan, mitane ke liye kahein';

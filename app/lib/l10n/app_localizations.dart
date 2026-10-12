@@ -266,10 +266,10 @@ abstract class AppL10n {
   /// **'Booking, payment and reminder messages are part of the service.'**
   String get phoneServiceNote;
 
-  /// Marketing consent is opt-in and starts UNTICKED (RULES 11).
+  /// Reminders that a customer is due are PROMOTIONAL (0066) and ride on this consent, so the label must say so - consent to something unnamed is not informed consent (DPDP s.6).
   ///
   /// In en, this message translates to:
-  /// **'Also send me offers from this salon'**
+  /// **'Also send me offers, and a reminder when I\'m due for a visit'**
   String get phoneConsentPromotional;
 
   /// No description provided for @phoneConsentWhatsapp.
@@ -875,7 +875,7 @@ abstract class AppL10n {
   /// No description provided for @consentPromotionalTitle.
   ///
   /// In en, this message translates to:
-  /// **'Offers from this salon'**
+  /// **'Offers and visit reminders'**
   String get consentPromotionalTitle;
 
   /// No description provided for @consentWhatsappTitle.
@@ -947,7 +947,7 @@ abstract class AppL10n {
   /// Erasure is anonymisation, and the app says so BEFORE rather than letting it be discovered after (RULES 11.8).
   ///
   /// In en, this message translates to:
-  /// **'Your name, number and birthday are removed, and you are logged out. Payments and wallet records stay without your name — the salon has to keep its books by law. This cannot be undone.'**
+  /// **'Your name, number and birthday are removed, and you are logged out. Payments and wallet records stay without your name — the salon has to keep its books by law. Any wallet credit left can no longer be used, and is not paid out as cash, so spend it first. This cannot be undone.'**
   String get erasureConfirmBody;
 
   /// No description provided for @erasureConfirmAction.

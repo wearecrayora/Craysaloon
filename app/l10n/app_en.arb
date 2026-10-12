@@ -107,9 +107,9 @@
   "@phoneHint": {},
   "phoneServiceNote": "Booking, payment and reminder messages are part of the service.",
   "@phoneServiceNote": {},
-  "phoneConsentPromotional": "Also send me offers from this salon",
+  "phoneConsentPromotional": "Also send me offers, and a reminder when I'm due for a visit",
   "@phoneConsentPromotional": {
-    "description": "Marketing consent is opt-in and starts UNTICKED (RULES 11)."
+    "description": "Reminders that a customer is due are PROMOTIONAL (0066) and ride on this consent, so the label must say so - consent to something unnamed is not informed consent (DPDP s.6)."
   },
   "phoneConsentWhatsapp": "Offers on WhatsApp too",
   "@phoneConsentWhatsapp": {},
@@ -415,7 +415,7 @@
   "@consentServiceTitle": {},
   "consentServiceLocked": "Part of the service. To stop these, ask for your account to be deleted.",
   "@consentServiceLocked": {},
-  "consentPromotionalTitle": "Offers from this salon",
+  "consentPromotionalTitle": "Offers and visit reminders",
   "@consentPromotionalTitle": {},
   "consentWhatsappTitle": "Offers on WhatsApp",
   "@consentWhatsappTitle": {},
@@ -455,7 +455,7 @@
   "@rightAskedThanks": {},
   "erasureConfirmTitle": "Ask to be deleted?",
   "@erasureConfirmTitle": {},
-  "erasureConfirmBody": "Your name, number and birthday are removed, and you are logged out. Payments and wallet records stay without your name — the salon has to keep its books by law. This cannot be undone.",
+  "erasureConfirmBody": "Your name, number and birthday are removed, and you are logged out. Payments and wallet records stay without your name — the salon has to keep its books by law. Any wallet credit left can no longer be used, and is not paid out as cash, so spend it first. This cannot be undone.",
   "@erasureConfirmBody": {
     "description": "Erasure is anonymisation, and the app says so BEFORE rather than letting it be discovered after (RULES 11.8)."
   },
