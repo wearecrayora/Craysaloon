@@ -1,33 +1,30 @@
-name: Dispatch notifications
+name: Dispatch watchdog
 
-# The messages the database has queued are actually SENT here.
+# Messages are SENT by the craysalon-cron Worker, every minute (cron/, 0100).
+# This workflow no longer sends on a schedule, because GitHub's schedule cannot
+# be trusted with it: "every five minutes" fired every four to six HOURS
+# (measured 13 Oct 2026), and before that the job "succeeded" from 5 Oct while
+# sending nothing, because its secrets were never set.
 #
-# Why this runs in GitHub Actions rather than in the database, where the rest of
-# the schedule lives: sending needs Crayora's service key, and a key in a
-# `cron.job` command string - or in Vault behind a third function that reads it -
-# is a credential sitting inside the thing it protects. `scripts/db/schedule.sql`
-# keeps the database half secret-free on purpose (RULES 8.12), so the half that
-# spends money runs out here, with its credential in repository secrets.
+# What it does now:
 #
-# **The cost is latency.** GitHub's shortest cron is five minutes and it is
-# best-effort, so a booking confirmation can wait a few minutes for its push.
-# That is survivable and visible; it is not free. The alternative - pg_net
-# calling the function every minute, with the key in Vault - is a deliberate
-# trade of one invariant for that latency, and it needs a decision rather than a
-# commit.
+#   * on its schedule - WATCH. public.dispatch_backlog() counts messages the
+#     dispatcher should have sent more than ten minutes ago, by the claim's own
+#     rule (so a customer with no device is not an alarm). Non-zero goes red:
+#     the Worker has stopped, lost its secret, or the Edge Function is failing.
+#     A late watchdog is fine - it only has to notice eventually; the Worker is
+#     what has to be on time.
 #
-# A queued-but-unsent delivery is never escalated: `escalate_due_deliveries`
-# only looks at rows with `sent_at` set. So a late dispatch delays a message; it
-# never causes a paid escalation for one that was never sent.
+#   * on a manual run - also DISPATCH, once, for every active salon: the
+#     fallback while the Worker is being fixed. Safe alongside the Worker, since
+#     a claim is a five-minute lease (0100) and nothing is sent twice.
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 concurrency:
-  # Two overlapping runs would claim the same batch. The database would cope -
-  # claiming writes the delivery row first - but there is no reason to find out.
   group: dispatch-notifications
   cancel-in-progress: false
 
@@ -35,34 +32,54 @@ jobs:
   dispatch:
     runs-on: ubuntu-latest
     steps:
-      - name: Dispatch every active salon's queue
+      - name: Check the secrets
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          CRAY_SECRET_KEY: ${{ secrets.CRAY_SECRET_KEY }}
+        run: |
+          # Missing secrets FAIL the run - a watchdog that cannot look is not one.
+          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${CRAY_SECRET_KEY:-}" ]; then
+            echo "::error::SUPABASE_URL or CRAY_SECRET_KEY is not set in repository secrets."
+            exit 1
+          fi
+
+      - name: Dispatch every active salon's queue (manual runs only)
+        if: github.event_name == 'workflow_dispatch'
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           CRAY_SECRET_KEY: ${{ secrets.CRAY_SECRET_KEY }}
         run: |
           set -euo pipefail
-          # Missing secrets FAIL the run. This workflow used to exit 0 here, and
-          # from 5 Oct 2026 it "succeeded" every five minutes while sending
-          # nothing - no confirmation, reminder or bill ever left (found 13 Oct).
-          # A green run must mean messages went.
-          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${CRAY_SECRET_KEY:-}" ]; then
-            echo "::error::SUPABASE_URL or CRAY_SECRET_KEY is not set in repository secrets - NOTHING IS BEING SENT."
-            exit 1
-          fi
-
-          # Every ACTIVE salon, from the database (0099) - never a hand-kept
-          # list, which would forget the next salon to be activated.
-          ids=$(curl -sS --fail-with-body -X POST "$SUPABASE_URL/rest/v1/rpc/dispatch_salons"             -H "apikey: $CRAY_SECRET_KEY" -H "Authorization: Bearer $CRAY_SECRET_KEY"             -H 'Content-Type: application/json' -d '{}' | tr -d '[]"' | tr ',' ' ')
+          # Every ACTIVE salon, from the database (0099) - never a hand-kept list.
+          ids=$(curl -sS --fail-with-body -X POST "$SUPABASE_URL/rest/v1/rpc/dispatch_salons" \
+                  -H "apikey: $CRAY_SECRET_KEY" -H "Authorization: Bearer $CRAY_SECRET_KEY" \
+                  -H 'Content-Type: application/json' -d '{}' | tr -d '[]"' | tr ',' ' ')
 
           failed=0
           for salon in $ids; do
             # The salon id is not a secret; the response is a count, not content.
-            body=$(curl -sS -o /tmp/out -w '%{http_code}'               -X POST "$SUPABASE_URL/functions/v1/dispatch-notifications"               -H "Authorization: Bearer $CRAY_SECRET_KEY"               -H 'Content-Type: application/json'               -d "{\"salon_id\":\"$salon\",\"limit\":100}") || body=000
+            body=$(curl -sS -o /tmp/out -w '%{http_code}' \
+                     -X POST "$SUPABASE_URL/functions/v1/dispatch-notifications" \
+                     -H "Authorization: Bearer $CRAY_SECRET_KEY" \
+                     -H 'Content-Type: application/json' \
+                     -d "{\"salon_id\":\"$salon\",\"limit\":100}") || body=000
             echo "$salon -> HTTP $body $(cat /tmp/out)"
             [ "$body" = "200" ] || failed=1
           done
-
-          # A non-200 fails the run. A dispatcher that has been broken for a
-          # week should not look the same as one that sent nothing because there
-          # was nothing to send.
           exit $failed
+
+      - name: Nothing is waiting that should have gone
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          CRAY_SECRET_KEY: ${{ secrets.CRAY_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          out=$(curl -sS --fail-with-body -X POST "$SUPABASE_URL/rest/v1/rpc/dispatch_backlog" \
+                  -H "apikey: $CRAY_SECRET_KEY" -H "Authorization: Bearer $CRAY_SECRET_KEY" \
+                  -H 'Content-Type: application/json' -d '{}')
+          echo "backlog: $out"
+          late=$(printf '%s' "$out" | sed -n 's/.*"late":\([0-9]*\).*/\1/p')
+          if [ "${late:-x}" != "0" ]; then
+            echo "::error::${late:-?} message(s) should have been sent more than ten minutes ago. Check the craysalon-cron Worker (Cloudflare -> Workers -> craysalon-cron -> cron events) and its CRAY_SECRET_KEY; run this workflow by hand to send them meanwhile."
+            exit 1
+          fi

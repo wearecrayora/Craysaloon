@@ -175,7 +175,7 @@ graph LR
 | Multi-row invariants (bind, wallet post, booking create, mark-complete) | Postgres `SECURITY DEFINER` RPC | end-user JWT | Atomicity and invariants next to the data; still RLS-checked at entry |
 | Anything touching a third-party secret | Edge Function | service role | Secrets must never reach a device or a browser |
 | Salon provisioning, branding publish, credential writes | Next.js server route → `app_admin.*` RPC | service role | Audit is written inside the same transaction, so it cannot be skipped |
-| Scheduled scans | `pg_cron` → dispatcher Edge Function | service role | Deterministic, observable, retryable |
+| Scheduled scans | `pg_cron` (database work); Cloudflare Worker cron → dispatcher Edge Function (sending, §11, 0100) | service role | Deterministic, observable, retryable - and no secret in the database |
 | Fan-out after a domain event | `domain_events` outbox → `pgmq` → worker | service role | Transactional; survives crashes; safe under offline replay |
 
 **Rule:** an Edge Function that only reads/writes tenant data and touches no secret is a smell —
@@ -1272,6 +1272,16 @@ salon's provider credentials and Crayora's service key, and neither may sit in a
 string where a superuser session could read it back (RULES 8.12). So cron runs the database half —
 the escalation sweep, bonus expiry, the expiry warning — and `dispatch-notifications`, which
 actually spends money, is called from outside with its credentials held outside.
+
+**The outside clock is a Cloudflare Worker cron (0100, 13 Oct 2026).** `craysalon-cron` (`cron/`)
+calls `dispatch-notifications` for every active salon (`public.dispatch_salons()`) **every
+minute**, its service key in Worker secrets. It replaced a GitHub Actions schedule whose "every
+five minutes" was measured firing every four to six **hours** - and which, with its secrets never
+set, had sent nothing at all from 5 to 13 Oct. Two consequences are built in: a claim is a
+**five-minute lease** (`notification_deliveries.claimed_at`, `for update skip locked`), so
+overlapping ticks never send a message twice; and a stopped clock is caught by a watchdog, the
+GitHub workflow **Dispatch watchdog**, which goes red when `public.dispatch_backlog()` reports
+claimable work more than ten minutes old. Runbook: `docs/runbooks/stuck-dispatch.md`.
 
 ---
 

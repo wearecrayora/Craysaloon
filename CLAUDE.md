@@ -36,6 +36,10 @@ session — drift between the documents is how a rule quietly dies.
   the join site with `npx wrangler deploy` in `join/` - both to the **Crayoratech** Cloudflare
   account (the token in `.env`), never the other account wrangler may be logged in to. The console
   sits behind **Cloudflare Access** (`docs/runbooks/console-access.md`)
+- **Dispatch clock:** the `craysalon-cron` Worker (`cron/`, no URL) calls `dispatch-notifications`
+  every minute; deploy with `npx wrangler deploy` in `cron/`, same account. **Never put sending
+  back on a GitHub schedule** - it fired every 4-6 hours (0100). GitHub only watches
+  (`Dispatch watchdog`)
 - **Auth:** Supabase Auth for **sessions** — the OTP itself is Message Central's (below)
 - **OTP:** **Message Central VerifyNow generates, sends and verifies the code**, from **the
   salon's own account** (salon code is entered BEFORE login); Crayora's account is a logged,

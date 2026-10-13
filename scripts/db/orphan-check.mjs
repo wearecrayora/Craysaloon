@@ -51,7 +51,7 @@ const ALLOWED_ORPHANS = new Map([
 const CANARY = process.argv.includes('--canary');
 const CANARY_NAME = 'app.canary_unreachable_function';
 
-const SOURCE_DIRS = ['app/lib', 'console/app', 'console/server', 'console/lib', 'supabase/functions'];
+const SOURCE_DIRS = ['app/lib', 'console/app', 'console/server', 'console/lib', 'supabase/functions', 'cron/src'];
 const SOURCE_EXT = /\.(dart|ts|tsx|js|mjs)$/;
 
 async function walk(dir) {

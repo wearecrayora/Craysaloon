@@ -1,0 +1,29 @@
+{
+  // The dispatcher's clock (craysalon-cron). No routes, no URL: it only runs on
+  // its cron trigger, every minute, and asks the dispatch-notifications Edge
+  // Function to send each active salon's queue (src/worker.ts, migration 0100).
+  //
+  // Why here and not GitHub Actions: GitHub's "every five minutes" fired every
+  // four to six HOURS (13 Oct 2026). Why not pg_cron: sending needs the service
+  // key, and a key in the database is a credential inside what it protects
+  // (RULES 8.12, scripts/db/schedule.sql).
+  //
+  // Secret (never in this file):  npx wrangler secret put CRAY_SECRET_KEY
+  // Deploy: npx wrangler deploy   (from this directory, Crayoratech account)
+  "$schema": "../join/node_modules/wrangler/config-schema.json",
+  "name": "craysalon-cron",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-09-29",
+  "workers_dev": false,
+  "preview_urls": false,
+  "triggers": {
+    "crons": ["* * * * *"]
+  },
+  "vars": {
+    // Public: the same URL ships in the app.
+    "SUPABASE_URL": "https://khabztodwqamgywsfeel.supabase.co"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

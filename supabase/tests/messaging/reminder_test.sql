@@ -13,7 +13,7 @@
 --   * **a salon with no WhatsApp templates and no RCS agent still works
 --     completely** - the rungs it cannot use are skipped, never errored on
 
-select plan(44);
+select plan(45);
 
 insert into auth.users (id) values
   ('eeeeeeee-aaaa-4000-8000-00000000000a'),
@@ -399,6 +399,13 @@ select is(
     where customer_id = 'eeeeeeee-1111-4000-8000-00000000000c' and channel = 'push'),
   0,
   'and one with NO token never waits out a push window for a device that cannot receive');
+
+-- The dispatcher runs every minute (0100), so two ticks can overlap. A claim is
+-- a lease: what one dispatcher holds, the next one does not get to send again.
+select is(
+  (select count(*)::int from app.claim_notification_batch('eeeeeeee-0000-4000-8000-000000000001')),
+  0,
+  'a second dispatcher claiming at the same moment gets nothing - no message is sent twice');
 
 reset role;
 

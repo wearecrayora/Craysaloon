@@ -16,7 +16,7 @@ read back, so there is nothing to compare - replace and test. For Razorpay also 
 
 | Credential | Rotate in | Then update |
 |---|---|---|
-| Supabase secret key (`sb_secret_…`) | Supabase → Project Settings → API keys | console Worker secret (`npx wrangler secret put`), GitHub secret `CRAY_SECRET_KEY`, Edge Function secrets, `.env` |
+| Supabase secret key (`sb_secret_…`) | Supabase → Project Settings → API keys | console Worker secret (`npx wrangler secret put`), **`craysalon-cron` Worker secret `CRAY_SECRET_KEY`** (`cd cron && npx wrangler secret put CRAY_SECRET_KEY` - miss it and no message is sent), GitHub secret `CRAY_SECRET_KEY`, Edge Function secrets, `.env` |
 | Database password | Supabase → Database | `.env` `DATABASE_URL`, console Worker secret `ADMIN_DATABASE_URL`, GitHub `DATABASE_URL` (ict-logs) and `RESTORE_DRILL_DB_URL` |
 | Supabase personal access token (**account-wide**, not scoped) | Supabase → Account → Access tokens: create a new one, revoke the old | GitHub secret `SUPABASE_ACCESS_TOKEN` (ict-logs reads logs with it), `.env` |
 | FCM service account | Firebase → Service accounts → new key; delete the old | `supabase secrets set FCM_SERVICE_ACCOUNT=…` (from a file outside the repo) |
