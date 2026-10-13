@@ -548,7 +548,7 @@ export async function publishBranding(
   const sql = client();
   const [row] = await sql<{ publish_branding: number }[]>`
     select app_admin.publish_branding(
-      ${actorAdminId}::uuid, ${salonId}::uuid, ${sql.json(tokens)})`;
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${sql.json(tokens)}::jsonb)`;
   if (!row) throw new Error('publish_branding returned no row');
   return row.publish_branding;
 }
@@ -859,7 +859,7 @@ export async function setSalonRules(
   const sql = client();
   await sql`
     select app_admin.set_salon_rules(
-      ${actorAdminId}::uuid, ${salonId}::uuid, ${sql.json(rules)})`;
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${sql.json(rules)}::jsonb)`;
 }
 
 /** RULES 6.5 in spirit: generating a salon's public-facing artifact is attributable. */
