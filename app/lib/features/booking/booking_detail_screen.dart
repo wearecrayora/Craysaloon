@@ -53,12 +53,13 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                 child: Text(l10n.bookingKeep),
               ),
               const SizedBox(height: 8),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Theme.of(context).colorScheme.error,
-                ),
+              // The red is on the icon: the fixed danger colour reads 3.4:1 as
+              // text on the glass, under the 4.5:1 a label needs. The words
+              // stay in the readable ink, so it is never colour alone.
+              OutlinedButton.icon(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text(l10n.bookingCancel),
+                icon: Icon(Icons.event_busy_outlined, color: Theme.of(context).colorScheme.error),
+                label: Text(l10n.bookingCancel),
               ),
             ],
           ),
@@ -119,11 +120,14 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                   alignment: Alignment.centerLeft,
                   child: TextButton.icon(
                     style: TextButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.error,
+                      foregroundColor: Theme.of(context).colorScheme.onSurface,
                       minimumSize: const Size(48, 48),
                     ),
                     onPressed: _busy ? null : () => _cancel(value),
-                    icon: const Icon(Icons.event_busy_outlined),
+                    icon: Icon(
+                      Icons.event_busy_outlined,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                     label: Text(l10n.bookingCancel),
                   ),
                 ),

@@ -169,11 +169,8 @@ class _Problem extends StatelessWidget {
           Icon(Icons.error_outline, size: 20, color: scheme.error),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              text,
-              style: Theme.of(context).textTheme.bodyMedium
-                  ?.copyWith(color: scheme.error),
-            ),
+            // Red on the icon, readable ink on the words (contrast, the sweep).
+            child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),

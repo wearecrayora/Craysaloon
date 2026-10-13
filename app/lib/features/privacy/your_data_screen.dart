@@ -42,13 +42,27 @@ class YourDataScreen extends ConsumerWidget {
                       // Not "everything is off": that would be a false statement
                       // about a legal record. The screen says it could not read
                       // them and offers a retry.
+                      // The fixed danger red marks it on the icon; the words
+                      // stay in the readable ink - red text on the glass read
+                      // 4.4:1, under the 4.5:1 a sentence needs (the sweep).
                       Padding(
                         padding: const EdgeInsets.only(bottom: 16),
-                        child: Text(
-                          l10n.consentSaveFailed,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.error,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              size: 20,
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                l10n.consentSaveFailed,
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
+                            ),
+                          ],
                         ),
                       )
                     else ...[

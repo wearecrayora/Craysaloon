@@ -98,24 +98,28 @@ Map<String, Object?> publishedBranding({
   String script = 'latin',
   double lineHeightBonus = 0,
 }) {
-  Map<String, Object?> set(String primary, String surface, String text) => {
+  // Each mode resolved as the console's publish would: the dark set carries
+  // its OWN ink and greys, light on dark. (It used to reuse the light ones,
+  // which no real publish could produce - the contrast gate blocks it - and
+  // which the screen sweep's contrast check rightly failed.)
+  Map<String, Object?> set(String primary, String surface, String text, {bool dark = false}) => {
         'color': {
           'primary': primary,
-          'onPrimary': '#ffffff',
-          'primaryContainer': '#dbeee8',
-          'onPrimaryContainer': '#0d3b31',
+          'onPrimary': dark ? '#1a1a19' : '#ffffff',
+          'primaryContainer': dark ? '#1f3b34' : '#dbeee8',
+          'onPrimaryContainer': dark ? '#a8e6d4' : '#0d3b31',
           'accent': '#eb6834',
           'onAccent': '#1a1a19',
-          'brandInk': '#155447',
+          'brandInk': dark ? '#3fbf9f' : '#155447',
           'surface': surface,
-          'surfaceAlt': '#f4f3f0',
-          'surfaceSunken': '#eceae5',
-          'border': '#dedcd6',
-          'borderStrong': '#8f8d85',
-          'divider': '#e7e5df',
+          'surfaceAlt': dark ? '#1f1e1b' : '#f4f3f0',
+          'surfaceSunken': dark ? '#0f0f0e' : '#eceae5',
+          'border': dark ? '#35342f' : '#dedcd6',
+          'borderStrong': dark ? '#7d7b73' : '#8f8d85',
+          'divider': dark ? '#2a2927' : '#e7e5df',
           'textPrimary': text,
-          'textSecondary': '#52514e',
-          'textMuted': '#6b6964',
+          'textSecondary': dark ? '#c4c1ba' : '#52514e',
+          'textMuted': dark ? '#9a968e' : '#6b6964',
           // A palette that tried to recolour status. The app must ignore it.
           'success': '#ff00ff',
           'danger': '#00ff00',
@@ -138,7 +142,7 @@ Map<String, Object?> publishedBranding({
     },
     'resolved': {
       'light': set(primaryLight, '#fcfcfb', '#1a1a19'),
-      'dark': set('#3fbf9f', '#1a1a19', '#ffffff'),
+      'dark': set('#3fbf9f', '#1a1a19', '#ffffff', dark: true),
     },
   };
 }

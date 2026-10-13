@@ -30,12 +30,16 @@ import 'support/fake_cray_api.dart';
 import 'support/fake_customer_api.dart';
 import 'wallet_test.dart' show FakeWalletApi;
 
-/// IMPLEMENTATION 7, for the screens built in the redesign: every one, in
-/// `en`, `hi` (Devanagari) and `hi_Latn` (the longest strings), at normal and
-/// 200% text, on a small phone - and not one overflow.
+/// IMPLEMENTATION 7, for the screens built in the redesign, on a small phone:
 ///
-/// Flutter reports a clipped row as an exception; `takeException` turns it
-/// into a failure naming the screen, the language and the scale.
+///   * every screen in `en`, `hi` (Devanagari) and `hi_Latn` (the longest
+///     strings), at normal and 200% text - and not one overflow. Flutter
+///     reports a clipped row as an exception; `takeException` turns it into a
+///     failure naming the screen, the language and the scale.
+///   * every screen in light, dark and the neutral (unbranded) default -
+///     targets at least 48dp, every tappable thing labelled, text readable.
+typedef _Variant = ({String name, Locale locale, double scale, bool dark, bool branded});
+
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({'cray.shortcut_offered': true}));
 
@@ -48,55 +52,80 @@ void main() {
 
   final locales = {'en': kEnglish, 'hi': kHindi, 'hi_Latn': kHinglish};
 
+  final List<_Variant> textVariants = [
+    for (final MapEntry(key: name, value: locale) in locales.entries)
+      for (final scale in [1.0, 2.0])
+        (name: '$name ${scale}x', locale: locale, scale: scale, dark: false, branded: true),
+  ];
+
+  final List<_Variant> lookVariants = [
+    (name: 'light', locale: kEnglish, scale: 1.0, dark: false, branded: true),
+    (name: 'dark', locale: kEnglish, scale: 1.0, dark: true, branded: true),
+    (name: 'neutral', locale: kEnglish, scale: 1.0, dark: false, branded: false),
+  ];
+
   Future<void> sweep(
     WidgetTester tester, {
     required String role,
     required List<String> routes,
     required List<Override> overrides,
+    required List<_Variant> variants,
+    required Future<void> Function(WidgetTester tester, String where) check,
   }) async {
     tester.view.physicalSize = const Size(360, 740);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    for (final MapEntry(key: name, value: locale) in locales.entries) {
-      for (final scale in [1.0, 2.0]) {
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              sessionProvider.overrideWithValue(
-                AppSession(appRole: role, salonId: '11111111-0000-4000-8000-000000000001'),
-              ),
-              initialBrandingProvider.overrideWithValue(branding),
-              homeShortcutProvider.overrideWithValue(FakeShortcut(supported: false)),
-              salonNotificationsProvider.overrideWithValue(FakeNotifications()),
-              ...overrides,
-            ],
-            child: MediaQuery(
-              data: MediaQueryData(
-                size: const Size(360, 740),
-                textScaler: TextScaler.linear(scale),
-              ),
-              child: const CraySalonApp(),
+    for (final v in variants) {
+      await tester.pumpWidget(
+        ProviderScope(
+          // A fresh scope per variant: the overrides differ (branded or not).
+          key: ValueKey(v.name),
+          overrides: [
+            sessionProvider.overrideWithValue(
+              AppSession(appRole: role, salonId: '11111111-0000-4000-8000-000000000001'),
             ),
+            if (v.branded) initialBrandingProvider.overrideWithValue(branding),
+            homeShortcutProvider.overrideWithValue(FakeShortcut(supported: false)),
+            salonNotificationsProvider.overrideWithValue(FakeNotifications()),
+            ...overrides,
+          ],
+          child: MediaQuery(
+            data: MediaQueryData(
+              size: const Size(360, 740),
+              textScaler: TextScaler.linear(v.scale),
+              platformBrightness: v.dark ? Brightness.dark : Brightness.light,
+            ),
+            child: const CraySalonApp(),
           ),
-        );
-        await tester.pumpAndSettle();
-        final container = ProviderScope.containerOf(tester.element(find.byType(CraySalonApp)));
-        container.read(localeProvider.notifier).select(locale);
-        await tester.pumpAndSettle();
+        ),
+      );
+      await tester.pumpAndSettle();
+      final container = ProviderScope.containerOf(tester.element(find.byType(CraySalonApp)));
+      container.read(localeProvider.notifier).select(v.locale);
+      await tester.pumpAndSettle();
 
-        for (final route in routes) {
-          container.read(routerProvider).go(route);
-          await tester.pumpAndSettle();
-          final error = tester.takeException();
-          expect(error, isNull, reason: '$route in $name at ${scale}x: $error');
-        }
+      for (final route in routes) {
+        container.read(routerProvider).go(route);
+        await tester.pumpAndSettle();
+        await check(tester, '$route (${v.name})');
       }
     }
   }
 
-  testWidgets('customer screens: no clipping in any language, at 200% text', (tester) async {
+  Future<void> noOverflow(WidgetTester tester, String where) async {
+    final error = tester.takeException();
+    expect(error, isNull, reason: '$where: $error');
+  }
+
+  Future<void> accessible(WidgetTester tester, String where) async {
+    await expectLater(tester, meetsGuideline(androidTapTargetGuideline), reason: where);
+    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline), reason: where);
+    await expectLater(tester, meetsGuideline(textContrastGuideline), reason: where);
+  }
+
+  List<Override> customer() {
     final soon = DateTime.now().add(const Duration(days: 2));
     final api = FakeCustomerApi()
       ..due = NextDue(dueOn: DateTime(2026, 10, 14), serviceName: 'Hair spa and head massage')
@@ -136,21 +165,24 @@ void main() {
           lines: const [DocumentLine(kind: 'service', name: 'Haircut', pricePaise: 1250000)],
         ),
       ];
+    return [
+      crayApiProvider.overrideWithValue(api),
+      walletApiProvider.overrideWithValue(FakeWalletApi()),
+    ];
+  }
 
-    await sweep(
-      tester,
-      role: 'customer',
-      routes: ['/home', '/book', '/wallet', '/me', '/visits', '/documents', '/booking/b-9', '/your-data'],
-      overrides: [
-        crayApiProvider.overrideWithValue(api),
-        walletApiProvider.overrideWithValue(FakeWalletApi()),
-      ],
-    );
-  });
+  const customerRoutes = [
+    '/home',
+    '/book',
+    '/wallet',
+    '/me',
+    '/visits',
+    '/documents',
+    '/booking/b-9',
+    '/your-data',
+  ];
 
-  testWidgets('owner screens: no clipping in any language, at 200% text', (tester) async {
-    final cache = CacheDb(NativeDatabase.memory());
-    addTearDown(cache.close);
+  List<Override> owner(CacheDb cache) {
     final remote = FakeBookings();
     final outbox = Outbox(cache);
     final hours = FakeHours()
@@ -166,66 +198,115 @@ void main() {
           reason: 'Diwali and Bhai Dooj, the whole family is away',
         ),
       ];
+    return [
+      crayApiProvider.overrideWithValue(FakeCrayApi()),
+      cacheDbProvider.overrideWithValue(cache),
+      outboxProvider.overrideWithValue(outbox),
+      dayRepositoryProvider.overrideWithValue(
+        DayRepository(
+          remote: remote,
+          cache: cache,
+          outbox: outbox,
+          salonId: '11111111-0000-4000-8000-000000000001',
+        ),
+      ),
+      salonHoursApiProvider.overrideWithValue(hours),
+      staffProvider.overrideWith(
+        (ref) async => const Cached(
+          [StaffMember(id: 'st-1', name: 'Suresh Kumar Venkataraman', active: true)],
+          fromCache: false,
+        ),
+      ),
+      salonAccountApiProvider.overrideWithValue(
+        FakeAccount(
+          const SalonBilling(
+            state: 'grace',
+            readOnly: true,
+            plan: 'Salon with three stylists',
+            monthlyPricePaise: 149900,
+          ),
+          profile: const SalonProfile(
+            displayName: 'Studio Nine Unisex Family Salon',
+            legalName: 'Studio Nine Unisex Family Salon Private Limited',
+            address: '12th Main Road, HAL 2nd Stage, Indiranagar, Bengaluru 560038',
+            email: 'privacy.officer@studionine.example',
+            gstNumber: '29ABCDE1234F1Z5',
+            gstRateBp: 500,
+            walletRule: {'topup_paise': 100000, 'bonus_paise': 15000, 'min_topup_paise': 20000},
+            rewardRule: {'referrer_paise': 10000, 'referred_paise': 5000},
+            reminderCycleDays: 45,
+            cancellationPolicy:
+                'Free to cancel up to two hours before your time. Closer than that, please call the salon.',
+            grievanceName: 'Sunita Rao',
+            grievanceEmail: 'privacy.officer@studionine.example',
+          ),
+        ),
+      ),
+    ];
+  }
 
+  const ownerRoutes = [
+    '/day',
+    '/more',
+    '/more/rules',
+    '/more/hours',
+    '/more/billing',
+    '/more/profile',
+    '/staff',
+    '/staff/st-1/hours',
+  ];
+
+  testWidgets('customer screens: no clipping in any language, at 200% text', (tester) async {
+    await sweep(
+      tester,
+      role: 'customer',
+      routes: customerRoutes,
+      overrides: customer(),
+      variants: textVariants,
+      check: noOverflow,
+    );
+  });
+
+  testWidgets('owner screens: no clipping in any language, at 200% text', (tester) async {
+    final cache = CacheDb(NativeDatabase.memory());
+    addTearDown(cache.close);
     await sweep(
       tester,
       role: 'owner',
-      routes: [
-        '/day',
-        '/more',
-        '/more/rules',
-        '/more/hours',
-        '/more/billing',
-        '/more/profile',
-        '/staff',
-        '/staff/st-1/hours',
-      ],
-      overrides: [
-        crayApiProvider.overrideWithValue(FakeCrayApi()),
-        cacheDbProvider.overrideWithValue(cache),
-        outboxProvider.overrideWithValue(outbox),
-        dayRepositoryProvider.overrideWithValue(
-          DayRepository(
-            remote: remote,
-            cache: cache,
-            outbox: outbox,
-            salonId: '11111111-0000-4000-8000-000000000001',
-          ),
-        ),
-        salonHoursApiProvider.overrideWithValue(hours),
-        staffProvider.overrideWith(
-          (ref) async => const Cached(
-            [StaffMember(id: 'st-1', name: 'Suresh Kumar Venkataraman', active: true)],
-            fromCache: false,
-          ),
-        ),
-        salonAccountApiProvider.overrideWithValue(
-          FakeAccount(
-            const SalonBilling(
-              state: 'grace',
-              readOnly: true,
-              plan: 'Salon with three stylists',
-              monthlyPricePaise: 149900,
-            ),
-            profile: const SalonProfile(
-              displayName: 'Studio Nine Unisex Family Salon',
-              legalName: 'Studio Nine Unisex Family Salon Private Limited',
-              address: '12th Main Road, HAL 2nd Stage, Indiranagar, Bengaluru 560038',
-              email: 'privacy.officer@studionine.example',
-              gstNumber: '29ABCDE1234F1Z5',
-              gstRateBp: 500,
-              walletRule: {'topup_paise': 100000, 'bonus_paise': 15000, 'min_topup_paise': 20000},
-              rewardRule: {'referrer_paise': 10000, 'referred_paise': 5000},
-              reminderCycleDays: 45,
-              cancellationPolicy:
-                  'Free to cancel up to two hours before your time. Closer than that, please call the salon.',
-              grievanceName: 'Sunita Rao',
-              grievanceEmail: 'privacy.officer@studionine.example',
-            ),
-          ),
-        ),
-      ],
+      routes: ownerRoutes,
+      overrides: owner(cache),
+      variants: textVariants,
+      check: noOverflow,
     );
   });
-}
 
+  testWidgets('customer screens: 48dp targets, labels and contrast - light, dark, unbranded',
+      (tester) async {
+    final handle = tester.ensureSemantics();
+    await sweep(
+      tester,
+      role: 'customer',
+      routes: customerRoutes,
+      overrides: customer(),
+      variants: lookVariants,
+      check: accessible,
+    );
+    handle.dispose();
+  });
+
+  testWidgets('owner screens: 48dp targets, labels and contrast - light, dark, unbranded',
+      (tester) async {
+    final handle = tester.ensureSemantics();
+    final cache = CacheDb(NativeDatabase.memory());
+    addTearDown(cache.close);
+    await sweep(
+      tester,
+      role: 'owner',
+      routes: ownerRoutes,
+      overrides: owner(cache),
+      variants: lookVariants,
+      check: accessible,
+    );
+    handle.dispose();
+  });
+}

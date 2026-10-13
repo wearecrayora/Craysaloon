@@ -143,7 +143,7 @@ class _PressableState extends State<Pressable> {
   @override
   Widget build(BuildContext context) {
     final reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
-    return GestureDetector(
+    final pressable = GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (_) => _set(true),
       onTapUp: (_) => _set(false),
@@ -156,6 +156,11 @@ class _PressableState extends State<Pressable> {
         child: widget.child,
       ),
     );
+    if (widget.onTap == null) return pressable;
+    // One button, named by what it shows: without the merge a screen reader
+    // announced an unnamed "button" and read the text as separate, untappable
+    // lines (labeledTapTargetGuideline, the screen sweep).
+    return MergeSemantics(child: Semantics(button: true, child: pressable));
   }
 }
 
