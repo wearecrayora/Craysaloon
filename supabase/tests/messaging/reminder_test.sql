@@ -13,7 +13,7 @@
 --   * **a salon with no WhatsApp templates and no RCS agent still works
 --     completely** - the rungs it cannot use are skipped, never errored on
 
-select plan(45);
+select plan(46);
 
 insert into auth.users (id) values
   ('eeeeeeee-aaaa-4000-8000-00000000000a'),
@@ -408,6 +408,20 @@ select is(
   'a second dispatcher claiming at the same moment gets nothing - no message is sent twice');
 
 reset role;
+
+-- The watchdog (0100) must SEE a message the dispatcher left behind. A message
+-- for a customer with a live token, eleven minutes old and never claimed, is
+-- exactly what a stopped dispatcher leaves.
+create temp table backlog_before as select late from public.dispatch_backlog();
+
+insert into public.notifications (salon_id, customer_id, purpose, category, template_key, created_at)
+values ('eeeeeeee-0000-4000-8000-000000000001', 'eeeeeeee-1111-4000-8000-00000000000d',
+        'booking_confirmed', 'transactional', 'canary_key', now() - interval '11 minutes');
+
+select is(
+  (select late from public.dispatch_backlog()) - (select late from backlog_before),
+  1,
+  'a message left unsent for eleven minutes turns the dispatch watchdog red');
 
 -- ---------------------------------------------------------------------------
 -- The sweep: one bad salon must not stall every other salon
