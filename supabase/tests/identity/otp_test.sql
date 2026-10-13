@@ -12,7 +12,7 @@
 --   * one verification yields at most one session;
 --   * the identity a session is minted for carries no plaintext phone.
 
-select plan(24);
+select plan(26);
 
 insert into auth.users (id) values ('55555555-eeee-4000-8000-000000000001');
 
@@ -51,6 +51,29 @@ select is(
   'rate_limited',
   'the fourth send in ten minutes is refused - every send is real money'
 );
+
+-- Per salon per day (0101): a salon at 1,000 sends today sends no more, from
+-- any number or address - its own Message Central balance is what pays.
+insert into public.rate_limit_counters (bucket, window_start, count)
+values ('otp_send_salon:55555555-0000-4000-8000-00000000000a',
+        to_timestamp(floor(extract(epoch from clock_timestamp()) / 86400) * 86400), 1000)
+on conflict (bucket, window_start) do update set count = 1000;
+select public.start_join('CRAY-QQQRRR', '9811100002');
+
+create temp table capped as select public.otp_begin('9811100002', 'another-address') as r;
+select is(
+  (select r ->> 'reason' from capped),
+  'salon_daily_limit',
+  'a salon''s 1,001st send of the day is refused, whatever number or address asks'
+);
+select is(
+  (select (r ->> 'first_refusal')::boolean from capped),
+  true,
+  'and the first refusal is flagged, so Crayora is alerted once - not a thousand times'
+);
+
+delete from public.rate_limit_counters
+ where bucket = 'otp_send_salon:55555555-0000-4000-8000-00000000000a';
 
 -- ---------------------------------------------------------------------------
 -- The challenge

@@ -224,6 +224,28 @@ void main() {
     );
   });
 
+  // PRD 20: "failed payment handled". The credit only ever follows a captured
+  // webhook, so a failure moves no money - and the customer is told so, in
+  // words that do not blame them for a cancel.
+  for (final (outcome, message) in [
+    (PaymentOutcome.failed, 'That payment did not go through. Nothing was charged.'),
+    (PaymentOutcome.cancelled, 'Payment cancelled. Nothing was charged.'),
+  ]) {
+    testWidgets('a ${outcome.name} payment says nothing was charged, and nothing is credited',
+        (tester) async {
+      sheet.outcome = outcome;
+      await pump(tester);
+      await openAddMoney(tester);
+
+      await tester.tap(find.textContaining('Pay ₹'));
+      await tester.pumpAndSettle();
+
+      expect(find.text(message), findsOneWidget);
+      expect(find.textContaining('Payment sent'), findsNothing,
+          reason: 'a failure must never read like a payment on its way');
+    });
+  }
+
   testWidgets('a retried tap reuses the SAME action id; a new amount does not',
       (tester) async {
     sheet.outcome = PaymentOutcome.failed;

@@ -11,7 +11,7 @@
 --   * the salon comes from the URL token, never from the body
 --   * there is still exactly ONE function that reads a decrypted credential
 
-select plan(24);
+select plan(25);
 
 -- ---------------------------------------------------------------------------
 -- The credential door
@@ -172,6 +172,16 @@ select is(
 );
 
 reset role;
+
+-- PRD 20 "failed payment handled": a payment that never captured - failed,
+-- cancelled, or simply abandoned in the sheet - credits nothing, whoever asks.
+-- The webhook ignores every event but payment.captured, so this is the whole
+-- of the failure path on the server: the money never arrived, so none moves.
+select is(
+  (app.wallet_credit_from_payment((select (r ->> 'payment_id')::uuid from started)) ->> 'reason'),
+  'not_captured',
+  'a payment that never captured - failed or abandoned - credits nothing, even asked directly'
+);
 
 -- ---------------------------------------------------------------------------
 -- The webhook's work
