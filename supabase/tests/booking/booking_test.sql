@@ -58,7 +58,9 @@ insert into public.service_addons (salon_id, service_id, add_on_id)
 values ('ffffffff-0000-4000-8000-000000000001', 'ffffffff-2222-4000-8000-000000000001',
         'ffffffff-6666-4000-8000-000000000001');
 
--- Rahul works 10:00-18:00 local, every day of the week.
+-- Rahul works 10:00-18:00 local, every day of the week - replacing the 10-17
+-- default every new stylist starts on (0104), as an owner setting a week would.
+delete from public.staff_schedules where staff_id = 'ffffffff-4444-4000-8000-000000000001';
 insert into public.staff_schedules (salon_id, staff_id, day_of_week, starts_at, ends_at)
 select 'ffffffff-0000-4000-8000-000000000001', 'ffffffff-4444-4000-8000-000000000001',
        d::smallint, time '10:00', time '18:00'

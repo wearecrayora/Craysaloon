@@ -137,7 +137,7 @@ if (generated) {
       '',
       generated,
       '',
-      'Sign in at http://localhost:3000/login, enrol two-factor when prompted,',
+      'Sign in at https://craysalon-console.crayoratech.workers.dev/login, enrol two-factor when prompted,',
       'then change this password. Delete this file afterwards.',
       '',
     ].join('\n'),

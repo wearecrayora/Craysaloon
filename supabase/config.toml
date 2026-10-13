@@ -22,8 +22,13 @@ enabled = true
 
 [auth]
 enabled = true
-site_url = "http://localhost:3000"
-additional_redirect_urls = ["https://craysalon-join.crayoratech.workers.dev"]
+# The hosted project is set to match through the Management API (13 Oct 2026):
+# no custom domain until the app is on the Play Store - workers.dev only.
+site_url = "https://craysalon-console.crayoratech.workers.dev"
+additional_redirect_urls = [
+  "https://craysalon-console.crayoratech.workers.dev/**",
+  "https://craysalon-join.crayoratech.workers.dev/**",
+]
 jwt_expiry = 3600
 enable_refresh_token_rotation = true
 refresh_token_reuse_interval = 10

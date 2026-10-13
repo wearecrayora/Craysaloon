@@ -6,7 +6,7 @@
 -- day the whole salon is closed. Before 0098 nothing wrote a stylist's week (so
 -- nothing could ever be booked) and a salon holiday blocked nothing.
 
-select plan(14);
+select plan(16);
 
 insert into auth.users (id) values ('aaaa7777-aaaa-4000-8000-00000000000f');
 
@@ -41,6 +41,23 @@ create function pg_temp.slots(p_staff uuid default null) returns integer languag
     p_staff, (select day from d), '{}'::uuid[], 30);
 $$;
 
+-- 0104: a stylist is bookable from the moment they are added - 10:00 to 17:00,
+-- every day, until the owner sets their week.
+select results_eq(
+  $q$select count(*)::int, count(distinct day_of_week)::int, min(starts_at), max(ends_at)
+       from public.staff_schedules where staff_id = 'aaaa7777-3333-4000-8000-000000000001'$q$,
+  $q$values (7, 7, time '10:00', time '17:00')$q$,
+  'a new stylist starts on 10:00-17:00, every day of the week (0104)');
+
+set local role authenticated;
+select pg_temp.as_role('owner');
+
+select cmp_ok(pg_temp.slots(), '>', 0, 'so a salon that has just added its team can take a booking');
+
+-- Without any hours, nothing is bookable - the state every salon was in before
+-- 0104. Cleared here so the rest of this gate starts from an empty week.
+reset role;
+delete from public.staff_schedules where salon_id = 'aaaa7777-0000-4000-8000-000000000001';
 set local role authenticated;
 select pg_temp.as_role('owner');
 
