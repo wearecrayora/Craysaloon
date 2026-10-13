@@ -101,19 +101,23 @@ export async function provisionSalon(
   const [row] = await sql<{ provision_salon: ProvisionResult }[]>`
     select app_admin.provision_salon(
       ${actorAdminId}::uuid,
-      ${input.legalName},
-      ${input.displayName},
-      ${input.ownerName},
-      ${input.ownerPhone},
-      ${input.plan},
-      ${input.setupFeePaise},
-      ${input.phone ?? null},
-      ${input.email ?? null},
-      ${input.address ?? null},
-      ${input.gstNumber ?? null},
-      ${input.timezone ?? 'Asia/Kolkata'},
-      ${sql.array(input.languages ?? ['en', 'hi'])},
-      ${sql.json(input.settings ?? {})}
+      ${input.legalName}::text,
+      ${input.displayName}::text,
+      ${input.ownerName}::text,
+      ${input.ownerPhone}::text,
+      ${input.plan}::text,
+      ${input.setupFeePaise}::bigint,
+      ${input.phone ?? null}::text,
+      ${input.email ?? null}::text,
+      ${input.address ?? null}::text,
+      ${input.gstNumber ?? null}::text,
+      ${input.timezone ?? 'Asia/Kolkata'}::text,
+      -- Every argument cast: with prepare:false the driver sends parameters
+      -- untyped, and an array arrives as TEXT - so no function matched and
+      -- provisioning failed with "provision_salon(..., text, jsonb) does not
+      -- exist" (13 Oct 2026, the first salon provisioned on Cloudflare).
+      ${input.languages ?? ['en', 'hi']}::text[],
+      ${sql.json(input.settings ?? {})}::jsonb
     )`;
   if (!row) throw new Error('provision_salon returned no row');
   return row.provision_salon;
@@ -837,7 +841,7 @@ export async function upsertStaff(
   const [row] = await sql<{ upsert_staff: string }[]>`
     select app_admin.upsert_staff(
       ${actorAdminId}::uuid, ${salonId}::uuid, ${v.id}::uuid, ${v.name},
-      ${sql.array(v.skills)}, ${v.active})`;
+      ${v.skills}::text[], ${v.active}::boolean)`;
   if (!row) throw new Error('upsert_staff returned no row');
   return row.upsert_staff;
 }

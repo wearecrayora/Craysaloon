@@ -106,6 +106,12 @@ function message(e: unknown): string {
   const m = /app_admin: (.+)/s.exec(raw);
   if (m?.[1]) return m[1].trim();
   if (/phone_hash: /.test(raw)) return 'That phone number is not a valid Indian mobile number.';
+  // Anything else is a fault, not an operator mistake - and it used to vanish:
+  // provisioning failed on 13 Oct 2026 with nothing recorded but this sentence.
+  // The message and SQLSTATE go to Workers Logs; never `detail`, which can
+  // carry the values that were submitted (a phone, an email).
+  const code = (e as { code?: unknown } | null)?.code;
+  console.error(`console action failed${typeof code === 'string' ? ` [${code}]` : ''}: ${raw.slice(0, 500)}`);
   return 'Something went wrong. The action was not applied.';
 }
 
