@@ -294,3 +294,12 @@ jobs:
       - name: Prove the leak test can fail
         run: node scripts/db/negative-control.mjs
 
+      # PRD 20: concurrent wallet debits cannot overdraw - on separate
+      # connections, which pgTAP's single session cannot do. It commits rows to
+      # append-only ledgers, so it runs only here, on the throwaway container.
+      - name: Concurrent debits cannot overdraw
+        run: node scripts/db/concurrency-test.mjs
+
+      - name: Concurrency gate - negative control
+        run: node scripts/db/concurrency-test.mjs --canary
+
