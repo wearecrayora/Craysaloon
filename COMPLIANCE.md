@@ -146,7 +146,7 @@ now.
 | Requirement | Status |
 |---|---|
 | Report listed cyber incidents to CERT-In within **6 hours** of becoming aware | **Gap** — no process, no named person. §7 item 3 |
-| Enable ICT logs, retain **180 days**, **within Indian jurisdiction** | **Partial** — Postgres and Edge Function logs are in `ap-south-1`; retention is Supabase's default, not 180 days by policy, and **Sentry's copy sits outside India** |
+| Enable ICT logs, retain **180 days**, **within Indian jurisdiction** | **Built** (0099, 13 Oct 2026) — `ict-logs.yml` copies API, auth, PostgREST and Edge Function logs hourly (database and pooler logs: security-relevant lines only) into `ops.ict_logs` in `ap-south-1`, and deletes rows past 180 days. A failed run goes red; a gap of more than 23 hours is lost, so watch the job. **Still outside India: Sentry's crash copy** |
 | Clocks synchronised to NIC/NPL NTP | **Assumed** (managed infrastructure) |
 
 ### RBI — why this wallet is not a PPI requiring authorisation
@@ -249,7 +249,7 @@ WhatsApp are unaffected — and push is the preferred channel anyway (RULES 12).
 | 7c | Hindi and Hinglish translations of the policy | The app ships three languages; the notice behind it must too | M13 |
 | 8 | Test a backup restore | An untested backup is a belief, not a safeguard. **Built** (M12): `restore-drill.yml` restores into an empty stack, re-seeds the pepper, verifies and runs every gate. **First run owed** - needs `RESTORE_DRILL_DB_URL` and `RESTORE_DRILL_PEPPER` as repository secrets | Before first real salon |
 | 9 | Play Data Safety declaration + privacy policy URL | Blocks release | M13 |
-| 10 | Access-log retention aligned to 180 days in India | CERT-In | Before first real salon |
+| 10 | Access-log retention aligned to 180 days in India | CERT-In. **Built** (0099): hourly copy into `ops.ict_logs`, Mumbai, 180 days | Before first real salon |
 
 ---
 
