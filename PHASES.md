@@ -483,8 +483,10 @@ needs two repository secrets (`RESTORE_DRILL_DB_URL`, `RESTORE_DRILL_PEPPER`) an
 until then this condition is **owed**, not met.
 **Sentry** now covers the console's server errors too (`instrumentation.ts`, no SDK, scrubbed of
 any run of six digits - tested), beside the app's.
-**Still open:** Edge Functions report only OTP fallbacks to Sentry - dispatcher and webhook errors
-go to the function logs only · the shared `trace_id` across surfaces is not built · nomination (s.14) and the children's-details
+**Edge Function alerts (13 Oct 2026):** every function's alerts reach Sentry tagged by area (otp,
+payments, dispatch), and an exception nobody caught is reported as `<area>_crashed` by the guard
+in `_shared/runtime.ts` - previously it reached only the function log.
+**Still open:** the shared `trace_id` across surfaces is not built · nomination (s.14) and the children's-details
 rule remain · the breach runbook is written, not rehearsed.
 
 ### Phase 5 — Ship *(M13)*

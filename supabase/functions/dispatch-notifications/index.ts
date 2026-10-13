@@ -25,7 +25,7 @@
 // credentials are missing does not send SMS - it records why, and that is a
 // state the console shows rather than a cost Crayora absorbs.
 
-import { admin, alert, json } from '../_shared/runtime.ts';
+import { admin, alert, json, serve } from '../_shared/runtime.ts';
 import { type BatchRow, fcmMessage, type PushBrand } from '../_shared/push_message.ts';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -42,7 +42,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
  */
 const COST_PAISE: Record<string, number> = { push: 0, whatsapp: 17, sms: 22 };
 
-Deno.serve(async (req) => {
+serve('dispatch', 'dispatch-notifications', async (req) => {
   if (req.method !== 'POST') return json(405, { error: 'method_not_allowed' });
 
   // Service-role only. This function reads every customer's notifications for a

@@ -1,5 +1,5 @@
-// Shared plumbing for the OTP Edge Functions: the service-role client, the
-// customer's address, JSON responses, and alerting.
+// Shared plumbing for the Edge Functions: the service-role client, the
+// customer's address, JSON responses, alerting, and the crash guard.
 
 import { createClient, type SupabaseClient } from 'jsr:@supabase/supabase-js@2';
 
@@ -44,9 +44,18 @@ export function json(status: number, body: Record<string, unknown>): Response {
   });
 }
 
+/** The alert's area, from its prefix: otp_*, payments_*, dispatch_* / fcm_*. */
+function areaOf(event: string): string {
+  if (event.startsWith('otp_')) return 'otp';
+  if (event.startsWith('payments_')) return 'payments';
+  if (event.startsWith('dispatch_') || event.startsWith('fcm_')) return 'dispatch';
+  return event.split('_')[0] ?? 'edge';
+}
+
 /**
  * RULES 7.1.3: a fallback to Crayora's account is never a normal state, so
- * every occurrence is ALERTED, not just logged.
+ * every occurrence is ALERTED, not just logged. The same path carries every
+ * other Edge Function alert - payments, dispatch - and the crash guard below.
  *
  * Sent to Sentry over its envelope API directly - no SDK, because the whole
  * point of an alert path is that it has nothing in it that can fail to load.
@@ -65,13 +74,14 @@ export async function alert(event: string, extra: Record<string, string | number
     const eventId = crypto.randomUUID().replaceAll('-', '');
     const header = JSON.stringify({ event_id: eventId, sent_at: new Date().toISOString() });
     const item = JSON.stringify({ type: 'event' });
+    const area = areaOf(event);
     const payload = JSON.stringify({
       event_id: eventId,
-      level: 'warning',
+      level: event.endsWith('_crashed') ? 'error' : 'warning',
       platform: 'javascript',
-      logger: 'otp',
+      logger: area,
       message: { formatted: event },
-      tags: { area: 'otp', event },
+      tags: { area, event },
       extra,
       timestamp: Date.now() / 1000,
     });
@@ -87,4 +97,23 @@ export async function alert(event: string, extra: Record<string, string | number
   } catch {
     // An alert that fails must not fail the login. It is already in the log.
   }
+}
+
+/**
+ * Deno.serve with a crash guard. An exception nobody caught used to reach
+ * only the function log - a dispatcher or a webhook could fail on every call
+ * and nobody would be told. Now it is alerted as `<area>_crashed`, by the
+ * function's name and the error's CLASS only: an error message can carry
+ * whatever the failing call was handed, and Sentry is not where that goes.
+ */
+export function serve(area: string, fn: string, handler: (req: Request) => Promise<Response>) {
+  Deno.serve(async (req) => {
+    try {
+      return await handler(req);
+    } catch (e) {
+      console.error(`${fn} crashed:`, e);
+      await alert(`${area}_crashed`, { function: fn, error: e instanceof Error ? e.name : typeof e });
+      return json(500, { error: 'internal' });
+    }
+  });
 }

@@ -18,9 +18,9 @@
 // processed correctly is noise, not safety.
 
 import { parseRazorpaySecret, verifyWebhook } from '../_shared/razorpay.ts';
-import { admin, alert, json } from '../_shared/runtime.ts';
+import { admin, alert, json, serve } from '../_shared/runtime.ts';
 
-Deno.serve(async (req) => {
+serve('payments', 'rzp-webhook', async (req) => {
   if (req.method !== 'POST') return json(405, { error: 'method_not_allowed' });
 
   // /rzp-webhook/<token>

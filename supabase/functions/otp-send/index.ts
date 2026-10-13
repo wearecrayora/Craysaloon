@@ -9,7 +9,7 @@
 // THEN spend money. Nothing is sent for a number with no salon context.
 
 import { mcSend, platformCreds, type McCreds } from '../_shared/message-central.ts';
-import { admin, alert, clientAddress, json } from '../_shared/runtime.ts';
+import { admin, alert, clientAddress, json, serve } from '../_shared/runtime.ts';
 
 /**
  * A number with no salon context gets a response that looks like success.
@@ -29,7 +29,7 @@ async function decoy(): Promise<Response> {
   return json(200, { challenge_id: crypto.randomUUID(), expires_in: 60 });
 }
 
-Deno.serve(async (req) => {
+serve('otp', 'otp-send', async (req) => {
   if (req.method !== 'POST') return json(405, { error: 'method_not_allowed' });
 
   let phone: unknown;

@@ -14,12 +14,12 @@
 // different salon by editing a request.
 
 import { mcValidate, platformCreds, type McCreds } from '../_shared/message-central.ts';
-import { admin, alert, json } from '../_shared/runtime.ts';
+import { admin, alert, json, serve } from '../_shared/runtime.ts';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const CODE = /^[0-9]{4,8}$/;
 
-Deno.serve(async (req) => {
+serve('otp', 'otp-verify', async (req) => {
   if (req.method !== 'POST') return json(405, { error: 'method_not_allowed' });
 
   let challengeId: unknown;

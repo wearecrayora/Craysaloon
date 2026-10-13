@@ -26,11 +26,11 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { createOrder, parseRazorpaySecret } from '../_shared/razorpay.ts';
-import { admin, alert, json } from '../_shared/runtime.ts';
+import { admin, alert, json, serve } from '../_shared/runtime.ts';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-Deno.serve(async (req) => {
+serve('payments', 'create-payment-order', async (req) => {
   if (req.method !== 'POST') return json(405, { error: 'method_not_allowed' });
 
   const authorization = req.headers.get('Authorization');
