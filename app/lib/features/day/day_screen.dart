@@ -54,57 +54,69 @@ class DayScreen extends ConsumerWidget {
         label: Text(l10n.walkInTitle),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Why nothing can be recorded, BEFORE a tap is refused (0087).
-            const ReadOnlyBanner(),
-            if (state.fromCache) CacheBanner(refreshedAt: state.refreshedAt),
-            if (pending > 0)
-              Container(
-                width: double.infinity,
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  children: [
-                    const Icon(Icons.schedule_send, size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        l10n.daySyncPending(pending),
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () {
-                  // A payment recorded in the console lifts read-only at once;
-                  // pulling down is how the owner sees that.
-                  ref.invalidate(salonBillingProvider);
-                  return ref.read(dayControllerProvider.notifier).refresh();
-                },
-                child: state.loading && state.bookings.isEmpty
-                    ? const Center(child: CircularProgressIndicator())
-                    : state.bookings.isEmpty
-                        ? ListView(
-                            padding: const EdgeInsets.all(16),
-                            children: [Text(l10n.dayEmpty)],
-                          )
-                        : ListView.separated(
-                            padding: const EdgeInsets.only(bottom: 24),
-                            // +1 for clearance under the Walk-in button,
-                            // composed from the 4dp scale (DESIGN 4.1, GATE-4).
-                            itemCount: state.bookings.length + 1,
-                            separatorBuilder: (_, _) => const Divider(height: 1),
-                            itemBuilder: (context, i) => i == state.bookings.length
-                                ? const SizedBox(height: 64)
-                                : _BookingTile(booking: state.bookings[i]),
+        child: RefreshIndicator(
+          onRefresh: () {
+            // A payment recorded in the console lifts read-only at once;
+            // pulling down is how the owner sees that.
+            ref.invalidate(salonBillingProvider);
+            return ref.read(dayControllerProvider.notifier).refresh();
+          },
+          // The banners scroll WITH the day rather than sitting above it: at
+          // 200% text a fixed read-only banner on a small phone took the whole
+          // screen and left no room for a single booking (IMPLEMENTATION 7,
+          // found by the screen sweep).
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              // Why nothing can be recorded, BEFORE a tap is refused (0087).
+              const SliverToBoxAdapter(child: ReadOnlyBanner()),
+              if (state.fromCache)
+                SliverToBoxAdapter(child: CacheBanner(refreshedAt: state.refreshedAt)),
+              if (pending > 0)
+                SliverToBoxAdapter(
+                  child: Container(
+                    width: double.infinity,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.schedule_send, size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            l10n.daySyncPending(pending),
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
-              ),
-            ),
-          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              if (state.loading && state.bookings.isEmpty)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (state.bookings.isEmpty)
+                SliverPadding(
+                  padding: const EdgeInsets.all(16),
+                  sliver: SliverToBoxAdapter(child: Text(l10n.dayEmpty)),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  sliver: SliverList.separated(
+                    // +1 for clearance under the Walk-in button,
+                    // composed from the 4dp scale (DESIGN 4.1, GATE-4).
+                    itemCount: state.bookings.length + 1,
+                    separatorBuilder: (_, _) => const Divider(height: 1),
+                    itemBuilder: (context, i) => i == state.bookings.length
+                        ? const SizedBox(height: 64)
+                        : _BookingTile(booking: state.bookings[i]),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

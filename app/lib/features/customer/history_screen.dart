@@ -88,22 +88,29 @@ class HistoryScreen extends ConsumerWidget {
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    rupees(v.amountPaise),
-                                    style: text.titleMedium?.copyWith(
-                                      fontFeatures: moneyFeatures,
+                              // May wrap, never push past the edge: at 200%
+                              // text "Not paid yet" outgrew its column (the
+                              // screen sweep, IMPLEMENTATION 7).
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      rupees(v.amountPaise),
+                                      textAlign: TextAlign.end,
+                                      style: text.titleMedium?.copyWith(
+                                        fontFeatures: moneyFeatures,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    v.paid
-                                        ? l10n.historyPaid
-                                        : l10n.historyUnpaid,
-                                    style: text.bodySmall,
-                                  ),
-                                ],
+                                    Text(
+                                      v.paid
+                                          ? l10n.historyPaid
+                                          : l10n.historyUnpaid,
+                                      textAlign: TextAlign.end,
+                                      style: text.bodySmall,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),

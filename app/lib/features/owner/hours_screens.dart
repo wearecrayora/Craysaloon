@@ -321,10 +321,16 @@ class _Line extends StatelessWidget {
           bottom: BorderSide(color: Theme.of(context).dividerColor),
         ),
       ),
+      // Both sides may wrap: at 200% text the hours outgrew the row.
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: Text(label, style: text.bodyMedium)),
-          Text(value, style: text.titleMedium),
+          Expanded(flex: 2, child: Text(label, style: text.bodyMedium)),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 3,
+            child: Text(value, textAlign: TextAlign.end, style: text.titleMedium),
+          ),
         ],
       ),
     );

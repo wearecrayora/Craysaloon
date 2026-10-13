@@ -814,9 +814,15 @@ class DetailRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: emphasis ? text.titleMedium : text.bodyMedium),
+          // Both sides may wrap: at 200% text a fixed-width label pushed the
+          // value off the screen (the screen sweep, IMPLEMENTATION 7).
+          Flexible(
+            flex: 2,
+            child: Text(label, style: emphasis ? text.titleMedium : text.bodyMedium),
+          ),
           const SizedBox(width: 16),
           Expanded(
+            flex: 3,
             child: Text(
               value,
               textAlign: TextAlign.end,

@@ -336,8 +336,19 @@ class _BonusExpiryRowState extends ConsumerState<_BonusExpiryRow> {
       ),
       child: Row(
         children: [
-          Expanded(child: Text(l10n.rulesBonusLasts, style: text.bodyMedium)),
-          Text(_label(l10n, widget.days), style: text.titleMedium),
+          Expanded(
+            flex: 2,
+            child: Text(l10n.rulesBonusLasts, style: text.bodyMedium),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 3,
+            child: Text(
+              _label(l10n, widget.days),
+              textAlign: TextAlign.end,
+              style: text.titleMedium,
+            ),
+          ),
           if (owner) ...[
             const SizedBox(width: 8),
             _saving
