@@ -16,12 +16,12 @@ interface ScheduledController {
   scheduledTime: number;
 }
 
-// The Free plan allows 50 outbound requests per invocation; one goes to
-// dispatch_salons. Past this many salons, each tick takes the next slice in
-// turn, so every salon is still served - once every ceil(n / PER_TICK) minutes
-// - instead of the tick failing outright. Workers Paid lifts the limit; raise
-// this then.
-const PER_TICK = 40;
+// Salons dispatched per tick. On Workers Paid (since 13 Oct 2026) a single
+// invocation may make thousands of outbound requests; the Free plan's 50 is
+// what this used to be sized for (40). Past this many salons, each tick takes
+// the next slice in turn, so every salon is still served - once every
+// ceil(n / PER_TICK) minutes - instead of the tick failing outright.
+const PER_TICK = 200;
 
 // The batch per salon per tick. A minute cadence needs no big batches, and a
 // small one keeps a tick well inside the lease.
