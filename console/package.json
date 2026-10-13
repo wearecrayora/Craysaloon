@@ -7,7 +7,7 @@
     "dev": "vite dev --port 3001",
     "build": "vite build",
     "start": "vite preview",
-    "deploy": "vinext-cloudflare deploy",
+    "deploy": "vinext-cloudflare deploy && node scripts/keep-logs.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "next lint",
     "test": "vitest run",
