@@ -1,0 +1,48 @@
+name: ICT logs (CERT-In, 180 days in India)
+
+# Copies Supabase's API, auth, database and Edge Function logs into
+# ops.ict_logs - in our own database, in ap-south-1 (Mumbai) - and deletes
+# anything older than 180 days (CERT-In directions, April 2022; migration 0099;
+# decided 13 Oct 2026). Supabase itself keeps them only for the plan's short
+# window, so this runs hourly and each run picks up where the last stopped.
+#
+# The access token is account-wide (Supabase personal tokens are not scoped):
+# it lives only in this repository's secrets, and this job only READS logs with
+# it. Rotate it with the rest at launch (docs/runbooks/credential-rotation.md).
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: ict-logs
+  cancel-in-progress: false
+
+jobs:
+  copy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: scripts
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install
+        run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+
+      # A missing secret FAILS the run: a log job that silently copies nothing
+      # is a compliance gap that looks green.
+      - name: Copy the last hour's logs, drop anything past 180 days
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          set -euo pipefail
+          node ops/pull-logs.mjs

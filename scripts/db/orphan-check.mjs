@@ -114,6 +114,16 @@ try {
   }
   const repo = code.join('\n');
   const schedule = await readFile(path.join(ROOT, 'scripts/db/schedule.sql'), 'utf8');
+  // Scheduled GitHub workflows run too (dispatch.yml, 0099): they reach a public
+  // function over REST, as /rest/v1/rpc/<name>. Matched on that exact shape, so
+  // a name merely mentioned in a comment is not a caller.
+  const workflows = (
+    await Promise.all(
+      (await readdir(path.join(ROOT, '.github/workflows')).catch(() => []))
+        .filter((f) => /\.ya?ml$/.test(f))
+        .map((f) => readFile(path.join(ROOT, '.github/workflows', f), 'utf8')),
+    )
+  ).join(String.fromCharCode(10));
 
   // Column DEFAULTs and RLS POLICY expressions call functions too - my_salon_id()
   // is called by four catalogue tables' salon_id default and by nothing else.
@@ -150,6 +160,9 @@ try {
     // reached through the call graph like everything else.
     else if (schema === 'public' && new RegExp(`['"\`]${bare}['"\`]`).test(repo)) {
       mark(name, 'called from the app, console or an Edge Function');
+    }
+    else if (schema === 'public' && workflows.includes(`/rest/v1/rpc/${bare}"`)) {
+      mark(name, 'called by a scheduled GitHub workflow');
     }
     // The console calls app_admin.* over a direct connection, by schema-qualified
     // name in SQL - that IS a real caller.

@@ -34,40 +34,30 @@ concurrency:
 jobs:
   dispatch:
     runs-on: ubuntu-latest
-    # Without the secrets this would fail every five minutes forever, which
-    # trains everyone to ignore a red workflow. It skips instead, loudly enough
-    # to find in the run log.
-    if: ${{ github.repository_owner != '' }}
     steps:
       - name: Dispatch every active salon's queue
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           CRAY_SECRET_KEY: ${{ secrets.CRAY_SECRET_KEY }}
-          SALON_IDS: ${{ secrets.DISPATCH_SALON_IDS }}
         run: |
           set -euo pipefail
+          # Missing secrets FAIL the run. This workflow used to exit 0 here, and
+          # from 5 Oct 2026 it "succeeded" every five minutes while sending
+          # nothing - no confirmation, reminder or bill ever left (found 13 Oct).
+          # A green run must mean messages went.
           if [ -z "${SUPABASE_URL:-}" ] || [ -z "${CRAY_SECRET_KEY:-}" ]; then
-            echo "SUPABASE_URL or CRAY_SECRET_KEY is not set in repository secrets."
-            echo "Nothing dispatched. Add them under Settings > Secrets > Actions."
-            exit 0
-          fi
-          if [ -z "${SALON_IDS:-}" ]; then
-            echo "DISPATCH_SALON_IDS is not set - no salon to dispatch for."
-            echo "Set it to a comma-separated list of salon uuids."
-            exit 0
+            echo "::error::SUPABASE_URL or CRAY_SECRET_KEY is not set in repository secrets - NOTHING IS BEING SENT."
+            exit 1
           fi
 
+          # Every ACTIVE salon, from the database (0099) - never a hand-kept
+          # list, which would forget the next salon to be activated.
+          ids=$(curl -sS --fail-with-body -X POST "$SUPABASE_URL/rest/v1/rpc/dispatch_salons"             -H "apikey: $CRAY_SECRET_KEY" -H "Authorization: Bearer $CRAY_SECRET_KEY"             -H 'Content-Type: application/json' -d '{}' | tr -d '[]"' | tr ',' ' ')
+
           failed=0
-          IFS=',' read -ra ids <<< "$SALON_IDS"
-          for id in "${ids[@]}"; do
-            salon=$(echo "$id" | tr -d '[:space:]')
-            [ -z "$salon" ] && continue
+          for salon in $ids; do
             # The salon id is not a secret; the response is a count, not content.
-            body=$(curl -sS -o /tmp/out -w '%{http_code}' \
-              -X POST "$SUPABASE_URL/functions/v1/dispatch-notifications" \
-              -H "Authorization: Bearer $CRAY_SECRET_KEY" \
-              -H 'Content-Type: application/json' \
-              -d "{\"salon_id\":\"$salon\",\"limit\":100}") || body=000
+            body=$(curl -sS -o /tmp/out -w '%{http_code}'               -X POST "$SUPABASE_URL/functions/v1/dispatch-notifications"               -H "Authorization: Bearer $CRAY_SECRET_KEY"               -H 'Content-Type: application/json'               -d "{\"salon_id\":\"$salon\",\"limit\":100}") || body=000
             echo "$salon -> HTTP $body $(cat /tmp/out)"
             [ "$body" = "200" ] || failed=1
           done
