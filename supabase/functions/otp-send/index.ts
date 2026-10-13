@@ -55,15 +55,6 @@ serve('otp', 'otp-send', async (req) => {
   }
   if (!begin?.ok) {
     if (begin?.reason === 'rate_limited') return json(429, { error: 'rate_limited' });
-    if (begin?.reason === 'salon_daily_limit') {
-      // 1,000 sends today for this salon (0101): an attack on its Message
-      // Central balance, or an enormous day. Alerted once, on the first
-      // refusal; the customer sees the ordinary "try again later".
-      if (begin.first_refusal) {
-        await alert('otp_salon_daily_limit', { salon_id: begin.salon_id ?? null });
-      }
-      return json(429, { error: 'rate_limited' });
-    }
     if (begin?.reason === 'salon_blocked') {
       // A real customer of a real salon whose messaging trial and grace have
       // both ended without it setting up its own account (0033). Not a decoy:

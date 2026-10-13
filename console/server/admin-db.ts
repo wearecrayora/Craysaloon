@@ -447,6 +447,72 @@ export async function getPlatformMetrics(actorAdminId: string): Promise<Platform
  * ARCHITECTURE 8.2 - write-only. There is deliberately no counterpart that
  * reads a credential back, here or in the database.
  */
+/**
+ * The salon's SMS sender ID, WhatsApp Business number and template approval
+ * status (0102). Not secrets - but they decide which paid rungs exist, so they
+ * are Crayora's to set, audited, like the credentials beside them.
+ */
+export async function setMessagingIdentity(
+  actorAdminId: string,
+  salonId: string,
+  smsSenderId: string | null,
+  whatsappNumber: string | null,
+  whatsappStatus: string,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.set_messaging_identity(${actorAdminId}::uuid, ${salonId}::uuid,
+      ${smsSenderId}, ${whatsappNumber}, ${whatsappStatus})`;
+}
+
+/** Map one message (key, language) to an approved WhatsApp template; a null name clears it. */
+export async function setWhatsappTemplate(
+  actorAdminId: string,
+  salonId: string,
+  templateKey: string,
+  locale: string,
+  templateName: string | null,
+  lang: string | null,
+  variables: string[],
+) {
+  const sql = client();
+  await sql`
+    select app_admin.set_whatsapp_template(${actorAdminId}::uuid, ${salonId}::uuid,
+      ${templateKey}, ${locale}, ${templateName}, ${lang}, ${variables}::text[])`;
+}
+
+export type MessageKey = { template_key: string; placeholders: string[] };
+export type WhatsappTemplateRow = {
+  template_key: string;
+  locale: string;
+  template_name: string;
+  lang: string | null;
+  variables: string[];
+};
+
+/** The messages this product sends, and the values each one may use (0102). */
+export async function listMessageKeys(): Promise<MessageKey[]> {
+  const sql = client();
+  return sql<MessageKey[]>`
+    select t.template_key,
+           coalesce(array_agg(distinct m[1]) filter (where m[1] is not null), '{}') as placeholders
+      from public.message_templates t
+      left join lateral regexp_matches(t.body, '\\{\\{([a-z_]+)\\}\\}', 'g') m on true
+     where t.salon_id is null and t.channel = 'push'
+     group by t.template_key
+     order by t.template_key`;
+}
+
+export async function listWhatsappTemplates(salonId: string): Promise<WhatsappTemplateRow[]> {
+  const sql = client();
+  return sql<WhatsappTemplateRow[]>`
+    select template_key, locale, provider_template_id as template_name,
+           provider_lang as lang, coalesce(provider_variables, '{}') as variables
+      from public.message_templates
+     where salon_id = ${salonId}::uuid and channel = 'whatsapp'
+     order by template_key, locale`;
+}
+
 export async function setIntegrationSecret(
   actorAdminId: string,
   salonId: string,

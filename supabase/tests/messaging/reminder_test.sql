@@ -13,7 +13,7 @@
 --   * **a salon with no WhatsApp templates and no RCS agent still works
 --     completely** - the rungs it cannot use are skipped, never errored on
 
-select plan(46);
+select plan(51);
 
 insert into auth.users (id) values
   ('eeeeeeee-aaaa-4000-8000-00000000000a'),
@@ -254,10 +254,30 @@ select is(
 -- The ladder, on a salon that has configured nothing
 -- ---------------------------------------------------------------------------
 
+-- 0102: a rung is only offered if the salon can actually send on it. Before,
+-- SMS was offered to every salon and every one of those sends failed at the
+-- provider - after waiting out a window first.
+select is(
+  app.next_channel('eeeeeeee-0000-4000-8000-000000000001', 'transactional', '{push}')::text,
+  null,
+  'with no Message Central account at all there is no paid rung - the ladder ends, it does not fail at a provider');
+
+update public.salon_integrations
+   set vault_secret_id = extensions.gen_random_uuid(), status = 'ok'
+ where salon_id = 'eeeeeeee-0000-4000-8000-000000000001' and provider = 'message_central';
+
+select is(
+  app.next_channel('eeeeeeee-0000-4000-8000-000000000001', 'transactional', '{push}')::text,
+  null,
+  'nor with the account but no SMS sender ID - Message Central refuses an SMS without one');
+
+update public.salon_integrations set sender_id = 'SALONX'
+ where salon_id = 'eeeeeeee-0000-4000-8000-000000000001' and provider = 'message_central';
+
 select is(
   app.next_channel('eeeeeeee-0000-4000-8000-000000000001', 'transactional', '{push}')::text,
   'sms',
-  'with no approved templates and no RCS agent, transactional falls to SMS - and WORKS');
+  'with the account and a sender ID, transactional falls to SMS - with no approved WhatsApp templates and no RCS agent');
 
 select is(
   app.next_channel('eeeeeeee-0000-4000-8000-000000000001', 'marketing', '{push}')::text,
@@ -270,6 +290,14 @@ select is(
   'and when the owner has not opted in, the ladder ends rather than spending their money');
 
 update public.salon_integrations set whatsapp_template_status = 'approved'
+ where salon_id = 'eeeeeeee-0000-4000-8000-000000000001' and provider = 'whatsapp';
+
+select is(
+  app.next_channel('eeeeeeee-0000-4000-8000-000000000001', 'transactional', '{push}')::text,
+  'sms',
+  'approved templates with no WhatsApp Business number to send from are not a rung (0102)');
+
+update public.salon_integrations set sender_id = '919800000001'
  where salon_id = 'eeeeeeee-0000-4000-8000-000000000001' and provider = 'whatsapp';
 
 select is(
@@ -422,6 +450,46 @@ select is(
   (select late from public.dispatch_backlog()) - (select late from backlog_before),
   1,
   'a message left unsent for eleven minutes turns the dispatch watchdog red');
+
+-- 0102: what the batch carries, per channel. A WhatsApp row carries the number,
+-- the salon's WhatsApp sender, and the approved template with its values in
+-- placeholder order; a push row never carries a phone number at all.
+update public.customers set phone = '9788800011' where id = 'eeeeeeee-1111-4000-8000-00000000000c';
+update public.customers set phone = '9788800012' where id = 'eeeeeeee-1111-4000-8000-00000000000d';
+update public.salon_integrations set rcs_agent_status = 'not_started'
+ where salon_id = 'eeeeeeee-0000-4000-8000-000000000001' and provider = 'rcs';
+
+insert into public.message_templates
+  (salon_id, template_key, locale, channel, provider_template_id, provider_lang, provider_variables)
+values ('eeeeeeee-0000-4000-8000-000000000001', 'booking_confirmed', 'en', 'whatsapp',
+        'booking_confirmed_v1', 'en', '{salon,when}');
+
+insert into public.notifications (id, salon_id, customer_id, purpose, category, template_key, locale, params)
+values
+  ('eeeeeeee-0c02-4000-8000-000000000001', 'eeeeeeee-0000-4000-8000-000000000001',
+   'eeeeeeee-1111-4000-8000-00000000000c', 'booking_confirmed', 'transactional',
+   'booking_confirmed', 'hi', '{"when": "Fri 5 pm"}'),
+  ('eeeeeeee-0c02-4000-8000-000000000002', 'eeeeeeee-0000-4000-8000-000000000001',
+   'eeeeeeee-1111-4000-8000-00000000000d', 'booking_confirmed', 'transactional',
+   'booking_confirmed', 'en', '{"when": "Fri 6 pm"}');
+
+create temp table batch2 as
+  select * from app.claim_notification_batch('eeeeeeee-0000-4000-8000-000000000001')
+   where notification_id in ('eeeeeeee-0c02-4000-8000-000000000001',
+                             'eeeeeeee-0c02-4000-8000-000000000002');
+
+select results_eq(
+  $q$select channel::text, phone, sender_id, wa_template, wa_lang, wa_variables::text
+       from batch2 where notification_id = 'eeeeeeee-0c02-4000-8000-000000000001'$q$,
+  $q$values ('whatsapp', '9788800011', '919800000001', 'booking_confirmed_v1', 'en',
+             '{"Bare Salon","Fri 5 pm"}')$q$,
+  'a WhatsApp row carries the number, the salon''s sender and the approved template with its values in order (0102)');
+
+select results_eq(
+  $q$select channel::text, phone from batch2
+      where notification_id = 'eeeeeeee-0c02-4000-8000-000000000002'$q$,
+  $q$values ('push', null::text)$q$,
+  'and a push row never carries the customer''s phone number - a device is not a number');
 
 -- ---------------------------------------------------------------------------
 -- The sweep: one bad salon must not stall every other salon

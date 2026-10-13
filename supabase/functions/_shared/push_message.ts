@@ -11,6 +11,13 @@ export type BatchRow = {
   platform: string | null;
   body: string | null;
   purpose: string;
+  // 0102: what the paid rungs need. phone is set ONLY on SMS and WhatsApp rows.
+  category?: 'transactional' | 'marketing';
+  phone?: string | null;
+  sender_id?: string | null;
+  wa_template?: string | null;
+  wa_lang?: string | null;
+  wa_variables?: string[] | null;
 };
 
 /** What a push from this salon wears: its name, colour and logo (PRD 20). */

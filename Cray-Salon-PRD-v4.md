@@ -1005,8 +1005,9 @@ to that salon. Per-salon daily OTP caps and per-phone/IP/device limits are there
   §5.2, ADR-36), from **the salon's** account by the resolution order in §12.1; Supabase issues the
   session only after VerifyNow confirms. No DLT needed — OTPs go out under Message Central's own
   registered name — and the message body is Message Central's and unbrandable (§12.1a).
-  **Rate-limit OTP requests** per phone, per IP, per device **and per salon per day** — every OTP
-  is now a paid SMS on *the salon's* bill, so the cap protects the owner, not us.
+  **Rate-limit OTP requests** per phone and per caller address (the "device": the app has no
+  identifier an attacker could not rotate). **No per-salon daily cap** — Crayora's decision,
+  13 Oct 2026; one was built (0101) and removed the same day (0102).
 - **Utility** (booking / wallet / receipt): push first, ack-gated (§10.1); the salon's WhatsApp
   utility template as fallback.
 - **Marketing** (reminders, lifecycle, campaigns): push first; the salon's WhatsApp marketing
@@ -1433,14 +1434,17 @@ wants · who marks services complete · GST registered? · preferred languages �
 - [ ] A salon with unapproved templates still works — the ladder skips WhatsApp cleanly
 - [ ] The app is branded as the salon **before** the phone-number screen
 - [ ] The first OTP sends from **the salon's** account; an OTP request with no salon context is
-      refused; the hook endpoint **rejects unsigned requests**
+      refused. *(There is no hook endpoint: since ADR-36 Message Central sends and verifies the
+      code and Supabase issues the session afterwards - the old "rejects unsigned requests" item
+      has nothing left to test.)*
 - [ ] **No code attempts to template, brand or validate the OTP message** — it is Message
       Central's and fixed
 - [ ] The screen shown while the customer waits for the OTP is fully salon-branded
 - [ ] Every **push** notification carries the salon's name, logo and colour
 - [ ] Each salon has a WhatsApp template registered per key and locale it needs, with matching
       variable counts
-- [ ] OTP is rate-limited per phone, IP, device **and per salon per day**
+- [ ] OTP is rate-limited per phone and per caller address (no per-salon daily cap, by decision
+      of 13 Oct 2026)
 - [ ] A broken salon Message Central account falls back to the platform and raises an alert
 
 **Security & compliance**

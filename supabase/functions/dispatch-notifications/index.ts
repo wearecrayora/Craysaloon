@@ -27,6 +27,7 @@
 
 import { admin, alert, json, serve } from '../_shared/runtime.ts';
 import { type BatchRow, fcmMessage, type PushBrand } from '../_shared/push_message.ts';
+import { messageNowRequest, messageNowResult } from '../_shared/message_now.ts';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -138,19 +139,24 @@ async function send(
   row: BatchRow,
   brand: PushBrand | null,
 ): Promise<SendResult> {
-  if (!row.body) {
-    // No template for this key, locale and channel. Recorded rather than
-    // guessed at: a message whose body we had to invent is a message the salon
-    // did not agree to send.
-    return { ok: false, reason: 'no_template' };
-  }
-
   if (row.channel === 'push') {
+    if (!row.body) {
+      // No template for this key, locale and channel. Recorded rather than
+      // guessed at: a message whose body we had to invent is a message the
+      // salon did not agree to send.
+      return { ok: false, reason: 'no_template' };
+    }
     if (!row.token) return { ok: false, reason: 'no_token', deadToken: false };
     return await sendPush(row, brand);
   }
 
-  // SMS, WhatsApp and RCS all ride the SALON's own Message Central account.
+  // SMS and WhatsApp: built exactly as Message Central documents them (0102).
+  // A row that cannot be addressed - no number, no sender, no text, no
+  // approved template - is refused here, before any credential is read.
+  const request = messageNowRequest(row);
+  if (!request.ok) return { ok: false, reason: request.reason };
+
+  // Both ride the SALON's own Message Central account.
   const { data: secret } = await db.rpc('salon_provider_secret', {
     p_salon_id: salonId,
     p_provider: 'message_central',
@@ -163,7 +169,7 @@ async function send(
     return { ok: false, reason: 'messaging_not_configured' };
   }
 
-  return await sendViaMessageCentral(row, secret);
+  return await sendViaMessageCentral(request.query, secret.secret);
 }
 
 /**
@@ -257,26 +263,20 @@ async function googleAccessToken(account: {
   }
 }
 
-async function sendViaMessageCentral(
-  row: BatchRow,
-  secret: { secret: string; public_key_id?: string | null },
-): Promise<SendResult> {
-  const base = Deno.env.get('MESSAGE_CENTRAL_BASE_URL') ?? 'https://cpaas.messagecentral.com';
+async function sendViaMessageCentral(query: URLSearchParams, authToken: string): Promise<SendResult> {
+  const base = (Deno.env.get('MESSAGE_CENTRAL_BASE_URL') ?? 'https://cpaas.messagecentral.com')
+    .replace(/\/+$/, '');
   try {
-    const response = await fetch(`${base}/verification/v3/send`, {
+    // Everything rides the query string, as Message Central documents it; the
+    // only header is the salon's own token. Nothing here is logged - the query
+    // carries the customer's number.
+    const response = await fetch(`${base}/verification/v3/send?${query}`, {
       method: 'POST',
-      headers: { authToken: secret.secret, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        customerId: secret.public_key_id,
-        channel: row.channel.toUpperCase(),
-        message: row.body,
-      }),
+      headers: { authToken },
+      signal: AbortSignal.timeout(10_000),
     });
-    if (!response.ok) {
-      return { ok: false, reason: `provider_${response.status}` };
-    }
-    const body = await response.json().catch(() => ({}));
-    return { ok: true, providerMessageId: body?.data?.transactionId ?? undefined };
+    const body = await response.json().catch(() => null);
+    return messageNowResult(response.status, body);
   } catch {
     return { ok: false, reason: 'provider_unreachable' };
   }

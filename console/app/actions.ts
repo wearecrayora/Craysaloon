@@ -36,6 +36,8 @@ import {
   setFeatureFlag,
   setSalonGst,
   setIntegrationSecret,
+  setMessagingIdentity,
+  setWhatsappTemplate,
   setMessagingGrace,
   setMessagingTrial,
   setSalonRules,
@@ -551,8 +553,8 @@ export async function setSecretAction(_prev: ActionState, form: FormData): Promi
       provider,
       stored,
       publicKeyId,
-      // VerifyNow sends under Message Central's own registered sender, so a
-      // sender id for Message Central would be stored and never used.
+      // Message Central's SMS sender ID is set under "SMS and WhatsApp"
+      // (0102), not with the credential: null here keeps whatever is set.
       provider === 'message_central' ? null : senderId,
     );
 
@@ -583,6 +585,66 @@ export async function setSecretAction(_prev: ActionState, form: FormData): Promi
   }
 }
 
+/**
+ * SMS sender ID, WhatsApp Business number and template status (0102). These
+ * decide which paid rungs of the ladder exist for the salon: no sender ID, no
+ * SMS; WhatsApp only when approved AND a number is set.
+ */
+export async function messagingIdentityAction(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const smsSenderId = String(form.get('smsSenderId') ?? '').trim() || null;
+  const whatsappNumber = String(form.get('whatsappNumber') ?? '').trim() || null;
+  const whatsappStatus = String(form.get('whatsappStatus') ?? 'not_started');
+
+  try {
+    await setMessagingIdentity(admin.id, salonId, smsSenderId, whatsappNumber, whatsappStatus);
+    revalidatePath(`/salon/${salonId}/credentials`);
+    const rungs = [
+      smsSenderId ? 'SMS' : null,
+      whatsappStatus === 'approved' && whatsappNumber ? 'WhatsApp' : null,
+    ].filter(Boolean);
+    return {
+      ok: rungs.length
+        ? `Saved. When a push is not acknowledged, this salon can now fall back to ${rungs.join(' and ')} - from its own Message Central account.`
+        : 'Saved. With no SMS sender ID and no approved WhatsApp, messages go by push only.',
+    };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+/** One message, one language, mapped to the salon's Meta-approved WhatsApp template (0102). */
+export async function whatsappTemplateAction(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const templateKey = String(form.get('templateKey') ?? '');
+  const locale = String(form.get('locale') ?? '');
+  const templateName = String(form.get('templateName') ?? '').trim() || null;
+  const lang = String(form.get('lang') ?? '').trim() || null;
+  const variables = String(form.get('variables') ?? '')
+    .split(',')
+    .map((v) => v.trim())
+    .filter(Boolean);
+
+  try {
+    await setWhatsappTemplate(admin.id, salonId, templateKey, locale, templateName, lang, variables);
+    revalidatePath(`/salon/${salonId}/credentials`);
+    return {
+      ok: templateName
+        ? `Mapped ${templateKey} (${locale}) to ${templateName}.`
+        : `Cleared ${templateKey} (${locale}) - it goes by SMS instead.`,
+    };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Catalogue

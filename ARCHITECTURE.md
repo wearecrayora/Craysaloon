@@ -1331,6 +1331,23 @@ resolve consent (per-purpose, from the consents ledger)
        └─ no channel available          -> stop, record `no_channel_available`
 ```
 
+**A rung exists only if the salon can send on it (0102, 13 Oct 2026).** SMS needs the salon's
+Message Central credential **and** its SMS sender ID; WhatsApp needs approved templates **and**
+the salon's WhatsApp Business number (plus the same credential). Crayora sets all of them in the
+console (`app_admin.set_messaging_identity`, `set_whatsapp_template`), audited. A salon with none
+of them is push-only - the ladder ends rather than "sending" into a provider error after waiting
+out a window. Before 0102 the paid rungs had **never delivered anything**: the dispatcher posted a
+JSON body with no recipient to the OTP endpoint, and no SMS wording existed. Now, per Message
+Central's own documents (`supabase/functions/_shared/message_now.ts`, unit-tested):
+
+| | Request (`POST /verification/v3/send`, header `authToken`) | Text |
+|---|---|---|
+| SMS (MessageNow) | `type=SMS&flowType=SMS&countryCode=91&mobileNumber&senderId&message&messageType=TRANSACTION\|PROMOTIONAL` | the push wording (`render_template` falls back to it); no DLT fields - none are needed |
+| WhatsApp (WhatsApp Now) | `flowType=WHATSAPP&type=BROADCAST&templateName&senderId=<WABA>&countryCode=91&mobileNumber&langId&variables` | the Meta-approved template mapped per message and language; `variables` are filled from `provider_variables` in placeholder order |
+
+The batch carries the customer's number **only** on an SMS or WhatsApp row - a push is addressed to
+a device and never sees it.
+
 #### 12.2a RCS — why it sits above WhatsApp, and what makes it conditional
 
 RCS (Rich Communication Services) delivers a branded, rich message **into the phone's default
@@ -1714,9 +1731,9 @@ bundle are additionally grepped for known key prefixes before shipping (PRD §20
 Implemented in Postgres — `app.rl_consume(key, limit, window)` over `rate_limit_counters` — so it
 shares a transaction with the thing it guards.
 
-- **OTP:** per phone, per IP, per device **and per salon per day (v2.2)**, with escalating
-  cooldowns. Every OTP is a paid SMS **on the salon's account**, so the per-salon cap is the
-  owner's spending limit and is surfaced to them (§12.4). The strongest control is upstream
+- **OTP:** per phone (3 per 10 minutes) and per caller address (10 per 10 minutes) - the
+  caller's address stands for "device", since the app has no identifier an attacker could not
+  rotate. **No per-salon daily cap: decided 13 Oct 2026** (built in 0101, removed in 0102). The strongest control is upstream
   though: `resolve_otp_sender()` **refuses** any request with no salon context (§5.2), so the
   unbounded flood case cannot reach a sender at all.
 - **`start_join(code, phone)`:** the tightest limit in the system, per IP, per device and per

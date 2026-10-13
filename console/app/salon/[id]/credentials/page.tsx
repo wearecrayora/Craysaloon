@@ -1,8 +1,15 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireAdmin } from '@/server/auth';
-import { getSalon, getWebhookToken, listIntegrations } from '@/server/admin-db';
+import {
+  getSalon,
+  getWebhookToken,
+  listIntegrations,
+  listMessageKeys,
+  listWhatsappTemplates,
+} from '@/server/admin-db';
 import { CredentialForm } from './form';
+import { MessagingForm } from './messaging';
 import { ConsoleShell } from '@/app/shell';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +25,7 @@ const LABEL: Record<string, { name: string; what: string }> = {
   },
   whatsapp: {
     name: 'WhatsApp Business',
-    what: 'Templates are authored in the Message Central dashboard and approved by Meta. Pending approval never blocks activation.',
+    what: 'Sends through the salon’s Message Central account (WhatsApp Now). Its number, approval and templates are set under SMS and WhatsApp below. Pending approval never blocks activation.',
   },
   rcs: {
     name: 'RCS',
@@ -33,6 +40,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (!salon) notFound();
   const rows = await listIntegrations(id);
   const webhookToken = await getWebhookToken(id);
+  const [keys, templates] = await Promise.all([listMessageKeys(), listWhatsappTemplates(id)]);
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
   const webhookUrl = webhookToken
     ? `${supabaseUrl}/functions/v1/rzp-webhook/${webhookToken}`
@@ -94,6 +102,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             blurb={LABEL[row.provider]?.what ?? ''}
           />
         ))}
+
+        <MessagingForm
+          salonId={id}
+          messageCentral={rows.find((r) => r.provider === 'message_central')}
+          whatsapp={rows.find((r) => r.provider === 'whatsapp')}
+          keys={keys}
+          templates={templates}
+        />
       </ConsoleShell>
     </>
   );

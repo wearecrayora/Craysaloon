@@ -64,3 +64,7 @@ scripts/db/node_modules/
 # a placeholder fingerprint fails Android App Link verification silently
 # (join/README.md, GATE-8).
 join/public/.well-known/assetlinks.json
+
+# Vendor API documents, supplied by Crayora - reference only, not ours to publish.
+/Message_Central_MessageNow_SMS_API_Doc.pdf
+/WhatsApp_Now_API_Documentation_V1.pdf
