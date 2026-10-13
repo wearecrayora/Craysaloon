@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,6 +7,7 @@ import '../../app/providers.dart';
 import '../../data/local/branding_store.dart';
 import '../../domain/join/cray_api.dart';
 import '../join/join_controller.dart';
+import 'live_refresh.dart';
 
 /// Branding published in the console reaches the app on its next open (PRD 20).
 ///
@@ -63,13 +66,23 @@ Future<bool> refreshBranding(WidgetRef ref) async {
   return true;
 }
 
-/// Runs [refreshBranding] once the app is up and again whenever it comes back
-/// to the foreground - "next open" on a phone is usually a resume, not a cold
-/// start.
+/// Keeps the app current with the console, without an update or a reinstall:
+///
+/// * on open - the branding;
+/// * on every return to the foreground - the branding AND every server read
+///   the console can change ([refreshServerReads]); "next open" on a phone is
+///   usually a resume, not a cold start;
+/// * every [interval] while the app stays open - the same, so a phone left on
+///   the counter all day still catches a price changed at noon.
 class BrandingRefresh extends ConsumerStatefulWidget {
-  const BrandingRefresh({required this.child, super.key});
+  const BrandingRefresh({
+    required this.child,
+    this.interval = const Duration(minutes: 3),
+    super.key,
+  });
 
   final Widget child;
+  final Duration interval;
 
   @override
   ConsumerState<BrandingRefresh> createState() => _BrandingRefreshState();
@@ -78,30 +91,48 @@ class BrandingRefresh extends ConsumerStatefulWidget {
 class _BrandingRefreshState extends ConsumerState<BrandingRefresh>
     with WidgetsBindingObserver {
   bool _running = false;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _refresh(reads: false));
+    _startTimer();
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _refresh();
+    if (state == AppLifecycleState.resumed) {
+      _refresh(reads: true);
+      _startTimer();
+    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+      // No polling from the background: it costs the customer battery and
+      // data for a screen nobody is looking at.
+      _timer?.cancel();
+      _timer = null;
+    }
   }
 
-  Future<void> _refresh() async {
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(widget.interval, (_) => _refresh(reads: true));
+  }
+
+  Future<void> _refresh({required bool reads}) async {
     // One at a time: a resume during a slow read must not race it.
     if (_running || !mounted) return;
     _running = true;
     try {
+      // Only a signed-in app has salon data to re-read; the join flow does not.
+      if (reads && ref.read(sessionProvider) != null) refreshServerReads(ref);
       await refreshBranding(ref);
     } finally {
       _running = false;

@@ -43,9 +43,10 @@ final historyProvider = FutureProvider<List<PastVisit>>((ref) async {
   return await api?.history() ?? const [];
 });
 
-/// The booking catalogue, as a customer sees it: active only. Read live - a
-/// customer choosing from yesterday's prices is a customer surprised at the
-/// counter.
+/// The booking catalogue, as a customer sees it: active only. Kept current -
+/// re-read on every return to the foreground and every few minutes
+/// (refreshServerReads): a customer choosing from yesterday's prices is a
+/// customer surprised at the counter.
 final bookableServicesProvider = FutureProvider<List<Service>>((ref) async {
   final api = ref.watch(crayApiProvider);
   if (api is! SalonReads) return const [];

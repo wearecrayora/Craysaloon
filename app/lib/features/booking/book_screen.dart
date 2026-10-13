@@ -524,7 +524,9 @@ class _AddOnStep extends ConsumerWidget {
 
 typedef _SlotKey = ({String service, String addOns, String? staff, DateTime day});
 
-final _slotsProvider = FutureProvider.family<List<Slot>, _SlotKey>((ref, key) async {
+// Auto-disposed: read fresh every time the screen asks, so a holiday or a
+// stylist's changed hours set in the console shows the next time anyone looks.
+final _slotsProvider = FutureProvider.autoDispose.family<List<Slot>, _SlotKey>((ref, key) async {
   final api = ref.watch(customerBookingsProvider);
   if (api == null) return const [];
   final slots = await api.slots(
