@@ -35,7 +35,10 @@ session — drift between the documents is how a rule quietly dies.
   on 29 Sep 2026 (ARCHITECTURE §14.1). Deploy the console with `npm run deploy` in `console/`,
   the join site with `npx wrangler deploy` in `join/` - both to the **Crayoratech** Cloudflare
   account (the token in `.env`), never the other account wrangler may be logged in to. The console
-  sits behind **Cloudflare Access** (`docs/runbooks/console-access.md`)
+  sits behind **Cloudflare Access** (`docs/runbooks/console-access.md`). **The Crayoratech account
+  must be on Workers Paid** ($5/month): the free plan's 10 ms of CPU per request cannot render the
+  console - branding, metrics and provision failed with Error 1102 (13 Oct 2026; decided over a
+  move to Vercel, whose free plan forbids commercial use)
 - **Dispatch clock:** the `craysalon-cron` Worker (`cron/`, no URL) calls `dispatch-notifications`
   every minute; deploy with `npx wrangler deploy` in `cron/`, same account. **Never put sending
   back on a GitHub schedule** - it fired every 4-6 hours (0100). GitHub only watches
