@@ -591,17 +591,32 @@ console itself.
 
 ## 13. Definition of done (design)
 
-- [ ] Renders correctly under **three test brandings**: a dark brand, a pale brand, and the neutral
-      default
-- [ ] Renders correctly in **light and dark**, both stamped and system
-- [ ] Renders correctly in `en`, `hi` (Devanagari metrics) and `hi_Latn` (longest strings)
-- [ ] Readable at **200% text scale** with no clipping
-- [ ] Empty, loading, error and **offline** states all implemented
-- [ ] All targets ≥48dp; primary action reachable one-handed
-- [ ] All money uses tabular figures and Indian grouping
-- [ ] No raw hex, no raw font size, no spacing value outside the scale
-- [ ] Reduced-motion path verified; no shimmer
-- [ ] Charts: form chosen before colour, ≤3 series, fixed palette, direct labels, table fallback
+**Audited 13 Oct 2026** - ticked only with the test or gate that proves it.
+
+- [x] Renders correctly under **three test brandings**: a dark brand, a pale brand, and the neutral
+      default - `app/test/screen_sweep_test.dart` (default teal, navy, pale yellow and unbranded,
+      every customer and owner screen, with the contrast guideline; seen to fail on an unreadable
+      pale-brand ink)
+- [x] Renders correctly in **light and dark**, both stamped and system - the sweep renders the
+      published brand's stamped light and dark sets under the phone's own setting; the app has no
+      separate in-app theme switch
+- [x] Renders correctly in `en`, `hi` (Devanagari metrics) and `hi_Latn` (longest strings) -
+      `screen_sweep_test.dart`, `localisation_test.dart`, `scripts/l10n-check.sh`
+- [x] Readable at **200% text scale** with no clipping - `screen_sweep_test.dart`
+- [ ] Empty, loading, error and **offline** states all implemented - asserted for the day view,
+      history, wallet, checkout, catalogue and branding (`day_screen_test`, `customer_test`,
+      `wallet_test`, `checkout_test`, `catalogue_edit_test`, `branding_refresh_test`); **not yet
+      asserted screen by screen for every route**
+- [ ] All targets ≥48dp; primary action reachable one-handed - **48dp is proven** on every screen
+      (`screen_sweep_test.dart`, `androidTapTargetGuideline`); one-handed reach is **not asserted**
+      by any test yet
+- [x] All money uses tabular figures and Indian grouping - `money_test.dart`, `dashboard_test.dart`
+- [x] No raw hex, no raw font size, no spacing value outside the scale - GATE-2, GATE-4b, GATE-4
+      (`scripts/lint-gates.sh`)
+- [x] Reduced-motion path verified; no shimmer - `reduced_motion_test.dart` (with controls),
+      GATE-4c
+- [x] Charts: form chosen before colour, ≤3 series, fixed palette, direct labels, table fallback -
+      `dashboard_test.dart`
 
 ---
 

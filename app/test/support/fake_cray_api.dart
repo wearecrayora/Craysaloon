@@ -95,8 +95,14 @@ class FakeCrayApi implements CrayApi {
 Map<String, Object?> publishedBranding({
   String displayName = 'Studio Nine Salon',
   String primaryLight = '#1f6f5c',
+  String primaryDark = '#3fbf9f',
   String script = 'latin',
   double lineHeightBonus = 0,
+  // The rest of a brand's resolved palette, per mode, as the console's publish
+  // would compute it - so a sweep can wear a dark brand or a pale one
+  // (DESIGN 13: three test brandings), not only the default teal.
+  Map<String, String> lightColors = const {},
+  Map<String, String> darkColors = const {},
 }) {
   // Each mode resolved as the console's publish would: the dark set carries
   // its OWN ink and greys, light on dark. (It used to reuse the light ones,
@@ -133,16 +139,21 @@ Map<String, Object?> publishedBranding({
         },
       };
 
+  Map<String, Object?> wearing(Map<String, Object?> resolved, Map<String, String> colors) => {
+        ...resolved,
+        'color': {...(resolved['color']! as Map<String, Object?>), ...colors},
+      };
+
   return {
     'version': 3,
     'displayName': displayName,
     'brand': {
       'light': {'primary': primaryLight, 'accent': '#eb6834'},
-      'dark': {'primary': '#3fbf9f', 'accent': '#eb6834'},
+      'dark': {'primary': primaryDark, 'accent': '#eb6834'},
     },
     'resolved': {
-      'light': set(primaryLight, '#fcfcfb', '#1a1a19'),
-      'dark': set('#3fbf9f', '#1a1a19', '#ffffff', dark: true),
+      'light': wearing(set(primaryLight, '#fcfcfb', '#1a1a19'), lightColors),
+      'dark': wearing(set(primaryDark, '#1a1a19', '#ffffff', dark: true), darkColors),
     },
   };
 }

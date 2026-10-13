@@ -38,31 +38,84 @@ import 'wallet_test.dart' show FakeWalletApi;
 ///     reports a clipped row as an exception; `takeException` turns it into a
 ///     failure naming the screen, the language and the scale.
 ///   * every screen in light, dark and the neutral (unbranded) default -
-///     targets at least 48dp, every tappable thing labelled, text readable.
-typedef _Variant = ({String name, Locale locale, double scale, bool dark, bool branded});
+///     targets at least 48dp, every tappable thing labelled, text readable -
+///     and under DESIGN 13's three test brandings: the default teal, a DARK
+///     brand (navy) and a PALE one (yellow), each in light and dark.
+typedef _Variant = ({String name, Locale locale, double scale, bool dark, bool branded, String brand});
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({'cray.shortcut_offered': true}));
 
-  final branding = CachedBranding(
-    salonId: '11111111-0000-4000-8000-000000000001',
-    displayName: 'Studio Nine Unisex Family Salon',
-    version: 3,
-    document: publishedBranding(displayName: 'Studio Nine Unisex Family Salon'),
-  );
+  CachedBranding brandingOf(Map<String, Object?> document) => CachedBranding(
+        salonId: '11111111-0000-4000-8000-000000000001',
+        displayName: 'Studio Nine Unisex Family Salon',
+        version: 3,
+        document: document,
+      );
+
+  // Resolved as the console's publish would resolve them: a pale primary
+  // carries dark ink on it and a darkened brandInk for text; a dark primary is
+  // lightened for dark mode. The contrast check below is the proof.
+  final brandings = {
+    'teal': brandingOf(publishedBranding(displayName: 'Studio Nine Unisex Family Salon')),
+    'navy': brandingOf(publishedBranding(
+      displayName: 'Studio Nine Unisex Family Salon',
+      primaryLight: '#1e2a5a',
+      primaryDark: '#8fa4f0',
+      lightColors: const {
+        'onPrimary': '#ffffff',
+        'primaryContainer': '#dde3f7',
+        'onPrimaryContainer': '#121a3a',
+        'brandInk': '#1e2a5a',
+      },
+      darkColors: const {
+        'onPrimary': '#1a1a19',
+        'primaryContainer': '#1d2547',
+        'onPrimaryContainer': '#c9d3fa',
+        'brandInk': '#8fa4f0',
+      },
+    )),
+    'pale': brandingOf(publishedBranding(
+      displayName: 'Studio Nine Unisex Family Salon',
+      primaryLight: '#f2c94c',
+      primaryDark: '#f2c94c',
+      lightColors: const {
+        'onPrimary': '#1a1a19',
+        'primaryContainer': '#fbf0cc',
+        'onPrimaryContainer': '#4a3800',
+        'brandInk': '#6b5200',
+      },
+      darkColors: const {
+        'onPrimary': '#1a1a19',
+        'primaryContainer': '#3d3210',
+        'onPrimaryContainer': '#f7e3a3',
+        'brandInk': '#f2c94c',
+      },
+    )),
+  };
 
   final locales = {'en': kEnglish, 'hi': kHindi, 'hi_Latn': kHinglish};
 
   final List<_Variant> textVariants = [
     for (final MapEntry(key: name, value: locale) in locales.entries)
       for (final scale in [1.0, 2.0])
-        (name: '$name ${scale}x', locale: locale, scale: scale, dark: false, branded: true),
+        (name: '$name ${scale}x', locale: locale, scale: scale, dark: false, branded: true, brand: 'teal'),
   ];
 
   final List<_Variant> lookVariants = [
-    (name: 'light', locale: kEnglish, scale: 1.0, dark: false, branded: true),
-    (name: 'dark', locale: kEnglish, scale: 1.0, dark: true, branded: true),
-    (name: 'neutral', locale: kEnglish, scale: 1.0, dark: false, branded: false),
+    (name: 'light', locale: kEnglish, scale: 1.0, dark: false, branded: true, brand: 'teal'),
+    (name: 'dark', locale: kEnglish, scale: 1.0, dark: true, branded: true, brand: 'teal'),
+    (name: 'neutral', locale: kEnglish, scale: 1.0, dark: false, branded: false, brand: 'teal'),
+    for (final brand in ['navy', 'pale'])
+      for (final dark in [false, true])
+        (
+          name: '$brand brand ${dark ? 'dark' : 'light'}',
+          locale: kEnglish,
+          scale: 1.0,
+          dark: dark,
+          branded: true,
+          brand: brand,
+        ),
   ];
 
   Future<void> sweep(
@@ -87,7 +140,7 @@ void main() {
             sessionProvider.overrideWithValue(
               AppSession(appRole: role, salonId: '11111111-0000-4000-8000-000000000001'),
             ),
-            if (v.branded) initialBrandingProvider.overrideWithValue(branding),
+            if (v.branded) initialBrandingProvider.overrideWithValue(brandings[v.brand]!),
             homeShortcutProvider.overrideWithValue(FakeShortcut(supported: false)),
             salonNotificationsProvider.overrideWithValue(FakeNotifications()),
             ...overrides,
@@ -379,7 +432,8 @@ void main() {
   testWidgets('join flow: 48dp targets, labels and contrast - light, dark', (tester) async {
     final handle = tester.ensureSemantics();
     // The neutral variant IS the join flow's look until a salon is known.
-    await joinSweep(tester, lookVariants.where((v) => v.branded).toList(), accessible);
+    await joinSweep(
+        tester, lookVariants.where((v) => v.branded && v.brand == 'teal').toList(), accessible);
     handle.dispose();
   });
 }

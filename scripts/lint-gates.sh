@@ -44,6 +44,23 @@ if [ -d "$APP" ] && [ -n "$(find "$APP" -name '*.dart' -print -quit 2>/dev/null)
          | grep -vxE '0|4|8|12|16|20|24|32|40|48|64' || true)
   if [ -n "$hits" ]; then note "off-scale values: $(echo "$hits" | tr '\n' ' ')"; fail=1; else note "ok"; fi
 
+  gate GATE-4c "no shimmer skeletons"
+  # DESIGN 7.4 / 13: skeletons do not shimmer - a phone that is already
+  # struggling should not be made to animate a placeholder.
+  hits=$(grep -rniE --include='*.dart' 'shimmer' "$APP" \
+         | grep -vE ':[0-9]+: *(//|\*|/\*)' || true)
+  hits="$hits$(grep -niE '^\s+shimmer' app/pubspec.yaml 2>/dev/null || true)"
+  if [ -n "$hits" ]; then note "$hits"; fail=1; else note "ok"; fi
+
+  gate GATE-4b "no raw font size outside core/theme"
+  # DESIGN 13: "no raw font size". A literal number is a size the type scale
+  # never agreed to; a size computed from something (the monogram's
+  # `size * 0.4`) is proportion, not a new size, and passes.
+  hits=$(grep -rn --include='*.dart' -E 'fontSize: *[0-9]' "$APP" \
+         | grep -v "^$APP/core/theme/" \
+         | grep -vE ':[0-9]+: *(//|\*|/\*)' || true)
+  if [ -n "$hits" ]; then note "$hits"; fail=1; else note "ok"; fi
+
 else
   printf '\n(no Dart sources yet - gates 1-4 wired and will run from M0 onward)\n'
 fi
