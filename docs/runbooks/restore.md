@@ -34,11 +34,18 @@ Check what the current plan includes **before** it is needed.
 1. **Stop writes.** Suspend nothing - put the console in a known state and tell salons the app is
    read-only for the restore window.
 2. Create the project: **Postgres 17**, region **Mumbai (ap-south-1)** - data stays in India.
-3. Restore, from a dump or the dashboard's backup file:
+3. Restore, from a dump or the dashboard's backup file - **without `roles.sql`** and **without the
+   `storage` schema's data**, exactly as `restore-drill.yml` rehearses it:
    ```
-   psql --single-transaction -v ON_ERROR_STOP=1 -f roles.sql -f schema.sql \
-        -c 'SET session_replication_role = replica' -f data.sql -d "$NEW_DB_URL"
+   awk '/^COPY "storage"\./ {skip=1} !skip {print} skip && /^\\\.$/ {skip=0}' data.sql > data.restore.sql
+   psql --single-transaction -v ON_ERROR_STOP=1 -f schema.sql \
+        -c 'SET session_replication_role = replica' -f data.restore.sql -d "$NEW_DB_URL"
    ```
+   Why: every role in `roles.sql` is Supabase's own - a new project already has them, and
+   `ALTER ROLE "supabase_admin"` is refused to `postgres` (the first drill stopped there).
+   Supabase Storage is unused - files live in R2 - and its tables belong to the storage admin
+   (the second drill stopped there). **If `roles.sql` ever holds a role of ours**, the drill
+   fails and says so: create that role before restoring.
 4. **Re-seed the pepper - with the SAME value.** Vault is encrypted per project: the restored
    secrets are unreadable. Without the same pepper every stored phone hash is unmatchable and
    **nobody can ever log in again**. Keep `PHONE_HASH_PEPPER` offline, in two places.

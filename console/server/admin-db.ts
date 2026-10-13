@@ -18,11 +18,18 @@ import postgres from 'postgres';
  * exhaust the direct connection slots within minutes of real use.
  */
 
-declare global {
-  // eslint-disable-next-line no-var
-  var __adminSql: ReturnType<typeof postgres> | undefined;
-}
-
+/**
+ * A connection for THIS call, never shared.
+ *
+ * On Cloudflare Workers a socket belongs to the request that opened it. The
+ * console used to keep one pool on globalThis (a Vercel habit): the first
+ * request in a fresh isolate worked, and every later one that touched the
+ * database waited on a socket it could not use - the runtime cancelled it as
+ * hung and the admin saw Error 1101 (found 13 Oct 2026, the first time anyone
+ * signed in after the move to Cloudflare). So each call opens its own
+ * single-connection client against the TRANSACTION pooler, which is built for
+ * exactly this, and lets it close on idle.
+ */
 function client() {
   const url = process.env.ADMIN_DATABASE_URL;
   if (!url) {
@@ -32,21 +39,16 @@ function client() {
     );
   }
 
-  // Reused across hot reloads in development; in production each serverless
-  // instance gets its own small pool.
-  if (!globalThis.__adminSql) {
-    globalThis.__adminSql = postgres(url, {
-      max: 3,
-      idle_timeout: 20,
-      connect_timeout: 15,
-      // The transaction pooler does not support prepared statements.
-      prepare: false,
-      onnotice: () => {},
-      // The URL carries a password. Never let it reach a log.
-      debug: false,
-    });
-  }
-  return globalThis.__adminSql;
+  return postgres(url, {
+    max: 1,
+    idle_timeout: 5,
+    connect_timeout: 15,
+    // The transaction pooler does not support prepared statements.
+    prepare: false,
+    onnotice: () => {},
+    // The URL carries a password. Never let it reach a log.
+    debug: false,
+  });
 }
 
 /**

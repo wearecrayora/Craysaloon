@@ -85,22 +85,39 @@ jobs:
           sed -i 's/^major_version = .*/major_version = 17/' supabase/config.toml
           supabase start -x studio,imgproxy,edge-runtime,logflare,vector,postgres-meta,supavisor
 
-      # Roles first, as the stack's SUPERUSER. The role dump carries Supabase's
-      # own settings for its reserved roles (`ALTER ROLE "supabase_admin" ...`),
-      # and supautils refuses those to `postgres` - the first drill, 13 Oct 2026,
-      # stopped right there. This project defines no roles of its own; every row
-      # in roles.sql is the platform's, so applying it as supabase_admin restores
-      # exactly what the source had.
+      # Exactly what docs/runbooks/restore.md does on a NEW HOSTED project, where
+      # nobody can connect as a superuser - so the drill must not either.
+      #
+      #   * roles.sql is NOT applied. Every role in it is Supabase's own (this
+      #     project defines none), every new project already has them, and
+      #     supautils refuses `ALTER ROLE "supabase_admin"` to postgres - the first
+      #     drill, 13 Oct 2026, stopped there. The guard below fails the drill the
+      #     day a role of OUR own appears, because then it would have to be restored.
+      #   * The `storage` schema's data is skipped: Supabase Storage is unused
+      #     (files live in R2; 0 buckets, 0 objects) and its tables belong to the
+      #     storage admin - the second drill stopped at storage.buckets_vectors.
       - name: Restore
         working-directory: ${{ runner.temp }}
         run: |
-          psql --single-transaction --variable ON_ERROR_STOP=1 \
-            --file roles.sql \
-            --dbname "postgresql://supabase_admin:postgres@127.0.0.1:54322/postgres"
+          ours=$(grep -oE 'CREATE ROLE "?[a-z_0-9]+' roles.sql | awk '{print $3}' | tr -d '"' \
+                 | grep -vxE 'anon|authenticated|authenticator|dashboard_user|pgbouncer|postgres|service_role|supabase_[a-z_]+' || true)
+          if [ -n "$ours" ]; then
+            echo "::error::roles.sql defines roles of our own ($ours) - the restore must create them now."
+            exit 1
+          fi
+          awk '/^COPY "storage"\./ {skip=1} !skip {print} skip && /^\\\.$/ {skip=0}' data.sql > data.restore.sql
+          # Only storage may go: every other table's COPY must still be there.
+          want=$(grep -c '^COPY ' data.sql); storage=$(grep -c '^COPY "storage"\.' data.sql || true)
+          kept=$(grep -c '^COPY ' data.restore.sql)
+          echo "COPY blocks: $want in the dump, $storage storage skipped, $kept kept"
+          if [ "$kept" -ne "$((want - storage))" ]; then
+            echo "::error::the storage filter dropped a table that is not storage's"
+            exit 1
+          fi
           psql --single-transaction --variable ON_ERROR_STOP=1 \
             --file schema.sql \
             --command 'SET session_replication_role = replica' \
-            --file data.sql \
+            --file data.restore.sql \
             --dbname "$TARGET_DB_URL"
 
       # The step a real restore cannot skip (docs/runbooks/restore.md, step 4).
@@ -129,5 +146,5 @@ jobs:
         if: always()
         working-directory: ${{ runner.temp }}
         run: |
-          rm -f roles.sql schema.sql data.sql restore-snapshot.json
+          rm -f roles.sql schema.sql data.sql data.restore.sql restore-snapshot.json
           (cd empty && supabase stop --no-backup) || true
