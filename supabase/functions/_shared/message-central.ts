@@ -16,8 +16,13 @@
 
 export type McCreds = { customerId: string; authToken: string };
 
-const BASE = (Deno.env.get('MESSAGE_CENTRAL_BASE_URL') ?? 'https://cpaas.messagecentral.com')
-  .replace(/\/+$/, '');
+// Read through globalThis so the pure parts of this file load under Node's test
+// runner too (message-central.test.ts), where there is no Deno.
+const BASE = (
+  ((globalThis as { Deno?: { env: { get(k: string): string | undefined } } }).Deno?.env.get(
+    'MESSAGE_CENTRAL_BASE_URL',
+  )) ?? 'https://cpaas.messagecentral.com'
+).replace(/\/+$/, '');
 
 // Six digits, not VerifyNow's default of four. A four-digit code is 10,000
 // guesses; with five attempts per challenge that is a 1-in-2,000 chance of
@@ -54,14 +59,24 @@ export type SendResult =
   | { ok: true; verificationId: string; timeoutSeconds: number }
   | { ok: false; reason: string };
 
-export async function mcSend(creds: McCreds, mobile: string, countryCode = '91'): Promise<SendResult> {
-  const q = new URLSearchParams({
+/**
+ * The OTP send, as VerifyNow takes it. Note what is NOT here: no message, no
+ * template, no sender, no brand. VerifyNow generates the code AND its wording,
+ * and that wording cannot be changed (CLAUDE.md rule 16) - so nothing in this
+ * product composes, brands or validates it. Pinned by message-central.test.ts.
+ */
+export function otpSendQuery(customerId: string, mobile: string, countryCode = '91'): URLSearchParams {
+  return new URLSearchParams({
     countryCode,
-    customerId: creds.customerId,
+    customerId,
     flowType: 'SMS',
     mobileNumber: mobile,
     otpLength: String(OTP_LENGTH),
   });
+}
+
+export async function mcSend(creds: McCreds, mobile: string, countryCode = '91'): Promise<SendResult> {
+  const q = otpSendQuery(creds.customerId, mobile, countryCode);
 
   try {
     const { status, body } = await call(`${BASE}/verification/v3/send?${q}`, {

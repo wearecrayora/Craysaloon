@@ -7,7 +7,7 @@
 -- FOR EACH ROW trigger never fired and the probe proved nothing. A statement
 -- that succeeds against zero rows is not evidence.
 
-select plan(73);
+select plan(74);
 
 select set_config('app.phone_hash_pepper', 'money-test-pepper', true);
 
@@ -200,6 +200,18 @@ select is(
 -- ---------------------------------------------------------------------------
 -- THE LEDGER IN MOTION (0048). Everything above is structure; this is behaviour.
 -- ---------------------------------------------------------------------------
+
+-- PRD 20: "no refund-to-bank and no cash-out path exists anywhere". Wallet
+-- credit leaves only as service at the issuing salon (RULES 2, the closed-loop
+-- position): a function that so much as NAMES a refund, cash-out, withdrawal or
+-- payout fails this on the day it is written, before anyone wires it up.
+select is_empty(
+  $q$select n.nspname || '.' || p.proname
+       from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname in ('public', 'app', 'app_admin')
+        and p.proname ~* 'refund|cash_?out|withdraw|payout|to_bank'$q$,
+  'no function refunds, cashes out or withdraws wallet credit - it does not exist, by design (RULES 2)'
+);
 
 -- Only ONE function may write a ledger row, and only the documented callers may
 -- call it. Asserted from the catalogue, so a sixth caller fails on the day it is

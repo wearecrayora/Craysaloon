@@ -1385,76 +1385,119 @@ wants · who marks services complete · GST registered? · preferred languages �
 
 ## 20. Release test checklist
 
+**Audited 13 Oct 2026.** A box is ticked only where a test that runs in CI proves it, and the
+evidence is named beside it. A box left open says why - most need a person, not a test.
+
 **Isolation & binding**
 
-- [ ] Cross-tenant isolation passes (automated, catalogue-driven)
-- [ ] A phone bound to Salon A cannot bind to Salon B
-- [ ] No customer-facing salon-switch or salon-add path exists anywhere
-- [ ] The "already registered" message never names the other salon
-- [ ] Super-admin transfer moves the binding, leaves wallet and history with the old salon, and
-      records the acknowledged balance
+- [x] Cross-tenant isolation passes (automated, catalogue-driven) - `rls/leak_test.sql`, with its
+      negative control
+- [x] A phone bound to Salon A cannot bind to Salon B - `rls/binding_test.sql`,
+      `rls/bind_flow_test.sql`
+- [x] No customer-facing salon-switch or salon-add path exists anywhere - `rls/binding_test.sql`
+      (catalogue: no unbind, transfer or switch function in `public`)
+- [x] The "already registered" message never names the other salon - `rls/bind_flow_test.sql`,
+      `app/test/join_flow_test.dart`
+- [x] Super-admin transfer moves the binding, leaves wallet and history with the old salon, and
+      records the acknowledged balance - `rls/bind_flow_test.sql`
 
 **Money**
 
-- [ ] **No wallet-adjustment control exists for owner or manager, and no endpoint accepts one**
-- [ ] Bonus amount, bonus expiry, "paid credit never expires", "this salon only" and "no cash
-      withdrawal" are **all** shown on the Add Money screen, before payment
-- [ ] **No setting, column or code path can expire paid credit**
-- [ ] A top-up produces a receipt, not a tax invoice; GST appears on the service invoice
-- [ ] Suspending and purging a salon offers an export, requires outstanding credit to be settled,
-      purges personal data, and **retains anonymised financial records**
-- [ ] Concurrent wallet debits cannot overdraw
-- [ ] Bonus credit is spent before paid credit
-- [ ] Expiry posts a ledger entry; owner expiry changes do not alter credit already issued
-- [ ] No refund-to-bank and no cash-out path exists anywhere
-- [ ] Failed payment handled; cancelled service returns value into the wallet
-- [ ] Dashboard totals match completed transactions
+- [x] **No wallet-adjustment control exists for owner or manager, and no endpoint accepts one** -
+      `money/ledger_test.sql` (one write path, five callers), `metrics/dashboard_test.sql`
+- [x] Bonus amount, bonus expiry, "paid credit never expires", "this salon only" and "no cash
+      withdrawal" are **all** shown on the Add Money screen, before payment -
+      `app/test/wallet_test.dart`
+- [x] **No setting, column or code path can expire paid credit** - `money/bonus_expiry_test.sql`,
+      `money/ledger_test.sql`
+- [x] A top-up produces a receipt, not a tax invoice; GST appears on the service invoice -
+      `money/documents_test.sql`
+- [x] Suspending and purging a salon offers an export, requires outstanding credit to be settled,
+      purges personal data, and **retains anonymised financial records** -
+      `privacy/offboarding_test.sql`, `billing/billing_test.sql`
+- [x] Concurrent wallet debits cannot overdraw - `scripts/db/concurrency-test.mjs` (separate
+      connections, in CI, with a negative control that removes the lock)
+- [x] Bonus credit is spent before paid credit - `money/ledger_test.sql`
+- [x] Expiry posts a ledger entry; owner expiry changes do not alter credit already issued -
+      `money/bonus_expiry_test.sql`, `money/ledger_test.sql`
+- [x] No refund-to-bank and no cash-out path exists anywhere - `money/ledger_test.sql` (catalogue:
+      no function names a refund, cash-out, withdrawal or payout)
+- [x] Failed payment handled; cancelled service returns value into the wallet -
+      `money/payments_test.sql` (an uncaptured payment credits nothing), `app/test/wallet_test.dart`
+      (failed and cancelled sheets say nothing was charged). A paid service cannot be cancelled:
+      payment follows mark-complete and a completed visit cannot be cancelled
+      (`booking/booking_test.sql`); making a customer whole afterwards is Crayora's audited
+      `wallet_correct`, which issues paid credit that never expires
+- [x] Dashboard totals match completed transactions - `metrics/dashboard_test.sql`
 
 **Booking & loop**
 
-- [ ] Duplicate booking / full slot rejected by a database constraint
-- [ ] Add-ons never pre-selected
-- [ ] Self-referral rejected; cancelled referral releases nothing
-- [ ] Reminder opt-out honoured; exactly one reminder per cycle
-- [ ] Offline mark-complete syncs; rejected actions surface in "Needs attention"
-- [ ] Owner logs into the app with the registered number and runs the daily workflow unaided
+- [x] Duplicate booking / full slot rejected by a database constraint - `booking/booking_test.sql`
+      (exclusion constraint; `create_booking` maps the violation to `slot_taken`)
+- [x] Add-ons never pre-selected - `app/test/customer_test.dart`
+- [x] Self-referral rejected; cancelled referral releases nothing - `growth/referral_test.sql`
+- [x] Reminder opt-out honoured; exactly one reminder per cycle - `messaging/reminder_test.sql`,
+      with the dropped-index negative control
+- [x] Offline mark-complete syncs; rejected actions surface in "Needs attention" -
+      `app/test/outbox_test.dart`, `booking/booking_test.sql`
+- [ ] Owner logs into the app with the registered number and runs the daily workflow unaided -
+      **needs a person**: the pilot owner, observed (PHASES §10)
 
 **Provisioning & branding**
 
-- [ ] A non-engineer provisions a salon in the console with no SQL
-- [ ] Switching a salon on is a deliberate manual action
-- [ ] Branding published in the console reaches the app on next open
-- [ ] Contrast check blocks an unreadable palette at publish time
+- [ ] A non-engineer provisions a salon in the console with no SQL - **needs a person**; the
+      console path exists end to end (`admin/admin_plane_test.sql`)
+- [x] Switching a salon on is a deliberate manual action - `admin/admin_plane_test.sql`,
+      `billing/billing_test.sql`
+- [x] Branding published in the console reaches the app on next open -
+      `app/test/branding_refresh_test.dart`, `admin/admin_plane_test.sql` (versioned publish)
+- [x] Contrast check blocks an unreadable palette at publish time - `rls/write_scope_test.sql`,
+      `packages/design-tokens` tests
 
 **Messaging**
 
-- [ ] Push acknowledged; WhatsApp only after an unacked window or explicit opt-in
-- [ ] Messages send from **the salon's own** WhatsApp/Message Central account and carry the
-      salon's name
-- [ ] A salon with unapproved templates still works — the ladder skips WhatsApp cleanly
-- [ ] The app is branded as the salon **before** the phone-number screen
-- [ ] The first OTP sends from **the salon's** account; an OTP request with no salon context is
-      refused. *(There is no hook endpoint: since ADR-36 Message Central sends and verifies the
-      code and Supabase issues the session afterwards - the old "rejects unsigned requests" item
-      has nothing left to test.)*
-- [ ] **No code attempts to template, brand or validate the OTP message** — it is Message
-      Central's and fixed
-- [ ] The screen shown while the customer waits for the OTP is fully salon-branded
-- [ ] Every **push** notification carries the salon's name, logo and colour
+- [x] Push acknowledged; WhatsApp only after an unacked window or explicit opt-in -
+      `messaging/reminder_test.sql` (Automation K), with the ignore-the-ack negative control
+- [x] Messages send from **the salon's own** WhatsApp/Message Central account and carry the
+      salon's name - `messaging/reminder_test.sql`, `_shared/message_now.test.ts` (0102)
+- [x] A salon with unapproved templates still works — the ladder skips WhatsApp cleanly -
+      `messaging/reminder_test.sql`
+- [x] The app is branded as the salon **before** the phone-number screen -
+      `app/test/join_flow_test.dart`
+- [x] The first OTP sends from **the salon's** account; an OTP request with no salon context is
+      refused - `identity/otp_test.sql`, `identity/join_flow_test.sql`. *(There is no hook
+      endpoint: since ADR-36 Message Central sends and verifies the code and Supabase issues the
+      session afterwards - the old "rejects unsigned requests" item has nothing left to test.)*
+- [x] **No code attempts to template, brand or validate the OTP message** — it is Message
+      Central's and fixed - `_shared/message-central.test.ts` (the request carries exactly
+      VerifyNow's fields)
+- [x] The screen shown while the customer waits for the OTP is fully salon-branded -
+      `app/test/join_flow_test.dart`, `app/test/screen_sweep_test.dart`
+- [x] Every **push** notification carries the salon's name, logo and colour -
+      `_shared/push_message.test.ts`, `messaging/reminder_test.sql`
 - [ ] Each salon has a WhatsApp template registered per key and locale it needs, with matching
-      variable counts
-- [ ] OTP is rate-limited per phone and per caller address (no per-salon daily cap, by decision
-      of 13 Oct 2026)
-- [ ] A broken salon Message Central account falls back to the platform and raises an alert
+      variable counts - **per-salon setup**, done by Crayora in the console (0102); the console
+      refuses a variable the message does not have, and a message with no template goes by SMS
+- [x] OTP is rate-limited per phone and per caller address (no per-salon daily cap, by decision
+      of 13 Oct 2026) - `identity/otp_test.sql`
+- [x] A broken salon Message Central account falls back to the platform and raises an alert -
+      `identity/otp_test.sql`, `identity/messaging_access_test.sql`
 
 **Security & compliance**
 
-- [ ] No secret keys in the APK or the console client bundle
-- [ ] Per-salon secrets unreadable after save
-- [ ] Per-salon WhatsApp templates authored in Message Central and Meta-approved before that salon's WhatsApp rung goes live
-- [ ] DPDP export and anonymise work; anonymise preserves ledger and binding integrity
-- [ ] Every super-admin access is audit-logged
-- [ ] Backup restore rehearsed
+- [x] No secret keys in the APK or the console client bundle - CI scans the built console bundle
+      (`scripts/secret-scan.sh`); `scripts/build-apk.sh` refuses to finish a release APK or bundle
+      that `scripts/scan-artifact.sh` flags. *The first release build is still owed (M13).*
+- [x] Per-salon secrets unreadable after save - `admin/admin_plane_test.sql`, GATE-7
+- [ ] Per-salon WhatsApp templates authored in Message Central and Meta-approved before that
+      salon's WhatsApp rung goes live - **per-salon setup**; enforced: the rung does not exist until
+      Crayora marks the salon approved and sets its number (0102)
+- [x] DPDP export and anonymise work; anonymise preserves ledger and binding integrity -
+      `privacy/data_rights_test.sql`, `privacy/offboarding_test.sql`
+- [x] Every super-admin access is audit-logged - `admin/admin_plane_test.sql` (catalogue: every
+      mutating `app_admin` function audits, with a negative control), `rls/bind_flow_test.sql`
+- [ ] Backup restore rehearsed - **owed**: `restore-drill.yml` is built but has never run; it
+      needs the `RESTORE_DRILL_DB_URL` and `RESTORE_DRILL_PEPPER` repository secrets
 
 ---
 
