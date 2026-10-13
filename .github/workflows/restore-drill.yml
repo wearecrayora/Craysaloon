@@ -85,11 +85,19 @@ jobs:
           sed -i 's/^major_version = .*/major_version = 17/' supabase/config.toml
           supabase start -x studio,imgproxy,edge-runtime,logflare,vector,postgres-meta,supavisor
 
+      # Roles first, as the stack's SUPERUSER. The role dump carries Supabase's
+      # own settings for its reserved roles (`ALTER ROLE "supabase_admin" ...`),
+      # and supautils refuses those to `postgres` - the first drill, 13 Oct 2026,
+      # stopped right there. This project defines no roles of its own; every row
+      # in roles.sql is the platform's, so applying it as supabase_admin restores
+      # exactly what the source had.
       - name: Restore
         working-directory: ${{ runner.temp }}
         run: |
           psql --single-transaction --variable ON_ERROR_STOP=1 \
             --file roles.sql \
+            --dbname "postgresql://supabase_admin:postgres@127.0.0.1:54322/postgres"
+          psql --single-transaction --variable ON_ERROR_STOP=1 \
             --file schema.sql \
             --command 'SET session_replication_role = replica' \
             --file data.sql \
