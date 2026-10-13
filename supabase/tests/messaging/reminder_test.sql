@@ -13,7 +13,7 @@
 --   * **a salon with no WhatsApp templates and no RCS agent still works
 --     completely** - the rungs it cannot use are skipped, never errored on
 
-select plan(51);
+select plan(52);
 
 insert into auth.users (id) values
   ('eeeeeeee-aaaa-4000-8000-00000000000a'),
@@ -490,6 +490,21 @@ select results_eq(
       where notification_id = 'eeeeeeee-0c02-4000-8000-000000000002'$q$,
   $q$values ('push', null::text)$q$,
   'and a push row never carries the customer''s phone number - a device is not a number');
+
+-- 0103: a customer with no usable number must cost THAT message, not the
+-- salon's whole batch - canonical_phone raises, and it used to take every
+-- queued message down with it.
+update public.customers set phone = 'not a number' where id = 'eeeeeeee-1111-4000-8000-00000000000c';
+insert into public.notifications (id, salon_id, customer_id, purpose, category, template_key, locale, params)
+values ('eeeeeeee-0c02-4000-8000-000000000003', 'eeeeeeee-0000-4000-8000-000000000001',
+        'eeeeeeee-1111-4000-8000-00000000000c', 'booking_confirmed', 'transactional',
+        'booking_confirmed', 'en', '{"when": "Sat 4 pm"}');
+
+select results_eq(
+  $q$select channel::text, phone from app.claim_notification_batch('eeeeeeee-0000-4000-8000-000000000001')
+      where notification_id = 'eeeeeeee-0c02-4000-8000-000000000003'$q$,
+  $q$values ('whatsapp', null::text)$q$,
+  'a malformed number makes that row number-less - the batch still comes back (0103)');
 
 -- ---------------------------------------------------------------------------
 -- The sweep: one bad salon must not stall every other salon
