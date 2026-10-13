@@ -114,11 +114,17 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
             Text(l10n.walkInCustomer, style: Theme.of(context).textTheme.labelMedium),
             DropdownButtonFormField<CustomerSummary>(
               initialValue: _customer,
+              // Fill the field and cut long names: sized to its widest item, a
+              // long stylist or service name overflowed a 360dp phone (the sweep).
+              isExpanded: true,
               items: [
                 for (final c in customers)
                   DropdownMenuItem(
                     value: c,
-                    child: Text(c.name?.trim().isNotEmpty == true ? c.name! : (c.phone ?? '')),
+                    child: Text(
+                      c.name?.trim().isNotEmpty == true ? c.name! : (c.phone ?? ''),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
               ],
               onChanged: (c) => setState(() => _customer = c),
@@ -128,11 +134,17 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
             Text(l10n.walkInService, style: Theme.of(context).textTheme.labelMedium),
             DropdownButtonFormField<Service>(
               initialValue: _service,
+              // Fill the field and cut long names: sized to its widest item, a
+              // long stylist or service name overflowed a 360dp phone (the sweep).
+              isExpanded: true,
               items: [
                 for (final s in services.where((s) => s.active))
                   DropdownMenuItem(
                     value: s,
-                    child: Text('${s.name} · ${rupees(s.pricePaise)}'),
+                    child: Text(
+                      '${s.name} · ${rupees(s.pricePaise)}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
               ],
               onChanged: (s) {
@@ -174,10 +186,16 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
             Text(l10n.walkInStaff, style: Theme.of(context).textTheme.labelMedium),
             DropdownButtonFormField<StaffMember?>(
               initialValue: _staff,
+              // Fill the field and cut long names: sized to its widest item, a
+              // long stylist or service name overflowed a 360dp phone (the sweep).
+              isExpanded: true,
               items: [
                 DropdownMenuItem<StaffMember?>(value: null, child: Text(l10n.walkInAnyStaff)),
                 for (final s in staff.where((s) => s.active))
-                  DropdownMenuItem<StaffMember?>(value: s, child: Text(s.name)),
+                  DropdownMenuItem<StaffMember?>(
+                    value: s,
+                    child: Text(s.name, overflow: TextOverflow.ellipsis),
+                  ),
               ],
               onChanged: (s) {
                 setState(() => _staff = s);

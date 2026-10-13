@@ -9,6 +9,7 @@ import 'package:craysalon/domain/customer/customer.dart';
 import 'package:craysalon/domain/join/cray_api.dart';
 import 'package:craysalon/domain/records/records.dart';
 import 'package:craysalon/domain/salon/salon_account.dart';
+import 'package:craysalon/features/join/deep_link_listener.dart';
 import 'package:craysalon/features/join/join_controller.dart';
 import 'package:craysalon/features/owner/hours_screens.dart';
 import 'package:craysalon/features/salon/salon_account.dart';
@@ -180,6 +181,8 @@ void main() {
     '/documents',
     '/booking/b-9',
     '/your-data',
+    '/wallet/add',
+    '/refer',
   ];
 
   List<Override> owner(CacheDb cache) {
@@ -254,6 +257,12 @@ void main() {
     '/more/profile',
     '/staff',
     '/staff/st-1/hours',
+    '/customers',
+    '/catalogue/services',
+    '/catalogue/addons',
+    '/day/walk-in',
+    '/attention',
+    '/dashboard',
   ];
 
   testWidgets('customer screens: no clipping in any language, at 200% text', (tester) async {
@@ -307,6 +316,70 @@ void main() {
       variants: lookVariants,
       check: accessible,
     );
+    handle.dispose();
+  });
+
+  /// The join flow - the first thing every customer sees - through its four
+  /// steps (code, confirm, phone, one-time code), each under every variant.
+  /// Driven through the controller, so it runs the same in every language.
+  Future<void> joinSweep(
+    WidgetTester tester,
+    List<_Variant> variants,
+    Future<void> Function(WidgetTester tester, String where) check,
+  ) async {
+    tester.view.physicalSize = const Size(360, 740);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    for (final v in variants) {
+      await tester.pumpWidget(
+        ProviderScope(
+          key: ValueKey('join ${v.name}'),
+          overrides: [
+            crayApiProvider.overrideWithValue(
+              FakeCrayApi(salon: fakeSalon(displayName: 'Studio Nine Unisex Family Salon')),
+            ),
+            deviceKeyProvider.overrideWithValue('sweep-device'),
+            appLinkStreamProvider.overrideWithValue(const Stream.empty()),
+          ],
+          child: MediaQuery(
+            data: MediaQueryData(
+              size: const Size(360, 740),
+              textScaler: TextScaler.linear(v.scale),
+              platformBrightness: v.dark ? Brightness.dark : Brightness.light,
+            ),
+            child: const CraySalonApp(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final container = ProviderScope.containerOf(tester.element(find.byType(CraySalonApp)));
+      container.read(localeProvider.notifier).select(v.locale);
+      await tester.pumpAndSettle();
+      final join = container.read(joinControllerProvider.notifier);
+
+      await check(tester, 'join: code (${v.name})');
+      await join.submitCode('CRAY-22335S');
+      await tester.pumpAndSettle();
+      await check(tester, 'join: confirm (${v.name})');
+      join.confirmSalon();
+      await tester.pumpAndSettle();
+      await check(tester, 'join: phone and notice (${v.name})');
+      await join.submitPhone('9812344821');
+      await tester.pumpAndSettle();
+      await check(tester, 'join: one-time code (${v.name})');
+    }
+  }
+
+  testWidgets('join flow: no clipping in any language, at 200% text', (tester) async {
+    await joinSweep(tester, textVariants, noOverflow);
+  });
+
+  testWidgets('join flow: 48dp targets, labels and contrast - light, dark', (tester) async {
+    final handle = tester.ensureSemantics();
+    // The neutral variant IS the join flow's look until a salon is known.
+    await joinSweep(tester, lookVariants.where((v) => v.branded).toList(), accessible);
     handle.dispose();
   });
 }
