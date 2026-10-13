@@ -38,9 +38,17 @@ Check what the current plan includes **before** it is needed.
    `storage` schema's data**, exactly as `restore-drill.yml` rehearses it:
    ```
    awk '/^COPY "storage"\./ {skip=1} !skip {print} skip && /^\\\.$/ {skip=0}' data.sql > data.restore.sql
-   psql --single-transaction -v ON_ERROR_STOP=1 -f schema.sql \
-        -c 'SET session_replication_role = replica' -f data.restore.sql -d "$NEW_DB_URL"
+   psql --single-transaction -v ON_ERROR_STOP=1 \
+        -f scripts/ops/restore-before-schema.sql -f schema.sql \
+        -c 'SET session_replication_role = replica' -f data.restore.sql \
+        -c 'SET session_replication_role = origin' -f scripts/ops/restore-after-data.sql \
+        -d "$NEW_DB_URL"
    ```
+   **Never skip the two `scripts/ops/restore-*.sql` files.** A new project grants anon and
+   authenticated on everything postgres creates; the dump records only the grants objects have,
+   not the ones our migrations revoked - so without them every row comes back right and the
+   security model does not (anon reading `public`, tenants calling the OTP and credential
+   functions). The fourth drill found it, 13 Oct 2026.
    Why: every role in `roles.sql` is Supabase's own - a new project already has them, and
    `ALTER ROLE "supabase_admin"` is refused to `postgres` (the first drill stopped there).
    Supabase Storage is unused - files live in R2 - and its tables belong to the storage admin

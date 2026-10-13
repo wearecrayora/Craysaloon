@@ -114,10 +114,15 @@ jobs:
             echo "::error::the storage filter dropped a table that is not storage's"
             exit 1
           fi
+          # Default privileges OFF around the schema, or every restored object
+          # comes back wider than the source (the fourth drill's finding).
           psql --single-transaction --variable ON_ERROR_STOP=1 \
+            --file "$GITHUB_WORKSPACE/scripts/ops/restore-before-schema.sql" \
             --file schema.sql \
             --command 'SET session_replication_role = replica' \
             --file data.restore.sql \
+            --command 'SET session_replication_role = origin' \
+            --file "$GITHUB_WORKSPACE/scripts/ops/restore-after-data.sql" \
             --dbname "$TARGET_DB_URL"
 
       # The step a real restore cannot skip (docs/runbooks/restore.md, step 4).
