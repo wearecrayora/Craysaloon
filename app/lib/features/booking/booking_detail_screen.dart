@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/ui/load_failed.dart';
 import '../../core/format/money.dart';
 import '../../core/theme/cray_glass.dart';
 import '../../core/ui/salon_mark.dart';
@@ -24,7 +25,8 @@ class BookingDetailScreen extends ConsumerStatefulWidget {
   final String id;
 
   @override
-  ConsumerState<BookingDetailScreen> createState() => _BookingDetailScreenState();
+  ConsumerState<BookingDetailScreen> createState() =>
+      _BookingDetailScreenState();
 }
 
 class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
@@ -43,9 +45,15 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(l10n.bookingCancelAsk, style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                l10n.bookingCancelAsk,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: 8),
-              Text(l10n.bookingCancelBody, style: Theme.of(context).textTheme.bodyMedium),
+              Text(
+                l10n.bookingCancelBody,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               const SizedBox(height: 20),
               // Keeping it is the filled, default-looking choice.
               FilledButton(
@@ -58,7 +66,10 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
               // stay in the readable ink, so it is never colour alone.
               OutlinedButton.icon(
                 onPressed: () => Navigator.of(context).pop(true),
-                icon: Icon(Icons.event_busy_outlined, color: Theme.of(context).colorScheme.error),
+                icon: Icon(
+                  Icons.event_busy_outlined,
+                  color: Theme.of(context).colorScheme.error,
+                ),
                 label: Text(l10n.bookingCancel),
               ),
             ],
@@ -74,7 +85,10 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
     _actionId ??= Outbox.newActionId();
     setState(() => _busy = true);
     try {
-      await api.cancelBooking(clientActionId: _actionId!, bookingId: booking.id);
+      await api.cancelBooking(
+        clientActionId: _actionId!,
+        bookingId: booking.id,
+      );
       ref.invalidate(bookingDetailProvider(widget.id));
       ref.invalidate(upcomingProvider);
       messenger.showSnackBar(SnackBar(content: Text(l10n.bookingCancelled)));
@@ -96,51 +110,61 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       appBar: AppBar(title: const SalonTitle()),
       body: switch (booking) {
         AsyncData(:final value?) => ListView(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-            children: [
-              Text(l10n.bookingTitle, style: text.headlineMedium),
-              const SizedBox(height: 12),
-              Align(alignment: Alignment.centerLeft, child: _StatusChip(value.status)),
-              const SizedBox(height: 8),
-              DetailRow(
-                label: l10n.bookDateTime,
-                value: '${ml.formatShortMonthDay(value.startsAt)} · '
-                    '${ml.formatTimeOfDay(TimeOfDay.fromDateTime(value.startsAt))}',
-              ),
-              DetailRow(label: l10n.bookService, value: value.serviceNames),
-              if (value.staffName != null)
-                DetailRow(label: l10n.bookStylist, value: value.staffName!),
-              DetailRow(label: l10n.bookTakesAbout, value: l10n.bookMinutes(value.minutes)),
-              DetailRow(label: l10n.bookTotal, value: rupees(value.totalPaise), emphasis: true),
-              const SizedBox(height: 20),
-              Text(l10n.bookPayAfter, style: text.bodyMedium),
-              if (value.cancellable) ...[
-                const SizedBox(height: 24),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    style: TextButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.onSurface,
-                      minimumSize: const Size(48, 48),
-                    ),
-                    onPressed: _busy ? null : () => _cancel(value),
-                    icon: Icon(
-                      Icons.event_busy_outlined,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                    label: Text(l10n.bookingCancel),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        AsyncData() => Center(child: Text(l10n.bookingNotFound, style: text.bodyLarge)),
-        AsyncError() => Center(
-            child: TextButton(
-              onPressed: () => ref.invalidate(bookingDetailProvider(widget.id)),
-              child: Text(l10n.retry),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          children: [
+            Text(l10n.bookingTitle, style: text.headlineMedium),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: _StatusChip(value.status),
             ),
-          ),
+            const SizedBox(height: 8),
+            DetailRow(
+              label: l10n.bookDateTime,
+              value:
+                  '${ml.formatShortMonthDay(value.startsAt)} · '
+                  '${ml.formatTimeOfDay(TimeOfDay.fromDateTime(value.startsAt))}',
+            ),
+            DetailRow(label: l10n.bookService, value: value.serviceNames),
+            if (value.staffName != null)
+              DetailRow(label: l10n.bookStylist, value: value.staffName!),
+            DetailRow(
+              label: l10n.bookTakesAbout,
+              value: l10n.bookMinutes(value.minutes),
+            ),
+            DetailRow(
+              label: l10n.bookTotal,
+              value: rupees(value.totalPaise),
+              emphasis: true,
+            ),
+            const SizedBox(height: 20),
+            Text(l10n.bookPayAfter, style: text.bodyMedium),
+            if (value.cancellable) ...[
+              const SizedBox(height: 24),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    minimumSize: const Size(48, 48),
+                  ),
+                  onPressed: _busy ? null : () => _cancel(value),
+                  icon: Icon(
+                    Icons.event_busy_outlined,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  label: Text(l10n.bookingCancel),
+                ),
+              ),
+            ],
+          ],
+        ),
+        AsyncData() => Center(
+          child: Text(l10n.bookingNotFound, style: text.bodyLarge),
+        ),
+        AsyncError() => LoadFailed(
+          onRetry: () => ref.invalidate(bookingDetailProvider(widget.id)),
+        ),
         _ => const Center(child: CircularProgressIndicator()),
       },
     );
@@ -160,8 +184,16 @@ class _StatusChip extends StatelessWidget {
     final g = CrayGlass.of(context);
     final scheme = Theme.of(context).colorScheme;
     final (icon, label, color) = switch (status) {
-      'cancelled' => (Icons.event_busy_outlined, l10n.bookingCancelledStatus, scheme.error),
-      'no_show' => (Icons.event_busy_outlined, l10n.bookingMissed, scheme.error),
+      'cancelled' => (
+        Icons.event_busy_outlined,
+        l10n.bookingCancelledStatus,
+        scheme.error,
+      ),
+      'no_show' => (
+        Icons.event_busy_outlined,
+        l10n.bookingMissed,
+        scheme.error,
+      ),
       'in_progress' => (Icons.content_cut, l10n.bookingInProgress, g.success),
       _ => (Icons.event_available_outlined, l10n.bookingBooked, g.success),
     };

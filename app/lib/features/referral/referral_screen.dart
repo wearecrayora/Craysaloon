@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/ui/load_failed.dart';
 import '../../core/format/money.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/join/join_code.dart';
@@ -90,18 +91,8 @@ class ReferralScreen extends ConsumerWidget {
               ],
             ),
           ),
-          AsyncError() => Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(l10n.joinOffline),
-                const SizedBox(height: 12),
-                OutlinedButton(
-                  onPressed: () => ref.invalidate(referralProvider),
-                  child: Text(l10n.retry),
-                ),
-              ],
-            ),
+          AsyncError() => LoadFailed(
+            onRetry: () => ref.invalidate(referralProvider),
           ),
           _ => const Center(child: CircularProgressIndicator()),
         },

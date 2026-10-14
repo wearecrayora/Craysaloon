@@ -75,7 +75,9 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
     final customer = _customer;
     final service = _service;
     final slot = _slot;
-    if (repo == null || customer == null || service == null || slot == null) return;
+    if (repo == null || customer == null || service == null || slot == null) {
+      return;
+    }
 
     setState(() => _saving = true);
     await repo.book(
@@ -90,9 +92,13 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
     // Queued either way; the message says which happened, because "booked" when
     // it is only queued is the kind of small lie that costs trust at a till.
     final waiting = await ref.read(outboxProvider)?.pending() ?? const [];
-    messenger.showSnackBar(SnackBar(
-      content: Text(waiting.isEmpty ? l10n.walkInBooked : l10n.walkInQueuedOffline),
-    ));
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          waiting.isEmpty ? l10n.walkInBooked : l10n.walkInQueuedOffline,
+        ),
+      ),
+    );
     ref.read(dayControllerProvider.notifier).refresh();
     router.go('/day');
   }
@@ -100,9 +106,11 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppL10n.of(context);
-    final services = ref.watch(servicesProvider).value?.value ?? const <Service>[];
+    final services =
+        ref.watch(servicesProvider).value?.value ?? const <Service>[];
     final addOns = ref.watch(addOnsProvider).value?.value ?? const <AddOn>[];
-    final staff = ref.watch(staffProvider).value?.value ?? const <StaffMember>[];
+    final staff =
+        ref.watch(staffProvider).value?.value ?? const <StaffMember>[];
     final customers = ref.watch(customersControllerProvider).customers;
 
     return Scaffold(
@@ -111,29 +119,45 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(l10n.walkInCustomer, style: Theme.of(context).textTheme.labelMedium),
-            DropdownButtonFormField<CustomerSummary>(
-              initialValue: _customer,
-              // Fill the field and cut long names: sized to its widest item, a
-              // long stylist or service name overflowed a 360dp phone (the sweep).
-              isExpanded: true,
-              items: [
-                for (final c in customers)
-                  DropdownMenuItem(
-                    value: c,
-                    child: Text(
-                      c.name?.trim().isNotEmpty == true ? c.name! : (c.phone ?? ''),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-              ],
-              onChanged: (c) => setState(() => _customer = c),
+            Text(
+              l10n.walkInCustomer,
+              style: Theme.of(context).textTheme.labelMedium,
             ),
+            if (customers.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(l10n.walkInNoCustomers),
+              )
+            else
+              DropdownButtonFormField<CustomerSummary>(
+                initialValue: _customer,
+                hint: Text(l10n.walkInChooseCustomer),
+                // Fill the field and cut long names: sized to its widest item, a
+                // long stylist or service name overflowed a 360dp phone (the sweep).
+                isExpanded: true,
+                items: [
+                  for (final c in customers)
+                    DropdownMenuItem(
+                      value: c,
+                      child: Text(
+                        c.name?.trim().isNotEmpty == true
+                            ? c.name!
+                            : (c.phone ?? ''),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                ],
+                onChanged: (c) => setState(() => _customer = c),
+              ),
             const SizedBox(height: 16),
 
-            Text(l10n.walkInService, style: Theme.of(context).textTheme.labelMedium),
+            Text(
+              l10n.walkInService,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
             DropdownButtonFormField<Service>(
               initialValue: _service,
+              hint: Text(l10n.walkInChooseService),
               // Fill the field and cut long names: sized to its widest item, a
               // long stylist or service name overflowed a 360dp phone (the sweep).
               isExpanded: true,
@@ -161,7 +185,10 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
             const SizedBox(height: 16),
 
             if (addOns.isNotEmpty) ...[
-              Text(l10n.walkInAddOns, style: Theme.of(context).textTheme.labelMedium),
+              Text(
+                l10n.walkInAddOns,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
               for (final a in addOns.where((a) => a.active))
                 CheckboxListTile(
                   // UNTICKED. Always (RULES 9).
@@ -183,14 +210,20 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
               const SizedBox(height: 16),
             ],
 
-            Text(l10n.walkInStaff, style: Theme.of(context).textTheme.labelMedium),
+            Text(
+              l10n.walkInStaff,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
             DropdownButtonFormField<StaffMember?>(
               initialValue: _staff,
               // Fill the field and cut long names: sized to its widest item, a
               // long stylist or service name overflowed a 360dp phone (the sweep).
               isExpanded: true,
               items: [
-                DropdownMenuItem<StaffMember?>(value: null, child: Text(l10n.walkInAnyStaff)),
+                DropdownMenuItem<StaffMember?>(
+                  value: null,
+                  child: Text(l10n.walkInAnyStaff),
+                ),
                 for (final s in staff.where((s) => s.active))
                   DropdownMenuItem<StaffMember?>(
                     value: s,
@@ -204,14 +237,20 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
             ),
             const SizedBox(height: 16),
 
-            Text(l10n.walkInTime, style: Theme.of(context).textTheme.labelMedium),
+            Text(
+              l10n.walkInTime,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
             if (_loadingSlots)
               const Padding(
                 padding: EdgeInsets.all(16),
                 child: Center(child: CircularProgressIndicator()),
               )
             else if (_service == null)
-              const SizedBox.shrink()
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(l10n.walkInPickServiceFirst),
+              )
             else if (_slots.isEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -232,7 +271,11 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
             const SizedBox(height: 24),
 
             FilledButton(
-              onPressed: _saving || _customer == null || _service == null || _slot == null
+              onPressed:
+                  _saving ||
+                      _customer == null ||
+                      _service == null ||
+                      _slot == null
                   ? null
                   : _book,
               child: Text(l10n.walkInBook),

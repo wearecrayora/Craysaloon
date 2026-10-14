@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../core/ui/load_failed.dart';
 import '../../app/providers.dart';
 import '../../core/ui/salon_mark.dart';
 import '../../domain/join/cray_api.dart';
@@ -119,9 +120,9 @@ class HoursScreen extends ConsumerWidget {
                     ),
                 ],
               ),
-              AsyncError() => TextButton(
-                onPressed: () => ref.invalidate(shiftsProvider),
-                child: Text(l10n.retry),
+              AsyncError() => LoadFailed(
+                inline: true,
+                onRetry: () => ref.invalidate(shiftsProvider),
               ),
               _ => const Padding(
                 padding: EdgeInsets.all(24),
@@ -329,7 +330,11 @@ class _Line extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             flex: 3,
-            child: Text(value, textAlign: TextAlign.end, style: text.titleMedium),
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: text.titleMedium,
+            ),
           ),
         ],
       ),
@@ -464,43 +469,49 @@ class _StaffHoursScreenState extends ConsumerState<StaffHoursScreen> {
                         ),
                       ),
                     ),
-                    child: Row(
+                    // The day and its switch on one line, the hours under
+                    // it: side by side, "10:00 AM - 5:00 PM" did not fit
+                    // beside a day name and a switch on a 360dp phone.
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          width: 112,
-                          child: Text(
-                            dayName(context, d),
-                            style: text.titleMedium,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                dayName(context, d),
+                                style: text.titleMedium,
+                              ),
+                            ),
+                            if (!week[d]!.working)
+                              Text(
+                                l10n.staffHoursDayOff,
+                                style: text.bodyMedium,
+                              ),
+                            const SizedBox(width: 8),
+                            Switch(
+                              value: week[d]!.working,
+                              onChanged: (v) =>
+                                  setState(() => week[d]!.working = v),
+                            ),
+                          ],
+                        ),
+                        if (week[d]!.working)
+                          Wrap(
+                            spacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              _TimeButton(
+                                label: _show(context, week[d]!.starts),
+                                onTap: () => _pick(week[d]!, true),
+                              ),
+                              const Text('–'),
+                              _TimeButton(
+                                label: _show(context, week[d]!.ends),
+                                onTap: () => _pick(week[d]!, false),
+                              ),
+                            ],
                           ),
-                        ),
-                        Switch(
-                          value: week[d]!.working,
-                          onChanged: (v) =>
-                              setState(() => week[d]!.working = v),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: week[d]!.working
-                              ? Wrap(
-                                  spacing: 4,
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  children: [
-                                    _TimeButton(
-                                      label: _show(context, week[d]!.starts),
-                                      onTap: () => _pick(week[d]!, true),
-                                    ),
-                                    const Text('–'),
-                                    _TimeButton(
-                                      label: _show(context, week[d]!.ends),
-                                      onTap: () => _pick(week[d]!, false),
-                                    ),
-                                  ],
-                                )
-                              : Text(
-                                  l10n.staffHoursDayOff,
-                                  style: text.bodyMedium,
-                                ),
-                        ),
                       ],
                     ),
                   ),

@@ -160,8 +160,13 @@ void main() {
     // Showing four unticked switches would be a false statement about a legal
     // record - and the one it would get wrong is marketing.
     expect(find.byType(SwitchListTile), findsNothing);
-    expect(find.text('That did not save. Check your connection and try again.'),
+    // It says the READ failed - not "did not save" - and offers a retry.
+    expect(find.text('We could not load your choices. Check your connection and try again.'),
         findsOneWidget);
+    privacy.failReads = false;
+    await tester.tap(find.text('Try again'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SwitchListTile), findsWidgets);
   });
 
   testWidgets('asking for a copy records the request and shows when it is due',

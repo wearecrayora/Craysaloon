@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/ui/load_failed.dart';
 import '../../domain/privacy/privacy.dart';
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
@@ -33,7 +34,8 @@ class YourDataScreen extends ConsumerWidget {
         child: state.loading
             ? const Center(child: CircularProgressIndicator())
             : RefreshIndicator(
-                onRefresh: () => ref.read(yourDataControllerProvider.notifier).load(),
+                onRefresh: () =>
+                    ref.read(yourDataControllerProvider.notifier).load(),
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
@@ -45,25 +47,12 @@ class YourDataScreen extends ConsumerWidget {
                       // The fixed danger red marks it on the icon; the words
                       // stay in the readable ink - red text on the glass read
                       // 4.4:1, under the 4.5:1 a sentence needs (the sweep).
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              size: 20,
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                l10n.consentSaveFailed,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ),
-                          ],
-                        ),
+                      LoadFailed(
+                        inline: true,
+                        message: l10n.yourDataLoadFailed,
+                        onRetry: () => ref
+                            .read(yourDataControllerProvider.notifier)
+                            .load(),
                       )
                     else ...[
                       Text(
@@ -162,8 +151,9 @@ class _ConsentRow extends ConsumerWidget {
       // find them here, with the reason, rather than conclude the app forgot.
       onChanged: locked || state.busyPurpose == purpose
           ? null
-          : (value) =>
-              ref.read(yourDataControllerProvider.notifier).setConsent(purpose, value),
+          : (value) => ref
+                .read(yourDataControllerProvider.notifier)
+                .setConsent(purpose, value),
       title: Text(title),
       subtitle: subtitle == null ? null : Text(subtitle),
       contentPadding: EdgeInsets.zero,
@@ -211,7 +201,10 @@ class _RightTile extends ConsumerWidget {
       title: Text(title),
       trailing: state.busyPurpose == kind
           ? const SizedBox(
-              width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
           : const Icon(Icons.chevron_right),
       onTap: state.busyPurpose == kind
           ? null

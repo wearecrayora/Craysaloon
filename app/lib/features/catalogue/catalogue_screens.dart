@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../app/providers.dart';
 import '../../core/format/money.dart';
 import '../../core/ui/cache_banner.dart';
+import '../../core/ui/load_failed.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/records/records.dart';
@@ -31,6 +32,7 @@ class ServicesScreen extends ConsumerWidget {
     return _CatalogueList<Service>(
       title: l10n.catalogueServices,
       cached: ref.watch(servicesProvider),
+      onRetry: () => ref.invalidate(servicesProvider),
       onAdd: () => _edit(context, ref, null),
       rowBuilder: (context, service) => _CatalogueRow(
         name: service.name,
@@ -42,7 +44,11 @@ class ServicesScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _edit(BuildContext context, WidgetRef ref, Service? service) async {
+  Future<void> _edit(
+    BuildContext context,
+    WidgetRef ref,
+    Service? service,
+  ) async {
     // Captured BEFORE the sheet: after an await the screen may be gone, and a
     // BuildContext used across that gap is a crash waiting for a slow network.
     final l10n = AppL10n.of(context);
@@ -59,22 +65,18 @@ class ServicesScreen extends ConsumerWidget {
     );
     if (draft == null) return;
 
-    await saveAndReport(
-      messenger,
-      l10n,
-      () async {
-        final repo = ref.read(recordsRepositoryProvider);
-        if (repo == null) throw const CrayApiException(CrayErrorKind.forbidden);
-        await repo.saveService(
-          id: service?.id,
-          name: draft.name,
-          pricePaise: draft.pricePaise,
-          durationMinutes: draft.minutes,
-          active: draft.active,
-        );
-        ref.invalidate(servicesProvider);
-      },
-    );
+    await saveAndReport(messenger, l10n, () async {
+      final repo = ref.read(recordsRepositoryProvider);
+      if (repo == null) throw const CrayApiException(CrayErrorKind.forbidden);
+      await repo.saveService(
+        id: service?.id,
+        name: draft.name,
+        pricePaise: draft.pricePaise,
+        durationMinutes: draft.minutes,
+        active: draft.active,
+      );
+      ref.invalidate(servicesProvider);
+    });
   }
 }
 
@@ -88,6 +90,7 @@ class AddOnsScreen extends ConsumerWidget {
     return _CatalogueList<AddOn>(
       title: l10n.catalogueAddOns,
       cached: ref.watch(addOnsProvider),
+      onRetry: () => ref.invalidate(addOnsProvider),
       onAdd: () => _edit(context, ref, null),
       rowBuilder: (context, addOn) => _CatalogueRow(
         name: addOn.name,
@@ -119,22 +122,18 @@ class AddOnsScreen extends ConsumerWidget {
     );
     if (draft == null) return;
 
-    await saveAndReport(
-      messenger,
-      l10n,
-      () async {
-        final repo = ref.read(recordsRepositoryProvider);
-        if (repo == null) throw const CrayApiException(CrayErrorKind.forbidden);
-        await repo.saveAddOn(
-          id: addOn?.id,
-          name: draft.name,
-          pricePaise: draft.pricePaise,
-          extraDurationMinutes: draft.minutes,
-          active: draft.active,
-        );
-        ref.invalidate(addOnsProvider);
-      },
-    );
+    await saveAndReport(messenger, l10n, () async {
+      final repo = ref.read(recordsRepositoryProvider);
+      if (repo == null) throw const CrayApiException(CrayErrorKind.forbidden);
+      await repo.saveAddOn(
+        id: addOn?.id,
+        name: draft.name,
+        pricePaise: draft.pricePaise,
+        extraDurationMinutes: draft.minutes,
+        active: draft.active,
+      );
+      ref.invalidate(addOnsProvider);
+    });
   }
 }
 
@@ -151,6 +150,7 @@ class StaffScreen extends ConsumerWidget {
     return _CatalogueList<StaffMember>(
       title: l10n.staffTitle,
       cached: ref.watch(staffProvider),
+      onRetry: () => ref.invalidate(staffProvider),
       onAdd: () => _edit(context, ref, null),
       // Who can SIGN IN is the owner's to decide (0106); a stylist on this
       // list is someone customers can BOOK - the two are different things.
@@ -165,7 +165,10 @@ class StaffScreen extends ConsumerWidget {
       rowBuilder: (context, member) => _CatalogueRow(
         name: member.name,
         active: member.active,
-        detail: shifts != null && member.active && !shifts.any((s) => s.staffId == member.id)
+        detail:
+            shifts != null &&
+                member.active &&
+                !shifts.any((s) => s.staffId == member.id)
             ? l10n.staffHoursNone
             : null,
         onTap: () => _edit(context, ref, member),
@@ -178,28 +181,35 @@ class StaffScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _edit(BuildContext context, WidgetRef ref, StaffMember? member) async {
+  Future<void> _edit(
+    BuildContext context,
+    WidgetRef ref,
+    StaffMember? member,
+  ) async {
     final l10n = AppL10n.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final draft = await CatalogueForm.open(
       context,
       title: l10n.staffFormTitle,
-      draft: CatalogueDraft(name: member?.name ?? '', active: member?.active ?? true),
+      draft: CatalogueDraft(
+        name: member?.name ?? '',
+        active: member?.active ?? true,
+      ),
       showPrice: false,
       showMinutes: false,
     );
     if (draft == null) return;
 
-    await saveAndReport(
-      messenger,
-      l10n,
-      () async {
-        final repo = ref.read(recordsRepositoryProvider);
-        if (repo == null) throw const CrayApiException(CrayErrorKind.forbidden);
-        await repo.saveStaff(id: member?.id, name: draft.name, active: draft.active);
-        ref.invalidate(staffProvider);
-      },
-    );
+    await saveAndReport(messenger, l10n, () async {
+      final repo = ref.read(recordsRepositoryProvider);
+      if (repo == null) throw const CrayApiException(CrayErrorKind.forbidden);
+      await repo.saveStaff(
+        id: member?.id,
+        name: draft.name,
+        active: draft.active,
+      );
+      ref.invalidate(staffProvider);
+    });
   }
 }
 
@@ -216,13 +226,15 @@ Future<void> saveAndReport(
   try {
     await save();
   } on CrayApiException catch (e) {
-    messenger.showSnackBar(SnackBar(
-      content: Text(switch (e.kind) {
-        CrayErrorKind.forbidden => l10n.saveFailedRefused,
-        CrayErrorKind.network => l10n.saveFailedOffline,
-        _ => l10n.saveFailed,
-      }),
-    ));
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(switch (e.kind) {
+          CrayErrorKind.forbidden => l10n.saveFailedRefused,
+          CrayErrorKind.network => l10n.saveFailedOffline,
+          _ => l10n.saveFailed,
+        }),
+      ),
+    );
   }
 }
 
@@ -232,6 +244,7 @@ class _CatalogueList<T> extends ConsumerWidget {
     required this.cached,
     required this.rowBuilder,
     required this.onAdd,
+    required this.onRetry,
     this.actions = const [],
   });
 
@@ -240,6 +253,7 @@ class _CatalogueList<T> extends ConsumerWidget {
   final AsyncValue<Cached<List<T>>> cached;
   final Widget Function(BuildContext, T) rowBuilder;
   final VoidCallback onAdd;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -258,23 +272,25 @@ class _CatalogueList<T> extends ConsumerWidget {
       body: SafeArea(
         child: cached.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, _) => Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(l10n.joinOffline),
-          ),
+          error: (_, _) => LoadFailed(onRetry: onRetry),
           data: (result) {
             if (result.value.isEmpty) {
               return Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  result.fromCache ? l10n.cachedNeverLoaded : l10n.catalogueEmpty,
+                  result.fromCache
+                      ? l10n.cachedNeverLoaded
+                      : canEdit
+                      ? l10n.catalogueEmptyCanAdd
+                      : l10n.catalogueEmpty,
                 ),
               );
             }
             return ListView(
               padding: const EdgeInsets.only(bottom: 24),
               children: [
-                if (result.fromCache) CacheBanner(refreshedAt: result.refreshedAt),
+                if (result.fromCache)
+                  CacheBanner(refreshedAt: result.refreshedAt),
                 for (final row in result.value) rowBuilder(context, row),
                 // Clearance for the Add button, composed from the 4dp scale
                 // rather than a one-off 88 (DESIGN 4.1, GATE-4).

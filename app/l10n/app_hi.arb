@@ -466,5 +466,12 @@
   "homeWithStylist": "{name} के साथ",
   "dayHeaderSummary": "{booked} बुक · {done} पूरे",
   "dayEmptyTitle": "अभी तक दिन शांत है",
-  "dayEmptyBody": "बुकिंग और वॉक-इन आते ही यहाँ दिखेंगे।"
+  "dayEmptyBody": "बुकिंग और वॉक-इन आते ही यहाँ दिखेंगे।",
+  "yourDataLoadFailed": "आपकी पसंद लोड नहीं हो सकी। इंटरनेट जाँचें और फिर कोशिश करें।",
+  "addMoneyOtherAmount": "या रकम लिखें",
+  "walkInChooseCustomer": "ग्राहक चुनें",
+  "walkInChooseService": "सेवा चुनें",
+  "walkInPickServiceFirst": "खाली समय देखने के लिए सेवा चुनें।",
+  "walkInNoCustomers": "अभी कोई ग्राहक नहीं। वॉक-इन ग्राहक पहले आपका QR कोड स्कैन करके जुड़ें।",
+  "catalogueEmptyCanAdd": "अभी यहां कुछ नहीं। मेन्यू में पहला जोड़ने के लिए Add दबाएँ।"
 }

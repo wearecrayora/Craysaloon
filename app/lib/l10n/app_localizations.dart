@@ -2899,6 +2899,48 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Bookings and walk-ins appear here as they come in.'**
   String get dayEmptyBody;
+
+  /// No description provided for @yourDataLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not load your choices. Check your connection and try again.'**
+  String get yourDataLoadFailed;
+
+  /// No description provided for @addMoneyOtherAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Or type an amount'**
+  String get addMoneyOtherAmount;
+
+  /// No description provided for @walkInChooseCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a customer'**
+  String get walkInChooseCustomer;
+
+  /// No description provided for @walkInChooseService.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a service'**
+  String get walkInChooseService;
+
+  /// No description provided for @walkInPickServiceFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a service to see the free times.'**
+  String get walkInPickServiceFirst;
+
+  /// No description provided for @walkInNoCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers yet. A walk-in joins first by scanning your QR code.'**
+  String get walkInNoCustomers;
+
+  /// No description provided for @catalogueEmptyCanAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet. Tap Add to put the first one on the menu.'**
+  String get catalogueEmptyCanAdd;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

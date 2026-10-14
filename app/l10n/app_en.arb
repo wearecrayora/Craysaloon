@@ -1476,5 +1476,12 @@
     }
   },
   "dayEmptyTitle": "A quiet day so far",
-  "dayEmptyBody": "Bookings and walk-ins appear here as they come in."
+  "dayEmptyBody": "Bookings and walk-ins appear here as they come in.",
+  "yourDataLoadFailed": "We could not load your choices. Check your connection and try again.",
+  "addMoneyOtherAmount": "Or type an amount",
+  "walkInChooseCustomer": "Choose a customer",
+  "walkInChooseService": "Choose a service",
+  "walkInPickServiceFirst": "Choose a service to see the free times.",
+  "walkInNoCustomers": "No customers yet. A walk-in joins first by scanning your QR code.",
+  "catalogueEmptyCanAdd": "Nothing here yet. Tap Add to put the first one on the menu."
 }

@@ -247,7 +247,7 @@ void main() {
                   ? null
                   : AppSession(
                       appRole: role,
-                      salonId: '11111111-0000-4000-8000-000000000001',
+                      salonId: role == 'platform_admin' ? null : '11111111-0000-4000-8000-000000000001',
                     ),
             ),
             if (branded) initialBrandingProvider.overrideWithValue(branding),
@@ -273,7 +273,7 @@ void main() {
       tester.element(find.byType(CraySalonApp)),
     );
     for (final route in routes) {
-      if (role != 'join') container.read(routerProvider).go(route);
+      if (role != 'join' && role != 'platform_admin') container.read(routerProvider).go(route);
       await tester.pumpAndSettle();
       await tester.runAsync(() async {
         final boundary =
@@ -289,24 +289,11 @@ void main() {
   }
 
   const customerRoutes = [
-    '/home',
-    '/book',
-    '/wallet',
-    '/me',
-    '/visits',
-    '/wallet/add',
-    '/refer',
-    '/your-data',
+    '/home', '/book', '/wallet', '/me', '/visits', '/documents', '/booking/b-9', '/wallet/add', '/refer', '/your-data',
   ];
   const ownerRoutes = [
-    '/day',
-    '/dashboard',
-    '/customers',
-    '/catalogue/services',
-    '/staff',
-    '/staff/logins',
-    '/more',
-    '/more/hours',
+    '/day', '/day/walk-in', '/attention', '/dashboard', '/customers', '/catalogue/services', '/catalogue/addons',
+    '/staff', '/staff/st-1/hours', '/staff/logins', '/more', '/more/rules', '/more/hours', '/more/billing', '/more/profile',
   ];
 
   testWidgets('customer', (tester) async {
@@ -329,6 +316,14 @@ void main() {
     await shoot(tester, 'owner', owner(cache, busy: true), const [
       '/day',
     ], tag: '_busy');
+  });
+  testWidgets('stylist', (tester) async {
+    final cache = CacheDb(NativeDatabase.memory());
+    addTearDown(cache.close);
+    await shoot(tester, 'staff', owner(cache, busy: true), const ['/day', '/customers', '/more']);
+  });
+  testWidgets('platform admin', (tester) async {
+    await shoot(tester, 'platform_admin', const [], const ['/console-only']);
   });
   testWidgets('join', (tester) async {
     await shoot(

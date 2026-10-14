@@ -67,6 +67,7 @@ class HistoryScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Expanded(
+                                flex: 3,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -90,8 +91,10 @@ class HistoryScreen extends ConsumerWidget {
                               const SizedBox(width: 12),
                               // May wrap, never push past the edge: at 200%
                               // text "Not paid yet" outgrew its column (the
-                              // screen sweep, IMPLEMENTATION 7).
-                              Flexible(
+                              // screen sweep, IMPLEMENTATION 7). A fixed share,
+                              // so the amounts sit on the right edge.
+                              Expanded(
+                                flex: 2,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [

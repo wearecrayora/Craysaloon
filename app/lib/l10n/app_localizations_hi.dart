@@ -1673,6 +1673,30 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get dayEmptyBody => 'बुकिंग और वॉक-इन आते ही यहाँ दिखेंगे।';
+
+  @override
+  String get yourDataLoadFailed =>
+      'आपकी पसंद लोड नहीं हो सकी। इंटरनेट जाँचें और फिर कोशिश करें।';
+
+  @override
+  String get addMoneyOtherAmount => 'या रकम लिखें';
+
+  @override
+  String get walkInChooseCustomer => 'ग्राहक चुनें';
+
+  @override
+  String get walkInChooseService => 'सेवा चुनें';
+
+  @override
+  String get walkInPickServiceFirst => 'खाली समय देखने के लिए सेवा चुनें।';
+
+  @override
+  String get walkInNoCustomers =>
+      'अभी कोई ग्राहक नहीं। वॉक-इन ग्राहक पहले आपका QR कोड स्कैन करके जुड़ें।';
+
+  @override
+  String get catalogueEmptyCanAdd =>
+      'अभी यहां कुछ नहीं। मेन्यू में पहला जोड़ने के लिए Add दबाएँ।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -3357,4 +3381,29 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get dayEmptyBody => 'Booking aur walk-in aate hi yahan dikhenge.';
+
+  @override
+  String get yourDataLoadFailed =>
+      'Aapki pasand load nahin ho saki. Internet jaanchein aur phir koshish karein.';
+
+  @override
+  String get addMoneyOtherAmount => 'Ya rakam likhein';
+
+  @override
+  String get walkInChooseCustomer => 'Customer chunein';
+
+  @override
+  String get walkInChooseService => 'Service chunein';
+
+  @override
+  String get walkInPickServiceFirst =>
+      'Khaali samay dekhne ke liye service chunein.';
+
+  @override
+  String get walkInNoCustomers =>
+      'Abhi koi customer nahin. Walk-in customer pehle aapka QR code scan karke judein.';
+
+  @override
+  String get catalogueEmptyCanAdd =>
+      'Abhi yahan kuch nahi. Menu mein pehla jodne ke liye Add dabayein.';
 }

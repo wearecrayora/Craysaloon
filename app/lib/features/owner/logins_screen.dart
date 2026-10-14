@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/ui/load_failed.dart';
 import '../../app/providers.dart';
 import '../../core/ui/salon_mark.dart';
 import '../../domain/join/cray_api.dart';
@@ -27,12 +28,12 @@ final canManageLoginsProvider = Provider<bool>(
 );
 
 String loginRefusalText(AppL10n l10n, LoginRefusal r) => switch (r) {
-      LoginRefusal.numberInUse => l10n.loginsNumberInUse,
-      LoginRefusal.badPhone => l10n.loginsBadPhone,
-      LoginRefusal.nameRequired => l10n.loginsNameRequired,
-      LoginRefusal.ownerLogin => l10n.loginsOwnLogin,
-      LoginRefusal.salonUnavailable || LoginRefusal.notFound => l10n.loginsFailed,
-    };
+  LoginRefusal.numberInUse => l10n.loginsNumberInUse,
+  LoginRefusal.badPhone => l10n.loginsBadPhone,
+  LoginRefusal.nameRequired => l10n.loginsNameRequired,
+  LoginRefusal.ownerLogin => l10n.loginsOwnLogin,
+  LoginRefusal.salonUnavailable || LoginRefusal.notFound => l10n.loginsFailed,
+};
 
 class LoginsScreen extends ConsumerWidget {
   const LoginsScreen({super.key});
@@ -63,9 +64,9 @@ class LoginsScreen extends ConsumerWidget {
               AsyncData(:final value) => Column(
                 children: [for (final l in value) _LoginTile(login: l)],
               ),
-              AsyncError() => TextButton(
-                onPressed: () => ref.invalidate(staffLoginsProvider),
-                child: Text(l10n.retry),
+              AsyncError() => LoadFailed(
+                inline: true,
+                onRetry: () => ref.invalidate(staffLoginsProvider),
               ),
               _ => const Padding(
                 padding: EdgeInsets.all(24),
@@ -91,10 +92,20 @@ class LoginsScreen extends ConsumerWidget {
     final api = ref.read(staffLoginsApiProvider);
     if (api == null) return;
     try {
-      final r = await api.addStaffLogin(name: draft.name, phone: draft.phone, role: draft.role);
-      messenger.showSnackBar(SnackBar(
-        content: Text(r.ok ? l10n.loginsAdded(draft.name) : loginRefusalText(l10n, r.refusal!)),
-      ));
+      final r = await api.addStaffLogin(
+        name: draft.name,
+        phone: draft.phone,
+        role: draft.role,
+      );
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            r.ok
+                ? l10n.loginsAdded(draft.name)
+                : loginRefusalText(l10n, r.refusal!),
+          ),
+        ),
+      );
       if (r.ok) ref.invalidate(staffLoginsProvider);
     } on CrayApiException {
       messenger.showSnackBar(SnackBar(content: Text(l10n.loginsFailed)));
@@ -131,14 +142,19 @@ class _LoginTile extends ConsumerWidget {
                 children: [
                   Text(login.name, style: text.titleMedium),
                   const SizedBox(height: 4),
-                  Text('$role · ••••${login.phoneLast4}', style: text.bodyMedium),
+                  Text(
+                    '$role · ••••${login.phoneLast4}',
+                    style: text.bodyMedium,
+                  ),
                   Text(status, style: text.bodySmall),
                 ],
               ),
             ),
             if (login.role != LoginRole.owner)
               Semantics(
-                label: login.active ? l10n.loginsSwitchOff : l10n.loginsSwitchOn,
+                label: login.active
+                    ? l10n.loginsSwitchOff
+                    : l10n.loginsSwitchOn,
                 child: Switch(
                   value: login.active,
                   onChanged: (on) => _set(context, ref, on),
@@ -158,7 +174,9 @@ class _LoginTile extends ConsumerWidget {
     try {
       final r = await api.setStaffLoginActive(login.id, active: on);
       if (!r.ok) {
-        messenger.showSnackBar(SnackBar(content: Text(loginRefusalText(l10n, r.refusal!))));
+        messenger.showSnackBar(
+          SnackBar(content: Text(loginRefusalText(l10n, r.refusal!))),
+        );
       }
       ref.invalidate(staffLoginsProvider);
     } on CrayApiException {
@@ -198,7 +216,12 @@ class _AddLoginSheetState extends State<_AddLoginSheet> {
     final l10n = AppL10n.of(context);
     final text = Theme.of(context).textTheme;
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.viewInsetsOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        0,
+        16,
+        16 + MediaQuery.viewInsetsOf(context).bottom,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

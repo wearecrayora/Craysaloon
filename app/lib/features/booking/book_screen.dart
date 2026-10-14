@@ -49,29 +49,32 @@ class _BookScreenState extends ConsumerState<BookScreen> {
   String? _problem;
 
   List<AddOn> get _addOns => ref.read(bookableAddOnsProvider).value ?? const [];
-  List<AddOn> get _chosenAddOns => _addOns.where((a) => _addOnIds.contains(a.id)).toList();
-  bool get _hasAddOnStep => (ref.watch(bookableAddOnsProvider).value ?? const []).isNotEmpty;
+  List<AddOn> get _chosenAddOns =>
+      _addOns.where((a) => _addOnIds.contains(a.id)).toList();
+  bool get _hasAddOnStep =>
+      (ref.watch(bookableAddOnsProvider).value ?? const []).isNotEmpty;
 
   int get _totalPaise =>
-      (_service?.pricePaise ?? 0) + _chosenAddOns.fold(0, (sum, a) => sum + a.pricePaise);
+      (_service?.pricePaise ?? 0) +
+      _chosenAddOns.fold(0, (sum, a) => sum + a.pricePaise);
   int get _minutes =>
       (_service?.durationMinutes ?? 0) +
       _chosenAddOns.fold(0, (sum, a) => sum + a.extraDurationMinutes);
 
   List<_Step> get _steps => [
-        _Step.service,
-        if (_hasAddOnStep) _Step.addOns,
-        _Step.time,
-        _Step.review,
-      ];
+    _Step.service,
+    if (_hasAddOnStep) _Step.addOns,
+    _Step.time,
+    _Step.review,
+  ];
 
   void _go(_Step step) => setState(() {
-        _step = step;
-        _problem = null;
-        // Anything that changes the time invalidates the chosen time, and a
-        // new review gets a new action id.
-        if (step != _Step.review) _actionId = null;
-      });
+    _step = step;
+    _problem = null;
+    // Anything that changes the time invalidates the chosen time, and a
+    // new review gets a new action id.
+    if (step != _Step.review) _actionId = null;
+  });
 
   void _next() {
     final steps = _steps;
@@ -88,11 +91,11 @@ class _BookScreenState extends ConsumerState<BookScreen> {
   }
 
   bool get _canContinue => switch (_step) {
-        _Step.service => _service != null,
-        _Step.addOns => true,
-        _Step.time => _slot != null,
-        _Step.review => !_busy,
-      };
+    _Step.service => _service != null,
+    _Step.addOns => true,
+    _Step.time => _slot != null,
+    _Step.review => !_busy,
+  };
 
   Future<void> _confirm() async {
     final api = ref.read(customerBookingsProvider);
@@ -119,7 +122,9 @@ class _BookScreenState extends ConsumerState<BookScreen> {
       ref.invalidate(upcomingProvider);
       if (!mounted) return;
       messenger.showSnackBar(
-        SnackBar(content: Text(l10n.bookDone(ml.formatShortMonthDay(slot.startsAt)))),
+        SnackBar(
+          content: Text(l10n.bookDone(ml.formatShortMonthDay(slot.startsAt))),
+        ),
       );
       _reset();
       context.push('/booking/$id');
@@ -145,15 +150,15 @@ class _BookScreenState extends ConsumerState<BookScreen> {
   }
 
   void _reset() => setState(() {
-        _step = _Step.service;
-        _service = null;
-        _addOnIds.clear();
-        _staffId = null;
-        _slot = null;
-        _actionId = null;
-        _busy = false;
-        _problem = null;
-      });
+    _step = _Step.service;
+    _service = null;
+    _addOnIds.clear();
+    _staffId = null;
+    _slot = null;
+    _actionId = null;
+    _busy = false;
+    _problem = null;
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +189,10 @@ class _BookScreenState extends ConsumerState<BookScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                 children: [
-                  Text(l10n.bookStep(index + 1, steps.length), style: text.bodySmall),
+                  Text(
+                    l10n.bookStep(index + 1, steps.length),
+                    style: text.bodySmall,
+                  ),
                   const SizedBox(height: 2),
                   // The step heading changes with a short cross-fade; with
                   // reduced motion it simply changes.
@@ -214,52 +222,58 @@ class _BookScreenState extends ConsumerState<BookScreen> {
                   ],
                   switch (_step) {
                     _Step.service => _ServiceStep(
-                        selected: _service?.id,
-                        onSelect: (s) => setState(() {
-                          _service = s;
-                          _slot = null;
-                        }),
-                      ),
+                      selected: _service?.id,
+                      onSelect: (s) => setState(() {
+                        _service = s;
+                        _slot = null;
+                      }),
+                    ),
                     _Step.addOns => _AddOnStep(
-                        chosen: _addOnIds,
-                        onToggle: (id, on) => setState(() {
-                          on ? _addOnIds.add(id) : _addOnIds.remove(id);
-                          _slot = null;
-                        }),
-                      ),
+                      chosen: _addOnIds,
+                      onToggle: (id, on) => setState(() {
+                        on ? _addOnIds.add(id) : _addOnIds.remove(id);
+                        _slot = null;
+                      }),
+                    ),
                     _Step.time => _TimeStep(
-                        serviceId: _service!.id,
-                        addOnIds: _addOnIds.toList()..sort(),
-                        staffId: _staffId,
-                        day: _day,
-                        slot: _slot,
-                        onStaff: (id) => setState(() {
-                          _staffId = id;
-                          _slot = null;
-                        }),
-                        onDay: (d) => setState(() {
-                          _day = d;
-                          _slot = null;
-                        }),
-                        onSlot: (s) => setState(() => _slot = s),
-                      ),
+                      serviceId: _service!.id,
+                      addOnIds: _addOnIds.toList()..sort(),
+                      staffId: _staffId,
+                      day: _day,
+                      slot: _slot,
+                      onStaff: (id) => setState(() {
+                        _staffId = id;
+                        _slot = null;
+                      }),
+                      onDay: (d) => setState(() {
+                        _day = d;
+                        _slot = null;
+                      }),
+                      onSlot: (s) => setState(() => _slot = s),
+                    ),
                     _Step.review => _Review(
-                        service: _service!,
-                        addOns: _chosenAddOns,
-                        slot: _slot!,
-                        minutes: _minutes,
-                        totalPaise: _totalPaise,
-                      ),
+                      service: _service!,
+                      addOns: _chosenAddOns,
+                      slot: _slot!,
+                      minutes: _minutes,
+                      totalPaise: _totalPaise,
+                    ),
                   },
                 ],
               ),
             ),
             _BottomBar(
-              totalPaise: _service == null || _step == _Step.review ? null : _totalPaise,
+              totalPaise: _service == null || _step == _Step.review
+                  ? null
+                  : _totalPaise,
               minutes: _minutes,
-              label: _step == _Step.review ? l10n.bookConfirm : l10n.bookContinue,
+              label: _step == _Step.review
+                  ? l10n.bookConfirm
+                  : l10n.bookContinue,
               busy: _busy,
-              onPressed: _canContinue ? (_step == _Step.review ? _confirm : _next) : null,
+              onPressed: _canContinue
+                  ? (_step == _Step.review ? _confirm : _next)
+                  : null,
             ),
           ],
         ),
@@ -282,7 +296,9 @@ class _Problem extends StatelessWidget {
         children: [
           Icon(Icons.error_outline, color: scheme.error),
           const SizedBox(width: 8),
-          Expanded(child: Text(message, style: Theme.of(context).textTheme.bodyMedium)),
+          Expanded(
+            child: Text(message, style: Theme.of(context).textTheme.bodyMedium),
+          ),
         ],
       ),
     );
@@ -306,44 +322,53 @@ class _ServiceStep extends ConsumerWidget {
     final services = ref.watch(bookableServicesProvider);
 
     return switch (services) {
-      AsyncData(:final value) when value.isEmpty =>
-        Text(l10n.bookNoServices, style: text.bodyLarge),
+      AsyncData(:final value) when value.isEmpty => Text(
+        l10n.bookNoServices,
+        style: text.bodyLarge,
+      ),
       AsyncData(:final value) => Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (final group in _grouped(value, l10n.bookOther).entries) ...[
-              Padding(
-                padding: const EdgeInsets.only(top: 12, bottom: 4),
-                child: Text(group.key, style: text.titleLarge),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final group in _grouped(value, l10n.bookOther).entries) ...[
+            Padding(
+              padding: const EdgeInsets.only(top: 12, bottom: 4),
+              child: Text(group.key, style: text.titleLarge),
+            ),
+            for (final s in group.value)
+              _ChoiceRow(
+                selected: s.id == selected,
+                onTap: () => onSelect(s),
+                title: s.name,
+                subtitle: l10n.bookMinutes(s.durationMinutes),
+                trailing: rupees(s.pricePaise),
+                radio: true,
               ),
-              for (final s in group.value)
-                _ChoiceRow(
-                  selected: s.id == selected,
-                  onTap: () => onSelect(s),
-                  title: s.name,
-                  subtitle: l10n.bookMinutes(s.durationMinutes),
-                  trailing: rupees(s.pricePaise),
-                  radio: true,
-                ),
-            ],
           ],
-        ),
-      AsyncError() => _Retry(onRetry: () => ref.invalidate(bookableServicesProvider)),
+        ],
+      ),
+      AsyncError() => _Retry(
+        onRetry: () => ref.invalidate(bookableServicesProvider),
+      ),
       _ => const Padding(
-          padding: EdgeInsets.all(32),
-          child: Center(child: CircularProgressIndicator()),
-        ),
+        padding: EdgeInsets.all(32),
+        child: Center(child: CircularProgressIndicator()),
+      ),
     };
   }
 
   /// Grouped by the salon's own categories, in first-seen order; services with
   /// none go last under "Other" - or ungrouped entirely, if none have one.
-  static Map<String, List<Service>> _grouped(List<Service> services, String other) {
+  static Map<String, List<Service>> _grouped(
+    List<Service> services,
+    String other,
+  ) {
     final out = <String, List<Service>>{};
     final hasAny = services.any((s) => (s.category ?? '').trim().isNotEmpty);
     for (final s in services) {
       final key = (s.category ?? '').trim();
-      out.putIfAbsent(key.isEmpty ? (hasAny ? other : '') : key, () => []).add(s);
+      out
+          .putIfAbsent(key.isEmpty ? (hasAny ? other : '') : key, () => [])
+          .add(s);
     }
     final loose = out.remove(other);
     if (loose != null) out[other] = loose;
@@ -393,14 +418,21 @@ class _ChoiceRow extends StatelessWidget {
             // background; the choice is the ink outline, not a fill.
             color: g.card,
             borderRadius: BorderRadius.circular(g.radius),
-            border: Border.all(color: selected ? g.ink : g.line, width: selected ? 1.5 : 1),
+            border: Border.all(
+              color: selected ? g.ink : g.line,
+              width: selected ? 1.5 : 1,
+            ),
           ),
           child: Row(
             children: [
               Icon(
                 radio
-                    ? (selected ? Icons.radio_button_checked : Icons.radio_button_unchecked)
-                    : (selected ? Icons.check_box : Icons.check_box_outline_blank),
+                    ? (selected
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_unchecked)
+                    : (selected
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank),
                 color: selected ? scheme.primary : scheme.outline,
               ),
               const SizedBox(width: 12),
@@ -409,7 +441,8 @@ class _ChoiceRow extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(title, style: text.titleMedium),
-                    if (subtitle != null) Text(subtitle!, style: text.bodySmall),
+                    if (subtitle != null)
+                      Text(subtitle!, style: text.bodySmall),
                   ],
                 ),
               ),
@@ -438,7 +471,10 @@ class _Retry extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(message ?? l10n.bookFailed, style: Theme.of(context).textTheme.bodyLarge),
+        Text(
+          message ?? l10n.bookFailed,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
         const SizedBox(height: 12),
         OutlinedButton(onPressed: onRetry, child: Text(l10n.retry)),
       ],
@@ -463,14 +499,19 @@ class _AddOnStep extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(l10n.bookAddOnsHint, style: Theme.of(context).textTheme.bodyMedium),
+        Text(
+          l10n.bookAddOnsHint,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
         const SizedBox(height: 8),
         for (final a in addOns)
           _ChoiceRow(
             selected: chosen.contains(a.id),
             onTap: () => onToggle(a.id, !chosen.contains(a.id)),
             title: a.name,
-            subtitle: a.extraDurationMinutes > 0 ? '+${l10n.bookMinutes(a.extraDurationMinutes)}' : null,
+            subtitle: a.extraDurationMinutes > 0
+                ? '+${l10n.bookMinutes(a.extraDurationMinutes)}'
+                : null,
             trailing: '+${rupees(a.pricePaise)}',
             radio: false,
           ),
@@ -483,11 +524,19 @@ class _AddOnStep extends ConsumerWidget {
 // C7 - stylist and time
 // ---------------------------------------------------------------------------
 
-typedef _SlotKey = ({String service, String addOns, String? staff, DateTime day});
+typedef _SlotKey = ({
+  String service,
+  String addOns,
+  String? staff,
+  DateTime day,
+});
 
 // Auto-disposed: read fresh every time the screen asks, so a holiday or a
 // stylist's changed hours set in the console shows the next time anyone looks.
-final _slotsProvider = FutureProvider.autoDispose.family<List<Slot>, _SlotKey>((ref, key) async {
+final _slotsProvider = FutureProvider.autoDispose.family<List<Slot>, _SlotKey>((
+  ref,
+  key,
+) async {
   final api = ref.watch(customerBookingsProvider);
   if (api == null) return const [];
   final slots = await api.slots(
@@ -500,7 +549,9 @@ final _slotsProvider = FutureProvider.autoDispose.family<List<Slot>, _SlotKey>((
   final seen = <DateTime>{};
   final now = DateTime.now();
   return [
-    for (final s in [...slots]..sort((a, b) => a.startsAt.compareTo(b.startsAt)))
+    for (final s in [
+      ...slots,
+    ]..sort((a, b) => a.startsAt.compareTo(b.startsAt)))
       if (s.startsAt.isAfter(now) && seen.add(s.startsAt)) s,
   ];
 });
@@ -532,7 +583,12 @@ class _TimeStep extends ConsumerWidget {
     final text = Theme.of(context).textTheme;
     final ml = MaterialLocalizations.of(context);
     final staff = ref.watch(bookableStaffProvider).value ?? const [];
-    final key = (service: serviceId, addOns: addOnIds.join(','), staff: staffId, day: day);
+    final key = (
+      service: serviceId,
+      addOns: addOnIds.join(','),
+      staff: staffId,
+      day: day,
+    );
     final slots = ref.watch(_slotsProvider(key));
     final locale = Localizations.localeOf(context);
     // Hinglish reads Latin script: weekday names in English, not Devanagari.
@@ -548,9 +604,17 @@ class _TimeStep extends ConsumerWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            _Chip(label: l10n.bookAnyone, selected: staffId == null, onTap: () => onStaff(null)),
+            _Chip(
+              label: l10n.bookAnyone,
+              selected: staffId == null,
+              onTap: () => onStaff(null),
+            ),
             for (final s in staff)
-              _Chip(label: s.name, selected: staffId == s.id, onTap: () => onStaff(s.id)),
+              _Chip(
+                label: s.name,
+                selected: staffId == s.id,
+                onTap: () => onStaff(s.id),
+              ),
           ],
         ),
         const SizedBox(height: 20),
@@ -577,29 +641,31 @@ class _TimeStep extends ConsumerWidget {
         Text(ml.formatMediumDate(day), style: text.titleMedium),
         const SizedBox(height: 8),
         switch (slots) {
-          AsyncData(:final value) when value.isEmpty =>
-            Text(l10n.bookNoTimes, style: text.bodyLarge),
+          AsyncData(:final value) when value.isEmpty => Text(
+            l10n.bookNoTimes,
+            style: text.bodyLarge,
+          ),
           AsyncData(:final value) => Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final s in value)
-                  _Chip(
-                    label: ml.formatTimeOfDay(TimeOfDay.fromDateTime(s.startsAt)),
-                    selected: slot?.startsAt == s.startsAt,
-                    onTap: () => onSlot(s),
-                    wide: true,
-                  ),
-              ],
-            ),
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final s in value)
+                _Chip(
+                  label: ml.formatTimeOfDay(TimeOfDay.fromDateTime(s.startsAt)),
+                  selected: slot?.startsAt == s.startsAt,
+                  onTap: () => onSlot(s),
+                  wide: true,
+                ),
+            ],
+          ),
           AsyncError() => _Retry(
-              message: l10n.bookTimesFailed,
-              onRetry: () => ref.invalidate(_slotsProvider(key)),
-            ),
+            message: l10n.bookTimesFailed,
+            onRetry: () => ref.invalidate(_slotsProvider(key)),
+          ),
           _ => const Padding(
-              padding: EdgeInsets.all(24),
-              child: Center(child: CircularProgressIndicator()),
-            ),
+            padding: EdgeInsets.all(24),
+            child: Center(child: CircularProgressIndicator()),
+          ),
         },
       ],
     );
@@ -607,7 +673,12 @@ class _TimeStep extends ConsumerWidget {
 }
 
 class _Chip extends StatelessWidget {
-  const _Chip({required this.label, required this.selected, required this.onTap, this.wide = false});
+  const _Chip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.wide = false,
+  });
 
   final String label;
   final bool selected;
@@ -633,7 +704,9 @@ class _Chip extends StatelessWidget {
           decoration: BoxDecoration(
             color: selected ? scheme.primary : g.card,
             borderRadius: BorderRadius.circular(g.radiusChip + 4),
-            border: Border.all(color: selected ? scheme.primary : scheme.outline),
+            border: Border.all(
+              color: selected ? scheme.primary : scheme.outline,
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -730,7 +803,9 @@ class _Review extends ConsumerWidget {
     final text = Theme.of(context).textTheme;
     final ml = MaterialLocalizations.of(context);
     final staff = ref.watch(bookableStaffProvider).value ?? const [];
-    final stylist = staff.where((s) => s.id == slot.staffId).firstOrNull?.name ?? l10n.bookAnyone;
+    final stylist =
+        staff.where((s) => s.id == slot.staffId).firstOrNull?.name ??
+        l10n.bookAnyone;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -738,16 +813,23 @@ class _Review extends ConsumerWidget {
         DetailRow(label: l10n.bookService, value: service.name),
         DetailRow(
           label: l10n.bookAddOns,
-          value: addOns.isEmpty ? l10n.bookNone : addOns.map((a) => a.name).join(', '),
+          value: addOns.isEmpty
+              ? l10n.bookNone
+              : addOns.map((a) => a.name).join(', '),
         ),
         DetailRow(label: l10n.bookStylist, value: stylist),
         DetailRow(
           label: l10n.bookDateTime,
-          value: '${ml.formatShortMonthDay(slot.startsAt)} · '
+          value:
+              '${ml.formatShortMonthDay(slot.startsAt)} · '
               '${ml.formatTimeOfDay(TimeOfDay.fromDateTime(slot.startsAt))}',
         ),
         DetailRow(label: l10n.bookTakesAbout, value: l10n.bookMinutes(minutes)),
-        DetailRow(label: l10n.bookTotal, value: rupees(totalPaise), emphasis: true),
+        DetailRow(
+          label: l10n.bookTotal,
+          value: rupees(totalPaise),
+          emphasis: true,
+        ),
         const SizedBox(height: 20),
         Text(l10n.bookPayAfter, style: text.bodyMedium),
         const SizedBox(height: 8),
@@ -760,7 +842,12 @@ class _Review extends ConsumerWidget {
 /// Label left, value right, a hairline under it - the review and the booking
 /// detail share it.
 class DetailRow extends StatelessWidget {
-  const DetailRow({required this.label, required this.value, this.emphasis = false, super.key});
+  const DetailRow({
+    required this.label,
+    required this.value,
+    this.emphasis = false,
+    super.key,
+  });
 
   final String label;
   final String value;
@@ -772,16 +859,23 @@ class DetailRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
+        border: Border(
+          bottom: BorderSide(color: Theme.of(context).dividerColor),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Both sides may wrap: at 200% text a fixed-width label pushed the
-          // value off the screen (the screen sweep, IMPLEMENTATION 7).
-          Flexible(
+          // value off the screen (the screen sweep, IMPLEMENTATION 7). Both
+          // take a fixed share, so every value ends on the same right edge -
+          // a loose label left the gap at the END, and the values zig-zagged.
+          Expanded(
             flex: 2,
-            child: Text(label, style: emphasis ? text.titleMedium : text.bodyMedium),
+            child: Text(
+              label,
+              style: emphasis ? text.titleMedium : text.bodyMedium,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -841,7 +935,9 @@ class _BottomBar extends StatelessWidget {
                     // counted up: money never animates (DESIGN 6.1).
                     Text(
                       '${rupees(totalPaise!)} · ${l10n.bookMinutes(minutes)}',
-                      style: text.titleMedium?.copyWith(fontFeatures: moneyFeatures),
+                      style: text.titleMedium?.copyWith(
+                        fontFeatures: moneyFeatures,
+                      ),
                     ),
                   ],
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/ui/load_failed.dart';
 import '../../core/format/money.dart';
 import '../../core/theme/chart_palette.dart';
 import '../../domain/dashboard/dashboard.dart';
@@ -44,22 +45,12 @@ class DashboardScreen extends ConsumerWidget {
       body: SafeArea(
         child: switch (dashboard) {
           AsyncData(:final value) => RefreshIndicator(
-              onRefresh: () async => ref.invalidate(dashboardProvider),
-              child: _Body(value),
-            ),
-          AsyncError() => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(l10n.joinOffline),
-                  const SizedBox(height: 12),
-                  OutlinedButton(
-                    onPressed: () => ref.invalidate(dashboardProvider),
-                    child: Text(l10n.retry),
-                  ),
-                ],
-              ),
-            ),
+            onRefresh: () async => ref.invalidate(dashboardProvider),
+            child: _Body(value),
+          ),
+          AsyncError() => LoadFailed(
+            onRetry: () => ref.invalidate(dashboardProvider),
+          ),
           _ => const Center(child: CircularProgressIndicator()),
         },
       ),
@@ -89,37 +80,46 @@ class _Body extends StatelessWidget {
 
         Text(l10n.dashToday, style: text.titleMedium),
         const SizedBox(height: 8),
-        _TileGrid(tiles: [
-          _Tile(label: l10n.dashRevenue, value: rupees(d.revenuePaise)),
-          _Tile(label: l10n.dashCompleted, value: '${d.completed}'),
-          _Tile(
-            label: l10n.dashAvgBill,
-            // An average of nothing is not zero.
-            value: d.avgBillPaise == null ? l10n.dashNoAverage : rupees(d.avgBillPaise!),
-          ),
-          _Tile(
-            label: l10n.dashBookings,
-            value: '${d.bookingsLive}',
-            caption: l10n.dashCancelledNoShow(d.cancelled, d.noShow),
-          ),
-        ]),
+        _TileGrid(
+          tiles: [
+            _Tile(label: l10n.dashRevenue, value: rupees(d.revenuePaise)),
+            _Tile(label: l10n.dashCompleted, value: '${d.completed}'),
+            _Tile(
+              label: l10n.dashAvgBill,
+              // An average of nothing is not zero.
+              value: d.avgBillPaise == null
+                  ? l10n.dashNoAverage
+                  : rupees(d.avgBillPaise!),
+            ),
+            _Tile(
+              label: l10n.dashBookings,
+              value: '${d.bookingsLive}',
+              caption: l10n.dashCancelledNoShow(d.cancelled, d.noShow),
+            ),
+          ],
+        ),
 
         const SizedBox(height: 24),
         Text(l10n.dashThisMonth, style: text.titleMedium),
         const SizedBox(height: 8),
-        _TileGrid(tiles: [
-          _Tile(
-            label: l10n.dashNewRepeat,
-            value: '${d.newCustomers} / ${d.repeatCustomers}',
-          ),
-          _Tile(label: l10n.dashWalletCollected, value: rupees(d.walletCollectedPaise)),
-          _Tile(
-            label: l10n.dashOutstanding,
-            value: rupees(d.outstandingCreditPaise),
-            caption: l10n.dashOutstandingNote,
-          ),
-          _Tile(label: l10n.dashBinds, value: '${d.binds}'),
-        ]),
+        _TileGrid(
+          tiles: [
+            _Tile(
+              label: l10n.dashNewRepeat,
+              value: '${d.newCustomers} / ${d.repeatCustomers}',
+            ),
+            _Tile(
+              label: l10n.dashWalletCollected,
+              value: rupees(d.walletCollectedPaise),
+            ),
+            _Tile(
+              label: l10n.dashOutstanding,
+              value: rupees(d.outstandingCreditPaise),
+              caption: l10n.dashOutstandingNote,
+            ),
+            _Tile(label: l10n.dashBinds, value: '${d.binds}'),
+          ],
+        ),
 
         const SizedBox(height: 24),
         _MessagingCard(d),
@@ -175,7 +175,10 @@ class _Tile extends StatelessWidget {
             Text(label, style: text.labelMedium),
             const SizedBox(height: 4),
             // Tabular figures, and never animated (DESIGN 6.1).
-            Text(value, style: text.headlineSmall?.copyWith(fontFeatures: moneyFeatures)),
+            Text(
+              value,
+              style: text.headlineSmall?.copyWith(fontFeatures: moneyFeatures),
+            ),
             if (caption != null) ...[
               const SizedBox(height: 4),
               Text(caption!, style: text.bodySmall),
@@ -200,7 +203,9 @@ class _Notice extends StatelessWidget {
       children: [
         Icon(icon, size: 20, color: ChartPalette.warning),
         const SizedBox(width: 8),
-        Expanded(child: Text(text, style: Theme.of(context).textTheme.bodyMedium)),
+        Expanded(
+          child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
+        ),
       ],
     );
   }
@@ -228,11 +233,19 @@ class _MessagingCard extends StatelessWidget {
             Text(l10n.dashMessagingTitle, style: text.titleSmall),
             const SizedBox(height: 12),
             Text(l10n.dashSpend, style: text.labelMedium),
-            Text(rupees(d.totalSpendPaise),
-                style: text.headlineSmall?.copyWith(fontFeatures: moneyFeatures)),
+            Text(
+              rupees(d.totalSpendPaise),
+              style: text.headlineSmall?.copyWith(fontFeatures: moneyFeatures),
+            ),
             const SizedBox(height: 8),
-            Text(l10n.dashRemindersSent(d.remindersSent), style: text.bodyMedium),
-            Text(l10n.dashReminderBookings(d.reminderBookings), style: text.bodyMedium),
+            Text(
+              l10n.dashRemindersSent(d.remindersSent),
+              style: text.bodyMedium,
+            ),
+            Text(
+              l10n.dashReminderBookings(d.reminderBookings),
+              style: text.bodyMedium,
+            ),
             const SizedBox(height: 4),
             // Every acked push is money the owner did not spend (ARCH 12.4).
             Text(l10n.dashPushSaved(d.ackedPushes), style: text.bodySmall),
@@ -261,7 +274,10 @@ class _CohortSectionState extends State<_CohortSection> {
 
   List<DateTime> get _months {
     final seen = <DateTime>{};
-    return [for (final c in widget.cohorts) if (seen.add(c.month)) c.month];
+    return [
+      for (final c in widget.cohorts)
+        if (seen.add(c.month)) c.month,
+    ];
   }
 
   @override
@@ -283,7 +299,8 @@ class _CohortSectionState extends State<_CohortSection> {
 
     // The most recent cohort with ANY known rate, by default: the newest cohort
     // is usually unripe and would open on a chart of "not yet".
-    final selected = _month ??
+    final selected =
+        _month ??
         months.lastWhere(
           (m) => widget.cohorts.any((c) => c.month == m && c.d30 != null),
           orElse: () => months.last,
@@ -324,8 +341,14 @@ class _CohortSectionState extends State<_CohortSection> {
         Wrap(
           spacing: 16,
           children: [
-            _LegendKey(color: ChartPalette.series1(brightness), label: l10n.dashCohortWallet),
-            _LegendKey(color: ChartPalette.series2(brightness), label: l10n.dashCohortNoWallet),
+            _LegendKey(
+              color: ChartPalette.series1(brightness),
+              label: l10n.dashCohortWallet,
+            ),
+            _LegendKey(
+              color: ChartPalette.series2(brightness),
+              label: l10n.dashCohortNoWallet,
+            ),
           ],
         ),
         const SizedBox(height: 4),
@@ -365,7 +388,10 @@ class _LegendKey extends StatelessWidget {
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4)),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(4),
+          ),
         ),
         const SizedBox(width: 8),
         // Text wears ink, never the series colour (DESIGN 9.3).
@@ -389,10 +415,10 @@ class _BarGroup extends StatelessWidget {
   final Brightness brightness;
 
   double? _rate(CohortRow? r) => switch (days) {
-        30 => r?.d30,
-        60 => r?.d60,
-        _ => r?.d90,
-      };
+    30 => r?.d30,
+    60 => r?.d60,
+    _ => r?.d90,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -402,7 +428,10 @@ class _BarGroup extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.dashCohortWithin(days), style: Theme.of(context).textTheme.labelMedium),
+          Text(
+            l10n.dashCohortWithin(days),
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
           const SizedBox(height: 4),
           _Bar(
             rate: _rate(wallet),
@@ -468,11 +497,16 @@ class _Bar extends StatelessWidget {
                       height: 20,
                       alignment: Alignment.centerLeft,
                       decoration: BoxDecoration(
-                        border: Border.all(color: ChartPalette.gridline(brightness)),
+                        border: Border.all(
+                          color: ChartPalette.gridline(brightness),
+                        ),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(l10n.dashCohortNotYet, style: text.labelSmall),
+                      child: Text(
+                        l10n.dashCohortNotYet,
+                        style: text.labelSmall,
+                      ),
                     );
                   }
                   return Stack(
@@ -523,8 +557,10 @@ class _CohortTable extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppL10n.of(context);
     final loc = MaterialLocalizations.of(context);
-    final style = Theme.of(context).textTheme.bodySmall?.copyWith(fontFeatures: moneyFeatures);
-    String pct(double? v) => v == null ? l10n.dashCohortNotYet : '${v.toStringAsFixed(1)}%';
+    final style = Theme.of(context).textTheme.bodySmall
+        ?.copyWith(fontFeatures: moneyFeatures);
+    String pct(double? v) =>
+        v == null ? l10n.dashCohortNotYet : '${v.toStringAsFixed(1)}%';
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -541,17 +577,23 @@ class _CohortTable extends StatelessWidget {
         ],
         rows: [
           for (final c in cohorts)
-            DataRow(cells: [
-              DataCell(Text(loc.formatMonthYear(c.month), style: style)),
-              DataCell(Text(
-                c.segment == 'wallet' ? l10n.dashCohortWallet : l10n.dashCohortNoWallet,
-                style: style,
-              )),
-              DataCell(Text('${c.n}', style: style)),
-              DataCell(Text(pct(c.d30), style: style)),
-              DataCell(Text(pct(c.d60), style: style)),
-              DataCell(Text(pct(c.d90), style: style)),
-            ]),
+            DataRow(
+              cells: [
+                DataCell(Text(loc.formatMonthYear(c.month), style: style)),
+                DataCell(
+                  Text(
+                    c.segment == 'wallet'
+                        ? l10n.dashCohortWallet
+                        : l10n.dashCohortNoWallet,
+                    style: style,
+                  ),
+                ),
+                DataCell(Text('${c.n}', style: style)),
+                DataCell(Text(pct(c.d30), style: style)),
+                DataCell(Text(pct(c.d60), style: style)),
+                DataCell(Text(pct(c.d90), style: style)),
+              ],
+            ),
         ],
       ),
     );

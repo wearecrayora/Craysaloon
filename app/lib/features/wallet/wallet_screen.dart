@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/format/money.dart';
+import '../../core/ui/load_failed.dart';
 import '../../domain/wallet/wallet.dart';
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
@@ -67,7 +68,7 @@ class WalletScreen extends ConsumerWidget {
             ),
           ),
           // Money is never served stale. Offline, this says so (RULES 5).
-          AsyncError() => _Failed(
+          AsyncError() => LoadFailed(
             onRetry: () => ref.invalidate(walletProvider),
           ),
           _ => const Center(child: CircularProgressIndicator()),
@@ -190,27 +191,6 @@ class _EntryRow extends StatelessWidget {
         // as a positive number is how a statement stops being checkable.
         '${entry.amountPaise > 0 ? '+' : ''}${rupees(entry.amountPaise)}',
         style: text.bodyMedium?.copyWith(fontFeatures: moneyFeatures),
-      ),
-    );
-  }
-}
-
-class _Failed extends StatelessWidget {
-  const _Failed({required this.onRetry});
-
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppL10n.of(context);
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(l10n.joinOffline, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 12),
-          OutlinedButton(onPressed: onRetry, child: Text(l10n.retry)),
-        ],
       ),
     );
   }

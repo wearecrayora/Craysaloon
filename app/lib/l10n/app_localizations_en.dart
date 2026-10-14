@@ -1682,4 +1682,29 @@ class AppL10nEn extends AppL10n {
   @override
   String get dayEmptyBody =>
       'Bookings and walk-ins appear here as they come in.';
+
+  @override
+  String get yourDataLoadFailed =>
+      'We could not load your choices. Check your connection and try again.';
+
+  @override
+  String get addMoneyOtherAmount => 'Or type an amount';
+
+  @override
+  String get walkInChooseCustomer => 'Choose a customer';
+
+  @override
+  String get walkInChooseService => 'Choose a service';
+
+  @override
+  String get walkInPickServiceFirst =>
+      'Choose a service to see the free times.';
+
+  @override
+  String get walkInNoCustomers =>
+      'No customers yet. A walk-in joins first by scanning your QR code.';
+
+  @override
+  String get catalogueEmptyCanAdd =>
+      'Nothing here yet. Tap Add to put the first one on the menu.';
 }

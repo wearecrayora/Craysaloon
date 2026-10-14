@@ -14,7 +14,9 @@ import 'wallet_controller.dart';
 /// Razorpay Checkout, against the salon's own account. Overridden with a fake
 /// in tests: a pay button has to be testable without a payment gateway, and
 /// nothing about the money may depend on which implementation is installed.
-final paymentSheetProvider = Provider<PaymentSheet>((ref) => RazorpayPaymentSheet());
+final paymentSheetProvider = Provider<PaymentSheet>(
+  (ref) => RazorpayPaymentSheet(),
+);
 
 /// The amounts offered, in paise. Round numbers a customer would hand over at a
 /// counter; the field below them takes anything the salon allows.
@@ -84,8 +86,9 @@ class _AddMoneyScreenState extends ConsumerState<AddMoneyScreen> {
         amountPaise: _amountPaise,
       );
 
-      final outcome =
-          await ref.read(paymentSheetProvider).open(order, salonName: salonName);
+      final outcome = await ref
+          .read(paymentSheetProvider)
+          .open(order, salonName: salonName);
 
       if (!mounted) return;
       setState(() {
@@ -103,8 +106,9 @@ class _AddMoneyScreenState extends ConsumerState<AddMoneyScreen> {
       if (!mounted) return;
       setState(() {
         _message = switch (e.problem) {
-          TopupProblem.belowMinimum =>
-            l10n.addMoneyBelowMinimum(rupees(e.minTopupPaise ?? 0)),
+          TopupProblem.belowMinimum => l10n.addMoneyBelowMinimum(
+            rupees(e.minTopupPaise ?? 0),
+          ),
           TopupProblem.invalidAmount => l10n.addMoneyInvalid,
           TopupProblem.paymentsUnavailable => l10n.addMoneyUnavailable,
           TopupProblem.salonUnavailable => l10n.joinSalonUnavailable,
@@ -128,7 +132,10 @@ class _AddMoneyScreenState extends ConsumerState<AddMoneyScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(l10n.addMoneyAmount, style: Theme.of(context).textTheme.labelLarge),
+            Text(
+              l10n.addMoneyAmount,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -146,7 +153,10 @@ class _AddMoneyScreenState extends ConsumerState<AddMoneyScreen> {
             TextField(
               controller: _controller,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(prefixText: '₹ '),
+              decoration: InputDecoration(
+                prefixText: '₹ ',
+                labelText: l10n.addMoneyOtherAmount,
+              ),
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               onChanged: (value) {
                 final rupeesTyped = int.tryParse(value) ?? 0;
@@ -163,14 +173,18 @@ class _AddMoneyScreenState extends ConsumerState<AddMoneyScreen> {
             // The disclosure block. Above the pay button, always visible.
             // ---------------------------------------------------------------
             switch (quote) {
-              AsyncData(:final value) =>
-                _Disclosure(quote: value, salonName: salonName),
-              AsyncError() => Text(l10n.joinOffline,
-                  style: Theme.of(context).textTheme.bodyMedium),
+              AsyncData(:final value) => _Disclosure(
+                quote: value,
+                salonName: salonName,
+              ),
+              AsyncError() => Text(
+                l10n.joinOffline,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               _ => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: LinearProgressIndicator(),
-                ),
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(),
+              ),
             },
 
             const SizedBox(height: 24),
@@ -181,7 +195,9 @@ class _AddMoneyScreenState extends ConsumerState<AddMoneyScreen> {
               onPressed: _paying || quote.value == null || _amountPaise <= 0
                   ? null
                   : () => _pay(quote.value!, salonName),
-              child: Text(_paying ? '…' : l10n.addMoneyPay(rupees(_amountPaise))),
+              child: Text(
+                _paying ? '…' : l10n.addMoneyPay(rupees(_amountPaise)),
+              ),
             ),
             if (_message != null) ...[
               const SizedBox(height: 16),
@@ -214,8 +230,10 @@ class _Disclosure extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.addMoneyDisclosureHeading,
-                style: Theme.of(context).textTheme.titleSmall),
+            Text(
+              l10n.addMoneyDisclosureHeading,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
             const SizedBox(height: 8),
             Text(
               quote.hasBonus

@@ -466,5 +466,12 @@
   "homeWithStylist": "{name} ke saath",
   "dayHeaderSummary": "{booked} book · {done} poore",
   "dayEmptyTitle": "Abhi tak din shaant hai",
-  "dayEmptyBody": "Booking aur walk-in aate hi yahan dikhenge."
+  "dayEmptyBody": "Booking aur walk-in aate hi yahan dikhenge.",
+  "yourDataLoadFailed": "Aapki pasand load nahin ho saki. Internet jaanchein aur phir koshish karein.",
+  "addMoneyOtherAmount": "Ya rakam likhein",
+  "walkInChooseCustomer": "Customer chunein",
+  "walkInChooseService": "Service chunein",
+  "walkInPickServiceFirst": "Khaali samay dekhne ke liye service chunein.",
+  "walkInNoCustomers": "Abhi koi customer nahin. Walk-in customer pehle aapka QR code scan karke judein.",
+  "catalogueEmptyCanAdd": "Abhi yahan kuch nahi. Menu mein pehla jodne ke liye Add dabayein."
 }
