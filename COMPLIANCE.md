@@ -273,10 +273,10 @@ WhatsApp are unaffected — and push is the preferred channel anyway (RULES 12).
 | 4 | ~~**Grievance contact per salon**~~ | **Done** (0053/0055 + console). The *app* half — showing it — is part of item 1 | Done |
 | 5 | Nomination (s.14) | Statutory, low volume | M12 |
 | 6 | Children's-details rule: no DOB or photos for a minor, and a consent purpose if notes are kept | s.9 applies to a note as much as to a profile | M12 |
-| 7 | R2 bucket pinned to India/APAC at creation | The sub-processor list is published now; the bucket location is a deployment instruction nobody has executed | Before first real salon |
+| 7 | ~~R2 bucket pinned to India/APAC at creation~~ | **Done.** Both buckets (`craysalon-assets`, `craysalon-brand`) report location APAC (checked 14 Oct 2026) | Done |
 | 7b | Fill the privacy policy's placeholders, and have a lawyer read it | A published policy naming nobody is evidence the obligation was noticed and skipped | Before first real salon |
-| 7c | Hindi and Hinglish translations of the policy | The app ships three languages; the notice behind it must too | M13 |
-| 8 | Test a backup restore | An untested backup is a belief, not a safeguard. **Built** (M12): `restore-drill.yml` restores into an empty stack, re-seeds the pepper, verifies and runs every gate. **First run owed** - needs `RESTORE_DRILL_DB_URL` and `RESTORE_DRILL_PEPPER` as repository secrets | Before first real salon |
+| 7c | ~~Hindi translation of the policy~~ | **Done** - and of every public page (14 Oct 2026). Hinglish readers get the English pages, as the app decides | Done |
+| 8 | Test a backup restore | An untested backup is a belief, not a safeguard. **Built** (M12): `restore-drill.yml` restores into an empty stack, re-seeds the pepper, verifies and runs every gate. **Ran green 13 Oct 2026** | Done |
 | 9 | Play Data Safety declaration + privacy policy URL | Blocks release | M13 |
 | 10 | Access-log retention aligned to 180 days in India | CERT-In. **Built** (0099): hourly copy into `ops.ict_logs`, Mumbai, 180 days | Before first real salon |
 

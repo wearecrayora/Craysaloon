@@ -410,8 +410,8 @@ from the server and never guessed), add-on-to-service links in the console (with
 caller 5 had no screen). In CI, with a canary.
 
 **Still open:** customer bind *rate* needs durable join-attempt counting (join intents are deleted
-at login); the owner's daily summary push needs owner device registration; the owner cannot yet set
-bonus expiry in the app (O10), which RULES says is theirs.
+at login); the owner's daily summary push (owner devices register since 0108). ~~O10 bonus expiry~~
+is built (the owner sets it on Rules).
 
 **Added 2026-09-29 - start code and the customer paying their own bill** (PRD §9.2a; 0083-0086;
 `booking/start_and_pay_test.sql`, 34 assertions + two canaries; 16 app tests). Revised the same
@@ -447,8 +447,8 @@ a lapsed salon's **own people can still log in** - the login check moved to `sal
 a first join needs the salon writable. Activation now refuses an unpaid setup fee, which the
 console could not record at all before this milestone.
 
-**Still open:** there is no channel to the owner for the notices (a notice is a call Crayora
-makes; the app shows the state when opened) - owner push registration would close it · plan
+**Still open:** billing notices are not yet pushed to the owner - owner devices register since 0108,
+so this is now a trigger, not a channel · plan
 tiers are PRD §21 Q-A: every plan carries every feature until the pilot prices them · a mistaken
 subscription payment has no reversal action yet · the purge itself is M12 · the full O12 screen
 waits for the designs.
@@ -555,7 +555,7 @@ Do not take money from a salon owner until **all** of these hold. This is the on
 - [ ] ⚖️ CA has confirmed GST treatment and the retention period
 - [ ] Grievance officer named and contactable, for the salon and for Crayora
 - [ ] Breach-notification runbook written **and rehearsed**
-- [ ] Backup restore **rehearsed**, not merely configured
+- [x] Backup restore **rehearsed**, not merely configured (13 Oct 2026, `restore-drill.yml`)
 - [ ] The salon's outstanding-credit settlement obligation is in the signed contract
 
 ---

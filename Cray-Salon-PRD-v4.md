@@ -1496,8 +1496,8 @@ evidence is named beside it. A box left open says why - most need a person, not 
       `privacy/data_rights_test.sql`, `privacy/offboarding_test.sql`
 - [x] Every super-admin access is audit-logged - `admin/admin_plane_test.sql` (catalogue: every
       mutating `app_admin` function audits, with a negative control), `rls/bind_flow_test.sql`
-- [ ] Backup restore rehearsed - **owed**: `restore-drill.yml` is built but has never run; it
-      needs the `RESTORE_DRILL_DB_URL` and `RESTORE_DRILL_PEPPER` repository secrets
+- [x] Backup restore rehearsed - `restore-drill.yml` ran green on 13 Oct 2026: an empty stack,
+      the pepper re-seeded, every gate passing on the restored copy
 
 ---
 
