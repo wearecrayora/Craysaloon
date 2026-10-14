@@ -6,10 +6,17 @@
          for. The failure is invisible: nothing errors. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
+    <!-- No backup, no device-to-device copy. The session's refresh token and
+         the owner's offline cache (customer names and numbers) live in app
+         storage; Android backs that up by default and restores it onto another
+         phone, signed in. Logging in again is one OTP. -->
     <application
         android:label="Cray Salon"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <!-- The status-bar icon for every push. Android draws it from ALPHA
              only, so the full-colour launcher icon would show as a white
              square; this is the logo as a white silhouette (drawable-*dpi). -->

@@ -322,6 +322,29 @@ const BILL_CREDIT_MUST_FAIL = [/credits NOTHING to the wallet/];
 // PRD 14: read-only grace is enforced in the database. The billing line in
 // salon_writable is one line, and "the owner says their customers can't book"
 // is exactly the day somebody deletes it. This canary is that deletion.
+// 0107: the capture checks the payment belongs to the salon whose webhook
+// spoke. Without that, salon A's owner - who holds A's webhook secret - could
+// sign a capture naming salon B's payment, and B's ledger credits money that
+// never moved.
+const PAYMENTS_TEST = 'supabase/tests/money/payments_test.sql';
+const CROSS_CAPTURE_CANARY = `
+  do $canary$
+  declare
+    v_oid oid;
+    v_def text;
+    v_new text;
+  begin
+    select p.oid into strict v_oid from pg_proc p
+     where p.proname = 'record_payment_captured' and p.pronamespace = 'app'::regnamespace;
+    v_def := pg_get_functiondef(v_oid);
+    v_new := replace(v_def, 'or v_payment.salon_id is distinct from p_salon_id', '');
+    if v_new = v_def then raise exception 'cross-capture canary: the salon check moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+const CROSS_CAPTURE_MUST_FAIL = [/another salon's webhook cannot capture/];
+
 const BILLING_TEST = 'supabase/tests/billing/billing_test.sql';
 const GRACE_CANARY = `
   do $canary$
@@ -583,6 +606,12 @@ try {
       START_TEST,
       BILL_CREDIT_CANARY,
       BILL_CREDIT_MUST_FAIL,
+    ),
+    await check(
+      "payments / a capture that accepts another salon's payment",
+      PAYMENTS_TEST,
+      CROSS_CAPTURE_CANARY,
+      CROSS_CAPTURE_MUST_FAIL,
     ),
     await check(
       'billing / a salon_writable that ignores a lapsed subscription',

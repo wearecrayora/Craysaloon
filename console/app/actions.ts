@@ -10,6 +10,7 @@ import { logoKey, logoProblem, sha256Hex, sniffLogo } from '@/lib/logo';
 import { GST_RATES_BP } from '@/lib/gst';
 import { checkMessageCentralCredentials } from '@/server/message-central-check';
 import { parseRupees } from '@/lib/money';
+import { scrub } from '@/lib/scrub';
 import {
   activateSalon,
   provisionSalon,
@@ -119,7 +120,8 @@ function message(e: unknown): string {
   // The message and SQLSTATE go to Workers Logs; never `detail`, which can
   // carry the values that were submitted (a phone, an email).
   const code = (e as { code?: unknown } | null)?.code;
-  console.error(`console action failed${typeof code === 'string' ? ` [${code}]` : ''}: ${raw.slice(0, 500)}`);
+  // Scrubbed too: our own functions sometimes name the value they refused.
+  console.error(`console action failed${typeof code === 'string' ? ` [${code}]` : ''}: ${scrub(raw.slice(0, 500))}`);
   return 'Something went wrong. The action was not applied.';
 }
 

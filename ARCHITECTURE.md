@@ -1093,9 +1093,16 @@ Each salon has an opaque `webhook_token`. Razorpay is configured to call
 1. Resolve the salon **from the path token** — never from the request body, which is
    attacker-controlled.
 2. Fetch that salon's webhook secret from Vault; verify the signature.
-3. Dedupe on `webhook_events(provider, event_id)` — insert first, then process.
-4. Re-verify the amount against the order before posting any credit.
-5. On signature failure: reject, count, and alert. Repeated failures on one salon mean either a
+3. Record the event in `webhook_events(provider, event_id)`. A repeated **capture** is NOT
+   short-circuited: the capture is idempotent, and a capture that failed with a 500 used to come
+   back on Razorpay's retry as a "duplicate" and never credit (0107).
+4. **Fetch the payment from Razorpay's API** with the salon's keys and take the status, amount and
+   order from there, never the body (0107). A valid signature proves only that the holder of the
+   webhook secret wrote it - and the salon owner holds it, since it is their Razorpay account.
+5. Capture only a payment of **that salon**, made against **the order we created** for it, for the
+   amount it was created for (`app.record_payment_captured(payment, rzp_payment, amount, salon,
+   order)`, 0107). Another salon's payment answers exactly like no payment.
+6. On signature failure: reject, count, and alert. Repeated failures on one salon mean either a
    rotation went wrong or someone is probing.
 
 ---
@@ -1777,7 +1784,10 @@ shares a transaction with the thing it guards.
 | Cross-tenant disclosure via the bind error | `already_bound` never names the other salon; asserted in the leak test |
 | Phone-number recovery from a DB dump | Peppered HMAC with the pepper in Vault, not in the table |
 | Per-salon credential theft | Vault at rest, write-only API, service-role-only decryption, never logged, rotation without disclosure |
-| Webhook spoofing | Tenant resolved from the path token (not the body), per-salon signature, event-id dedupe, amount re-verification |
+| Webhook spoofing | Tenant resolved from the path token (not the body), per-salon signature, and then **Razorpay's API, not the body, says what was paid**; the capture must match that salon and our order (0107) |
+| **A salon owner forging a capture** (they hold their own webhook secret) | The webhook re-fetches the payment from Razorpay with the salon's keys; a body naming another salon's payment is refused as `no_such_payment` (0107) |
+| **Rotating `X-Forwarded-For` to dodge rate limits** | `app.caller_key()` uses `cf-connecting-ip`, which Cloudflare overwrites; never the left-most forwarded entry, which the client writes (0107, verified against the live API) |
+| Backup of a signed-in device | `allowBackup="false"` and data-extraction rules: the session and the owner's offline cache never go to cloud backup or a new phone |
 | Malicious owner exfiltrating another tenant | Structurally impossible under forced RLS; proven per-table, per-release |
 | Insider access via the console | MFA, time-boxed support mode, mandatory reason, audit written in the same transaction, masked PII by default |
 | **Owner or manager manipulating a customer's balance** | **No such path exists** (§6.4) — not a permission that is off, an absence. The five ledger callers are asserted by test |

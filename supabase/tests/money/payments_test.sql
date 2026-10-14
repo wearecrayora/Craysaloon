@@ -11,7 +11,7 @@
 --   * the salon comes from the URL token, never from the body
 --   * there is still exactly ONE function that reads a decrypted credential
 
-select plan(25);
+select plan(28);
 
 -- ---------------------------------------------------------------------------
 -- The credential door
@@ -38,7 +38,7 @@ select is(
   (select count(*)::int from pg_proc p
     where p.oid in ('public.salon_provider_secret(uuid,public.integration_provider)'::regprocedure,
                     'public.salon_by_webhook_token(text)'::regprocedure,
-                    'app.record_payment_captured(uuid,text,bigint)'::regprocedure,
+                    'app.record_payment_captured(uuid,text,bigint,uuid,text)'::regprocedure,
                     'app.webhook_seen(text,text,uuid,jsonb)'::regprocedure)
       and (has_function_privilege('authenticated', p.oid, 'EXECUTE')
         or has_function_privilege('anon', p.oid, 'EXECUTE'))),
@@ -187,10 +187,41 @@ select is(
 -- The webhook's work
 -- ---------------------------------------------------------------------------
 
+-- create-payment-order attaches the Razorpay order before checkout opens (0050).
+reset role;
+update public.payments set razorpay_order_id = 'order_PAY_1'
+ where id = (select (r ->> 'payment_id')::uuid from started);
+
+-- 0107: salon A's webhook cannot capture salon B's payment. The owner of A holds
+-- A's webhook secret and can sign anything; the token says which salon spoke.
+select is(
+  (app.record_payment_captured(
+     (select (r ->> 'payment_id')::uuid from started), 'pay_OTHER', 100000,
+     'ffffffff-0000-4000-8000-000000000001', 'order_PAY_1') ->> 'reason'),
+  'no_such_payment',
+  'another salon''s webhook cannot capture this salon''s payment - it does not even learn it exists'
+);
+
+select is(
+  (app.record_payment_captured(
+     (select (r ->> 'payment_id')::uuid from started), 'pay_OTHER', 100000,
+     'aaaaaaab-0000-4000-8000-000000000001', 'order_SOMEONE_ELSE') ->> 'reason'),
+  'order_mismatch',
+  'nor can a payment made against some other order'
+);
+
+select is(
+  (select status::text from public.payments
+    where id = (select (r ->> 'payment_id')::uuid from started)),
+  'created',
+  'and neither attempt touched the payment'
+);
+
 -- A wrong amount is refused outright: the body is not evidence of what was owed.
 select is(
   (app.record_payment_captured(
-     (select (r ->> 'payment_id')::uuid from started), 'pay_FAKE', 50000) ->> 'reason'),
+     (select (r ->> 'payment_id')::uuid from started), 'pay_FAKE', 50000,
+     'aaaaaaab-0000-4000-8000-000000000001', 'order_PAY_1') ->> 'reason'),
   'amount_mismatch',
   'a webhook claiming a different amount is refused, not partially accepted'
 );
@@ -205,7 +236,8 @@ select is(
 -- The real capture.
 create temp table captured as
 select app.record_payment_captured(
-  (select (r ->> 'payment_id')::uuid from started), 'pay_REAL_1', 100000) as r;
+  (select (r ->> 'payment_id')::uuid from started), 'pay_REAL_1', 100000,
+  'aaaaaaab-0000-4000-8000-000000000001', 'order_PAY_1') as r;
 
 select is((select r ->> 'ok' from captured), 'true', 'the correct amount captures');
 
@@ -226,7 +258,8 @@ select is(
 -- Redelivery. This is the normal case, not an error.
 select is(
   (app.record_payment_captured(
-     (select (r ->> 'payment_id')::uuid from started), 'pay_REAL_1', 100000) ->> 'already'),
+     (select (r ->> 'payment_id')::uuid from started), 'pay_REAL_1', 100000,
+     'aaaaaaab-0000-4000-8000-000000000001', 'order_PAY_1') ->> 'already'),
   'true',
   'a redelivered webhook is a no-op'
 );

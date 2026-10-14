@@ -119,7 +119,10 @@
 </main>
 <script>
   // The code is the last path segment: /s/CRAY-XXXXXX
-  var raw = decodeURIComponent(location.pathname.split('/').filter(Boolean).pop() || '');
+  var raw = location.pathname.split('/').filter(Boolean).pop() || '';
+  // A torn link ("%E0") makes decodeURIComponent throw, which stopped this
+  // script before it could say the code was unreadable.
+  try { raw = decodeURIComponent(raw); } catch (e) { raw = ''; }
   var code = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
   if (code.indexOf('CRAY') === 0) code = code.slice(4);
   // Same alphabet as the printed code: no 0/O, 1/I/L (ARCHITECTURE 5.6).

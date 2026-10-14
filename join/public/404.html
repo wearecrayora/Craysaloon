@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found · Cray Salon</title>
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<!--
+  Any address nothing else answers. Every printed QR goes to /s/<code>, so a
+  visitor here typed or mangled a link: say so plainly, and point at the two
+  ways in. It names no salon (RULES 2).
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --ink: #0f1530; --ink-soft: #4a4f66; --violet: #4b47ff;
+    --card: rgba(255, 255, 255, 0.74); --line: rgba(15, 21, 48, 0.08); --bg: #f7f5fb;
+    --chip: rgba(75, 71, 255, 0.07);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #f2f1f8; --ink-soft: #b6b4c8; --violet: #9a97ff;
+      --card: rgba(28, 27, 40, 0.72); --line: rgba(255, 255, 255, 0.09); --bg: #13121c;
+      --chip: rgba(154, 151, 255, 0.12);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; padding: 28px 16px;
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background:
+      url(/still-life-light.svg) center / cover no-repeat fixed,
+      radial-gradient(70% 45% at 0% 0%, rgba(75, 71, 255, 0.12), transparent 70%),
+      radial-gradient(60% 40% at 100% 100%, rgba(232, 160, 196, 0.16), transparent 70%),
+      var(--bg);
+    display: grid; place-items: center;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background-image:
+      url(/still-life-dark.svg),
+      radial-gradient(70% 45% at 0% 0%, rgba(110, 106, 255, 0.18), transparent 70%),
+      radial-gradient(60% 40% at 100% 100%, rgba(232, 160, 196, 0.08), transparent 70%); }
+  }
+  main {
+    width: 100%; max-width: 27rem; text-align: center;
+    background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+    padding: 32px 24px 24px;
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    box-shadow: 0 24px 60px rgba(15, 21, 48, 0.12);
+  }
+  img { width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 6px 18px rgba(15,21,48,.14); }
+  h1 { font-size: 26px; margin: 16px 0 6px; letter-spacing: -.01em; }
+  p { margin: 0 0 14px; color: var(--ink-soft); }
+  a { color: var(--violet); text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <img src="/icon-192.png" alt="" width="72" height="72">
+  <h1>This page does not exist</h1>
+  <p>If you scanned a salon's QR code, scan it again - or ask at the counter for the salon's code and enter it in the app.</p>
+  <p style="margin:0"><a href="/">Cray Salon home</a> · <a href="/privacy">Privacy</a></p>
+</main>
+</body>
+</html>

@@ -84,8 +84,12 @@ select case when salon_id = '55555555-0000-4000-8000-000000000001'
             else '55555555-9999-4000-8000-000000000002'::uuid end,
        salon_id, id, 'upi', 100000, 'created', 'order_' || left(id::text, 8), 'offboard-' || id
   from people;
-select app.record_payment_captured('55555555-9999-4000-8000-000000000001', 'pay_off_1', 100000);
-select app.record_payment_captured('55555555-9999-4000-8000-000000000002', 'pay_off_2', 100000);
+-- The salon and the order come from the row itself, as rzp-webhook gets them
+-- from the token and from Razorpay (0107).
+select app.record_payment_captured(p.id, 'pay_off_' || right(p.id::text, 1), p.amount_paise,
+                                   p.salon_id, p.razorpay_order_id)
+  from public.payments p
+ where p.id in ('55555555-9999-4000-8000-000000000001', '55555555-9999-4000-8000-000000000002');
 
 -- Operational personal data that must go.
 insert into public.notification_tokens (salon_id, customer_id, token, platform)

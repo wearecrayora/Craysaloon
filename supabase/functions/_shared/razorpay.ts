@@ -98,6 +98,46 @@ export async function createOrder(
  * The raw body matters - re-serialising parsed JSON changes bytes and breaks the
  * signature, so callers must pass the text exactly as received.
  */
+export type FetchedPayment =
+  | { ok: true; status: string; amountPaise: number; orderId: string | null }
+  | { ok: false; reason: string };
+
+/**
+ * The payment as RAZORPAY holds it, with the salon's own keys (0107).
+ *
+ * A valid webhook signature proves only that whoever holds the salon's webhook
+ * secret wrote the body - and the salon owner holds it, because it is their
+ * Razorpay account. Razorpay's API cannot be written by anyone but Razorpay, so
+ * the status, the amount and the order are taken from here, never the body.
+ */
+export async function fetchPayment(creds: RazorpayCreds, rzpPaymentId: string): Promise<FetchedPayment> {
+  if (!/^pay_[A-Za-z0-9]+$/.test(rzpPaymentId)) return { ok: false, reason: 'bad_payment_id' };
+  const auth = btoa(`${creds.keyId}:${creds.keySecret}`);
+  let response: Response;
+  try {
+    response = await fetch(`https://api.razorpay.com/v1/payments/${rzpPaymentId}`, {
+      headers: { Authorization: `Basic ${auth}` },
+      signal: AbortSignal.timeout(15000),
+    });
+  } catch {
+    return { ok: false, reason: 'gateway_unreachable' };
+  }
+  if (!response.ok) {
+    console.log(JSON.stringify({ razorpay_payment_fetch_failed: response.status }));
+    return { ok: false, reason: response.status === 404 ? 'no_such_payment' : 'gateway_refused' };
+  }
+  const body = (await response.json()) as { status?: unknown; amount?: unknown; order_id?: unknown };
+  if (typeof body.status !== 'string' || typeof body.amount !== 'number') {
+    return { ok: false, reason: 'gateway_refused' };
+  }
+  return {
+    ok: true,
+    status: body.status,
+    amountPaise: body.amount,
+    orderId: typeof body.order_id === 'string' ? body.order_id : null,
+  };
+}
+
 export async function verifyWebhook(
   secret: string,
   rawBody: string,

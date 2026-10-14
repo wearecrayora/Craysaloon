@@ -345,10 +345,16 @@ select is((select r ->> 'amount_paise' from upi), '25000',
 
 reset role;
 
+-- create-payment-order attaches the Razorpay order (0050).
+update public.payments set razorpay_order_id = 'order_start_test'
+ where id = (select (r ->> 'payment_id')::uuid from upi);
+
 -- Razorpay's webhook arrives.
 select is(
   (app.record_payment_captured((select (r ->> 'payment_id')::uuid from upi),
-                               'pay_start_test', 25000) ->> 'settled'),
+                               'pay_start_test', 25000,
+                               '66666666-0000-4000-8000-000000000001',
+                               'order_start_test') ->> 'settled'),
   'paid',
   'a captured payment for a BILL settles the visit');
 

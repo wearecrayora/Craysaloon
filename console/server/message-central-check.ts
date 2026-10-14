@@ -74,7 +74,7 @@ export async function checkMessageCentralCredentials(
       ok: false,
       reason:
         'That does not look like a Message Central Customer ID. It starts with "C-", ' +
-        'for example C-84AF935335B54FC.',
+        'for example C-1A2B3C4D5E6F7A8B.',
     };
   }
 

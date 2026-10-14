@@ -17,7 +17,7 @@
 // to do: a 500 makes Razorpay retry, and retrying a webhook we have already
 // processed correctly is noise, not safety.
 
-import { parseRazorpaySecret, verifyWebhook } from '../_shared/razorpay.ts';
+import { fetchPayment, parseRazorpaySecret, verifyWebhook } from '../_shared/razorpay.ts';
 import { admin, alert, json, serve } from '../_shared/runtime.ts';
 
 serve('payments', 'rzp-webhook', async (req) => {
@@ -86,13 +86,16 @@ serve('payments', 'rzp-webhook', async (req) => {
     p_salon_id: salonId,
     p_payload: event,
   });
-  if (seen === true) return json(200, { ok: true, duplicate: true });
-
   // Only captures credit a wallet. An authorised-but-uncaptured payment is money
   // that has not arrived, and a failure is not an event to act on here.
   if (event.event !== 'payment.captured') {
-    return json(200, { ok: true, ignored: event.event ?? 'unknown' });
+    return json(200, { ok: true, ignored: event.event ?? 'unknown', duplicate: seen === true });
   }
+  // A capture is NOT short-circuited on a repeat (0107): the event is recorded
+  // before the capture runs, so a capture that failed with a 500 came back as a
+  // "duplicate" on Razorpay's retry and the money was never credited. The
+  // capture itself is idempotent - a second one answers "already".
+
 
   // Our own payment id travels in the order's notes and the receipt, so the
   // webhook can find its way back to the row we created.
@@ -105,10 +108,28 @@ serve('payments', 'rzp-webhook', async (req) => {
     return json(200, { ok: true, ignored: 'incomplete' });
   }
 
+  // The body is signed by whoever holds the webhook secret - the salon's owner
+  // among them. What Razorpay itself says is what counts (0107).
+  const fetched = await fetchPayment(creds, rzpPaymentId);
+  if (!fetched.ok) {
+    await alert('payments_verify_failed', { salon_id: salonId, reason: fetched.reason });
+    // Unreachable or refused: let Razorpay retry. A payment Razorpay does not
+    // know is a forgery, and retrying it cannot help.
+    return fetched.reason === 'no_such_payment' || fetched.reason === 'bad_payment_id'
+      ? json(200, { ok: false, reason: fetched.reason })
+      : json(503, { error: 'not_verifiable' });
+  }
+  if (fetched.status !== 'captured' || fetched.amountPaise !== amountPaise || !fetched.orderId) {
+    await alert('payments_capture_refused', { salon_id: salonId, reason: 'not_captured_at_razorpay' });
+    return json(200, { ok: false, reason: 'not_captured_at_razorpay' });
+  }
+
   const { data: captured, error } = await db.rpc('record_payment_captured', {
     p_payment_id: paymentId,
     p_rzp_payment_id: rzpPaymentId,
-    p_amount_paise: amountPaise,
+    p_amount_paise: fetched.amountPaise,
+    p_salon_id: salonId,
+    p_rzp_order_id: fetched.orderId,
   });
 
   if (error) {

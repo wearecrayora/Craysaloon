@@ -158,7 +158,8 @@ reset role;
 -- Razorpay captured a payment the customer made before the lapse: the money has
 -- already moved, so the credit must land.
 select is(
-  (app.record_payment_captured('77777777-9999-4000-8000-000000000001', 'pay_billing', 100000) ->> 'ok'),
+  (app.record_payment_captured('77777777-9999-4000-8000-000000000001', 'pay_billing', 100000,
+                               '77777777-0000-4000-8000-000000000001', 'order_billing_test') ->> 'ok'),
   'true',
   'the webhook still credits a captured payment - the money already moved');
 
