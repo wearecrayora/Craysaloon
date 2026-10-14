@@ -328,8 +328,10 @@ create temp table sess as
 grant select on sess to public;
 
 create temp table seen as
+  -- By the last four digits, as the console's search does: element 0 of an
+  -- unfiltered list depended on row order, which any update can change.
   select app_admin.support_customers('55555555-aaaa-4000-8000-00000000000a',
-           '55555555-0000-4000-8000-000000000002') -> 0 as c;
+           '55555555-0000-4000-8000-000000000002', '0022') -> 0 as c;
 grant select on seen to public;
 
 select ok(

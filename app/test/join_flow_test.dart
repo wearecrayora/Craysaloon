@@ -117,10 +117,8 @@ void main() {
     // The age question has no answer until the person gives one (0110).
     await scrollTo(tester, find.text('Under 18'));
     expect(
-      tester.widgetList<RadioListTile<bool>>(find.byType(RadioListTile<bool>)).every(
-        (r) => r.groupValue == null,
-      ),
-      isTrue,
+      tester.widget<RadioGroup<bool>>(find.byType(RadioGroup<bool>)).groupValue,
+      isNull,
       reason: 'nothing is pre-selected',
     );
 
