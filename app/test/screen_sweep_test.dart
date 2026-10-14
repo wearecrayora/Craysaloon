@@ -15,6 +15,7 @@ import 'package:craysalon/features/owner/hours_screens.dart';
 import 'package:craysalon/features/salon/salon_account.dart';
 import 'package:craysalon/features/salon/salon_home.dart';
 import 'package:craysalon/features/wallet/wallet_controller.dart';
+import 'package:craysalon/features/owner/logins_screen.dart';
 import 'package:craysalon/main.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ import 'day_screen_test.dart' show FakeAccount;
 import 'outbox_test.dart' show FakeBookings;
 import 'owner_more_test.dart' show FakeHours;
 import 'salon_home_test.dart' show FakeNotifications, FakeShortcut;
+import 'logins_screen_test.dart' show FakeLogins;
 import 'support/fake_cray_api.dart';
 import 'support/fake_customer_api.dart';
 import 'wallet_test.dart' show FakeWalletApi;
@@ -256,6 +258,7 @@ void main() {
       ];
     return [
       crayApiProvider.overrideWithValue(FakeCrayApi()),
+      staffLoginsApiProvider.overrideWithValue(FakeLogins()),
       cacheDbProvider.overrideWithValue(cache),
       outboxProvider.overrideWithValue(outbox),
       dayRepositoryProvider.overrideWithValue(
@@ -310,6 +313,7 @@ void main() {
     '/more/profile',
     '/staff',
     '/staff/st-1/hours',
+    '/staff/logins',
     '/customers',
     '/catalogue/services',
     '/catalogue/addons',

@@ -4,6 +4,7 @@ import '../../app/providers.dart';
 import '../customer/customer_providers.dart';
 import '../dashboard/dashboard_screen.dart';
 import '../owner/hours_screens.dart';
+import '../owner/logins_screen.dart';
 import '../referral/referral_screen.dart';
 import '../visit/visit_cards.dart';
 import '../wallet/wallet_controller.dart';
@@ -38,6 +39,7 @@ void refreshServerReads(WidgetRef ref) {
     ..invalidate(staffProvider)
     ..invalidate(shiftsProvider)
     ..invalidate(timeOffProvider)
+    ..invalidate(staffLoginsProvider)
     // The customer's own picture of the salon.
     ..invalidate(myProfileProvider)
     ..invalidate(nextDueProvider)

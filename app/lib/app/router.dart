@@ -24,6 +24,7 @@ import '../features/referral/referral_screen.dart';
 import '../features/wallet/add_money_screen.dart';
 import '../features/wallet/wallet_screen.dart';
 import '../core/ui/glass.dart';
+import '../features/owner/logins_screen.dart';
 import '../features/salon/salon_home.dart';
 import '../l10n/app_localizations.dart';
 import 'providers.dart';
@@ -167,6 +168,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: _page(const AddOnsScreen()),
           ),
           GoRoute(path: '/staff', pageBuilder: _page(const StaffScreen())),
+          // Who can sign in (0106) - the owner's; the database refuses others.
+          GoRoute(path: '/staff/logins', pageBuilder: _page(const LoginsScreen())),
           GoRoute(
             path: '/staff/:id/hours',
             pageBuilder: (context, state) => MaterialPage(

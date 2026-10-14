@@ -1586,4 +1586,76 @@ class AppL10nEn extends AppL10n {
   String staffHoursInvalid(String day) {
     return 'On $day the end must come after the start.';
   }
+
+  @override
+  String get loginsTitle => 'Who can sign in';
+
+  @override
+  String get loginsIntro =>
+      'Managers and stylists sign in like you do: the salon code, then their own number and its one-time code.';
+
+  @override
+  String get loginsAdd => 'Add a login';
+
+  @override
+  String get loginsName => 'Name';
+
+  @override
+  String get loginsPhone => 'Their mobile number';
+
+  @override
+  String get loginsRoleOwner => 'Owner';
+
+  @override
+  String get loginsRoleManager => 'Manager';
+
+  @override
+  String get loginsRoleStylist => 'Stylist';
+
+  @override
+  String get loginsManagerHint => 'Runs the day, the menu and the team';
+
+  @override
+  String get loginsStylistHint =>
+      'Sees the day and starts and finishes services';
+
+  @override
+  String get loginsSave => 'Add';
+
+  @override
+  String loginsAdded(String name) {
+    return '$name can now sign in';
+  }
+
+  @override
+  String get loginsCanSignIn => 'Can sign in';
+
+  @override
+  String get loginsNotYet => 'Not signed in yet';
+
+  @override
+  String get loginsSwitchedOff => 'Switched off';
+
+  @override
+  String get loginsSwitchOff => 'Switch off';
+
+  @override
+  String get loginsSwitchOn => 'Switch on';
+
+  @override
+  String get loginsNumberInUse =>
+      'That number already signs in to a salon. They need that login switched off first.';
+
+  @override
+  String get loginsBadPhone => 'That is not a valid mobile number.';
+
+  @override
+  String get loginsNameRequired => 'Enter their name.';
+
+  @override
+  String get loginsOwnLogin => 'Your own login cannot be switched off.';
+
+  @override
+  String get loginsFailed =>
+      'That did not work. Check your connection and try again.';
 }

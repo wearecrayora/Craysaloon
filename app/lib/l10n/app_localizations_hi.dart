@@ -1579,6 +1579,77 @@ class AppL10nHi extends AppL10n {
   String staffHoursInvalid(String day) {
     return '$day को समाप्ति का समय शुरुआत के बाद होना चाहिए।';
   }
+
+  @override
+  String get loginsTitle => 'कौन साइन इन कर सकता है';
+
+  @override
+  String get loginsIntro =>
+      'मैनेजर और स्टाइलिस्ट आपकी तरह साइन इन करते हैं: सैलून कोड, फिर अपना नंबर और उस पर आया कोड।';
+
+  @override
+  String get loginsAdd => 'लॉगिन जोड़ें';
+
+  @override
+  String get loginsName => 'नाम';
+
+  @override
+  String get loginsPhone => 'उनका मोबाइल नंबर';
+
+  @override
+  String get loginsRoleOwner => 'मालिक';
+
+  @override
+  String get loginsRoleManager => 'मैनेजर';
+
+  @override
+  String get loginsRoleStylist => 'स्टाइलिस्ट';
+
+  @override
+  String get loginsManagerHint => 'दिन का काम, मेन्यू और टीम संभालते हैं';
+
+  @override
+  String get loginsStylistHint =>
+      'दिन देखते हैं और सर्विस शुरू और पूरी करते हैं';
+
+  @override
+  String get loginsSave => 'जोड़ें';
+
+  @override
+  String loginsAdded(String name) {
+    return '$name अब साइन इन कर सकते हैं';
+  }
+
+  @override
+  String get loginsCanSignIn => 'साइन इन कर सकते हैं';
+
+  @override
+  String get loginsNotYet => 'अभी साइन इन नहीं किया';
+
+  @override
+  String get loginsSwitchedOff => 'बंद है';
+
+  @override
+  String get loginsSwitchOff => 'बंद करें';
+
+  @override
+  String get loginsSwitchOn => 'चालू करें';
+
+  @override
+  String get loginsNumberInUse =>
+      'यह नंबर पहले से किसी सैलून में साइन इन करता है। पहले वह लॉगिन बंद करवाना होगा।';
+
+  @override
+  String get loginsBadPhone => 'यह सही मोबाइल नंबर नहीं है।';
+
+  @override
+  String get loginsNameRequired => 'उनका नाम लिखें।';
+
+  @override
+  String get loginsOwnLogin => 'आपका अपना लॉगिन बंद नहीं किया जा सकता।';
+
+  @override
+  String get loginsFailed => 'यह नहीं हुआ। इंटरनेट देखें और फिर से कोशिश करें।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -3168,4 +3239,76 @@ class AppL10nHiLatn extends AppL10nHi {
   String staffHoursInvalid(String day) {
     return '$day ko end time start ke baad hona chahiye.';
   }
+
+  @override
+  String get loginsTitle => 'Kaun sign in kar sakta hai';
+
+  @override
+  String get loginsIntro =>
+      'Manager aur stylist aapki tarah sign in karte hain: salon code, phir apna number aur us par aaya code.';
+
+  @override
+  String get loginsAdd => 'Login jodiye';
+
+  @override
+  String get loginsName => 'Naam';
+
+  @override
+  String get loginsPhone => 'Unka mobile number';
+
+  @override
+  String get loginsRoleOwner => 'Malik';
+
+  @override
+  String get loginsRoleManager => 'Manager';
+
+  @override
+  String get loginsRoleStylist => 'Stylist';
+
+  @override
+  String get loginsManagerHint => 'Din ka kaam, menu aur team sambhalte hain';
+
+  @override
+  String get loginsStylistHint =>
+      'Din dekhte hain aur service shuru aur poori karte hain';
+
+  @override
+  String get loginsSave => 'Jodiye';
+
+  @override
+  String loginsAdded(String name) {
+    return '$name ab sign in kar sakte hain';
+  }
+
+  @override
+  String get loginsCanSignIn => 'Sign in kar sakte hain';
+
+  @override
+  String get loginsNotYet => 'Abhi sign in nahin kiya';
+
+  @override
+  String get loginsSwitchedOff => 'Band hai';
+
+  @override
+  String get loginsSwitchOff => 'Band kijiye';
+
+  @override
+  String get loginsSwitchOn => 'Chaalu kijiye';
+
+  @override
+  String get loginsNumberInUse =>
+      'Yeh number pehle se kisi salon mein sign in karta hai. Pehle woh login band karwana hoga.';
+
+  @override
+  String get loginsBadPhone => 'Yeh sahi mobile number nahin hai.';
+
+  @override
+  String get loginsNameRequired => 'Unka naam likhiye.';
+
+  @override
+  String get loginsOwnLogin => 'Aapka apna login band nahin kiya ja sakta.';
+
+  @override
+  String get loginsFailed =>
+      'Yeh nahin hua. Internet dekhiye aur phir se koshish kijiye.';
 }

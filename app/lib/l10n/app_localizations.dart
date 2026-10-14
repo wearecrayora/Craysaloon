@@ -2737,6 +2737,138 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'On {day} the end must come after the start.'**
   String staffHoursInvalid(String day);
+
+  /// No description provided for @loginsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can sign in'**
+  String get loginsTitle;
+
+  /// No description provided for @loginsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Managers and stylists sign in like you do: the salon code, then their own number and its one-time code.'**
+  String get loginsIntro;
+
+  /// No description provided for @loginsAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a login'**
+  String get loginsAdd;
+
+  /// No description provided for @loginsName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get loginsName;
+
+  /// No description provided for @loginsPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Their mobile number'**
+  String get loginsPhone;
+
+  /// No description provided for @loginsRoleOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get loginsRoleOwner;
+
+  /// No description provided for @loginsRoleManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Manager'**
+  String get loginsRoleManager;
+
+  /// No description provided for @loginsRoleStylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Stylist'**
+  String get loginsRoleStylist;
+
+  /// No description provided for @loginsManagerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs the day, the menu and the team'**
+  String get loginsManagerHint;
+
+  /// No description provided for @loginsStylistHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Sees the day and starts and finishes services'**
+  String get loginsStylistHint;
+
+  /// No description provided for @loginsSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get loginsSave;
+
+  /// No description provided for @loginsAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} can now sign in'**
+  String loginsAdded(String name);
+
+  /// No description provided for @loginsCanSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Can sign in'**
+  String get loginsCanSignIn;
+
+  /// No description provided for @loginsNotYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not signed in yet'**
+  String get loginsNotYet;
+
+  /// No description provided for @loginsSwitchedOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Switched off'**
+  String get loginsSwitchedOff;
+
+  /// No description provided for @loginsSwitchOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch off'**
+  String get loginsSwitchOff;
+
+  /// No description provided for @loginsSwitchOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch on'**
+  String get loginsSwitchOn;
+
+  /// No description provided for @loginsNumberInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'That number already signs in to a salon. They need that login switched off first.'**
+  String get loginsNumberInUse;
+
+  /// No description provided for @loginsBadPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'That is not a valid mobile number.'**
+  String get loginsBadPhone;
+
+  /// No description provided for @loginsNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter their name.'**
+  String get loginsNameRequired;
+
+  /// No description provided for @loginsOwnLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own login cannot be switched off.'**
+  String get loginsOwnLogin;
+
+  /// No description provided for @loginsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'That did not work. Check your connection and try again.'**
+  String get loginsFailed;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

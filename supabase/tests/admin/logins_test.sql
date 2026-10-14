@@ -5,7 +5,7 @@
 -- Before 0105 nothing could create a manager or stylist login - the owner's,
 -- made at provisioning, was the only one a salon could ever have.
 
-select plan(9);
+select plan(18);
 
 select set_config('app.phone_hash_pepper', 'logins-test-pepper', true);
 
@@ -84,5 +84,67 @@ select is(
         or has_function_privilege('anon', p.oid, 'EXECUTE'))),
   0,
   'no salon user can call either - logins are Crayora''s to give');
+
+-- ---------------------------------------------------------------------------
+-- 0106: the owner adds their own staff, from the app
+-- ---------------------------------------------------------------------------
+
+create function pg_temp.as_role(p_role text, p_salon uuid) returns void language sql as $$
+  select set_config('request.jwt.claims',
+    json_build_object('sub', '10501050-1111-4000-8000-000000000001', 'app_role', p_role,
+                      'salon_id', p_salon)::text, true);
+$$;
+
+set local role authenticated;
+select pg_temp.as_role('owner', '10501050-0000-4000-8000-000000000001');
+
+create temp table owner_added as
+  select public.add_staff_login('Ravi', '9810501061', 'staff') as r;
+
+select is((select r ->> 'ok' from owner_added), 'true',
+  'the owner adds a stylist from the app - no wait for Crayora');
+
+select is(
+  (select count(*)::int from public.list_staff_logins() where name = 'Ravi' and role = 'staff'),
+  1, 'and sees them in the list of who can sign in');
+
+select is(
+  (public.add_staff_login('Ravi again', '9810501061', 'manager') ->> 'reason'),
+  'number_in_use',
+  'one number, one salon - and the refusal names no salon');
+
+select is(
+  (public.set_staff_login_active('10501050-1111-4000-8000-000000000001', false) ->> 'reason'),
+  'owner_login',
+  'the owner cannot switch their own login off');
+
+select is(
+  (public.set_staff_login_active((select (r ->> 'id')::uuid from owner_added), false) ->> 'ok'),
+  'true',
+  'and switches a stylist off when they leave');
+
+-- Another salon's owner: that login does not exist for them.
+select pg_temp.as_role('owner', '10501050-0000-4000-8000-000000000002');
+select is(
+  (public.set_staff_login_active((select (r ->> 'id')::uuid from owner_added), true) ->> 'reason'),
+  'not_found',
+  'another salon''s owner cannot touch this salon''s logins - not even see that they exist');
+
+select pg_temp.as_role('manager', '10501050-0000-4000-8000-000000000001');
+select throws_ok($q$select public.add_staff_login('Sneha', '9810501062', 'staff')$q$,
+  '42501', null, 'a manager cannot add logins - the owner decides who gets in');
+
+select pg_temp.as_role('staff', '10501050-0000-4000-8000-000000000001');
+select throws_ok($q$select * from public.list_staff_logins()$q$,
+  '42501', null, 'nor can a stylist see who else has a login');
+
+reset role;
+
+select is(
+  (select count(*)::int from public.audit_log
+    where salon_id = '10501050-0000-4000-8000-000000000001' and actor_kind = 'owner'
+      and action in ('login.added', 'login.deactivated')),
+  2,
+  'the owner''s acts are in the audit trail as the owner''s');
 
 select * from finish();

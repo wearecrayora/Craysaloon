@@ -1412,5 +1412,34 @@
         "type": "String"
       }
     }
-  }
+  },
+  "loginsTitle": "Who can sign in",
+  "loginsIntro": "Managers and stylists sign in like you do: the salon code, then their own number and its one-time code.",
+  "loginsAdd": "Add a login",
+  "loginsName": "Name",
+  "loginsPhone": "Their mobile number",
+  "loginsRoleOwner": "Owner",
+  "loginsRoleManager": "Manager",
+  "loginsRoleStylist": "Stylist",
+  "loginsManagerHint": "Runs the day, the menu and the team",
+  "loginsStylistHint": "Sees the day and starts and finishes services",
+  "loginsSave": "Add",
+  "loginsAdded": "{name} can now sign in",
+  "@loginsAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "loginsCanSignIn": "Can sign in",
+  "loginsNotYet": "Not signed in yet",
+  "loginsSwitchedOff": "Switched off",
+  "loginsSwitchOff": "Switch off",
+  "loginsSwitchOn": "Switch on",
+  "loginsNumberInUse": "That number already signs in to a salon. They need that login switched off first.",
+  "loginsBadPhone": "That is not a valid mobile number.",
+  "loginsNameRequired": "Enter their name.",
+  "loginsOwnLogin": "Your own login cannot be switched off.",
+  "loginsFailed": "That did not work. Check your connection and try again."
 }

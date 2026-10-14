@@ -10,6 +10,7 @@ import '../../domain/privacy/privacy.dart';
 import '../../domain/referral/referral.dart';
 import '../../domain/salon/salon_account.dart';
 import '../../domain/records/records.dart';
+import '../../domain/salon/staff_logins.dart';
 import '../../domain/visit/visit.dart';
 import '../../domain/wallet/wallet.dart';
 
@@ -25,7 +26,7 @@ import '../../domain/wallet/wallet.dart';
 class SupabaseCrayApi
     implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi, WalletApi,
         PushApi, ReferralApi, DashboardApi, VisitApi, SalonAccountApi, CustomerApi,
-        SalonHoursApi {
+        SalonHoursApi, StaffLoginsApi {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -1034,6 +1035,73 @@ class SupabaseCrayApi
         plan: row['plan'] as String?,
         monthlyPricePaise: (row['monthly_price_paise'] as num?)?.toInt(),
       );
+    } on PostgrestException catch (e) {
+      throw CrayApiException(e.code == '42501' ? CrayErrorKind.forbidden : _postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // StaffLoginsApi (0106). The owner adds and switches off manager and stylist
+  // logins; the database refuses anyone else.
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<List<StaffLogin>> staffLogins() async {
+    try {
+      final rows = await _client.rpc<dynamic>('list_staff_logins');
+      return [
+        for (final r in (rows as List? ?? const []))
+          if (_asMap(r) case final m?)
+            StaffLogin(
+              id: m['id'] as String,
+              role: switch (m['role']) {
+                'owner' => LoginRole.owner,
+                'manager' => LoginRole.manager,
+                _ => LoginRole.staff,
+              },
+              name: m['name'] as String? ?? '',
+              phoneLast4: m['phone_last4'] as String? ?? '',
+              active: m['active'] as bool? ?? false,
+              signedIn: m['signed_in'] as bool? ?? false,
+            ),
+      ];
+    } on PostgrestException catch (e) {
+      throw CrayApiException(e.code == '42501' ? CrayErrorKind.forbidden : _postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  @override
+  Future<LoginOutcomeResult> addStaffLogin({
+    required String name,
+    required String phone,
+    required LoginRole role,
+  }) =>
+      _loginCall('add_staff_login', {
+        'p_name': name,
+        'p_phone': phone,
+        'p_role': role == LoginRole.manager ? 'manager' : 'staff',
+      });
+
+  @override
+  Future<LoginOutcomeResult> setStaffLoginActive(String id, {required bool active}) =>
+      _loginCall('set_staff_login_active', {'p_user_id': id, 'p_active': active});
+
+  Future<LoginOutcomeResult> _loginCall(String fn, Map<String, Object?> params) async {
+    try {
+      final body = _asMap(await _client.rpc<dynamic>(fn, params: params)) ?? const {};
+      if (body['ok'] == true) return const LoginOutcomeResult.ok();
+      return LoginOutcomeResult.refused(switch (body['reason']) {
+        'number_in_use' => LoginRefusal.numberInUse,
+        'bad_phone' => LoginRefusal.badPhone,
+        'name_required' || 'bad_role' => LoginRefusal.nameRequired,
+        'owner_login' => LoginRefusal.ownerLogin,
+        'salon_unavailable' => LoginRefusal.salonUnavailable,
+        _ => LoginRefusal.notFound,
+      });
     } on PostgrestException catch (e) {
       throw CrayApiException(e.code == '42501' ? CrayErrorKind.forbidden : _postgrestKind(e));
     } catch (_) {

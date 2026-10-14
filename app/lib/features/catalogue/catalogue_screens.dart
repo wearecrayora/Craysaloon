@@ -8,6 +8,7 @@ import '../../core/ui/cache_banner.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/records/records.dart';
+import '../owner/logins_screen.dart';
 import '../../l10n/app_localizations.dart';
 import '../owner/hours_screens.dart' show shiftsProvider;
 import 'catalogue_form.dart';
@@ -151,6 +152,16 @@ class StaffScreen extends ConsumerWidget {
       title: l10n.staffTitle,
       cached: ref.watch(staffProvider),
       onAdd: () => _edit(context, ref, null),
+      // Who can SIGN IN is the owner's to decide (0106); a stylist on this
+      // list is someone customers can BOOK - the two are different things.
+      actions: [
+        if (ref.watch(canManageLoginsProvider))
+          IconButton(
+            tooltip: l10n.loginsTitle,
+            icon: const Icon(Icons.badge_outlined),
+            onPressed: () => context.push('/staff/logins'),
+          ),
+      ],
       rowBuilder: (context, member) => _CatalogueRow(
         name: member.name,
         active: member.active,
@@ -221,9 +232,11 @@ class _CatalogueList<T> extends ConsumerWidget {
     required this.cached,
     required this.rowBuilder,
     required this.onAdd,
+    this.actions = const [],
   });
 
   final String title;
+  final List<Widget> actions;
   final AsyncValue<Cached<List<T>>> cached;
   final Widget Function(BuildContext, T) rowBuilder;
   final VoidCallback onAdd;
@@ -234,7 +247,7 @@ class _CatalogueList<T> extends ConsumerWidget {
     final canEdit = ref.watch(canEditCatalogueProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(title), actions: actions),
       floatingActionButton: canEdit
           ? FloatingActionButton.extended(
               onPressed: onAdd,
