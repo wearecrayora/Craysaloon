@@ -58,6 +58,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   drift_dev: ^2.35.0
   build_runner: ^2.16.1
+  flutter_launcher_icons: ^0.14.3
 
 flutter:
   uses-material-design: true
@@ -68,3 +69,17 @@ flutter:
 
   # Required for gen-l10n to run from l10n.yaml.
   generate: true
+
+# The launcher icon: the Crayora "C" (13 Oct 2026), replacing Flutter's default.
+# Regenerate after changing assets/branding/: dart run flutter_launcher_icons
+# The icon is the PRODUCT's - one install serves every salon, and a launcher
+# icon cannot change at runtime (CLAUDE.md 15); the salon's own brand is worn
+# inside the app and on its pinned home-screen shortcut.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/branding/app_icon.png
+  remove_alpha_ios: true
+  min_sdk_android: 21
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: assets/branding/app_icon_foreground.png

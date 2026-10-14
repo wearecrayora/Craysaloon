@@ -23,6 +23,9 @@ export type BatchRow = {
 /** What a push from this salon wears: its name, colour and logo (PRD 20). */
 export type PushBrand = { name: string | null; color: string | null; logo: string | null };
 
+/** The status-bar icon every push wears (the Android drawable's name). */
+export const STATUS_BAR_ICON = 'ic_stat_cray';
+
 /** The notification channel the app creates, named for the salon (ARCHITECTURE 7.4). */
 export const SALON_CHANNEL_ID = 'cray_salon';
 
@@ -55,7 +58,14 @@ export function fcmMessage(row: BatchRow, brand: PushBrand | null) {
     },
     android: {
       priority: 'high',
-      notification: { channel_id: SALON_CHANNEL_ID, ...(color ? { color } : {}) },
+      // The logo as a white silhouette (app/android/.../drawable-*/ic_stat_cray),
+      // tinted with the salon's colour by Android - a full-colour icon here
+      // would draw as a white square in the status bar.
+      notification: {
+        channel_id: SALON_CHANNEL_ID,
+        icon: STATUS_BAR_ICON,
+        ...(color ? { color } : {}),
+      },
     },
     ...(logo
       ? { apns: { payload: { aps: { 'mutable-content': 1 } }, fcm_options: { image: logo } } }

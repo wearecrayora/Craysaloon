@@ -7,9 +7,15 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
-        android:label="craysalon"
+        android:label="Cray Salon"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- The status-bar icon for every push. Android draws it from ALPHA
+             only, so the full-colour launcher icon would show as a white
+             square; this is the logo as a white silhouette (drawable-*dpi). -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_cray" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

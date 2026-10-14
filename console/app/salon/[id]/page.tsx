@@ -219,8 +219,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
           <li>
             <strong>The owner</strong>{facts.owner_name ? ` (${facts.owner_name}, number ending ${facts.owner_phone_last4})` : ''}:
-            install the app, enter <code>{facts.join_code}</code>, then their own number and the
-            one-time code. The app opens on the salon&rsquo;s day view.
+            once the salon is switched on, install the app, enter <code>{facts.join_code}</code>,
+            then their own number and the one-time code. The app opens on the salon&rsquo;s day
+            view. <em>Before activation the code finds nothing - for the owner too - so set up the
+            menu and team here first.</em>
           </li>
           <li>
             <strong>Managers and stylists</strong>: add them under{' '}

@@ -6,7 +6,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { type BatchRow, fcmMessage, SALON_CHANNEL_ID } from './push_message.ts';
+import { type BatchRow, fcmMessage, SALON_CHANNEL_ID, STATUS_BAR_ICON } from './push_message.ts';
 
 const row: BatchRow = {
   delivery_id: 'd-1',
@@ -64,5 +64,12 @@ test('a placeholder or non-https logo never reaches FCM', () => {
     const m = fcmMessage(row, { ...brand, logo }) as any;
     assert.equal(m.notification.image, undefined, String(logo));
     assert.equal(m.apns, undefined);
+  }
+});
+
+test('the status-bar icon is the logo silhouette, never the full-colour launcher icon', () => {
+  for (const b of [brand, null]) {
+    const m = fcmMessage(row, b) as any;
+    assert.equal(m.android.notification.icon, STATUS_BAR_ICON);
   }
 });
