@@ -16,12 +16,14 @@ const SALONS: Item[] = [
 ];
 
 const salonItems = (id: string): Item[] => [
+  { key: 'overview', href: `/salon/${id}`, label: 'Set up (checklist)', icon: 'check' },
   { key: 'branding', href: `/salon/${id}/branding`, label: 'Branding studio', icon: 'palette' },
   { key: 'catalogue', href: `/salon/${id}/catalogue`, label: 'Catalogue & rules', icon: 'scissors' },
   { key: 'credentials', href: `/salon/${id}/credentials`, label: 'Credentials', icon: 'key' },
   { key: 'privacy', href: `/salon/${id}/privacy`, label: 'Privacy contact', icon: 'shield' },
   { key: 'qr', href: `/salon/${id}/qr`, label: 'QR pack', icon: 'qr' },
   { key: 'billing', href: `/salon/${id}/billing`, label: 'Billing and activation', icon: 'receipt' },
+  { key: 'logins', href: `/salon/${id}/logins`, label: 'Logins (owner, staff)', icon: 'users' },
   { key: 'support', href: `/salon/${id}/support`, label: 'Support mode', icon: 'headset' },
 ];
 
@@ -99,6 +101,8 @@ const ICONS = {
   headset: 'M4 14v-2a8 8 0 0116 0v2M4 14h3v6H4zM17 14h3v6h-3zM20 20a3 3 0 01-3 2h-3',
   link: 'M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1',
   chart: 'M4 20V10M10 20V4M16 20v-7M22 20H2',
+  check: 'M4 12l5 5L20 6',
+  users: 'M9 11a4 4 0 100-8 4 4 0 000 8zM2 21v-1a6 6 0 0112 0v1M16 3.5a4 4 0 010 7.5M22 21v-1a6 6 0 00-4-5.7',
 };
 
 function Icon({ name }: { name: keyof typeof ICONS }) {

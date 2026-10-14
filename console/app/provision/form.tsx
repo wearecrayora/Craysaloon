@@ -21,10 +21,17 @@ export function ProvisionForm() {
           {state.joinCode}
         </p>
         <div className="notice">
-          Not yet built: the printable QR pack, the owner’s SMS invite, branding, and the
-          catalogue. The salon exists and is isolated; it just has nothing in it yet.
+          The salon exists, isolated, in <strong>setup</strong>: no customer can join it yet. Its
+          checklist walks through the rest - branding and logo, the menu and stylists, its
+          Message Central and Razorpay accounts, the privacy contact, the setup fee, and switching
+          it on.
         </div>
         <div className="actions">
+          {state.salonId && (
+            <Link href={`/salon/${state.salonId}`}>
+              <button type="button">Open the setup checklist →</button>
+            </Link>
+          )}
           <Link href="/">
             <button type="button" className="secondary">Back to salons</button>
           </Link>

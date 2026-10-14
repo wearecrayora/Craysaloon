@@ -98,6 +98,10 @@ export async function provisionSalon(
   input: ProvisionInput,
 ): Promise<ProvisionResult> {
   const sql = client();
+  // Every argument is cast: through the transaction pooler the driver sends
+  // parameters untyped, and an array arrives as TEXT - so no function matched
+  // and provisioning failed with "provision_salon(..., text, jsonb) does not
+  // exist" (13 Oct 2026, the first salon provisioned on Cloudflare).
   const [row] = await sql<{ provision_salon: ProvisionResult }[]>`
     select app_admin.provision_salon(
       ${actorAdminId}::uuid,
@@ -112,10 +116,6 @@ export async function provisionSalon(
       ${input.address ?? null}::text,
       ${input.gstNumber ?? null}::text,
       ${input.timezone ?? 'Asia/Kolkata'}::text,
-      -- Every argument cast: with prepare:false the driver sends parameters
-      -- untyped, and an array arrives as TEXT - so no function matched and
-      -- provisioning failed with "provision_salon(..., text, jsonb) does not
-      -- exist" (13 Oct 2026, the first salon provisioned on Cloudflare).
       ${input.languages ?? ['en', 'hi']}::text[],
       ${sql.json(input.settings ?? {})}::jsonb
     )`;
@@ -1080,4 +1080,111 @@ export async function completeAccessRequest(actorAdminId: string, requestId: str
 export async function reactivateSalon(actorAdminId: string, salonId: string, reason: string) {
   const sql = client();
   await sql`select app_admin.reactivate_salon(${actorAdminId}::uuid, ${salonId}::uuid, ${reason})`;
+}
+
+// ---------------------------------------------------------------------------
+// Setup checklist and logins (0105)
+// ---------------------------------------------------------------------------
+
+export type SetupFacts = {
+  display_name: string;
+  join_code: string;
+  status: string;
+  owner_name: string | null;
+  owner_phone_last4: string | null;
+  branding_version: number | null;
+  has_logo: boolean;
+  services: number;
+  stylists: number;
+  mc_status: string | null;
+  mc_has_secret: boolean;
+  razorpay_has_secret: boolean;
+  sms_sender: boolean;
+  whatsapp_approved: boolean;
+  grievance_set: boolean;
+  fee_status: string | null;
+  logins: number;
+  customers: number;
+};
+
+/** Everything the setup checklist needs to say what is done and what is not. */
+export async function getSetupFacts(salonId: string): Promise<SetupFacts | null> {
+  const sql = client();
+  const [row] = await sql<SetupFacts[]>`
+    select s.display_name, s.join_code, s.status::text,
+           o.name as owner_name, right(o.phone, 4) as owner_phone_last4,
+           b.version as branding_version,
+           coalesce(b.tokens #>> '{assets,logo}' like 'https://%', false) as has_logo,
+           (select count(*)::int from public.services x where x.salon_id = s.id and x.active) as services,
+           (select count(*)::int from public.staff x where x.salon_id = s.id and x.active) as stylists,
+           mc.status::text as mc_status,
+           (mc.vault_secret_id is not null) as mc_has_secret,
+           coalesce(rz.vault_secret_id is not null, false) as razorpay_has_secret,
+           coalesce(mc.sender_id is not null, false) as sms_sender,
+           coalesce(wa.whatsapp_template_status = 'approved' and wa.sender_id is not null, false)
+             as whatsapp_approved,
+           (coalesce(btrim(s.grievance_name), '') <> ''
+             and coalesce(btrim(coalesce(s.grievance_email, s.grievance_phone)), '') <> '')
+             as grievance_set,
+           sub.setup_fee_status::text as fee_status,
+           (select count(*)::int from public.users u
+             where u.salon_id = s.id and u.active and u.role <> 'owner') as logins,
+           (select count(*)::int from public.customers c where c.salon_id = s.id) as customers
+      from public.salons s
+      left join public.users o on o.salon_id = s.id and o.role = 'owner' and o.active
+      left join public.salon_branding b on b.salon_id = s.id
+      left join public.salon_integrations mc on mc.salon_id = s.id and mc.provider = 'message_central'
+      left join public.salon_integrations rz on rz.salon_id = s.id and rz.provider = 'razorpay'
+      left join public.salon_integrations wa on wa.salon_id = s.id and wa.provider = 'whatsapp'
+      left join public.subscriptions sub on sub.salon_id = s.id
+     where s.id = ${salonId}::uuid
+     limit 1`;
+  return row ?? null;
+}
+
+export type SalonLogin = {
+  id: string;
+  role: 'owner' | 'manager' | 'staff';
+  name: string;
+  phone_last4: string;
+  active: boolean;
+  signed_in: boolean;
+};
+
+/** Who can sign in to this salon. The number is shown by its last four only. */
+export async function listSalonLogins(salonId: string): Promise<SalonLogin[]> {
+  const sql = client();
+  return sql<SalonLogin[]>`
+    select id, role::text, name, right(phone, 4) as phone_last4, active,
+           (auth_user_id is not null) as signed_in
+      from public.users
+     where salon_id = ${salonId}::uuid
+     order by (role = 'owner') desc, active desc, name`;
+}
+
+export async function addSalonLogin(
+  actorAdminId: string,
+  salonId: string,
+  name: string,
+  phone: string,
+  role: 'manager' | 'staff',
+): Promise<string> {
+  const sql = client();
+  const [row] = await sql<{ id: string }[]>`
+    select app_admin.add_salon_login(${actorAdminId}::uuid, ${salonId}::uuid,
+      ${name}::text, ${phone}::text, ${role}::text) as id`;
+  if (!row) throw new Error('add_salon_login returned no row');
+  return row.id;
+}
+
+export async function setSalonLoginActive(
+  actorAdminId: string,
+  userId: string,
+  active: boolean,
+  reason: string,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.set_salon_login_active(${actorAdminId}::uuid, ${userId}::uuid,
+      ${active}::boolean, ${reason}::text)`;
 }

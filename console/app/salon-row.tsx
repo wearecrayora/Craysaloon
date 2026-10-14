@@ -55,7 +55,9 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
     <>
       <tr>
         <td>
-          <strong>{salon.display_name}</strong>
+          <Link href={`/salon/${salon.id}`}>
+            <strong>{salon.display_name}</strong>
+          </Link>
           <br />
           <span style={{ color: 'var(--ink-soft)', fontSize: 12 }}>{salon.legal_name}</span>
         </td>
@@ -107,6 +109,9 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
           </span>
         </td>
         <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+          <Link href={`/salon/${salon.id}`} style={{ fontSize: 13, marginRight: 10, fontWeight: 600 }}>
+            Set up
+          </Link>
           <Link href={`/salon/${salon.id}/branding`} style={{ fontSize: 13, marginRight: 10 }}>
             Branding
           </Link>

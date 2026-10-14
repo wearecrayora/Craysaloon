@@ -282,6 +282,13 @@ jobs:
       - name: Reachability check - negative control
         run: node scripts/db/orphan-check.mjs --canary
 
+      # Every call FITS the function it names - argument names for PostgREST
+      # callers, counts and casts for the console's SQL. Provisioning failed in
+      # production on 13 Oct 2026 with a call that compiled and passed every
+      # other gate.
+      - name: Every database call fits its function
+        run: node scripts/db/call-check.mjs
+
       # The claims hook decides what every token carries, and a hook that errors
       # stops EVERY login on the project. Probed here rather than only by hand
       # before enabling it.

@@ -36,6 +36,8 @@ import {
   setFeatureFlag,
   setSalonGst,
   setIntegrationSecret,
+  addSalonLogin,
+  setSalonLoginActive,
   setMessagingIdentity,
   setWhatsappTemplate,
   setMessagingGrace,
@@ -58,7 +60,13 @@ import {
  * mutates anything without an attributable actor.
  */
 
-export type ActionState = { error?: string; ok?: string; joinCode?: string; url?: string };
+export type ActionState = {
+  error?: string;
+  ok?: string;
+  joinCode?: string;
+  url?: string;
+  salonId?: string;
+};
 
 export type PublishState = {
   error?: string;
@@ -148,6 +156,7 @@ export async function provisionAction(
     return {
       ok: `${v.displayName} provisioned in setup.`,
       joinCode: result.join_code,
+      salonId: result.salon_id,
     };
   } catch (e) {
     return { error: message(e) };
@@ -647,6 +656,48 @@ export async function whatsappTemplateAction(
         ? `Mapped ${templateKey} (${locale}) to ${templateName}.`
         : `Cleared ${templateKey} (${locale}) - it goes by SMS instead.`,
     };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+/**
+ * A manager or stylist login (0105). They sign in exactly as the owner does:
+ * the salon's code, then their own number and its one-time code.
+ */
+export async function addLoginAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const name = String(form.get('name') ?? '').trim();
+  const phone = String(form.get('phone') ?? '').trim();
+  const role = String(form.get('role') ?? '') as 'manager' | 'staff';
+  if (!name || !phone) return { error: 'Enter the person’s name and mobile number.' };
+  if (role !== 'manager' && role !== 'staff') return { error: 'Choose manager or stylist.' };
+  try {
+    await addSalonLogin(admin.id, salonId, name, phone, role);
+    revalidatePath(`/salon/${salonId}/logins`);
+    revalidatePath(`/salon/${salonId}`);
+    return {
+      ok:
+        `${name} can now sign in: they open the app, enter this salon’s code, then ` +
+        `their own number and the one-time code it receives.`,
+    };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function setLoginActiveAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const userId = String(form.get('userId') ?? '');
+  const active = String(form.get('active') ?? '') === 'true';
+  const reason = String(form.get('reason') ?? '').trim();
+  if (!reason) return { error: 'Say why - it is kept in the audit trail.' };
+  try {
+    await setSalonLoginActive(admin.id, userId, active, reason);
+    revalidatePath(`/salon/${salonId}/logins`);
+    return { ok: active ? 'Login switched back on.' : 'Login switched off. Their next sign-in is refused.' };
   } catch (e) {
     return { error: message(e) };
   }
