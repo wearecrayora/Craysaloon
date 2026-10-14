@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>अपना Cray Salon अकाउंट मिटाएँ</title>
+<link rel="alternate" hreflang="en" href="https://craysalon-join.crayoratech.workers.dev/delete-account">
+<meta name="description" content="अपना Cray Salon अकाउंट और डेटा कैसे मिटवाएँ - ऐप में या ऐप के बिना - और क्या मिटता है, क्या रहता है।">
+<link rel="icon" href="/icon-192.png">
+<!--
+  The page Google Play asks for (Data safety -> "Delete account URL"): how to
+  delete an account and its data, from inside the app AND without it. It says
+  exactly what privacy.html#delete says - if one changes, both change in the
+  same commit (privacy.html's rule 1: describe what the system actually does).
+-->
+<style>
+  html[lang="hi"] body { line-height: 1.8; }
+  :root {
+    color-scheme: light dark;
+    --ink: #0f1530; --ink-soft: #4a4f66; --violet: #4b47ff;
+    --card: rgba(255, 255, 255, 0.78); --line: rgba(15, 21, 48, 0.08); --bg: #f7f5fb;
+    --chip: rgba(75, 71, 255, 0.07);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #f2f1f8; --ink-soft: #b6b4c8; --violet: #9a97ff;
+      --card: rgba(28, 27, 40, 0.78); --line: rgba(255, 255, 255, 0.09); --bg: #13121c;
+      --chip: rgba(154, 151, 255, 0.12);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; padding: 28px 16px;
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink);
+    background:
+      url(/still-life-light.svg) center / cover no-repeat fixed,
+      radial-gradient(70% 45% at 0% 0%, rgba(75, 71, 255, 0.10), transparent 70%),
+      var(--bg);
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background-image: url(/still-life-dark.svg),
+      radial-gradient(70% 45% at 0% 0%, rgba(110, 106, 255, 0.16), transparent 70%); }
+  }
+  main {
+    max-width: 38rem; margin: 0 auto;
+    background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+    padding: 28px 24px;
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    box-shadow: 0 24px 60px rgba(15, 21, 48, 0.12);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .brand img { width: 40px; height: 40px; border-radius: 11px; }
+  h1 { font-size: 25px; line-height: 1.25; margin: 0 0 8px; }
+  h2 { font-size: 18px; margin: 26px 0 8px; }
+  p, li { color: var(--ink-soft); }
+  strong { color: var(--ink); }
+  .way { background: var(--chip); border-radius: 16px; padding: 14px 16px; margin: 10px 0; }
+  .way p { margin: 4px 0 0; }
+  ul { padding-left: 20px; }
+  a { color: var(--violet); text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><img src="/icon-192.png" alt="" width="40" height="40"><strong>Cray Salon</strong></div>
+  <h1>अपना अकाउंट और डेटा मिटाएँ</h1>
+  <p>आप कभी भी अपना Cray Salon अकाउंट मिटवाने के लिए कह सकते हैं। हर अनुरोध का जवाब 30 दिनों के भीतर
+     दिया जाता है।</p>
+
+  <h2>कैसे कहें</h2>
+  <div class="way">
+    <strong>ऐप में</strong>
+    <p><strong>मैं &rarr; आपका डेटा</strong> खोलें और अपना डेटा मिटवाना चुनें। पुष्टि करने से <em>पहले</em>
+       स्क्रीन दिखाती है कि क्या हटेगा और क्या रखना ज़रूरी है।</p>
+  </div>
+  <div class="way">
+    <strong>ऐप के बिना</strong>
+    <p>अपने सैलून के गोपनीयता संपर्क को (जो ऐप में और सैलून में दिखता है), या
+       <a href="mailto:crayoratech@gmail.com">crayoratech@gmail.com</a> पर, उसी नंबर से लिखें जिससे
+       अकाउंट चलता है, और सैलून का नाम बताएँ। कार्रवाई से पहले हम पुष्टि करते हैं कि यह आप ही हैं।</p>
+  </div>
+
+  <h2>क्या मिटता है</h2>
+  <ul>
+    <li>आपका <strong>नाम और मोबाइल नंबर</strong> &mdash; और 18 से कम उम्र वाले के लिए माता-पिता या अभिभावक
+        का नाम &mdash; और आपके अकाउंट व लॉगिन के बीच का जुड़ाव। आपके नोटिफ़िकेशन टोकन मिटा दिए जाते हैं।
+        आप उस सैलून में फिर साइन इन नहीं कर सकेंगे।</li>
+  </ul>
+
+  <h2>क्या रहता है, और क्यों</h2>
+  <ul>
+    <li>आपके <strong>पैसों के रिकॉर्ड</strong> &mdash; टॉप-अप, ख़र्च, रसीदें और इनवॉइस &mdash; रहते हैं, पर
+        ऐसे व्यक्ति के नाम पर जिसे कोई पहचान नहीं सकता। वे सैलून के बही-खाते हैं, और टैक्स क़ानून के तहत
+        उन्हें रखना ज़रूरी है।</li>
+    <li>आपके <strong>नंबर का एकतरफ़ा फ़िंगरप्रिंट</strong> रहता है। उसे वापस नंबर के रूप में नहीं पढ़ा जा
+        सकता; वह बस आपके जाने के बाद भी &ldquo;एक नंबर, एक सैलून&rdquo; का नियम सही रखता है।</li>
+    <li><strong>वॉलेट क्रेडिट</strong> नकद नहीं निकाला जा सकता और अकाउंट के साथ ख़त्म हो जाता है। मिटवाने से
+        पहले उसे ख़र्च कर लें, या सैलून से उसके बारे में पूछ लें।</li>
+  </ul>
+
+  <p>पूरी जानकारी <a href="/privacy-hi#delete">गोपनीयता नीति</a> में है।</p>
+  <p style="font-size:14px;margin-bottom:0"><a href="/terms-hi">शर्तें</a> · <a href="/privacy-hi">गोपनीयता</a> · <a href="/refunds-hi">रिफ़ंड</a> · <a href="/cookies-hi">कुकीज़</a> · <a href="/about-hi">हमारे बारे में</a></p>
+  <p style="font-size:14px;margin:12px 0 0"><a href="/delete-account" lang="en" hreflang="en">Read in English</a></p>
+</main>
+</body>
+</html>

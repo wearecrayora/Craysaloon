@@ -6,7 +6,8 @@
 --   * an owner's device registers, and the owner hears about what a CUSTOMER
 --     did - a booking, a cancellation, "I'll pay at the counter", a bill paid -
 --     and nothing about what the salon did itself
---   * nobody without a device is queued for, and stylists are not told
+--   * owners, managers and stylists are told (0111); nobody without a device
+--     is queued for, and a login the owner switched off is told nothing
 --   * a staff message names the customer at SEND time; the stored params hold
 --     an id, never a name, so an erased customer leaves none behind
 --   * only the recipient acknowledges - a customer cannot ack the owner's push
@@ -14,13 +15,14 @@
 --   * the wallet receipt is actually sent when a top-up is captured
 --   * staff messages never escalate
 
-select plan(22);
+select plan(23);
 
 insert into auth.users (id) values
   ('7a7a7a7a-aaaa-4000-8000-00000000000a'),   -- Asha, a customer
   ('7a7a7a7a-aaaa-4000-8000-0000000000a1'),   -- the owner
   ('7a7a7a7a-aaaa-4000-8000-0000000000a2'),   -- a manager, no device
   ('7a7a7a7a-aaaa-4000-8000-0000000000a3'),   -- a stylist, with a device
+  ('7a7a7a7a-aaaa-4000-8000-0000000000a4'),   -- a stylist the owner switched off, with a device
   ('7a7a7a7a-aaaa-4000-8000-00000000000f');
 
 insert into public.platform_admins (id, email, name, is_super, active)
@@ -43,7 +45,9 @@ values
   ('7a7a7a7a-2222-4000-8000-0000000000a2', '7a7a7a7a-0000-4000-8000-000000000001', 'manager',
    'Manager', '+919766600022', app.phone_hash('9766600022'), true, '7a7a7a7a-aaaa-4000-8000-0000000000a2'),
   ('7a7a7a7a-2222-4000-8000-0000000000a3', '7a7a7a7a-0000-4000-8000-000000000001', 'staff',
-   'Stylist', '+919766600023', app.phone_hash('9766600023'), true, '7a7a7a7a-aaaa-4000-8000-0000000000a3');
+   'Stylist', '+919766600023', app.phone_hash('9766600023'), true, '7a7a7a7a-aaaa-4000-8000-0000000000a3'),
+  ('7a7a7a7a-2222-4000-8000-0000000000a4', '7a7a7a7a-0000-4000-8000-000000000001', 'staff',
+   'Former stylist', '+919766600024', app.phone_hash('9766600024'), false, '7a7a7a7a-aaaa-4000-8000-0000000000a4');
 
 -- ---------------------------------------------------------------------------
 -- Rendering
@@ -93,10 +97,13 @@ select is(
   '7a7a7a7a-2222-4000-8000-0000000000a1'::uuid,
   'and the token belongs to the owner, not to any customer');
 
--- The stylist has a device too - and is not who these messages are for.
+-- The stylist has a device too, and is told (0111). So does a stylist the
+-- owner switched off - who is not.
 insert into public.notification_tokens (salon_id, user_id, token, platform)
 values ('7a7a7a7a-0000-4000-8000-000000000001', '7a7a7a7a-2222-4000-8000-0000000000a3',
-        'fcm-stylist-push-test', 'android');
+        'fcm-stylist-push-test', 'android'),
+       ('7a7a7a7a-0000-4000-8000-000000000001', '7a7a7a7a-2222-4000-8000-0000000000a4',
+        'fcm-former-stylist-push-test', 'android');
 
 -- ---------------------------------------------------------------------------
 -- What the owner hears
@@ -124,9 +131,11 @@ values ('7a7a7a7a-4444-4000-8000-000000000002', '7a7a7a7a-0000-4000-8000-0000000
 
 select results_eq(
   $q$select user_id, purpose from public.notifications
-      where salon_id = '7a7a7a7a-0000-4000-8000-000000000001' and user_id is not null$q$,
-  $q$values ('7a7a7a7a-2222-4000-8000-0000000000a1'::uuid, 'staff_new_booking'::text)$q$,
-  'a customer''s booking is announced to the owner - not to a manager with no device, not to a stylist');
+      where salon_id = '7a7a7a7a-0000-4000-8000-000000000001' and user_id is not null
+      order by user_id$q$,
+  $q$values ('7a7a7a7a-2222-4000-8000-0000000000a1'::uuid, 'staff_new_booking'::text),
+            ('7a7a7a7a-2222-4000-8000-0000000000a3'::uuid, 'staff_new_booking'::text)$q$,
+  'a customer''s booking is announced to the owner and the stylist - not to a manager with no device, not to a switched-off login');
 
 select is(
   (select position('Asha' in params::text) from public.notifications where purpose = 'staff_new_booking'
@@ -143,7 +152,7 @@ select matches(
 -- The customer cancels it.
 update public.bookings set status = 'cancelled' where id = '7a7a7a7a-4444-4000-8000-000000000002';
 select is((select count(*)::int from public.notifications
-            where purpose = 'staff_booking_cancelled' and salon_id = '7a7a7a7a-0000-4000-8000-000000000001'),
+            where purpose = 'staff_booking_cancelled' and user_id = '7a7a7a7a-2222-4000-8000-0000000000a1'),
   1, 'and so is the customer''s cancellation');
 
 -- ...and asks to pay a bill at the counter.
@@ -155,7 +164,7 @@ values ('7a7a7a7a-5555-4000-8000-000000000001', '7a7a7a7a-0000-4000-8000-0000000
 update public.visits set counter_payment_requested_at = now()
  where id = '7a7a7a7a-5555-4000-8000-000000000001';
 select is((select count(*)::int from public.notifications
-            where purpose = 'staff_counter_payment' and salon_id = '7a7a7a7a-0000-4000-8000-000000000001'),
+            where purpose = 'staff_counter_payment' and user_id = '7a7a7a7a-2222-4000-8000-0000000000a1'),
   1, '"I''ll pay at the counter" tells the owner to expect them');
 
 -- A bill paid online, and a top-up.
@@ -172,7 +181,7 @@ update public.payments set status = 'captured'
  where id in ('7a7a7a7a-6666-4000-8000-000000000001', '7a7a7a7a-6666-4000-8000-000000000002');
 
 select is((select count(*)::int from public.notifications
-            where purpose = 'staff_bill_paid' and salon_id = '7a7a7a7a-0000-4000-8000-000000000001'),
+            where purpose = 'staff_bill_paid' and user_id = '7a7a7a7a-2222-4000-8000-0000000000a1'),
   1, 'a bill paid online is announced to the owner');
 
 select results_eq(
@@ -196,8 +205,13 @@ select is(
 
 select is(
   (select count(*)::int from claimed where token = 'fcm-stylist-push-test'),
+  4,
+  'and the stylist''s device for every one too (0111)');
+
+select is(
+  (select count(*)::int from claimed where token = 'fcm-former-stylist-push-test'),
   0,
-  'and never sends them to the stylist');
+  'and never a login the owner has switched off');
 
 select is(app.escalation_window('staff_new_booking'), null::interval,
   'a staff message never escalates to a channel the salon pays for');

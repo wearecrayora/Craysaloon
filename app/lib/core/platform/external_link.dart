@@ -44,7 +44,10 @@ Uri privacyPolicyUrlFor(Locale locale) =>
     ? Uri.parse('${JoinLink.origin}/privacy-hi')
     : privacyPolicyUrl;
 
-/// The other published pages, beside the policy on the join site (14 Oct 2026).
-final Uri termsUrl = Uri.parse('${JoinLink.origin}/terms');
-final Uri refundsUrl = Uri.parse('${JoinLink.origin}/refunds');
-final Uri aboutUrl = Uri.parse('${JoinLink.origin}/about');
+/// The other published pages, beside the policy on the join site (14 Oct 2026),
+/// in the reader's language: each has a Hindi page at `<page>-hi`, read in
+/// Devanagari; Hinglish readers get the English one, as with the policy.
+Uri sitePageFor(String page, Locale locale) =>
+    locale.languageCode == 'hi' && locale.scriptCode != 'Latn'
+    ? Uri.parse('${JoinLink.origin}/$page-hi')
+    : Uri.parse('${JoinLink.origin}/$page');

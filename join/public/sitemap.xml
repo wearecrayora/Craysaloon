@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://craysalon-join.crayoratech.workers.dev/</loc><lastmod>2026-10-14</lastmod></url>
+  <url><loc>https://craysalon-join.crayoratech.workers.dev/hi</loc><lastmod>2026-10-14</lastmod></url>
   <url><loc>https://craysalon-join.crayoratech.workers.dev/terms</loc><lastmod>2026-10-14</lastmod></url>
+  <url><loc>https://craysalon-join.crayoratech.workers.dev/terms-hi</loc><lastmod>2026-10-14</lastmod></url>
   <url><loc>https://craysalon-join.crayoratech.workers.dev/privacy</loc><lastmod>2026-10-14</lastmod></url>
   <url><loc>https://craysalon-join.crayoratech.workers.dev/privacy-hi</loc><lastmod>2026-10-14</lastmod></url>
   <url><loc>https://craysalon-join.crayoratech.workers.dev/refunds</loc><lastmod>2026-10-14</lastmod></url>
+  <url><loc>https://craysalon-join.crayoratech.workers.dev/refunds-hi</loc><lastmod>2026-10-14</lastmod></url>
   <url><loc>https://craysalon-join.crayoratech.workers.dev/cookies</loc><lastmod>2026-10-14</lastmod></url>
+  <url><loc>https://craysalon-join.crayoratech.workers.dev/cookies-hi</loc><lastmod>2026-10-14</lastmod></url>
   <url><loc>https://craysalon-join.crayoratech.workers.dev/about</loc><lastmod>2026-10-14</lastmod></url>
+  <url><loc>https://craysalon-join.crayoratech.workers.dev/about-hi</loc><lastmod>2026-10-14</lastmod></url>
   <url><loc>https://craysalon-join.crayoratech.workers.dev/delete-account</loc><lastmod>2026-10-14</lastmod></url>
+  <url><loc>https://craysalon-join.crayoratech.workers.dev/delete-account-hi</loc><lastmod>2026-10-14</lastmod></url>
 </urlset>

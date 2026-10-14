@@ -432,7 +432,7 @@ class _PhoneStepState extends ConsumerState<_PhoneStep> {
         _Problem(state.problem),
         const SizedBox(height: 8),
         Text(l10n.joinTermsLine, style: Theme.of(context).textTheme.bodySmall),
-        NoticeLink(label: l10n.linkTerms, url: termsUrl),
+        NoticeLink(label: l10n.linkTerms, url: sitePageFor('terms', Localizations.localeOf(context))),
         const SizedBox(height: 24),
         FilledButton(
           onPressed: state.busy

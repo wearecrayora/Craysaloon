@@ -363,23 +363,26 @@ const CHILD_MARKETING_CANARY = `
 `;
 const CHILD_MARKETING_MUST_FAIL = [/no path can grant a child offers or reminders/];
 
-// 0108: staff pushes go to the owner and managers. A notifier that forgets
-// the role sends them to every login with a device - stylists included.
+// 0108/0111: staff pushes go to the salon's ACTIVE logins. A notifier that
+// forgets `active` keeps telling a stylist the owner switched off about the
+// salon's customers.
 const STAFF_PUSH_TEST = 'supabase/tests/messaging/staff_push_test.sql';
-const STAFF_ROLE_CANARY = `
+const STAFF_ACTIVE_CANARY = `
   do $canary$
   declare
     v_def text;
     v_new text;
   begin
     v_def := pg_get_functiondef('app.notify_staff(uuid,text,text,jsonb)'::regprocedure);
-    v_new := replace(v_def, 'and u.role in (''owner'', ''manager'')', '');
-    if v_new = v_def then raise exception 'staff canary: the role filter moved'; end if;
+    v_new := replace(v_def, E'and u.active
+', E'and true
+');
+    if v_new = v_def then raise exception 'staff canary: the active filter moved'; end if;
     execute v_new;
   end;
   $canary$;
 `;
-const STAFF_ROLE_MUST_FAIL = [/never sends them to the stylist/];
+const STAFF_ACTIVE_MUST_FAIL = [/never a login the owner has switched off/];
 
 const BILLING_TEST = 'supabase/tests/billing/billing_test.sql';
 const GRACE_CANARY = `
@@ -656,10 +659,10 @@ try {
       CHILD_MARKETING_MUST_FAIL,
     ),
     await check(
-      'staff push / a notifier that messages stylists too',
+      'staff push / a notifier that messages switched-off logins',
       STAFF_PUSH_TEST,
-      STAFF_ROLE_CANARY,
-      STAFF_ROLE_MUST_FAIL,
+      STAFF_ACTIVE_CANARY,
+      STAFF_ACTIVE_MUST_FAIL,
     ),
     await check(
       'billing / a salon_writable that ignores a lapsed subscription',

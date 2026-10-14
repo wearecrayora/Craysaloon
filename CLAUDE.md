@@ -148,7 +148,7 @@ owner-callable payment-key function, a customer table protected only by `salon_i
 one-reminder-per-cycle index, an escalation sweep that ignores the ack, a `start_service` that
 accepts any code, a bill payment that credits the wallet, a `salon_writable` that ignores a
 lapsed subscription, a purge that keeps the closed salon's bindings, a support view that needs
-no session, a top-up receipt numbered as a tax invoice, a console rules save that resets the owner's bonus expiry, a salon holiday that blocks no booking, a capture that accepts another salon's payment, a consent trigger that no longer looks at age and a staff notifier that messages stylists, and require
+no session, a top-up receipt numbered as a tax invoice, a console rules save that resets the owner's bonus expiry, a salon holiday that blocks no booking, a capture that accepts another salon's payment, a consent trigger that no longer looks at age and a staff notifier that messages switched-off logins, and require
 the matching gate to go red. Never skipped, never deleted, never narrowed to pass. A gate that has
 only ever been seen passing is not known to be a gate.
 

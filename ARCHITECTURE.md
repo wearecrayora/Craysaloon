@@ -1314,11 +1314,11 @@ PRD §12 makes that a business metric, not just a behaviour.
 > switch on for its own transaction); turning it back on is a one-line migration. The login OTP is
 > a different product (VerifyNow, §5.2) and is unaffected.
 >
-> **The salon's own people get push too (0108).** Owner and manager devices register
+> **The salon's own people get push too (0108, stylists 0111).** Owner, manager and stylist devices register
 > (`register_push_token` accepts a staff session), and triggers announce what a *customer* did: a
 > booking, a cancellation, "I'll pay at the counter", a bill paid online. Staff messages carry the
 > customer's id and the name is read at send time, so an erased customer leaves no name in the log;
-> they never escalate. 0108 also fixed every customer message that printed a raw `{{when}}` or
+> they never escalate. A login the owner switched off is told nothing. 0108 also fixed every customer message that printed a raw `{{when}}` or
 > `{{amount}}`, and the wallet receipt that was never queued.
 
 **One sending identity, plus a safety net (v2.2).** Since the salon is known before the first

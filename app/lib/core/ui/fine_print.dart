@@ -15,20 +15,21 @@ class FinePrint extends StatelessWidget {
     final l10n = AppL10n.of(context);
     final text = Theme.of(context).textTheme;
     final link = text.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary);
+    final locale = Localizations.localeOf(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(l10n.meLegalHeading, style: text.titleSmall),
         const SizedBox(height: 4),
-        NoticeLink(label: l10n.linkTerms, url: termsUrl, style: link),
+        NoticeLink(label: l10n.linkTerms, url: sitePageFor('terms', locale), style: link),
         NoticeLink(
           label: l10n.linkPrivacy,
-          url: privacyPolicyUrlFor(Localizations.localeOf(context)),
+          url: privacyPolicyUrlFor(locale),
           style: link,
         ),
-        NoticeLink(label: l10n.linkRefunds, url: refundsUrl, style: link),
-        NoticeLink(label: l10n.linkAbout, url: aboutUrl, style: link),
+        NoticeLink(label: l10n.linkRefunds, url: sitePageFor('refunds', locale), style: link),
+        NoticeLink(label: l10n.linkAbout, url: sitePageFor('about', locale), style: link),
         InkWell(
           onTap: () => showLicensePage(context: context, applicationName: l10n.meAppBy),
           child: Padding(

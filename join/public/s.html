@@ -30,6 +30,7 @@
   glass (DESIGN.md 3.5a) - over a gradient; nothing else is fetched.
 -->
 <style>
+  .code { white-space: nowrap; }  /* a code split over two lines is misread */
   :root {
     color-scheme: light dark;
     --ink: #0f1530; --ink-soft: #4a4f66; --violet: #4b47ff;
@@ -73,6 +74,10 @@
   .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
   .brand img { width: 44px; height: 44px; border-radius: 12px; box-shadow: 0 4px 12px rgba(15,21,48,.12); }
   .brand span { font-weight: 650; letter-spacing: .01em; }
+  .brand button.lang { margin-left: auto; min-height: 44px; min-width: 44px; padding: 0 14px;
+    border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink);
+    font: inherit; font-size: 15px; cursor: pointer; }
+  html[lang="hi"] body { line-height: 1.75; }
   h1 { font-size: 24px; line-height: 1.25; margin: 0 0 8px; letter-spacing: -.01em; }
   .lede { margin: 0 0 22px; color: var(--ink-soft); }
   ol { list-style: none; padding: 0; margin: 0 0 22px; counter-reset: step; }
@@ -108,13 +113,14 @@
 </head>
 <body>
 <main>
-  <div class="brand"><img src="/icon-192.png" alt="" width="44" height="44"><span>Cray Salon</span></div>
-  <h1>Install the app to join your salon</h1>
-  <p class="lede">Your bookings, your wallet and your visits - in your salon's own app.</p>
+  <div class="brand"><img src="/icon-192.png" alt="" width="44" height="44"><span>Cray Salon</span>
+    <button class="lang" id="lang" type="button" lang="hi">हिन्दी</button></div>
+  <h1 id="t-title">Install the app to join your salon</h1>
+  <p class="lede" id="t-lede">Your bookings, your wallet and your visits - in your salon's own app.</p>
   <ol>
-    <li><span>Install the app from Google Play.</span></li>
-    <li><span>Open it. If it does not find your salon by itself, enter the code below.</span></li>
-    <li><span>Sign in with your mobile number and the one-time code.</span></li>
+    <li><span id="t-s1">Install the app from Google Play.</span></li>
+    <li><span id="t-s2">Open it. If it does not find your salon by itself, enter the code below.</span></li>
+    <li><span id="t-s3">Sign in with your mobile number and the one-time code.</span></li>
   </ol>
   <div class="codebox">
     <span class="code" id="code">—</span>
@@ -122,12 +128,47 @@
   </div>
   <a class="cta" id="play" href="https://play.google.com/store/apps/details?id=com.crayora.craysalon">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 2.8 13.6 12 4 21.2c-.3-.2-.5-.6-.5-1V3.8c0-.4.2-.8.5-1zm11 7.8 2.6-2.5L5.3 1.3c.1 0 .3 0 .4.1zm0 2.8-9.3 9.3c-.1.1-.3.1-.4.1l12.3-6.9zm3.7-3.9 3.1 1.8c.6.4.6 1.1 0 1.4l-3.1 1.8-2.8-2.5z"/></svg>
-    Get the app on Google Play
+    <span id="t-cta">Get the app on Google Play</span>
   </a>
   <small id="note">On iPhone, the app is coming soon. Ask at the counter.</small>
-  <small><a href="/privacy">What the app collects, and why</a> · <a href="/terms">Terms</a></small>
+  <small><a href="/privacy" id="t-privacy">What the app collects, and why</a> · <a href="/terms" id="t-terms">Terms</a></small>
 </main>
 <script>
+  // Printed on every salon's QR, so this one address serves both languages:
+  // it follows the phone's language, and the button switches it (14 Oct 2026).
+  var T = {
+    en: {
+      title: 'Install the app to join your salon',
+      lede: "Your bookings, your wallet and your visits - in your salon's own app.",
+      s1: 'Install the app from Google Play.',
+      s2: 'Open it. If it does not find your salon by itself, enter the code below.',
+      s3: 'Sign in with your mobile number and the one-time code.',
+      cta: 'Get the app on Google Play',
+      note: 'On iPhone, the app is coming soon. Ask at the counter.',
+      bad: 'This link is incomplete. Ask at the counter for the salon code.',
+      unreadable: 'Code not readable',
+      copy: 'Copy', copied: 'Copied',
+      privacy: 'What the app collects, and why', privacyHref: '/privacy',
+      terms: 'Terms', termsHref: '/terms',
+      other: 'हिन्दी', otherLang: 'hi'
+    },
+    hi: {
+      title: 'अपने सैलून से जुड़ने के लिए ऐप इंस्टॉल करें',
+      lede: 'आपकी बुकिंग, आपका वॉलेट और आपकी विज़िट - आपके सैलून के अपने ऐप में।',
+      s1: 'Google Play से ऐप इंस्टॉल करें।',
+      s2: 'उसे खोलें। अगर वह अपने-आप आपका सैलून न ढूँढे, तो नीचे दिया कोड डालें।',
+      s3: 'अपने मोबाइल नंबर और एक-बार के कोड से साइन इन करें।',
+      cta: 'Google Play से ऐप पाएँ',
+      note: 'iPhone के लिए ऐप जल्द आ रहा है। काउंटर पर पूछें।',
+      bad: 'यह लिंक अधूरा है। काउंटर पर सैलून का कोड पूछें।',
+      unreadable: 'कोड पढ़ा नहीं जा सका',
+      copy: 'कॉपी', copied: 'हो गया',
+      privacy: 'ऐप क्या जानकारी लेता है, और क्यों', privacyHref: '/privacy-hi',
+      terms: 'शर्तें', termsHref: '/terms-hi',
+      other: 'English', otherLang: 'en'
+    }
+  };
+
   // The code is the last path segment: /s/CRAY-XXXXXX
   var raw = location.pathname.split('/').filter(Boolean).pop() || '';
   // A torn link ("%E0") makes decodeURIComponent throw, which stopped this
@@ -137,10 +178,39 @@
   if (code.indexOf('CRAY') === 0) code = code.slice(4);
   // Same alphabet as the printed code: no 0/O, 1/I/L (ARCHITECTURE 5.6).
   var valid = /^[A-HJKMNP-Z2-9]{6}$/.test(code);
+  var full = valid ? 'CRAY-' + code : null;
+  var lang;
+
+  function set(id, text) { document.getElementById(id).textContent = text; }
+
+  function apply(l) {
+    lang = l;
+    var t = T[l];
+    document.documentElement.lang = l;
+    set('t-title', t.title); set('t-lede', t.lede);
+    set('t-s1', t.s1); set('t-s2', t.s2); set('t-s3', t.s3);
+    set('t-cta', t.cta);
+    set('note', valid ? t.note : t.bad);
+    if (!valid) set('code', t.unreadable);
+    set('copy', t.copy);
+    var pr = document.getElementById('t-privacy'); pr.textContent = t.privacy; pr.href = t.privacyHref;
+    var te = document.getElementById('t-terms'); te.textContent = t.terms; te.href = t.termsHref;
+    var b = document.getElementById('lang'); b.textContent = t.other; b.lang = t.otherLang;
+  }
+
+  var saved = null;
+  try { saved = localStorage.getItem('cray.lang'); } catch (e) {}
+  apply(saved === 'hi' || saved === 'en' ? saved
+        : ((navigator.language || '').toLowerCase().indexOf('hi') === 0 ? 'hi' : 'en'));
+
+  document.getElementById('lang').addEventListener('click', function () {
+    var next = lang === 'hi' ? 'en' : 'hi';
+    try { localStorage.setItem('cray.lang', next); } catch (e) {}
+    apply(next);
+  });
 
   if (valid) {
-    var full = 'CRAY-' + code;
-    document.getElementById('code').textContent = full;
+    set('code', full);
     // Play Install Referrer carries the code through the install, so a fresh
     // install can open on the right salon without anyone retyping it.
     document.getElementById('play').href =
@@ -151,17 +221,11 @@
       copy.hidden = false;
       copy.addEventListener('click', function () {
         navigator.clipboard.writeText(full).then(function () {
-          copy.textContent = 'Copied';
-          setTimeout(function () { copy.textContent = 'Copy'; }, 1800);
+          copy.textContent = T[lang].copied;
+          setTimeout(function () { copy.textContent = T[lang].copy; }, 1800);
         });
       });
     }
-  } else {
-    // A mistyped or damaged link. Say so rather than showing a code that is
-    // not a code.
-    document.getElementById('code').textContent = 'Code not readable';
-    document.getElementById('note').textContent =
-      'This link is incomplete. Ask at the counter for the salon code.';
   }
 </script>
 </body>

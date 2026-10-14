@@ -1,34 +1,56 @@
-"""Writes the join site's terms, refunds, cookies and about pages, styled exactly
-like privacy.html (its <style> block is reused verbatim), and adds the shared
-footer links to every page. Run from the repo root."""
+"""Writes the join site's terms, refunds, cookies and about pages - in English
+and Hindi (pages_hi.py) - styled exactly like privacy.html (its <style> block is
+reused verbatim), each linking to the other language. Run from the repo root."""
 import io
+import os
 import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import pages_hi  # noqa: E402
 
 PUB = 'join/public/'
 priv = io.open(PUB + 'privacy.html', encoding='utf-8').read()
 STYLE = re.search(r'<style>.*?</style>', priv, re.S).group(0)
-STYLE = STYLE.replace('  footer {', '  footer nav a { margin-right: 14px; display: inline-block; }\n  footer {', 1)
+STYLE = STYLE.replace('  footer {', '  footer nav a { margin-right: 14px; display: inline-block; }\n'
+                      '  html[lang="hi"] body { line-height: 1.8; }\n'
+                      '  html[lang="hi"] h1, html[lang="hi"] h2 { letter-spacing: 0; line-height: 1.4; }\n'
+                      '  .lang { font-size: 14px; margin: 0 0 16px; }\n  footer {', 1)
 ORIGIN = 'https://craysalon-join.crayoratech.workers.dev'
 
-FOOTER_LINKS = ('<nav aria-label="Policies"><a href="/">Cray Salon</a><a href="/terms">Terms</a>'
-                '<a href="/privacy">Privacy</a><a href="/refunds">Refunds</a>'
-                '<a href="/cookies">Cookies</a><a href="/about">About</a></nav>')
+FOOTER = {
+    'en': ('<p>Cray Salon is made by Crayora, India. This page carries no trackers, cookies or analytics.</p>\n'
+           '  <nav aria-label="Policies"><a href="/">Cray Salon</a><a href="/terms">Terms</a>'
+           '<a href="/privacy">Privacy</a><a href="/refunds">Refunds</a>'
+           '<a href="/cookies">Cookies</a><a href="/about">About</a></nav>'),
+    'hi': ('<p>Cray Salon को Crayora, भारत ने बनाया है। इस पेज पर कोई ट्रैकर, कुकी या एनालिटिक्स नहीं है।</p>\n'
+           '  <nav aria-label="नीतियाँ"><a href="/hi">Cray Salon</a><a href="/terms-hi">शर्तें</a>'
+           '<a href="/privacy-hi">गोपनीयता</a><a href="/refunds-hi">रिफ़ंड</a>'
+           '<a href="/cookies-hi">कुकीज़</a><a href="/about-hi">हमारे बारे में</a></nav>'),
+}
 
 
-def page(slug, title, desc, body):
+def page(slug, title, desc, body, lang='en'):
+    """slug is the English page's; the Hindi page is slug + '-hi'."""
+    own = slug if lang == 'en' else slug + '-hi'
+    switch = (f'<p class="lang"><a href="/{slug}-hi" lang="hi" hreflang="hi">हिन्दी में पढ़ें</a></p>'
+              if lang == 'en' else
+              f'<p class="lang"><a href="/{slug}" lang="en" hreflang="en">Read in English</a></p>')
     return f"""<!doctype html>
-<html lang="en">
+<html lang="{lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title} — Cray Salon</title>
 <meta name="description" content="{desc}">
-<link rel="canonical" href="{ORIGIN}/{slug}">
+<link rel="canonical" href="{ORIGIN}/{own}">
+<link rel="alternate" hreflang="en" href="{ORIGIN}/{slug}">
+<link rel="alternate" hreflang="hi" href="{ORIGIN}/{slug}-hi">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cray Salon">
 <meta property="og:title" content="{title} — Cray Salon">
 <meta property="og:description" content="{desc}">
-<meta property="og:url" content="{ORIGIN}/{slug}">
+<meta property="og:url" content="{ORIGIN}/{own}">
 <meta property="og:image" content="{ORIGIN}/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/icon-192.png">
@@ -37,11 +59,11 @@ def page(slug, title, desc, body):
 </head>
 <body>
 <main>
+{switch}
 {body.strip()}
 
 <footer>
-  <p>Cray Salon is made by Crayora, India. This page carries no trackers, cookies or analytics.</p>
-  {FOOTER_LINKS}
+  {FOOTER[lang]}
 </footer>
 </main>
 </body>
@@ -320,11 +342,19 @@ ABOUT = """
 </ul>
 """
 
-for slug, title, desc, body in [
-    ('terms', 'Terms of service', 'The terms for using the Cray Salon app: who is who, bookings, paying, the wallet, and your rights.', TERMS),
-    ('refunds', 'Refunds and cancellations', 'Cancelling a booking, wallet top-ups, and when money comes back on the Cray Salon app.', REFUNDS),
-    ('cookies', 'Cookies', 'This website sets no cookies. What the Cray Salon app keeps on your phone, and why.', COOKIES),
-    ('about', 'About Crayora', 'Crayora makes Cray Salon, a salon’s own app. Business details and contact.', ABOUT),
-]:
+PAGES = [
+    ('terms', 'Terms of service', 'The terms for using the Cray Salon app: who is who, bookings, paying, the wallet, and your rights.', TERMS,
+     'सेवा की शर्तें', 'Cray Salon ऐप इस्तेमाल करने की शर्तें: कौन क्या है, बुकिंग, भुगतान, वॉलेट और आपके अधिकार।', pages_hi.TERMS),
+    ('refunds', 'Refunds and cancellations', 'Cancelling a booking, wallet top-ups, and when money comes back on the Cray Salon app.', REFUNDS,
+     'रिफ़ंड और रद्द करना', 'Cray Salon ऐप पर बुकिंग रद्द करना, वॉलेट टॉप-अप, और पैसा कब वापस आता है।', pages_hi.REFUNDS),
+    ('cookies', 'Cookies', 'This website sets no cookies. What the Cray Salon app keeps on your phone, and why.', COOKIES,
+     'कुकीज़', 'यह वेबसाइट कोई कुकी नहीं रखती। Cray Salon ऐप आपके फ़ोन पर क्या रखता है, और क्यों।', pages_hi.COOKIES),
+    ('about', 'About Crayora', 'Crayora makes Cray Salon, a salon\u2019s own app. Business details and contact.', ABOUT,
+     'Crayora के बारे में', 'Crayora, Cray Salon बनाता है - एक सैलून का अपना ऐप। व्यावसायिक जानकारी और संपर्क।', pages_hi.ABOUT),
+]
+
+for slug, title, desc, body, title_hi, desc_hi, body_hi in PAGES:
     io.open(PUB + slug + '.html', 'w', encoding='utf-8', newline='\n').write(page(slug, title, desc, body))
-    print('wrote', slug)
+    io.open(PUB + slug + '-hi.html', 'w', encoding='utf-8', newline='\n').write(
+        page(slug, title_hi, desc_hi, body_hi, lang='hi'))
+    print('wrote', slug, '+', slug + '-hi')
