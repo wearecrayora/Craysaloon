@@ -305,8 +305,6 @@
   "@dayTitle": {
     "description": "O1, the day view. The tab is the DAY; mark-complete is an action on it, not its name."
   },
-  "dayEmpty": "Nothing booked today.",
-  "@dayEmpty": {},
   "dayDone": "Done",
   "@dayDone": {},
   "dayCancelled": "Cancelled",
@@ -969,14 +967,6 @@
   "@navBook": {},
   "navMe": "Me",
   "@navMe": {},
-  "homeGreeting": "Hi {name}",
-  "@homeGreeting": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "homeGreetingNoName": "Welcome back",
   "@homeGreetingNoName": {},
   "homeNextDueService": "Your next {service} is due around {date}",
@@ -1441,5 +1431,50 @@
   "loginsBadPhone": "That is not a valid mobile number.",
   "loginsNameRequired": "Enter their name.",
   "loginsOwnLogin": "Your own login cannot be switched off.",
-  "loginsFailed": "That did not work. Check your connection and try again."
+  "loginsFailed": "That did not work. Check your connection and try again.",
+  "homeGreetingMorning": "Good morning, {name}",
+  "@homeGreetingMorning": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreetingAfternoon": "Good afternoon, {name}",
+  "@homeGreetingAfternoon": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreetingEvening": "Good evening, {name}",
+  "@homeGreetingEvening": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWithStylist": "with {name}",
+  "@homeWithStylist": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dayHeaderSummary": "{booked} booked · {done} done",
+  "@dayHeaderSummary": {
+    "placeholders": {
+      "booked": {
+        "type": "int"
+      },
+      "done": {
+        "type": "int"
+      }
+    }
+  },
+  "dayEmptyTitle": "A quiet day so far",
+  "dayEmptyBody": "Bookings and walk-ins appear here as they come in."
 }

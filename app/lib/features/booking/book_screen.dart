@@ -320,7 +320,6 @@ class _ServiceStep extends ConsumerWidget {
                 _ChoiceRow(
                   selected: s.id == selected,
                   onTap: () => onSelect(s),
-                  leading: _ServiceTile(name: s.name, category: s.category),
                   title: s.name,
                   subtitle: l10n.bookMinutes(s.durationMinutes),
                   trailing: rupees(s.pricePaise),
@@ -352,43 +351,6 @@ class _ServiceStep extends ConsumerWidget {
   }
 }
 
-/// A tinted tile with an icon, where the design had a service photo: there are
-/// no photos of each salon's own services, and a stock photo of somebody
-/// else's haircut would be a promise (DESIGN 10). Container fill, not primary:
-/// the brand is never painted on a surface.
-class _ServiceTile extends StatelessWidget {
-  const _ServiceTile({required this.name, this.category});
-
-  final String name;
-  final String? category;
-
-  static IconData iconFor(String name, String? category) {
-    final s = '${category ?? ''} $name'.toLowerCase();
-    if (s.contains('beard') || s.contains('shave')) return Icons.face_retouching_natural;
-    if (s.contains('colour') || s.contains('color') || s.contains('dye')) return Icons.palette_outlined;
-    if (s.contains('spa') || s.contains('massage')) return Icons.spa_outlined;
-    if (s.contains('facial') || s.contains('clean') || s.contains('skin')) return Icons.face_outlined;
-    if (s.contains('nail') || s.contains('mani') || s.contains('pedi')) return Icons.back_hand_outlined;
-    if (s.contains('wash') || s.contains('blow')) return Icons.water_drop_outlined;
-    return Icons.content_cut;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final g = CrayGlass.of(context);
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        color: scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(g.radiusChip + 4),
-      ),
-      child: Icon(iconFor(name, category), color: scheme.onPrimaryContainer),
-    );
-  }
-}
-
 /// One choosable row: a radio or checkbox, the thing, its price. The whole row
 /// is the target (48dp+), and it settles under the thumb.
 class _ChoiceRow extends StatelessWidget {
@@ -399,12 +361,10 @@ class _ChoiceRow extends StatelessWidget {
     required this.trailing,
     required this.radio,
     this.subtitle,
-    this.leading,
   });
 
   final bool selected;
   final VoidCallback onTap;
-  final Widget? leading;
   final String title;
   final String? subtitle;
   final String trailing;
@@ -429,7 +389,9 @@ class _ChoiceRow extends StatelessWidget {
           margin: const EdgeInsets.symmetric(vertical: 4),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           decoration: BoxDecoration(
-            color: selected ? g.card : Colors.transparent,
+            // Glass whether chosen or not, so the list reads as a list over the
+            // background; the choice is the ink outline, not a fill.
+            color: g.card,
             borderRadius: BorderRadius.circular(g.radius),
             border: Border.all(color: selected ? g.ink : g.line, width: selected ? 1.5 : 1),
           ),
@@ -442,7 +404,6 @@ class _ChoiceRow extends StatelessWidget {
                 color: selected ? scheme.primary : scheme.outline,
               ),
               const SizedBox(width: 12),
-              if (leading != null) ...[leading!, const SizedBox(width: 12)],
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -61,7 +61,7 @@ void main() {
         ..due = NextDue(dueOn: DateTime(2026, 10, 14), serviceName: 'Haircut');
       await pump(tester, api);
 
-      expect(find.text('Hi Asha'), findsOneWidget);
+      expect(find.textContaining(RegExp(r'^Good (morning|afternoon|evening), Asha$')), findsOneWidget);
       expect(find.text('Your next haircut is due around Oct 14'), findsOneWidget);
       expect(find.text('Book now'), findsOneWidget);
     });

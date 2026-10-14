@@ -8,8 +8,8 @@ import '../theme/still_life_palette.dart';
 /// A still life of beauty objects in frosted glass, painted into the mesh
 /// behind every screen (decided 14 Oct 2026, DESIGN.md 3.5a).
 ///
-/// Lipstick, a compact, a brush, nail polish, perfume, a comb, scissors and a
-/// mascara wand - drawn as translucent glass: a faint fill, a hairline edge and
+/// Lipstick, a brush, nail polish, perfume, scissors and a mascara wand -
+/// drawn as translucent glass: a faint fill, a hairline edge and
 /// a highlight, the way a frosted object catches the light. They sit at the
 /// EDGES of the screen, partly cropped, so the middle - where people read - is
 /// left to the content.
@@ -28,9 +28,9 @@ void paintBeautyStillLife(Canvas canvas, Size size, {required bool dark}) {
   if (w <= 0 || h <= 0) return;
 
   final base = dark ? StillLifePalette.inkDark : StillLifePalette.inkLight;
-  final fillAlpha = dark ? 0.045 : 0.035;
-  final edgeAlpha = dark ? 0.12 : 0.085;
-  final shineAlpha = dark ? 0.16 : 0.55;
+  final fillAlpha = dark ? 0.04 : 0.028;
+  final edgeAlpha = dark ? 0.10 : 0.07;
+  final shineAlpha = dark ? 0.14 : 0.5;
   // One unit is a fraction of the shorter side, so phones and tablets get
   // objects of the same visual weight.
   final u = math.min(w, h);
@@ -50,15 +50,15 @@ void paintBeautyStillLife(Canvas canvas, Size size, {required bool dark}) {
     canvas.restore();
   }
 
-  // Corners and edges only; each object partly cropped by the screen edge.
-  place(_perfume, x: w - u * 0.10, y: h * 0.06, height: u * 0.42, turnDegrees: 14);
-  place(_compact, x: -u * 0.06, y: h * 0.30, height: u * 0.38, turnDegrees: -8);
-  place(_brush, x: w + u * 0.02, y: h * 0.50, height: u * 0.78, turnDegrees: 24);
-  place(_lipstick, x: u * 0.10, y: h * 0.80, height: u * 0.40, turnDegrees: -22);
-  place(_polish, x: w - u * 0.14, y: h * 0.86, height: u * 0.30, turnDegrees: 10);
-  place(_comb, x: u * 0.30, y: -u * 0.02, height: u * 0.36, turnDegrees: 72);
-  place(_scissors, x: w * 0.44, y: h - u * 0.30, height: u * 0.32, turnDegrees: -28);
-  place(_mascara, x: u * 0.07, y: h * 0.53, height: u * 0.40, turnDegrees: 16);
+  // Corners and edges only, small enough to read as texture rather than as
+  // pictures, each partly cropped by the screen edge. Six objects - more, and
+  // an empty screen starts to look like wallpaper (design review 14 Oct 2026).
+  place(_perfume, x: w - u * 0.07, y: h * 0.07, height: u * 0.26, turnDegrees: 14);
+  place(_brush, x: w + u * 0.03, y: h * 0.46, height: u * 0.50, turnDegrees: 24);
+  place(_mascara, x: u * 0.03, y: h * 0.34, height: u * 0.28, turnDegrees: 16);
+  place(_lipstick, x: u * 0.08, y: h * 0.80, height: u * 0.26, turnDegrees: -22);
+  place(_scissors, x: w * 0.46, y: h - u * 0.20, height: u * 0.22, turnDegrees: -28);
+  place(_polish, x: w - u * 0.10, y: h * 0.86, height: u * 0.20, turnDegrees: 10);
 }
 
 /// Paints one glass shape: a faint fill graded top-left to bottom-right, a
@@ -144,16 +144,6 @@ void _lipstick(_Glass g) {
   g.shine(const Offset(-0.11, 0.55), const Offset(-0.11, 0.95));
 }
 
-void _compact(_Glass g) {
-  // An open compact: the lid's mirror above, the powder pan below.
-  g.shape(Path()..addOval(Rect.fromCircle(center: const Offset(0, 0.30), radius: 0.30)));
-  g.shape(Path()..addOval(Rect.fromCircle(center: const Offset(0, 0.30), radius: 0.24)), weight: 0.8);
-  g.shape(_rrect(-0.05, 0.58, 0.05, 0.64, 0.02), weight: 1.4);
-  g.shape(Path()..addOval(Rect.fromCircle(center: const Offset(0, 0.92), radius: 0.30)));
-  g.shape(Path()..addOval(Rect.fromCircle(center: const Offset(0, 0.92), radius: 0.20)), weight: 1.4);
-  g.shine(const Offset(-0.16, 0.16), const Offset(-0.04, 0.08));
-}
-
 void _brush(_Glass g) {
   // A fan of bristles, the ferrule, a long tapering handle.
   g.shape(
@@ -210,18 +200,6 @@ void _perfume(_Glass g) {
     ..moveTo(-0.28, 0.48)
     ..lineTo(0.28, 0.48));
   g.shine(const Offset(-0.20, 0.54), const Offset(-0.20, 0.92));
-}
-
-void _comb(_Glass g) {
-  // A spine and its teeth, fine at one end and wide at the other.
-  g.shape(_rrect(-0.10, 0.0, 0.10, 1.0, 0.05), weight: 1.2);
-  for (var i = 0; i < 16; i++) {
-    final y = 0.06 + i * 0.056;
-    g.line(Path()
-      ..moveTo(0.10, y)
-      ..lineTo(i < 8 ? 0.26 : 0.30, y));
-  }
-  g.shine(const Offset(-0.05, 0.08), const Offset(-0.05, 0.9));
 }
 
 void _scissors(_Glass g) {

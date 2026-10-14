@@ -321,9 +321,6 @@ class AppL10nHi extends AppL10n {
   String get dayTitle => 'आज';
 
   @override
-  String get dayEmpty => 'आज कोई बुकिंग नहीं।';
-
-  @override
   String get dayDone => 'हो गया';
 
   @override
@@ -1045,11 +1042,6 @@ class AppL10nHi extends AppL10n {
   String get navMe => 'मैं';
 
   @override
-  String homeGreeting(String name) {
-    return 'नमस्ते $name';
-  }
-
-  @override
   String get homeGreetingNoName => 'फिर से स्वागत है';
 
   @override
@@ -1650,6 +1642,37 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get loginsFailed => 'यह नहीं हुआ। इंटरनेट देखें और फिर से कोशिश करें।';
+
+  @override
+  String homeGreetingMorning(String name) {
+    return 'सुप्रभात, $name';
+  }
+
+  @override
+  String homeGreetingAfternoon(String name) {
+    return 'शुभ दोपहर, $name';
+  }
+
+  @override
+  String homeGreetingEvening(String name) {
+    return 'शुभ संध्या, $name';
+  }
+
+  @override
+  String homeWithStylist(String name) {
+    return '$name के साथ';
+  }
+
+  @override
+  String dayHeaderSummary(int booked, int done) {
+    return '$booked बुक · $done पूरे';
+  }
+
+  @override
+  String get dayEmptyTitle => 'अभी तक दिन शांत है';
+
+  @override
+  String get dayEmptyBody => 'बुकिंग और वॉक-इन आते ही यहाँ दिखेंगे।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -1970,9 +1993,6 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get dayTitle => 'Aaj';
-
-  @override
-  String get dayEmpty => 'Aaj koi booking nahi.';
 
   @override
   String get dayDone => 'Ho gaya';
@@ -2701,11 +2721,6 @@ class AppL10nHiLatn extends AppL10nHi {
   String get navMe => 'Main';
 
   @override
-  String homeGreeting(String name) {
-    return 'Namaste $name';
-  }
-
-  @override
   String get homeGreetingNoName => 'Phir se swagat hai';
 
   @override
@@ -3311,4 +3326,35 @@ class AppL10nHiLatn extends AppL10nHi {
   @override
   String get loginsFailed =>
       'Yeh nahin hua. Internet dekhiye aur phir se koshish kijiye.';
+
+  @override
+  String homeGreetingMorning(String name) {
+    return 'Good morning, $name';
+  }
+
+  @override
+  String homeGreetingAfternoon(String name) {
+    return 'Good afternoon, $name';
+  }
+
+  @override
+  String homeGreetingEvening(String name) {
+    return 'Good evening, $name';
+  }
+
+  @override
+  String homeWithStylist(String name) {
+    return '$name ke saath';
+  }
+
+  @override
+  String dayHeaderSummary(int booked, int done) {
+    return '$booked book · $done poore';
+  }
+
+  @override
+  String get dayEmptyTitle => 'Abhi tak din shaant hai';
+
+  @override
+  String get dayEmptyBody => 'Booking aur walk-in aate hi yahan dikhenge.';
 }

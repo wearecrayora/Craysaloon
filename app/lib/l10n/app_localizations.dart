@@ -614,12 +614,6 @@ abstract class AppL10n {
   /// **'Today'**
   String get dayTitle;
 
-  /// No description provided for @dayEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing booked today.'**
-  String get dayEmpty;
-
   /// No description provided for @dayDone.
   ///
   /// In en, this message translates to:
@@ -1772,12 +1766,6 @@ abstract class AppL10n {
   /// **'Me'**
   String get navMe;
 
-  /// No description provided for @homeGreeting.
-  ///
-  /// In en, this message translates to:
-  /// **'Hi {name}'**
-  String homeGreeting(String name);
-
   /// No description provided for @homeGreetingNoName.
   ///
   /// In en, this message translates to:
@@ -2869,6 +2857,48 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'That did not work. Check your connection and try again.'**
   String get loginsFailed;
+
+  /// No description provided for @homeGreetingMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning, {name}'**
+  String homeGreetingMorning(String name);
+
+  /// No description provided for @homeGreetingAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon, {name}'**
+  String homeGreetingAfternoon(String name);
+
+  /// No description provided for @homeGreetingEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening, {name}'**
+  String homeGreetingEvening(String name);
+
+  /// No description provided for @homeWithStylist.
+  ///
+  /// In en, this message translates to:
+  /// **'with {name}'**
+  String homeWithStylist(String name);
+
+  /// No description provided for @dayHeaderSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{booked} booked · {done} done'**
+  String dayHeaderSummary(int booked, int done);
+
+  /// No description provided for @dayEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A quiet day so far'**
+  String get dayEmptyTitle;
+
+  /// No description provided for @dayEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings and walk-ins appear here as they come in.'**
+  String get dayEmptyBody;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

@@ -23,14 +23,13 @@ class _MeshPageTransitions extends PageTransitionsBuilder {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
-  ) =>
-      inner.buildTransitions(
-        route,
-        context,
-        animation,
-        secondaryAnimation,
-        MeshBackground(child: child),
-      );
+  ) => inner.buildTransitions(
+    route,
+    context,
+    animation,
+    secondaryAnimation,
+    MeshBackground(child: child),
+  );
 }
 
 /// Builds Flutter's theme from the salon's resolved tokens.
@@ -74,24 +73,24 @@ ThemeData brandTheme(BrandTokens t) {
   final fallback = devanagariFallback;
 
   TextStyle body(double size, {int? weight}) => TextStyle(
-        fontFamily: bodyFamily,
-        fontFamilyFallback: fallback,
-        fontSize: size,
-        height: bodyHeight,
-        letterSpacing: letterSpacing,
-        fontWeight: _weight(weight ?? t.bodyWeight),
-        color: t.textPrimary,
-      );
+    fontFamily: bodyFamily,
+    fontFamilyFallback: fallback,
+    fontSize: size,
+    height: bodyHeight,
+    letterSpacing: letterSpacing,
+    fontWeight: _weight(weight ?? t.bodyWeight),
+    color: t.textPrimary,
+  );
 
   TextStyle heading(double size) => TextStyle(
-        fontFamily: headingFamily,
-        fontFamilyFallback: fallback,
-        fontSize: size,
-        height: t.isDevanagari ? 1.3 + (t.lineHeightBonus / 16) : 1.25,
-        letterSpacing: letterSpacing,
-        fontWeight: _weight(t.headingWeight),
-        color: t.textPrimary,
-      );
+    fontFamily: headingFamily,
+    fontFamilyFallback: fallback,
+    fontSize: size,
+    height: t.isDevanagari ? 1.3 + (t.lineHeightBonus / 16) : 1.25,
+    letterSpacing: letterSpacing,
+    fontWeight: _weight(t.headingWeight),
+    color: t.textPrimary,
+  );
 
   final glass = CrayGlass.fromTokens(t);
   final sheetShape = RoundedRectangleBorder(
@@ -107,11 +106,21 @@ ThemeData brandTheme(BrandTokens t) {
     scaffoldBackgroundColor: Colors.transparent,
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
-        TargetPlatform.android: _MeshPageTransitions(ZoomPageTransitionsBuilder()),
-        TargetPlatform.iOS: _MeshPageTransitions(CupertinoPageTransitionsBuilder()),
-        TargetPlatform.linux: _MeshPageTransitions(ZoomPageTransitionsBuilder()),
-        TargetPlatform.macOS: _MeshPageTransitions(CupertinoPageTransitionsBuilder()),
-        TargetPlatform.windows: _MeshPageTransitions(ZoomPageTransitionsBuilder()),
+        TargetPlatform.android: _MeshPageTransitions(
+          ZoomPageTransitionsBuilder(),
+        ),
+        TargetPlatform.iOS: _MeshPageTransitions(
+          CupertinoPageTransitionsBuilder(),
+        ),
+        TargetPlatform.linux: _MeshPageTransitions(
+          ZoomPageTransitionsBuilder(),
+        ),
+        TargetPlatform.macOS: _MeshPageTransitions(
+          CupertinoPageTransitionsBuilder(),
+        ),
+        TargetPlatform.windows: _MeshPageTransitions(
+          ZoomPageTransitionsBuilder(),
+        ),
       },
     ),
     bottomSheetTheme: BottomSheetThemeData(
@@ -131,13 +140,21 @@ ThemeData brandTheme(BrandTokens t) {
       height: 72,
       iconTheme: WidgetStateProperty.resolveWith(
         (states) => IconThemeData(
-          color: states.contains(WidgetState.selected) ? t.onPrimaryContainer : t.textSecondary,
+          color: states.contains(WidgetState.selected)
+              ? t.onPrimaryContainer
+              : t.textSecondary,
         ),
       ),
       labelTextStyle: WidgetStateProperty.resolveWith(
-        (states) => body(13, weight: states.contains(WidgetState.selected) ? 600 : 400).copyWith(
-          color: states.contains(WidgetState.selected) ? t.textPrimary : t.textSecondary,
-        ),
+        (states) =>
+            body(
+              13,
+              weight: states.contains(WidgetState.selected) ? 600 : 400,
+            ).copyWith(
+              color: states.contains(WidgetState.selected)
+                  ? t.textPrimary
+                  : t.textSecondary,
+            ),
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -150,13 +167,14 @@ ThemeData brandTheme(BrandTokens t) {
       extendedTextStyle: body(15, weight: 600),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(t.radiusBase),
-        side: BorderSide(color: t.glassLine),
       ),
     ),
     dialogTheme: DialogThemeData(
       backgroundColor: t.glassSheet,
       surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(t.radiusSheet)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(t.radiusSheet),
+      ),
     ),
     dividerColor: t.divider,
     fontFamily: bodyFamily,
@@ -252,7 +270,9 @@ ThemeData brandTheme(BrandTokens t) {
     ),
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.selected) ? t.primary : Colors.transparent,
+        (states) => states.contains(WidgetState.selected)
+            ? t.primary
+            : Colors.transparent,
       ),
       checkColor: WidgetStateProperty.all(t.onPrimary),
       side: BorderSide(color: t.borderStrong, width: 1.5),
@@ -272,10 +292,10 @@ ThemeData brandTheme(BrandTokens t) {
 }
 
 FontWeight _weight(int value) => switch (value) {
-      <= 300 => FontWeight.w300,
-      <= 400 => FontWeight.w400,
-      <= 500 => FontWeight.w500,
-      <= 600 => FontWeight.w600,
-      <= 700 => FontWeight.w700,
-      _ => FontWeight.w800,
-    };
+  <= 300 => FontWeight.w300,
+  <= 400 => FontWeight.w400,
+  <= 500 => FontWeight.w500,
+  <= 600 => FontWeight.w600,
+  <= 700 => FontWeight.w700,
+  _ => FontWeight.w800,
+};

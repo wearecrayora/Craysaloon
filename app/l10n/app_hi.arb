@@ -86,7 +86,6 @@
   "saveFailedRefused": "आपका अकाउंट कैटलॉग नहीं बदल सकता। मालिक से कहें।",
   "saveFailed": "सेव नहीं हुआ। दोबारा कोशिश करें।",
   "dayTitle": "आज",
-  "dayEmpty": "आज कोई बुकिंग नहीं।",
   "dayDone": "हो गया",
   "dayCancelled": "रद्द",
   "daySyncPending": "{count, plural, =1{1 बदलाव सिंक होना बाकी} other{{count} बदलाव सिंक होने बाकी}}",
@@ -279,7 +278,6 @@
   "navHome": "होम",
   "navBook": "बुक करें",
   "navMe": "मैं",
-  "homeGreeting": "नमस्ते {name}",
   "homeGreetingNoName": "फिर से स्वागत है",
   "homeNextDueService": "आपकी अगली {service} लगभग {date} को होनी है",
   "homeNextDue": "आपकी अगली विज़िट लगभग {date} को है",
@@ -461,5 +459,12 @@
   "loginsBadPhone": "यह सही मोबाइल नंबर नहीं है।",
   "loginsNameRequired": "उनका नाम लिखें।",
   "loginsOwnLogin": "आपका अपना लॉगिन बंद नहीं किया जा सकता।",
-  "loginsFailed": "यह नहीं हुआ। इंटरनेट देखें और फिर से कोशिश करें।"
+  "loginsFailed": "यह नहीं हुआ। इंटरनेट देखें और फिर से कोशिश करें।",
+  "homeGreetingMorning": "सुप्रभात, {name}",
+  "homeGreetingAfternoon": "शुभ दोपहर, {name}",
+  "homeGreetingEvening": "शुभ संध्या, {name}",
+  "homeWithStylist": "{name} के साथ",
+  "dayHeaderSummary": "{booked} बुक · {done} पूरे",
+  "dayEmptyTitle": "अभी तक दिन शांत है",
+  "dayEmptyBody": "बुकिंग और वॉक-इन आते ही यहाँ दिखेंगे।"
 }

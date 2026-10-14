@@ -334,7 +334,7 @@ void main() {
       (tester) async {
     remote.dayRows = const [];
     await pump(tester);
-    expect(find.text('Nothing booked today.'), findsOneWidget);
+    expect(find.text('A quiet day so far'), findsOneWidget);
   });
 
   testWidgets('nothing clips at 200% text scale', (tester) async {

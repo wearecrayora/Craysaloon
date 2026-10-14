@@ -68,16 +68,26 @@ class DayScreen extends ConsumerWidget {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
+              // Today, in words, and how the day stands - the first thing an
+              // owner glances at between customers.
+              SliverToBoxAdapter(child: _DayHeader(bookings: state.bookings)),
               // Why nothing can be recorded, BEFORE a tap is refused (0087).
               const SliverToBoxAdapter(child: ReadOnlyBanner()),
               if (state.fromCache)
-                SliverToBoxAdapter(child: CacheBanner(refreshedAt: state.refreshedAt)),
+                SliverToBoxAdapter(
+                  child: CacheBanner(refreshedAt: state.refreshedAt),
+                ),
               if (pending > 0)
                 SliverToBoxAdapter(
                   child: Container(
                     width: double.infinity,
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerHighest,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     child: Row(
                       children: [
                         const Icon(Icons.schedule_send, size: 18),
@@ -98,18 +108,18 @@ class DayScreen extends ConsumerWidget {
                   child: Center(child: CircularProgressIndicator()),
                 )
               else if (state.bookings.isEmpty)
-                SliverPadding(
-                  padding: const EdgeInsets.all(16),
-                  sliver: SliverToBoxAdapter(child: Text(l10n.dayEmpty)),
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _EmptyDay(),
                 )
               else
                 SliverPadding(
-                  padding: const EdgeInsets.only(bottom: 24),
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                   sliver: SliverList.separated(
                     // +1 for clearance under the Walk-in button,
                     // composed from the 4dp scale (DESIGN 4.1, GATE-4).
                     itemCount: state.bookings.length + 1,
-                    separatorBuilder: (_, _) => const Divider(height: 1),
+                    separatorBuilder: (_, _) => const SizedBox(height: 8),
                     itemBuilder: (context, i) => i == state.bookings.length
                         ? const SizedBox(height: 64)
                         : _BookingTile(booking: state.bookings[i]),
@@ -138,46 +148,65 @@ class _BookingTile extends ConsumerWidget {
         ? booking.customerName!
         : l10n.walkInCustomer;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      DateFormat.jm().format(booking.startsAt),
-                      style: text.titleMedium?.copyWith(fontFeatures: moneyFeatures),
-                    ),
-                    Text(title, style: text.bodyLarge),
-                    if (booking.serviceNames.isNotEmpty)
-                      Text(booking.serviceNames, style: text.bodySmall),
-                    if (booking.staffName != null)
-                      Text(booking.staffName!, style: text.bodySmall),
-                  ],
-                ),
-              ),
-              Text(
-                rupees(booking.totalPaise),
-                style: text.titleMedium?.copyWith(fontFeatures: moneyFeatures),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (booking.status == 'completed')
+    final time = DateFormat.jm().format(booking.startsAt);
+    final split = time.split(RegExp(r'[\s ]+'));
+
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 12, 16, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.check_circle, size: 20, color: scheme.primary),
+                // The time, in its own column - the owner scans the day by it.
+                SizedBox(
+                  width: 64,
+                  child: Column(
+                    children: [
+                      Text(
+                        split.first,
+                        style: text.titleLarge?.copyWith(
+                          fontFeatures: moneyFeatures,
+                        ),
+                      ),
+                      if (split.length > 1)
+                        Text(split.last, style: text.labelSmall),
+                    ],
+                  ),
+                ),
                 const SizedBox(width: 8),
-                // "Paid" only when the SERVER says so. Never inferred from a tap.
                 Expanded(
-                  child: Text(
-                    switch (booking.paymentStatus) {
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: text.titleMedium),
+                      if (booking.serviceNames.isNotEmpty)
+                        Text(booking.serviceNames, style: text.bodySmall),
+                      if (booking.staffName != null)
+                        Text(booking.staffName!, style: text.bodySmall),
+                    ],
+                  ),
+                ),
+                Text(
+                  rupees(booking.totalPaise),
+                  style: text.titleMedium?.copyWith(
+                    fontFeatures: moneyFeatures,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (booking.status == 'completed')
+              Row(
+                children: [
+                  Icon(Icons.check_circle, size: 20, color: scheme.primary),
+                  const SizedBox(width: 8),
+                  // "Paid" only when the SERVER says so. Never inferred from a tap.
+                  Expanded(
+                    child: Text(switch (booking.paymentStatus) {
                       'paid' => '${l10n.dayDone} · ${l10n.payPaid}',
                       'partial' => '${l10n.dayDone} · ${l10n.payPartial}',
                       // The customer said "cash at the counter" in their app. It
@@ -185,60 +214,138 @@ class _BookingTile extends ConsumerWidget {
                       _ when booking.counterRequested =>
                         '${l10n.dayDone} · ${l10n.payCounterRequested}',
                       _ => l10n.dayDone,
-                    },
-                    style: text.labelLarge,
+                    }, style: text.labelLarge),
                   ),
-                ),
-                if (booking.awaitsPayment)
-                  OutlinedButton(
-                    // An explicit, FINITE minimum width. The theme gives buttons
-                    // Size.fromHeight(48) - infinite width - so a button inside a
-                    // Row without Expanded asserts at layout. The referral screen
-                    // hit the same trap.
-                    style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
-                    onPressed: () => CheckoutSheet.open(context, booking),
-                    child: Text(l10n.payTake),
+                  if (booking.awaitsPayment)
+                    OutlinedButton(
+                      // An explicit, FINITE minimum width. The theme gives buttons
+                      // Size.fromHeight(48) - infinite width - so a button inside a
+                      // Row without Expanded asserts at layout. The referral screen
+                      // hit the same trap.
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 48),
+                      ),
+                      onPressed: () => CheckoutSheet.open(context, booking),
+                      child: Text(l10n.payTake),
+                    ),
+                ],
+              )
+            else if (booking.status == 'cancelled')
+              Text(l10n.dayCancelled, style: text.labelLarge)
+            else if (booking.isInProgress)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(l10n.dayInProgress, style: text.labelLarge),
+                  const SizedBox(height: 8),
+                  FilledButton(
+                    // Mark-complete is still ONE TAP, no dialog (DESIGN 6.4,
+                    // RULES 13) - it moved from the booked row to the in-progress
+                    // one when the start code arrived (0084).
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(56),
+                    ),
+                    onPressed: () => ref
+                        .read(dayControllerProvider.notifier)
+                        .complete(booking),
+                    child: Text(l10n.markComplete),
                   ),
-              ],
-            )
-          else if (booking.status == 'cancelled')
-            Text(l10n.dayCancelled, style: text.labelLarge)
-          else if (booking.isInProgress)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(l10n.dayInProgress, style: text.labelLarge),
-                const SizedBox(height: 8),
-                FilledButton(
-                  // Mark-complete is still ONE TAP, no dialog (DESIGN 6.4,
-                  // RULES 13) - it moved from the booked row to the in-progress
-                  // one when the start code arrived (0084).
-                  style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
-                  onPressed: () => ref.read(dayControllerProvider.notifier).complete(booking),
-                  child: Text(l10n.markComplete),
-                ),
-              ],
-            )
-          else
-            Row(
-              children: [
-                Expanded(
-                  child: FilledButton(
-                    // Start, with the customer's code where they have the app
-                    // (0084). 56dp: pressed one-handed between customers.
-                    style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
-                    onPressed: () => StartSheet.open(context, booking),
-                    child: Text(l10n.startTitle),
+                ],
+              )
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: FilledButton(
+                      // Start, with the customer's code where they have the app
+                      // (0084). 56dp: pressed one-handed between customers.
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(56),
+                      ),
+                      onPressed: () => StartSheet.open(context, booking),
+                      child: Text(l10n.startTitle),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  tooltip: l10n.dayCancelBooking,
-                  onPressed: () => ref.read(dayControllerProvider.notifier).cancel(booking),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  IconButton(
+                    tooltip: l10n.dayCancelBooking,
+                    onPressed: () => ref
+                        .read(dayControllerProvider.notifier)
+                        .cancel(booking),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Today's date as the screen's heading, and the day in two numbers.
+class _DayHeader extends StatelessWidget {
+  const _DayHeader({required this.bookings});
+
+  final List<BookingRow> bookings;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final text = Theme.of(context).textTheme;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final live = bookings.where((b) => b.status != 'cancelled').toList();
+    final done = live.where((b) => b.status == 'completed').length;
+    String today;
+    try {
+      today = DateFormat.MMMMEEEEd(locale).format(DateTime.now());
+    } catch (_) {
+      today = DateFormat.MMMMEEEEd().format(DateTime.now());
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(today, style: text.headlineSmall),
+          if (live.isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(
+              l10n.dayHeaderSummary(live.length, done),
+              style: text.bodyMedium,
             ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// An empty day says so kindly; the Walk-in button below is the way in.
+class _EmptyDay extends StatelessWidget {
+  const _EmptyDay();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final text = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(32, 24, 32, 96),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            l10n.dayEmptyTitle,
+            style: text.titleLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.dayEmptyBody,
+            style: text.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );

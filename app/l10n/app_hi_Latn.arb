@@ -86,7 +86,6 @@
   "saveFailedRefused": "Aapka account catalogue nahi badal sakta. Owner se kahiye.",
   "saveFailed": "Save nahi hua. Dobara try kijiye.",
   "dayTitle": "Aaj",
-  "dayEmpty": "Aaj koi booking nahi.",
   "dayDone": "Ho gaya",
   "dayCancelled": "Cancel",
   "daySyncPending": "{count, plural, =1{1 change sync hona baaki} other{{count} changes sync hone baaki}}",
@@ -279,7 +278,6 @@
   "navHome": "Home",
   "navBook": "Book",
   "navMe": "Main",
-  "homeGreeting": "Namaste {name}",
   "homeGreetingNoName": "Phir se swagat hai",
   "homeNextDueService": "Aapka agla {service} lagbhag {date} ko hona hai",
   "homeNextDue": "Aapki agli visit lagbhag {date} ko hai",
@@ -461,5 +459,12 @@
   "loginsBadPhone": "Yeh sahi mobile number nahin hai.",
   "loginsNameRequired": "Unka naam likhiye.",
   "loginsOwnLogin": "Aapka apna login band nahin kiya ja sakta.",
-  "loginsFailed": "Yeh nahin hua. Internet dekhiye aur phir se koshish kijiye."
+  "loginsFailed": "Yeh nahin hua. Internet dekhiye aur phir se koshish kijiye.",
+  "homeGreetingMorning": "Good morning, {name}",
+  "homeGreetingAfternoon": "Good afternoon, {name}",
+  "homeGreetingEvening": "Good evening, {name}",
+  "homeWithStylist": "{name} ke saath",
+  "dayHeaderSummary": "{booked} book · {done} poore",
+  "dayEmptyTitle": "Abhi tak din shaant hai",
+  "dayEmptyBody": "Booking aur walk-in aate hi yahan dikhenge."
 }

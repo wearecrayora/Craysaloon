@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/format/money.dart';
@@ -10,6 +11,7 @@ import '../../core/theme/brand_tokens.dart';
 import '../../core/theme/cray_glass.dart';
 import '../../core/ui/glass.dart';
 import '../../core/ui/salon_mark.dart';
+import '../../domain/customer/customer.dart';
 import '../../domain/visit/visit.dart';
 import '../../l10n/app_localizations.dart';
 import '../customer/customer_providers.dart';
@@ -190,10 +192,15 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
             Text(
               firstName == null
                   ? l10n.homeGreetingNoName
-                  : l10n.homeGreeting(firstName),
+                  : _greeting(l10n, firstName, DateTime.now()),
               style: text.headlineMedium,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 2),
+            Text(
+              _today(context),
+              style: text.bodyMedium?.copyWith(color: text.bodySmall?.color),
+            ),
+            const SizedBox(height: 20),
             // Once, right after joining, and never again (ARCHITECTURE 7.3):
             // near the top, where it is seen, since it will not come back.
             if (_showOffer) ...[
@@ -289,18 +296,7 @@ class _NextCard extends ConsumerWidget {
         .firstOrNull;
 
     if (next != null) {
-      return Appear(
-        child: _RowCard(
-          icon: Icons.event_available_outlined,
-          title: l10n.homeNextBooking,
-          subtitle: [
-            '${ml.formatShortMonthDay(next.startsAt)} · '
-                '${ml.formatTimeOfDay(TimeOfDay.fromDateTime(next.startsAt))}',
-            if (next.serviceNames.isNotEmpty) next.serviceNames,
-          ].join(' · '),
-          onTap: () => context.push('/booking/${next.id}'),
-        ),
-      );
+      return Appear(child: _NextBookingCard(booking: next));
     }
 
     final due = ref.watch(nextDueProvider);
@@ -490,6 +486,107 @@ class _Placeholder extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
     ),
   );
+}
+
+/// "Good morning, Asha" - by the phone's clock, which is the customer's.
+String _greeting(AppL10n l10n, String name, DateTime now) => switch (now.hour) {
+  < 12 => l10n.homeGreetingMorning(name),
+  < 17 => l10n.homeGreetingAfternoon(name),
+  _ => l10n.homeGreetingEvening(name),
+};
+
+/// Today, written out ("Wednesday, October 14"), in the app's language.
+String _today(BuildContext context) {
+  final locale = Localizations.localeOf(context).toLanguageTag();
+  try {
+    return DateFormat.MMMMEEEEd(locale).format(DateTime.now());
+  } catch (_) {
+    return DateFormat.MMMMEEEEd().format(DateTime.now());
+  }
+}
+
+/// The next booking as a ticket: the date large on the left, where the eye
+/// lands, then the time, what is booked and with whom.
+class _NextBookingCard extends StatelessWidget {
+  const _NextBookingCard({required this.booking});
+
+  final UpcomingBooking booking;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final text = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final ml = MaterialLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    String month;
+    try {
+      month = DateFormat.MMM(locale).format(booking.startsAt);
+    } catch (_) {
+      month = DateFormat.MMM().format(booking.startsAt);
+    }
+    final staff = booking.staffName;
+
+    return Pressable(
+      onTap: () => context.push('/booking/${booking.id}'),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              // The date block: the brand's container, its computed ink.
+              Container(
+                width: 64,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      '${booking.startsAt.day}',
+                      style: text.headlineSmall?.copyWith(
+                        color: scheme.onPrimaryContainer,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                    Text(
+                      month,
+                      style: text.labelMedium?.copyWith(
+                        color: scheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.homeNextBooking, style: text.labelMedium),
+                    const SizedBox(height: 2),
+                    Text(
+                      ml.formatTimeOfDay(
+                        TimeOfDay.fromDateTime(booking.startsAt),
+                      ),
+                      style: text.titleMedium,
+                    ),
+                    if (booking.serviceNames.isNotEmpty)
+                      Text(booking.serviceNames, style: text.bodyMedium),
+                    if (staff != null && staff.isNotEmpty)
+                      Text(l10n.homeWithStylist(staff), style: text.bodySmall),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// A tappable glass row: icon, title, one line under it, a chevron.

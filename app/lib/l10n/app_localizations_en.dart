@@ -322,9 +322,6 @@ class AppL10nEn extends AppL10n {
   String get dayTitle => 'Today';
 
   @override
-  String get dayEmpty => 'Nothing booked today.';
-
-  @override
   String get dayDone => 'Done';
 
   @override
@@ -1052,11 +1049,6 @@ class AppL10nEn extends AppL10n {
   String get navMe => 'Me';
 
   @override
-  String homeGreeting(String name) {
-    return 'Hi $name';
-  }
-
-  @override
   String get homeGreetingNoName => 'Welcome back';
 
   @override
@@ -1658,4 +1650,36 @@ class AppL10nEn extends AppL10n {
   @override
   String get loginsFailed =>
       'That did not work. Check your connection and try again.';
+
+  @override
+  String homeGreetingMorning(String name) {
+    return 'Good morning, $name';
+  }
+
+  @override
+  String homeGreetingAfternoon(String name) {
+    return 'Good afternoon, $name';
+  }
+
+  @override
+  String homeGreetingEvening(String name) {
+    return 'Good evening, $name';
+  }
+
+  @override
+  String homeWithStylist(String name) {
+    return 'with $name';
+  }
+
+  @override
+  String dayHeaderSummary(int booked, int done) {
+    return '$booked booked · $done done';
+  }
+
+  @override
+  String get dayEmptyTitle => 'A quiet day so far';
+
+  @override
+  String get dayEmptyBody =>
+      'Bookings and walk-ins appear here as they come in.';
 }

@@ -28,30 +28,48 @@ class WalletScreen extends ConsumerWidget {
       body: SafeArea(
         child: switch (view) {
           AsyncData(:final value) => RefreshIndicator(
-              onRefresh: () async => ref.invalidate(walletProvider),
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  _BalanceCard(summary: value.summary, salonName: salonName),
-                  const SizedBox(height: 24),
-                  FilledButton(
-                    onPressed: () => context.push('/wallet/add'),
-                    child: Text(l10n.walletAddMoney),
+            onRefresh: () async => ref.invalidate(walletProvider),
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                _BalanceCard(summary: value.summary, salonName: salonName),
+                const SizedBox(height: 24),
+                FilledButton(
+                  onPressed: () => context.push('/wallet/add'),
+                  child: Text(l10n.walletAddMoney),
+                ),
+                const SizedBox(height: 32),
+                Text(
+                  l10n.walletHistoryHeading,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                if (value.history.isEmpty)
+                  Text(
+                    l10n.walletHistoryEmpty,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  )
+                else
+                  // One statement, not loose lines over the background.
+                  Card(
+                    margin: EdgeInsets.zero,
+                    child: Column(
+                      children: [
+                        for (final (i, entry) in value.history.indexed) ...[
+                          if (i > 0)
+                            const Divider(height: 1, indent: 16, endIndent: 16),
+                          _EntryRow(entry),
+                        ],
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 32),
-                  Text(l10n.walletHistoryHeading,
-                      style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: 8),
-                  if (value.history.isEmpty)
-                    Text(l10n.walletHistoryEmpty,
-                        style: Theme.of(context).textTheme.bodyMedium)
-                  else
-                    for (final entry in value.history) _EntryRow(entry),
-                ],
-              ),
+              ],
             ),
+          ),
           // Money is never served stale. Offline, this says so (RULES 5).
-          AsyncError() => _Failed(onRetry: () => ref.invalidate(walletProvider)),
+          AsyncError() => _Failed(
+            onRetry: () => ref.invalidate(walletProvider),
+          ),
           _ => const Center(child: CircularProgressIndicator()),
         },
       ),
@@ -130,7 +148,10 @@ class _Line extends StatelessWidget {
           // not.
           Flexible(child: Text(label, style: style)),
           const SizedBox(width: 12),
-          Text(rupees(paise), style: style?.copyWith(fontFeatures: moneyFeatures)),
+          Text(
+            rupees(paise),
+            style: style?.copyWith(fontFeatures: moneyFeatures),
+          ),
         ],
       ),
     );
@@ -157,7 +178,7 @@ class _EntryRow extends StatelessWidget {
     };
 
     return ListTile(
-      contentPadding: EdgeInsets.zero,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Text(label),
       subtitle: Text(
         entry.reason ??
