@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../theme/cray_glass.dart';
+import 'beauty_still_life.dart';
 
 /// The soft colour mesh behind every screen (Claude Design, 29 Sep 2026).
 ///
@@ -66,6 +67,11 @@ class _MeshPainter extends CustomPainter {
     glow(Offset(0, 0), w * 0.9, h * 0.55, g.primaryGlow, 0.62);
     glow(Offset(w, h * 0.22), w * 0.8, h * 0.45, g.accentGlow, 0.60);
     glow(Offset(w * 0.3, h), w * 1.1, h * 0.6, g.primaryLow, 0.70);
+
+    // The still life of beauty objects in frosted glass (DESIGN.md 3.5a):
+    // neutral, faint, still, at the edges. Dark mode is read from the mesh's
+    // own base, so the objects follow the theme the salon's tokens resolved.
+    paintBeautyStillLife(canvas, size, dark: g.meshBottom.computeLuminance() < 0.2);
   }
 
   @override

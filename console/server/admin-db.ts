@@ -1188,3 +1188,101 @@ export async function setSalonLoginActive(
     select app_admin.set_salon_login_active(${actorAdminId}::uuid, ${userId}::uuid,
       ${active}::boolean, ${reason}::text)`;
 }
+
+// ---------------------------------------------------------------------------
+// Audit log (K16) and messaging (K8)
+// ---------------------------------------------------------------------------
+
+export type AuditRow = {
+  id: string;
+  created_at: string;
+  salon_name: string | null;
+  actor_kind: string;
+  actor_name: string | null;
+  action: string;
+  entity: string;
+  entity_id: string | null;
+  reason: string | null;
+  after_state: unknown;
+};
+
+/** The newest 200 audit rows, filtered. Read-only - the log is append-only. */
+export async function listAudit(filter: {
+  salonId?: string | null;
+  action?: string | null;
+  actorKind?: string | null;
+  days?: number;
+}): Promise<AuditRow[]> {
+  const sql = client();
+  const days = Math.min(Math.max(filter.days ?? 30, 1), 365);
+  const action = filter.action ? `%${filter.action}%` : null;
+  return sql<AuditRow[]>`
+    select a.id::text, a.created_at, s.display_name as salon_name, a.actor_kind::text,
+           coalesce(pa.name, u.name) as actor_name, a.action, a.entity, a.entity_id,
+           a.reason, a.after_state
+      from public.audit_log a
+      left join public.salons s on s.id = a.salon_id
+      left join public.platform_admins pa on pa.id = a.actor_user_id
+      left join public.users u on u.auth_user_id = a.actor_user_id or u.id = a.actor_user_id
+     where a.created_at > now() - make_interval(days => ${days}::int)
+       and (${filter.salonId ?? null}::uuid is null or a.salon_id = ${filter.salonId ?? null}::uuid)
+       and (${action}::text is null or a.action ilike ${action}::text)
+       and (${filter.actorKind ?? null}::text is null or a.actor_kind::text = ${filter.actorKind ?? null}::text)
+     order by a.created_at desc
+     limit 200`;
+}
+
+export type ChannelStats = {
+  channel: string;
+  attempts: number;
+  sent: number;
+  acked: number;
+  failed: number;
+  cost_paise: number;
+};
+
+export type MessagingStats = {
+  channels: ChannelStats[];
+  notifications: { status: string; n: number }[];
+  otp: { sender: string; n: number }[];
+  failures: { reason: string; n: number }[];
+};
+
+/** Thirty days of one salon's messaging: per channel, outcomes, what it cost. */
+export async function getMessagingStats(salonId: string): Promise<MessagingStats> {
+  const sql = client();
+  const [channels, notifications, otp, failures] = await Promise.all([
+    sql<ChannelStats[]>`
+      select channel::text,
+             count(*)::int as attempts,
+             count(*) filter (where sent_at is not null)::int as sent,
+             count(*) filter (where acked_at is not null)::int as acked,
+             count(*) filter (where provider_status = 'failed')::int as failed,
+             coalesce(sum(cost_paise), 0)::int as cost_paise
+        from public.notification_deliveries
+       where salon_id = ${salonId}::uuid and created_at > now() - interval '30 days'
+       group by 1 order by 1`,
+    sql<{ status: string; n: number }[]>`
+      select status::text, count(*)::int as n from public.notifications
+       where salon_id = ${salonId}::uuid and created_at > now() - interval '30 days'
+       group by 1 order by 2 desc`,
+    sql<{ sender: string; n: number }[]>`
+      select coalesce(sender, 'unknown') as sender, count(*)::int as n from public.otp_challenges
+       where salon_id = ${salonId}::uuid and created_at > now() - interval '30 days'
+       group by 1 order by 2 desc`,
+    sql<{ reason: string; n: number }[]>`
+      select coalesce(failure_reason, 'unknown') as reason, count(*)::int as n
+        from public.notification_deliveries
+       where salon_id = ${salonId}::uuid and provider_status = 'failed'
+         and created_at > now() - interval '30 days'
+       group by 1 order by 2 desc limit 8`,
+  ]);
+  return { channels, notifications, otp, failures };
+}
+
+/** Salons for filter pickers: id and name only. */
+export async function listSalonNames(): Promise<{ id: string; display_name: string }[]> {
+  const sql = client();
+  return sql<{ id: string; display_name: string }[]>`
+    select id, display_name from public.salons order by display_name`;
+}

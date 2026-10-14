@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Delete your Cray Salon account</title>
+<meta name="description" content="How to delete your Cray Salon account and data, what is removed, and what must be kept.">
+<link rel="icon" href="/icon-192.png">
+<!--
+  The page Google Play asks for (Data safety -> "Delete account URL"): how to
+  delete an account and its data, from inside the app AND without it. It says
+  exactly what privacy.html#delete says - if one changes, both change in the
+  same commit (privacy.html's rule 1: describe what the system actually does).
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --ink: #0f1530; --ink-soft: #4a4f66; --violet: #4b47ff;
+    --card: rgba(255, 255, 255, 0.78); --line: rgba(15, 21, 48, 0.08); --bg: #f7f5fb;
+    --chip: rgba(75, 71, 255, 0.07);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #f2f1f8; --ink-soft: #b6b4c8; --violet: #9a97ff;
+      --card: rgba(28, 27, 40, 0.78); --line: rgba(255, 255, 255, 0.09); --bg: #13121c;
+      --chip: rgba(154, 151, 255, 0.12);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; padding: 28px 16px;
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink);
+    background:
+      url(/still-life-light.svg) center / cover no-repeat fixed,
+      radial-gradient(70% 45% at 0% 0%, rgba(75, 71, 255, 0.10), transparent 70%),
+      var(--bg);
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background-image: url(/still-life-dark.svg),
+      radial-gradient(70% 45% at 0% 0%, rgba(110, 106, 255, 0.16), transparent 70%); }
+  }
+  main {
+    max-width: 38rem; margin: 0 auto;
+    background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+    padding: 28px 24px;
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    box-shadow: 0 24px 60px rgba(15, 21, 48, 0.12);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .brand img { width: 40px; height: 40px; border-radius: 11px; }
+  h1 { font-size: 25px; line-height: 1.25; margin: 0 0 8px; }
+  h2 { font-size: 18px; margin: 26px 0 8px; }
+  p, li { color: var(--ink-soft); }
+  strong { color: var(--ink); }
+  .way { background: var(--chip); border-radius: 16px; padding: 14px 16px; margin: 10px 0; }
+  .way p { margin: 4px 0 0; }
+  ul { padding-left: 20px; }
+  a { color: var(--violet); text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><img src="/icon-192.png" alt="" width="40" height="40"><strong>Cray Salon</strong></div>
+  <h1>Delete your account and data</h1>
+  <p>You can ask for your Cray Salon account to be deleted at any time. Every request is answered
+     within 30 days.</p>
+
+  <h2>How to ask</h2>
+  <div class="way">
+    <strong>In the app</strong>
+    <p>Open <strong>Me → Your data</strong> and choose to have your data deleted. The screen shows
+       what will be removed and what must be kept <em>before</em> you confirm.</p>
+  </div>
+  <div class="way">
+    <strong>Without the app</strong>
+    <p>Write to your salon&rsquo;s privacy contact (shown in the app and in the salon), or to
+       <a href="mailto:crayoratech@gmail.com">crayoratech@gmail.com</a>, from the number the
+       account uses, naming the salon. We confirm it is you before acting.</p>
+  </div>
+
+  <h2>What is deleted</h2>
+  <ul>
+    <li>Your <strong>name, mobile number, birthday and anniversary</strong>, and the link between
+        your account and your login. Your notification tokens are deleted. You can no longer sign
+        in to that salon.</li>
+  </ul>
+
+  <h2>What is kept, and why</h2>
+  <ul>
+    <li>Your <strong>financial records</strong> - top-ups, spends, receipts and invoices - stay, but
+        point at someone nobody can name. They are the salon&rsquo;s books, and tax law requires
+        them to be kept.</li>
+    <li>A <strong>one-way fingerprint of your number</strong> stays. It cannot be read back as a
+        number; it only keeps &ldquo;one number, one salon&rdquo; true after you are gone.</li>
+    <li><strong>Wallet credit</strong> cannot be withdrawn as cash and is lost with the account.
+        Spend it, or ask the salon about it, before you ask for deletion.</li>
+  </ul>
+
+  <p>The full detail is in the <a href="/privacy#delete">privacy policy</a>.</p>
+</main>
+</body>
+</html>

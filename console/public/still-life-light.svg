@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<defs>
+<linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d2430" stop-opacity="0.05"/><stop offset="1" stop-color="#1d2430" stop-opacity="0.02"/></linearGradient>
+<linearGradient id="shine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity="0.6"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+</defs>
+<g transform="translate(1330 40) rotate(14) scale(330)">
+<g fill="url(#glass)" stroke="#1d2430" stroke-opacity="0.09" stroke-width="1.2" vector-effect="non-scaling-stroke"><circle cx="0" cy="0.1" r="0.1" vector-effect="non-scaling-stroke"/><rect x="-0.05" y="0.19" width="0.100" height="0.110" rx="0.01" vector-effect="non-scaling-stroke"/><path d="M-0.20 0.30 L0.20 0.30 L0.28 0.48 L0.28 0.92 Q0.28 1 0.20 1 L-0.20 1 Q-0.28 1 -0.28 0.92 L-0.28 0.48 Z" vector-effect="non-scaling-stroke"/></g>
+<g fill="none" stroke="#1d2430" stroke-opacity="0.09" stroke-width="1.2" stroke-linecap="round"><path d="M-0.28 0.48 L0.28 0.48" vector-effect="non-scaling-stroke"/></g>
+<line x1="-0.2" y1="0.54" x2="-0.2" y2="0.92" stroke="url(#shine)" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+</g>
+<g transform="translate(40 260) rotate(-8) scale(300)">
+<g fill="url(#glass)" stroke="#1d2430" stroke-opacity="0.09" stroke-width="1.2" vector-effect="non-scaling-stroke"><circle cx="0" cy="0.3" r="0.3" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0.3" r="0.24" vector-effect="non-scaling-stroke"/><rect x="-0.05" y="0.58" width="0.100" height="0.060" rx="0.02" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0.92" r="0.3" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0.92" r="0.2" vector-effect="non-scaling-stroke"/></g>
+<line x1="-0.16" y1="0.16" x2="-0.04" y2="0.08" stroke="url(#shine)" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+</g>
+<g transform="translate(1420 380) rotate(24) scale(560)">
+<g fill="url(#glass)" stroke="#1d2430" stroke-opacity="0.09" stroke-width="1.2" vector-effect="non-scaling-stroke"><path d="M-0.03 0.30 Q-0.20 0.14 -0.11 0 Q0 -0.05 0.11 0 Q0.20 0.14 0.03 0.30 Z" vector-effect="non-scaling-stroke"/><rect x="-0.045" y="0.3" width="0.090" height="0.120" rx="0.015" vector-effect="non-scaling-stroke"/><path d="M-0.04 0.42 L0.04 0.42 L0.018 1.0 Q0 1.02 -0.018 1.0 Z" vector-effect="non-scaling-stroke"/></g>
+<g fill="none" stroke="#1d2430" stroke-opacity="0.09" stroke-width="1.2" stroke-linecap="round"><path d="M-0.024 0.28 L-0.06 0.04" vector-effect="non-scaling-stroke"/><path d="M0 0.28 L0 0.04" vector-effect="non-scaling-stroke"/><path d="M0.024 0.28 L0.06 0.04" vector-effect="non-scaling-stroke"/></g>
+<line x1="-0.02" y1="0.48" x2="-0.008" y2="0.9" stroke="url(#shine)" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+</g>
+<g transform="translate(150 640) rotate(-22) scale(300)">
+<g fill="url(#glass)" stroke="#1d2430" stroke-opacity="0.09" stroke-width="1.2" vector-effect="non-scaling-stroke"><rect x="-0.16" y="0.48" width="0.320" height="0.520" rx="0.04" vector-effect="non-scaling-stroke"/><rect x="-0.13" y="0.36" width="0.260" height="0.120" rx="0.02" vector-effect="non-scaling-stroke"/><path d="M-0.10 0.36 L-0.10 0.10 Q-0.06 0.02 0.10 0 L0.10 0.36 Z" vector-effect="non-scaling-stroke"/></g>
+<line x1="-0.11" y1="0.55" x2="-0.11" y2="0.95" stroke="url(#shine)" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+</g>
+<g transform="translate(1210 690) rotate(10) scale(230)">
+<g fill="url(#glass)" stroke="#1d2430" stroke-opacity="0.09" stroke-width="1.2" vector-effect="non-scaling-stroke"><rect x="-0.07" y="0" width="0.140" height="0.420" rx="0.03" vector-effect="non-scaling-stroke"/><rect x="-0.1" y="0.4" width="0.200" height="0.080" rx="0.02" vector-effect="non-scaling-stroke"/><rect x="-0.22" y="0.48" width="0.440" height="0.520" rx="0.1" vector-effect="non-scaling-stroke"/></g>
+<line x1="-0.15" y1="0.58" x2="-0.15" y2="0.9" stroke="url(#shine)" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+</g>
+<g transform="translate(420 -10) rotate(72) scale(270)">
+<g fill="url(#glass)" stroke="#1d2430" stroke-opacity="0.09" stroke-width="1.2" vector-effect="non-scaling-stroke"><rect x="-0.1" y="0" width="0.200" height="1.000" rx="0.05" vector-effect="non-scaling-stroke"/></g>
+<g fill="none" stroke="#1d2430" stroke-opacity="0.09" stroke-width="1.2" stroke-linecap="round"><path d="M0.10 0.060 L0.26 0.060" vector-effect="non-scaling-stroke"/><path d="M0.10 0.116 L0.26 0.116" vector-effect="non-scaling-stroke"/><path d="M0.10 0.172 L0.26 0.172" vector-effect="non-scaling-stroke"/><path d="M0.10 0.228 L0.26 0.228" vector-effect="non-scaling-stroke"/><path d="M0.10 0.284 L0.26 0.284" vector-effect="non-scaling-stroke"/><path d="M0.10 0.340 L0.26 0.340" vector-effect="non-scaling-stroke"/><path d="M0.10 0.396 L0.26 0.396" vector-effect="non-scaling-stroke"/><path d="M0.10 0.452 L0.26 0.452" vector-effect="non-scaling-stroke"/><path d="M0.10 0.508 L0.3 0.508" vector-effect="non-scaling-stroke"/><path d="M0.10 0.564 L0.3 0.564" vector-effect="non-scaling-stroke"/><path d="M0.10 0.620 L0.3 0.620" vector-effect="non-scaling-stroke"/><path d="M0.10 0.676 L0.3 0.676" vector-effect="non-scaling-stroke"/><path d="M0.10 0.732 L0.3 0.732" vector-effect="non-scaling-stroke"/><path d="M0.10 0.788 L0.3 0.788" vector-effect="non-scaling-stroke"/><path d="M0.10 0.844 L0.3 0.844" vector-effect="non-scaling-stroke"/><path d="M0.10 0.900 L0.3 0.900" vector-effect="non-scaling-stroke"/></g>
+<line x1="-0.05" y1="0.08" x2="-0.05" y2="0.9" stroke="url(#shine)" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+</g>
+<g transform="translate(760 760) rotate(-28) scale(240)">
+<g fill="url(#glass)" stroke="#1d2430" stroke-opacity="0.09" stroke-width="1.2" vector-effect="non-scaling-stroke"><circle cx="-0.13" cy="0.82" r="0.12" vector-effect="non-scaling-stroke"/><circle cx="0.13" cy="0.82" r="0.12" vector-effect="non-scaling-stroke"/><path d="M-0.07 0.72 L0.06 0 L0.10 0.04 L0 0.70 Z" vector-effect="non-scaling-stroke"/><path d="M0.07 0.72 L-0.06 0 L-0.10 0.04 L0 0.70 Z" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0.58" r="0.02" vector-effect="non-scaling-stroke"/></g>
+</g>
+<g transform="translate(1010 -20) rotate(78) scale(260)">
+<g fill="url(#glass)" stroke="#1d2430" stroke-opacity="0.09" stroke-width="1.2" vector-effect="non-scaling-stroke"><rect x="-0.06" y="0" width="0.120" height="0.440" rx="0.03" vector-effect="non-scaling-stroke"/><rect x="-0.07" y="0.44" width="0.140" height="0.560" rx="0.035" vector-effect="non-scaling-stroke"/></g>
+<g fill="none" stroke="#1d2430" stroke-opacity="0.09" stroke-width="1.2" stroke-linecap="round"><path d="M-0.07 0.44 L0.07 0.44" vector-effect="non-scaling-stroke"/></g>
+<line x1="-0.035" y1="0.52" x2="-0.035" y2="0.94" stroke="url(#shine)" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+</g>
+</svg>

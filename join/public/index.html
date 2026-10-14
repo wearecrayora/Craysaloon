@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cray Salon</title>
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <!--
   The bare domain. Nobody is sent here by a QR - every printed code links to
   /s/<code> - so this exists only for someone who typed the domain, and for
@@ -12,25 +14,62 @@
   enumeration).
 -->
 <style>
-  :root { color-scheme: light dark; }
-  body {
-    margin: 0; padding: 32px 20px;
-    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    background: #fcfcfb; color: #1a1a19;
+  :root {
+    color-scheme: light dark;
+    --ink: #0f1530; --ink-soft: #4a4f66; --violet: #4b47ff;
+    --card: rgba(255, 255, 255, 0.74); --line: rgba(15, 21, 48, 0.08); --bg: #f7f5fb;
+    --chip: rgba(75, 71, 255, 0.07);
   }
-  @media (prefers-color-scheme: dark) { body { background: #1a1a19; color: #fff; } }
-  main { max-width: 26rem; margin: 0 auto; }
-  h1 { font-size: 22px; margin: 0 0 8px; }
-  p { margin: 0 0 16px; }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #f2f1f8; --ink-soft: #b6b4c8; --violet: #9a97ff;
+      --card: rgba(28, 27, 40, 0.72); --line: rgba(255, 255, 255, 0.09); --bg: #13121c;
+      --chip: rgba(154, 151, 255, 0.12);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; padding: 28px 16px;
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background:
+      url(/still-life-light.svg) center / cover no-repeat fixed,
+      radial-gradient(70% 45% at 0% 0%, rgba(75, 71, 255, 0.12), transparent 70%),
+      radial-gradient(60% 40% at 100% 100%, rgba(232, 160, 196, 0.16), transparent 70%),
+      var(--bg);
+    display: grid; place-items: center;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background-image:
+      url(/still-life-dark.svg),
+      radial-gradient(70% 45% at 0% 0%, rgba(110, 106, 255, 0.18), transparent 70%),
+      radial-gradient(60% 40% at 100% 100%, rgba(232, 160, 196, 0.08), transparent 70%); }
+  }
+  main {
+    width: 100%; max-width: 27rem; text-align: center;
+    background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+    padding: 32px 24px 24px;
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    box-shadow: 0 24px 60px rgba(15, 21, 48, 0.12);
+  }
+  img { width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 6px 18px rgba(15,21,48,.14); }
+  h1 { font-size: 26px; margin: 16px 0 6px; letter-spacing: -.01em; }
+  p { margin: 0 0 14px; color: var(--ink-soft); }
+  .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 18px 0 20px; }
+  .chips span { background: var(--chip); color: var(--ink); border-radius: 999px; padding: 6px 12px; font-size: 14px; }
+  .owner { border-top: 1px solid var(--line); padding-top: 16px; margin-top: 4px; font-size: 14.5px; }
+  a { color: var(--violet); text-underline-offset: 3px; }
 </style>
 </head>
 <body>
 <main>
+  <img src="/icon-192.png" alt="" width="72" height="72">
   <h1>Cray Salon</h1>
-  <p>This link opens your salon in the Cray Salon app. Scan the QR code at your
-     salon, or ask at the counter for its code.</p>
-  <p>Are you a salon owner? Cray Salon is sold and set up by Crayora.</p>
-  <p><a href="/privacy">Privacy</a></p>
+  <p>Your salon's own app. Scan the QR code at your salon, or ask at the counter for its code.</p>
+  <div class="chips"><span>Book visits</span><span>Wallet and offers</span><span>Reminders</span><span>Your visit history</span></div>
+  <p class="owner">Own a salon? Cray Salon is set up for you by Crayora - write to
+    <a href="mailto:crayoratech@gmail.com">crayoratech@gmail.com</a>.</p>
+  <p style="margin:0"><a href="/privacy">Privacy</a></p>
 </main>
 </body>
 </html>

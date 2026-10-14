@@ -169,6 +169,25 @@ theme in `core/theme/cray_glass.dart`, widgets in `core/ui/glass.dart`.
   under reduced motion.
 - Status and chart colours are untouched by any of this.
 
+### 3.5a The still life *(decided 14 Oct 2026)*
+
+Behind every screen of the app, the console and the join site: a **still life of beauty objects
+in frosted glass** - lipstick, an open compact, a brush, nail polish, perfume, a comb, scissors and
+a mascara wand. Painted in the mesh (`core/ui/beauty_still_life.dart`) on the app; one SVG on the
+web (`scripts/design/still-life-svg.py` writes `still-life-light.svg` / `-dark.svg`).
+
+- **Neutral, never brand-tinted.** A violet-ink in light mode, white in dark
+  (`core/theme/still_life_palette.dart`). The salon's colour still reaches the background only
+  through the mesh glows.
+- **Faint.** Fill under 6%, a hairline edge under 13%, one catch-light per object. Text over it
+  clears 4.5:1 - asserted on every screen, light and dark, by the screen sweep.
+- **At the edges, partly cropped.** The middle of the screen, where people read, is left to the
+  content. Objects are placed in fractions of the shorter side so a tablet looks like a phone.
+- **Still.** Nothing in it moves - a moving background competes with the content and costs a
+  budget phone its battery. Vector, painted in one pass: no image to download.
+- It is decoration of the **chassis**, like the mesh - so it is not the "decorative gradient" of
+  §14, and photographs keep their own rules (§10).
+
 ## 4. Layout
 
 ### 4.1 Grid and spacing

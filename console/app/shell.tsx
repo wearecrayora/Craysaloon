@@ -20,6 +20,7 @@ const salonItems = (id: string): Item[] => [
   { key: 'branding', href: `/salon/${id}/branding`, label: 'Branding studio', icon: 'palette' },
   { key: 'catalogue', href: `/salon/${id}/catalogue`, label: 'Catalogue & rules', icon: 'scissors' },
   { key: 'credentials', href: `/salon/${id}/credentials`, label: 'Credentials', icon: 'key' },
+  { key: 'messaging', href: `/salon/${id}/messaging`, label: 'Messaging', icon: 'chat' },
   { key: 'privacy', href: `/salon/${id}/privacy`, label: 'Privacy contact', icon: 'shield' },
   { key: 'qr', href: `/salon/${id}/qr`, label: 'QR pack', icon: 'qr' },
   { key: 'billing', href: `/salon/${id}/billing`, label: 'Billing and activation', icon: 'receipt' },
@@ -31,6 +32,7 @@ const PLATFORM: Item[] = [
   { key: 'binding', href: '/customers/binding', label: 'Customer binding', icon: 'link' },
   { key: 'data-rights', href: '/data-rights', label: 'Data-rights requests', icon: 'shield' },
   { key: 'metrics', href: '/metrics', label: 'Metrics', icon: 'chart' },
+  { key: 'audit', href: '/audit', label: 'Audit log', icon: 'list' },
 ];
 
 export function ConsoleShell({
@@ -65,9 +67,8 @@ export function ConsoleShell({
     <div className="shell">
       <aside className="side" aria-label="Console">
         <div className="brand">
-          <span className="brand-mark" aria-hidden>
-            C
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="brand-logo" src="/icon-64.png" alt="" width={32} height={32} />
           <span>
             <strong>Crayora</strong>
             <small>Salon console</small>
@@ -102,6 +103,8 @@ const ICONS = {
   link: 'M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1',
   chart: 'M4 20V10M10 20V4M16 20v-7M22 20H2',
   check: 'M4 12l5 5L20 6',
+  chat: 'M4 5h16v11H9l-5 4V5zM8 9h8M8 12h5',
+  list: 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',
   users: 'M9 11a4 4 0 100-8 4 4 0 000 8zM2 21v-1a6 6 0 0112 0v1M16 3.5a4 4 0 010 7.5M22 21v-1a6 6 0 00-4-5.7',
 };
 

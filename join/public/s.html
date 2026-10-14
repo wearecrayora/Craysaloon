@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Join your salon</title>
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <!--
   What a phone sees when it opens a printed QR and the app is NOT installed.
 
@@ -13,43 +15,107 @@
   it survives even if every clever mechanism fails.
 
   Deliberately: no tracking, no fonts, no analytics, no framework. It loads on
-  a slow connection in a salon, which is where it will actually be used.
+  a slow connection in a salon, which is where it will actually be used. The
+  background is one 7 KB SVG - the still life of beauty objects in frosted
+  glass (DESIGN.md 3.5a) - over a gradient; nothing else is fetched.
 -->
 <style>
-  :root { color-scheme: light dark; }
+  :root {
+    color-scheme: light dark;
+    --ink: #0f1530; --ink-soft: #4a4f66; --violet: #4b47ff;
+    --card: rgba(255, 255, 255, 0.74); --line: rgba(15, 21, 48, 0.08);
+    --code-bg: rgba(75, 71, 255, 0.07); --cta: #0f1530; --cta-ink: #fff;
+    --bg: #f7f5fb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #f2f1f8; --ink-soft: #b6b4c8; --violet: #9a97ff;
+      --card: rgba(28, 27, 40, 0.72); --line: rgba(255, 255, 255, 0.09);
+      --code-bg: rgba(154, 151, 255, 0.12); --cta: #e9e8ff; --cta-ink: #0f1530;
+      --bg: #13121c;
+    }
+  }
+  * { box-sizing: border-box; }
   body {
-    margin: 0; padding: 32px 20px;
-    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    background: #fcfcfb; color: #1a1a19;
+    margin: 0; min-height: 100vh; padding: 28px 16px;
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background:
+      url(/still-life-light.svg) center / cover no-repeat fixed,
+      radial-gradient(70% 45% at 0% 0%, rgba(75, 71, 255, 0.12), transparent 70%),
+      radial-gradient(60% 40% at 100% 100%, rgba(232, 160, 196, 0.16), transparent 70%),
+      var(--bg);
+    display: grid; place-items: center;
   }
-  @media (prefers-color-scheme: dark) { body { background: #1a1a19; color: #fff; } }
-  main { max-width: 26rem; margin: 0 auto; }
-  h1 { font-size: 22px; margin: 0 0 8px; }
-  p { margin: 0 0 20px; }
-  .code {
-    font: 600 26px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
-    letter-spacing: .06em; padding: 16px; border-radius: 12px;
-    background: #f4f3f0; text-align: center; margin: 0 0 20px;
+  @media (prefers-color-scheme: dark) {
+    body { background-image:
+      url(/still-life-dark.svg),
+      radial-gradient(70% 45% at 0% 0%, rgba(110, 106, 255, 0.18), transparent 70%),
+      radial-gradient(60% 40% at 100% 100%, rgba(232, 160, 196, 0.08), transparent 70%); }
   }
-  @media (prefers-color-scheme: dark) { .code { background: #232320; } }
+  main {
+    width: 100%; max-width: 27rem;
+    background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+    padding: 28px 22px 22px;
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    box-shadow: 0 24px 60px rgba(15, 21, 48, 0.12);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .brand img { width: 44px; height: 44px; border-radius: 12px; box-shadow: 0 4px 12px rgba(15,21,48,.12); }
+  .brand span { font-weight: 650; letter-spacing: .01em; }
+  h1 { font-size: 24px; line-height: 1.25; margin: 0 0 8px; letter-spacing: -.01em; }
+  .lede { margin: 0 0 22px; color: var(--ink-soft); }
+  ol { list-style: none; padding: 0; margin: 0 0 22px; counter-reset: step; }
+  ol li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding: 8px 0; }
+  ol li::before {
+    content: counter(step); width: 30px; height: 30px; border-radius: 50%;
+    display: grid; place-items: center; font-weight: 700; font-size: 14px;
+    color: var(--violet); background: var(--code-bg);
+  }
+  .codebox {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--code-bg); border-radius: 16px; padding: 14px 14px 14px 18px; margin: 0 0 18px;
+  }
+  .code { font: 650 25px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .07em; }
+  button.copy {
+    font: inherit; font-size: 14px; font-weight: 600; min-height: 44px; min-width: 64px;
+    border: 1px solid var(--line); border-radius: 12px; padding: 0 14px; cursor: pointer;
+    background: var(--card); color: var(--ink);
+  }
   a.cta {
-    display: block; text-align: center; text-decoration: none;
-    padding: 14px 16px; border-radius: 12px;
-    background: #3f3d39; color: #fff; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px;
+    text-decoration: none; border-radius: 14px; font-weight: 650;
+    background: var(--cta); color: var(--cta-ink);
   }
-  @media (prefers-color-scheme: dark) { a.cta { background: #d8d5cc; color: #1a1a19; } }
-  small { display: block; margin-top: 20px; color: #6b6964; }
-  @media (prefers-color-scheme: dark) { small { color: #9d9b93; } }
+  a.cta svg { width: 20px; height: 20px; }
+  small { display: block; margin-top: 16px; color: var(--ink-soft); font-size: 13.5px; }
+  small a { color: var(--violet); text-underline-offset: 3px; }
+  @media (prefers-reduced-motion: no-preference) {
+    main { animation: rise .32s cubic-bezier(.2,0,0,1) both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+  }
 </style>
 </head>
 <body>
 <main>
-  <h1>Install the app to join</h1>
-  <p>Your salon's code is below. Keep this screen if you need to type it in.</p>
-  <p class="code" id="code">—</p>
-  <a class="cta" id="play" href="https://play.google.com/store/apps/details?id=com.crayora.craysalon">Get the app on Google Play</a>
+  <div class="brand"><img src="/icon-192.png" alt="" width="44" height="44"><span>Cray Salon</span></div>
+  <h1>Install the app to join your salon</h1>
+  <p class="lede">Your bookings, your wallet and your visits - in your salon's own app.</p>
+  <ol>
+    <li><span>Install the app from Google Play.</span></li>
+    <li><span>Open it. If it does not find your salon by itself, enter the code below.</span></li>
+    <li><span>Sign in with your mobile number and the one-time code.</span></li>
+  </ol>
+  <div class="codebox">
+    <span class="code" id="code">—</span>
+    <button class="copy" id="copy" type="button" hidden>Copy</button>
+  </div>
+  <a class="cta" id="play" href="https://play.google.com/store/apps/details?id=com.crayora.craysalon">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 2.8 13.6 12 4 21.2c-.3-.2-.5-.6-.5-1V3.8c0-.4.2-.8.5-1zm11 7.8 2.6-2.5L5.3 1.3c.1 0 .3 0 .4.1zm0 2.8-9.3 9.3c-.1.1-.3.1-.4.1l12.3-6.9zm3.7-3.9 3.1 1.8c.6.4.6 1.1 0 1.4l-3.1 1.8-2.8-2.5z"/></svg>
+    Get the app on Google Play
+  </a>
   <small id="note">On iPhone, the app is coming soon. Ask at the counter.</small>
-  <small><a href="/privacy">What the app collects</a></small>
+  <small><a href="/privacy">What the app collects, and why</a></small>
 </main>
 <script>
   // The code is the last path segment: /s/CRAY-XXXXXX
@@ -60,12 +126,23 @@
   var valid = /^[A-HJKMNP-Z2-9]{6}$/.test(code);
 
   if (valid) {
-    document.getElementById('code').textContent = 'CRAY-' + code;
+    var full = 'CRAY-' + code;
+    document.getElementById('code').textContent = full;
     // Play Install Referrer carries the code through the install, so a fresh
     // install can open on the right salon without anyone retyping it.
     document.getElementById('play').href =
       'https://play.google.com/store/apps/details?id=com.crayora.craysalon' +
-      '&referrer=' + encodeURIComponent('code=CRAY-' + code);
+      '&referrer=' + encodeURIComponent('code=' + full);
+    var copy = document.getElementById('copy');
+    if (navigator.clipboard) {
+      copy.hidden = false;
+      copy.addEventListener('click', function () {
+        navigator.clipboard.writeText(full).then(function () {
+          copy.textContent = 'Copied';
+          setTimeout(function () { copy.textContent = 'Copy'; }, 1800);
+        });
+      });
+    }
   } else {
     // A mistyped or damaged link. Say so rather than showing a code that is
     // not a code.
