@@ -2941,6 +2941,114 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Nothing here yet. Tap Add to put the first one on the menu.'**
   String get catalogueEmptyCanAdd;
+
+  /// No description provided for @joinAgeQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'How old are you?'**
+  String get joinAgeQuestion;
+
+  /// No description provided for @joinAgeAdult.
+  ///
+  /// In en, this message translates to:
+  /// **'18 or older'**
+  String get joinAgeAdult;
+
+  /// No description provided for @joinAgeMinor.
+  ///
+  /// In en, this message translates to:
+  /// **'Under 18'**
+  String get joinAgeMinor;
+
+  /// No description provided for @joinGuardianIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone under 18 needs a parent or guardian to agree. Please hand the phone to them.'**
+  String get joinGuardianIntro;
+
+  /// No description provided for @joinGuardianName.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent or guardian\'s full name'**
+  String get joinGuardianName;
+
+  /// No description provided for @joinGuardianConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'I am this person\'s parent or guardian, and I agree to {salon} keeping their details as described above.'**
+  String joinGuardianConfirm(String salon);
+
+  /// No description provided for @joinMinorNoOffers.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers and visit reminders are never sent to anyone under 18.'**
+  String get joinMinorNoOffers;
+
+  /// No description provided for @joinAgeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please say whether you are 18 or older.'**
+  String get joinAgeRequired;
+
+  /// No description provided for @joinGuardianRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'A parent or guardian must give their name and tick the box.'**
+  String get joinGuardianRequired;
+
+  /// No description provided for @joinTermsLine.
+  ///
+  /// In en, this message translates to:
+  /// **'By continuing, you agree to the terms of service.'**
+  String get joinTermsLine;
+
+  /// No description provided for @linkTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of service'**
+  String get linkTerms;
+
+  /// No description provided for @linkPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get linkPrivacy;
+
+  /// No description provided for @linkRefunds.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds and cancellations'**
+  String get linkRefunds;
+
+  /// No description provided for @linkAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About Crayora'**
+  String get linkAbout;
+
+  /// No description provided for @meLegalHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'The fine print'**
+  String get meLegalHeading;
+
+  /// No description provided for @consoleOnlyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This account is a Crayora operator account. Salons are managed in the console.'**
+  String get consoleOnlyMessage;
+
+  /// No description provided for @consentMinorLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available under 18'**
+  String get consentMinorLocked;
+
+  /// No description provided for @linkLicences.
+  ///
+  /// In en, this message translates to:
+  /// **'Open-source licences'**
+  String get linkLicences;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

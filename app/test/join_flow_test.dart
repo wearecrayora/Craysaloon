@@ -50,6 +50,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// The age question has no default (0110): every join answers it.
+  Future<void> answerAdult(WidgetTester tester) => tapBelow(tester, find.text('18 or older'));
+
   Future<void> enterCode(WidgetTester tester, String code) async {
     await tester.enterText(find.byType(TextField), code);
     await tester.tap(find.text('Continue'));
@@ -111,12 +114,25 @@ void main() {
     expect(find.text('Sunita Rao'), findsOneWidget);
     expect(find.text('privacy@studionine.example'), findsOneWidget);
 
-    // Marketing consent is opt-in: both boxes start unticked (RULES 11).
-    await scrollTo(tester, find.text('Offers on WhatsApp too'));
-    final boxes = tester.widgetList<Checkbox>(find.byType(Checkbox)).toList();
-    expect(boxes, hasLength(2), reason: 'both consent boxes exist, and are asked separately');
-    expect(boxes.every((b) => b.value == false), isTrue);
+    // The age question has no answer until the person gives one (0110).
+    await scrollTo(tester, find.text('Under 18'));
+    expect(
+      tester.widgetList<RadioListTile<bool>>(find.byType(RadioListTile<bool>)).every(
+        (r) => r.groupValue == null,
+      ),
+      isTrue,
+      reason: 'nothing is pre-selected',
+    );
 
+    // Marketing consent is opt-in, and starts unticked (RULES 11). WhatsApp is
+    // not asked for while the paid channels are off (0108).
+    await scrollTo(tester, find.text("Also send me offers, and a reminder when I'm due for a visit"));
+    final boxes = tester.widgetList<Checkbox>(find.byType(Checkbox)).toList();
+    expect(boxes, hasLength(1));
+    expect(boxes.single.value, isFalse);
+    expect(find.text('Offers on WhatsApp too'), findsNothing);
+
+    await answerAdult(tester);
     await scrollTo(tester, find.byType(TextField));
     await tester.enterText(find.byType(TextField), '8114325023');
     await tapBelow(tester, find.text('Get my code'));
@@ -134,28 +150,61 @@ void main() {
 
     expect(api.verifications.single['promotional'], false);
     expect(api.verifications.single['whatsapp'], false);
+    expect(api.verifications.single['age'], {'adult': true});
     expect(find.text('Welcome to Studio Nine Salon'), findsOneWidget);
   });
 
-  testWidgets('ticking WhatsApp implies the marketing consent it depends on', (tester) async {
+  testWidgets('under 18: a parent or guardian must agree, and no offers are asked for',
+      (tester) async {
     final api = FakeCrayApi(salon: fakeSalon());
     await pump(tester, api);
     await enterCode(tester, 'CRAY-22335S');
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
-    await tapBelow(tester, find.text('Offers on WhatsApp too'));
+    await tapBelow(tester, find.text('Under 18'));
+    // A child is never asked for marketing consent (DPDP s.9).
+    expect(find.text("Also send me offers, and a reminder when I'm due for a visit"), findsNothing);
+    await scrollTo(tester, find.text('Offers and visit reminders are never sent to anyone under 18.'));
+    expect(find.text('Offers and visit reminders are never sent to anyone under 18.'),
+        findsOneWidget);
 
-    await scrollTo(tester, find.byType(TextField));
-    await tester.enterText(find.byType(TextField), '8114325023');
+    // No guardian yet: refused BEFORE a code is spent.
+    await scrollTo(tester, find.byType(TextField).last);
+    await tester.enterText(find.byType(TextField).last, '8114325023');
     await tapBelow(tester, find.text('Get my code'));
+    expect(find.text('A parent or guardian must give their name and tick the box.'),
+        findsOneWidget);
+    expect(api.sentTo, isEmpty);
+
+    await scrollTo(tester, find.text("Parent or guardian's full name"));
+    await tester.enterText(find.widgetWithText(TextField, "Parent or guardian's full name"), 'Meena Rao');
+    await tapBelow(tester, find.textContaining("I am this person's parent or guardian"));
+    await tapBelow(tester, find.text('Get my code'));
+    expect(api.sentTo, ['8114325023']);
+
     await tester.enterText(find.byType(TextField), '573649');
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
-    expect(api.verifications.single['whatsapp'], true);
-    expect(api.verifications.single['promotional'], true,
-        reason: 'offers on WhatsApp are still offers');
+    expect(api.verifications.single['age'],
+        {'adult': false, 'guardian_name': 'Meena Rao', 'guardian_confirms': true});
+    expect(api.verifications.single['promotional'], false);
+  });
+
+  testWidgets('the age question is answered before a code is sent', (tester) async {
+    final api = FakeCrayApi(salon: fakeSalon());
+    await pump(tester, api);
+    await enterCode(tester, 'CRAY-22335S');
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+
+    await scrollTo(tester, find.byType(TextField));
+    await tester.enterText(find.byType(TextField), '8114325023');
+    await tapBelow(tester, find.text('Get my code'));
+
+    expect(find.text('Please say whether you are 18 or older.'), findsOneWidget);
+    expect(api.sentTo, isEmpty, reason: 'an unanswered question never costs an OTP');
   });
 
   testWidgets('a number bound elsewhere is refused WITHOUT naming the other salon',
@@ -168,6 +217,7 @@ void main() {
     await enterCode(tester, 'CRAY-22335S');
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
+    await answerAdult(tester);
     await scrollTo(tester, find.byType(TextField));
     await tester.enterText(find.byType(TextField), '8114325023');
     await tapBelow(tester, find.text('Get my code'));
@@ -192,6 +242,7 @@ void main() {
     await enterCode(tester, 'CRAY-22335S');
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
+    await answerAdult(tester);
     await scrollTo(tester, find.byType(TextField));
     await tester.enterText(find.byType(TextField), '8114325023');
     await tapBelow(tester, find.text('Get my code'));
@@ -212,6 +263,7 @@ void main() {
     await enterCode(tester, 'CRAY-22335S');
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
+    await answerAdult(tester);
     await scrollTo(tester, find.byType(TextField));
     await tester.enterText(find.byType(TextField), '8114325023');
     await tapBelow(tester, find.text('Get my code'));

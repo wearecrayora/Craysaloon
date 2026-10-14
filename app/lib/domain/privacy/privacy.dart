@@ -78,3 +78,9 @@ abstract interface class PrivacyApi {
   /// again as though nothing happened.
   Future<List<DataRightRequest>> myRequests();
 }
+
+/// While the SMS / WhatsApp channels are switched off (0108), WhatsApp offers
+/// are not ASKED for - consent to a channel nothing uses is consent for nothing.
+/// Someone who already gave it can still withdraw it. Flip with the server's
+/// app.paid_fallback_enabled().
+const kWhatsappOffers = false;

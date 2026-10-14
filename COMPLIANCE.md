@@ -80,7 +80,8 @@ disagrees, the fix is small: add it as a fourth tick at binding.
 
 | Requirement | Status | Notes |
 |---|---|---|
-| No account for under-18s without verifiable parental consent | **Built (by design)** | `RULES.md` 4.8: accounts are for the phone holder, who must be an adult |
+| No account for under-18s without verifiable parental consent | **Built, 14 Oct 2026 (0110)** | The join screen asks "18 or older / under 18", nothing pre-selected. Under 18 needs a parent or guardian, present, to give their name and confirm; `otp-verify` refuses without it and `record_age_declaration` records it on the customer. Erasure clears the guardian's name. **Remaining gap:** it is a declaration by the adult present, not identity-checked consent in the sense of Rules 2025 r.10 (e.g. a DigiLocker token) |
+| A child is never sent marketing | **Built, 14 Oct 2026 (0110)** | The join screen does not offer the box; Your data locks it; a trigger on `consents` refuses promotional or WhatsApp consent for a minor from any path (asserted in `age_test.sql`) |
 | No tracking or targeted advertising directed at children | **Built (by absence)** | There is no behavioural tracking or ad targeting anywhere in the product |
 | **A child's details kept as a note on an adult's record** | **Flag** | This is still a child's personal data, processed by the salon. A stylist writing "Aarav, 6, short back and sides" is processing under s.9. See §7 item 6 |
 
@@ -173,6 +174,11 @@ account to fall back on, and a salon without its own keys simply cannot take top
 | Subscription trap | No consumer subscription exists |
 | Forced action | Marketing consent is not required to use the app |
 | Confirm-shaming | No such copy; the app says "Not now", not "No, I don't want offers" |
+| Pre-ticking | Nothing is ticked for the person. The join screen's WhatsApp box used to tick "offers" when ticked; since 14 Oct 2026 it needs "offers" first and never ticks it (and is not shown while WhatsApp is off). The age question has no default |
+| Drip / hidden fees | Menu prices are GST-inclusive (0094 extracts the tax), and the app adds no booking or convenience fee; Razorpay's fee is the salon's. Stated in the Terms |
+| False urgency | None: no countdowns, "only N left" or limited-time copy (audited 14 Oct 2026) |
+| Fake reviews / disguised ads | The product shows no reviews, ratings or testimonials, and no advertising |
+| Interface interference | Withdrawing consent is one tap, as easy as giving it (s.6(4)); the cancel-a-booking sheet shows Keep and Cancel at equal size, Keep filled |
 
 ### TRAI / TCCCPA and the Telecommunications Act, 2023
 
@@ -190,8 +196,31 @@ deleted. **The exact period needs a CA's answer** — it is already flagged in `
 
 ### Google Play
 
-A Data Safety declaration and a published privacy policy URL are required before the app can ship.
-Neither exists yet. §7 item 9.
+The privacy policy is published (`/privacy`, `/privacy-hi`), with `/terms`, `/refunds`, `/cookies`,
+`/about` and `/delete-account` beside it (14 Oct 2026). The Data Safety declaration is still to be
+filled in the Play Console, from the SDK table below.
+
+### Third-party SDKs in the app (audited 14 Oct 2026)
+
+| Package | What it touches | Goes to |
+|---|---|---|
+| `supabase_flutter` | Sign-in session; every read and write the app makes | Supabase, Mumbai |
+| `firebase_core`, `firebase_messaging` | The device's push token; notification payloads | Google (outside India) |
+| `sentry_flutter` | Crash reports: device and error detail. `sendDefaultPii = false`, and `beforeSend` scrubs phone numbers, codes and keys | Sentry (outside India) |
+| `razorpay_flutter` | The payment sheet; card / UPI details are entered into Razorpay, never seen by the app | Razorpay, India |
+| `google_fonts` | Downloads typefaces; Google sees the device's IP address | Google (outside India) |
+| `mobile_scanner` | The camera, only while the person scans a QR; decoding is on the device and nothing is kept | Nowhere |
+| `shared_preferences`, `drift`, `app_links`, `url_launcher`, `go_router`, `flutter_riverpod`, `intl` | Local only | Nowhere |
+
+No analytics, advertising or attribution SDK is in the app. Android backup and device-to-device
+transfer are off (`allowBackup="false"`, data-extraction rules), so the session and the offline cache
+do not leave the phone. The join site sets no cookies and loads no third-party script.
+
+### Data collected, against need (audited 14 Oct 2026)
+
+`customers.birthday` and `anniversary` exist in the schema but **nothing collects them**: no screen
+asks, no feature reads them, and every row is empty. The privacy policy no longer says they are
+collected. They are erased with the identity, and should be dropped if no occasion offer is built.
 
 ---
 

@@ -149,11 +149,13 @@ class SupabaseCrayApi
     required String code,
     bool promotional = false,
     bool whatsapp = false,
+    AgeDeclaration? age,
   }) async {
     final response = await _invoke('otp-verify', {
       'challenge_id': challengeId,
       'code': code,
       'consents': {'promotional': promotional, 'whatsapp': whatsapp},
+      if (age != null) 'age': age.toJson(),
     });
     final body = _asMap(response.data) ?? const {};
 
@@ -368,11 +370,12 @@ class SupabaseCrayApi
 
   @override
   Future<CustomerProfile?> me() async {
-    final rows = await _rows(() => _client.from('customers').select('name,phone').limit(1));
+    final rows = await _rows(() => _client.from('customers').select('name,phone,is_minor').limit(1));
     if (rows.isEmpty) return null;
     return CustomerProfile(
       name: rows.first['name'] as String?,
       phone: rows.first['phone'] as String?,
+      isMinor: rows.first['is_minor'] == true,
     );
   }
 

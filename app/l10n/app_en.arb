@@ -1483,5 +1483,30 @@
   "walkInChooseService": "Choose a service",
   "walkInPickServiceFirst": "Choose a service to see the free times.",
   "walkInNoCustomers": "No customers yet. A walk-in joins first by scanning your QR code.",
-  "catalogueEmptyCanAdd": "Nothing here yet. Tap Add to put the first one on the menu."
+  "catalogueEmptyCanAdd": "Nothing here yet. Tap Add to put the first one on the menu.",
+  "joinAgeQuestion": "How old are you?",
+  "joinAgeAdult": "18 or older",
+  "joinAgeMinor": "Under 18",
+  "joinGuardianIntro": "Someone under 18 needs a parent or guardian to agree. Please hand the phone to them.",
+  "joinGuardianName": "Parent or guardian's full name",
+  "joinGuardianConfirm": "I am this person's parent or guardian, and I agree to {salon} keeping their details as described above.",
+  "@joinGuardianConfirm": {
+    "placeholders": {
+      "salon": {
+        "type": "String"
+      }
+    }
+  },
+  "joinMinorNoOffers": "Offers and visit reminders are never sent to anyone under 18.",
+  "joinAgeRequired": "Please say whether you are 18 or older.",
+  "joinGuardianRequired": "A parent or guardian must give their name and tick the box.",
+  "joinTermsLine": "By continuing, you agree to the terms of service.",
+  "linkTerms": "Terms of service",
+  "linkPrivacy": "Privacy policy",
+  "linkRefunds": "Refunds and cancellations",
+  "linkAbout": "About Crayora",
+  "meLegalHeading": "The fine print",
+  "consoleOnlyMessage": "This account is a Crayora operator account. Salons are managed in the console.",
+  "consentMinorLocked": "Not available under 18",
+  "linkLicences": "Open-source licences"
 }

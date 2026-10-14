@@ -1,0 +1,8 @@
+# The public pages may be indexed. A salon's join page (/s/<code>) may not -
+# which salons use Cray Salon is theirs to tell (RULES 2) - so it carries
+# noindex and an X-Robots-Tag header. It is NOT disallowed here: a crawler
+# that cannot fetch the page never sees the noindex.
+User-agent: *
+Disallow: /brand/
+
+Sitemap: https://craysalon-join.crayoratech.workers.dev/sitemap.xml

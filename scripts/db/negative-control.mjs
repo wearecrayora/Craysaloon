@@ -345,6 +345,42 @@ const CROSS_CAPTURE_CANARY = `
 `;
 const CROSS_CAPTURE_MUST_FAIL = [/another salon's webhook cannot capture/];
 
+// 0110: no path may grant a child marketing consent. A trigger that stops
+// looking at is_minor lets one through.
+const AGE_TEST = 'supabase/tests/privacy/age_test.sql';
+const CHILD_MARKETING_CANARY = `
+  do $canary$
+  declare
+    v_def text;
+    v_new text;
+  begin
+    v_def := pg_get_functiondef('app.no_marketing_to_children()'::regprocedure);
+    v_new := replace(v_def, 'and c.is_minor', 'and false');
+    if v_new = v_def then raise exception 'child canary: the minor check moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+const CHILD_MARKETING_MUST_FAIL = [/no path can grant a child offers or reminders/];
+
+// 0108: staff pushes go to the owner and managers. A notifier that forgets
+// the role sends them to every login with a device - stylists included.
+const STAFF_PUSH_TEST = 'supabase/tests/messaging/staff_push_test.sql';
+const STAFF_ROLE_CANARY = `
+  do $canary$
+  declare
+    v_def text;
+    v_new text;
+  begin
+    v_def := pg_get_functiondef('app.notify_staff(uuid,text,text,jsonb)'::regprocedure);
+    v_new := replace(v_def, 'and u.role in (''owner'', ''manager'')', '');
+    if v_new = v_def then raise exception 'staff canary: the role filter moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+const STAFF_ROLE_MUST_FAIL = [/never sends them to the stylist/];
+
 const BILLING_TEST = 'supabase/tests/billing/billing_test.sql';
 const GRACE_CANARY = `
   do $canary$
@@ -612,6 +648,18 @@ try {
       PAYMENTS_TEST,
       CROSS_CAPTURE_CANARY,
       CROSS_CAPTURE_MUST_FAIL,
+    ),
+    await check(
+      'age / a consent trigger that no longer looks at age',
+      AGE_TEST,
+      CHILD_MARKETING_CANARY,
+      CHILD_MARKETING_MUST_FAIL,
+    ),
+    await check(
+      'staff push / a notifier that messages stylists too',
+      STAFF_PUSH_TEST,
+      STAFF_ROLE_CANARY,
+      STAFF_ROLE_MUST_FAIL,
     ),
     await check(
       'billing / a salon_writable that ignores a lapsed subscription',

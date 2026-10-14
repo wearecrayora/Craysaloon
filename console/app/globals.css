@@ -6,7 +6,7 @@
 :root {
   --ink: #1d2430;
   --ink-soft: #5b6573;
-  --ink-faint: #8a93a0;
+  --ink-faint: #666c76; /* 4.6:1 on the glass (was 2.7:1) */
   --line: rgba(29, 36, 48, 0.1);
   --line-strong: rgba(29, 36, 48, 0.18);
   --bg: #ffffff;
@@ -17,8 +17,8 @@
   --primary-ink: #ffffff;
   --accent: #2f5fa8;
   --danger: #b4372b;
-  --ok: #16865f;
-  --warn: #9a6b00;
+  --ok: #147b57; /* 4.6:1 on the glass (was 4.0:1) */
+  --warn: #8f6300; /* 4.7:1 on the glass (was 4.1:1) */
   --radius: 12px;
   --shadow: 0 10px 30px rgba(29, 36, 48, 0.08);
 }

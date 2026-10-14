@@ -1707,4 +1707,65 @@ class AppL10nEn extends AppL10n {
   @override
   String get catalogueEmptyCanAdd =>
       'Nothing here yet. Tap Add to put the first one on the menu.';
+
+  @override
+  String get joinAgeQuestion => 'How old are you?';
+
+  @override
+  String get joinAgeAdult => '18 or older';
+
+  @override
+  String get joinAgeMinor => 'Under 18';
+
+  @override
+  String get joinGuardianIntro =>
+      'Someone under 18 needs a parent or guardian to agree. Please hand the phone to them.';
+
+  @override
+  String get joinGuardianName => 'Parent or guardian\'s full name';
+
+  @override
+  String joinGuardianConfirm(String salon) {
+    return 'I am this person\'s parent or guardian, and I agree to $salon keeping their details as described above.';
+  }
+
+  @override
+  String get joinMinorNoOffers =>
+      'Offers and visit reminders are never sent to anyone under 18.';
+
+  @override
+  String get joinAgeRequired => 'Please say whether you are 18 or older.';
+
+  @override
+  String get joinGuardianRequired =>
+      'A parent or guardian must give their name and tick the box.';
+
+  @override
+  String get joinTermsLine =>
+      'By continuing, you agree to the terms of service.';
+
+  @override
+  String get linkTerms => 'Terms of service';
+
+  @override
+  String get linkPrivacy => 'Privacy policy';
+
+  @override
+  String get linkRefunds => 'Refunds and cancellations';
+
+  @override
+  String get linkAbout => 'About Crayora';
+
+  @override
+  String get meLegalHeading => 'The fine print';
+
+  @override
+  String get consoleOnlyMessage =>
+      'This account is a Crayora operator account. Salons are managed in the console.';
+
+  @override
+  String get consentMinorLocked => 'Not available under 18';
+
+  @override
+  String get linkLicences => 'Open-source licences';
 }

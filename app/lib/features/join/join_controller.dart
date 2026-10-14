@@ -28,6 +28,10 @@ enum JoinProblem {
   otpExpired,
   alreadyBound,
   accountConflict,
+  // 0110: the age question is answered before a code is sent; under 18 needs
+  // a parent or guardian.
+  ageRequired,
+  guardianRequired,
   generic,
 }
 
@@ -44,6 +48,9 @@ class JoinState {
     this.outcome,
     this.promotional = false,
     this.whatsapp = false,
+    this.adult,
+    this.guardianName = '',
+    this.guardianConfirms = false,
     this.referral,
   });
 
@@ -73,6 +80,11 @@ class JoinState {
   final bool promotional;
   final bool whatsapp;
 
+  /// Null until the person answers - nothing is pre-selected (0110).
+  final bool? adult;
+  final String guardianName;
+  final bool guardianConfirms;
+
   JoinState copyWith({
     JoinStep? step,
     bool? busy,
@@ -86,6 +98,9 @@ class JoinState {
     LoginOutcome? outcome,
     bool? promotional,
     bool? whatsapp,
+    bool? adult,
+    String? guardianName,
+    bool? guardianConfirms,
   }) {
     return JoinState(
       step: step ?? this.step,
@@ -100,6 +115,9 @@ class JoinState {
       outcome: outcome ?? this.outcome,
       promotional: promotional ?? this.promotional,
       whatsapp: whatsapp ?? this.whatsapp,
+      adult: adult ?? this.adult,
+      guardianName: guardianName ?? this.guardianName,
+      guardianConfirms: guardianConfirms ?? this.guardianConfirms,
     );
   }
 }
@@ -185,15 +203,53 @@ class JoinController extends Notifier<JoinState> {
 
   void backToCode() => state = const JoinState();
 
-  void setPromotional(bool value) => state = state.copyWith(promotional: value);
+  /// A child is never asked for marketing consent (DPDP s.9): the box is off
+  /// and stays off. WhatsApp offers are offers, so they need this box first -
+  /// and unticking it unticks them, rather than ticking it FOR the person.
+  void setPromotional(bool value) => state = state.copyWith(
+        promotional: value && state.adult != false,
+        whatsapp: value ? state.whatsapp : false,
+      );
 
   void setWhatsapp(bool value) =>
-      state = state.copyWith(whatsapp: value, promotional: value ? true : state.promotional);
+      state = state.copyWith(whatsapp: value && state.promotional && state.adult != false);
+
+  /// 18 or older, or not (0110). Under 18 clears any marketing choice.
+  void setAdult(bool adult) => state = state.copyWith(
+        adult: adult,
+        problem: JoinProblem.none,
+        promotional: adult ? state.promotional : false,
+        whatsapp: adult ? state.whatsapp : false,
+      );
+
+  void setGuardianName(String name) => state = state.copyWith(guardianName: name);
+
+  void setGuardianConfirms(bool value) =>
+      state = state.copyWith(guardianConfirms: value, problem: JoinProblem.none);
+
+  AgeDeclaration? get _age => switch (state.adult) {
+        true => const AgeDeclaration.adult(),
+        false => AgeDeclaration.minor(
+            guardianName: state.guardianName.trim(),
+            guardianConfirms: state.guardianConfirms,
+          ),
+        null => null,
+      };
 
   /// U4/U5. Records the intent - so this salon's account sends and pays for the
   /// OTP - and then asks for the code.
   Future<void> submitPhone(String phone) async {
     if (state.salon == null || state.code.isEmpty) return;
+    // Before a code is sent - a refused declaration should not spend an OTP.
+    if (state.adult == null) {
+      state = state.copyWith(problem: JoinProblem.ageRequired);
+      return;
+    }
+    if (state.adult == false &&
+        (state.guardianName.trim().length < 2 || !state.guardianConfirms)) {
+      state = state.copyWith(problem: JoinProblem.guardianRequired);
+      return;
+    }
 
     state = state.copyWith(busy: true, problem: JoinProblem.none, phone: phone);
     try {
@@ -233,6 +289,7 @@ class JoinController extends Notifier<JoinState> {
         code: code,
         promotional: state.promotional,
         whatsapp: state.whatsapp,
+        age: _age,
       );
 
       // Bound: this salon's branding is now the app's, offline included.

@@ -4,7 +4,8 @@
 // VERIFICATION_COMPLETED, binds the number to the salon (first login) and then
 // issues a Supabase session.
 //
-//   POST { challenge_id, code, consents?: { promotional?, whatsapp? } }
+//   POST { challenge_id, code, consents?: { promotional?, whatsapp? },
+//          age?: { adult, guardian_name?, guardian_confirms? } }
 //     ->  200 { outcome, access_token, refresh_token, ... }
 //     ->  409 already_bound | account_conflict,  403 salon_unavailable
 //
@@ -25,16 +26,35 @@ serve('otp', 'otp-verify', async (req) => {
   let challengeId: unknown;
   let code: unknown;
   let rawConsents: unknown;
+  let rawAge: unknown;
   try {
-    ({ challenge_id: challengeId, code, consents: rawConsents } = await req.json());
+    ({ challenge_id: challengeId, code, consents: rawConsents, age: rawAge } = await req.json());
   } catch {
     return json(400, { error: 'invalid_request' });
+  }
+  // Age (0110). Under 18 needs a named parent or guardian who confirmed - and a
+  // child is sent no marketing, whatever was ticked (DPDP s.9). Checked before
+  // the code, so a refused declaration never costs an attempt.
+  const a = (rawAge ?? null) as Record<string, unknown> | null;
+  const age = a && typeof a.adult === 'boolean'
+    ? {
+        adult: a.adult,
+        guardian_name: typeof a.guardian_name === 'string' ? a.guardian_name.trim().slice(0, 120) : null,
+        guardian_confirms: a.guardian_confirms === true,
+      }
+    : null;
+  if (age && !age.adult && (!age.guardian_name || age.guardian_name.length < 2 || !age.guardian_confirms)) {
+    return json(400, { error: 'guardian_required' });
   }
   // Marketing consent is opt-in: only a literal `true` counts, anything else
   // (missing, "yes", 1) is a no. Service messages are the service itself and
   // photos are never asked for here, so neither is the client's to set.
   const c = (rawConsents ?? {}) as Record<string, unknown>;
-  const consents = { promotional: c.promotional === true, whatsapp: c.whatsapp === true };
+  const child = age !== null && !age.adult;
+  const consents = {
+    promotional: !child && c.promotional === true,
+    whatsapp: !child && c.whatsapp === true,
+  };
   // Shape checks first: a malformed request never costs an attempt.
   if (typeof challengeId !== 'string' || !UUID.test(challengeId)) {
     return json(400, { error: 'expired' });
@@ -143,6 +163,17 @@ serve('otp', 'otp-verify', async (req) => {
         await alert('otp_refused_account_conflict', { salon_id: done.salon_id });
         return json(409, { error: 'account_conflict' });
     }
+  }
+
+  // 5b. The age the person declared, against the customer just bound or
+  //     returning (0110). Staff logins record nothing. A failure here is
+  //     alerted, never a reason to refuse a login that has already bound.
+  if (age && fin.outcome !== 'staff') {
+    const { data: rec, error: recErr } = await db.rpc('record_age_declaration', {
+      p_auth_user_id: userId,
+      p_age: age,
+    });
+    if (recErr || !rec?.ok) await alert('otp_age_not_recorded', { salon_id: done.salon_id });
   }
 
   // 6. Mint the session. generateLink returns a single-use token and SENDS

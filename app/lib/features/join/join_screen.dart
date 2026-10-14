@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/platform/external_link.dart';
 import '../../core/ui/glass.dart';
 import '../../core/ui/salon_mark.dart';
 import '../../domain/join/cray_api.dart';
+import '../../domain/privacy/privacy.dart' show kWhatsappOffers;
 import '../privacy/consent_notice.dart';
 import '../../l10n/app_localizations.dart';
 import 'join_controller.dart';
@@ -143,6 +145,8 @@ String? problemText(BuildContext context, JoinProblem problem) {
     JoinProblem.otpExpired => l10n.otpExpired,
     JoinProblem.alreadyBound => l10n.joinAlreadyBound,
     JoinProblem.accountConflict => l10n.otpAccountConflict,
+    JoinProblem.ageRequired => l10n.joinAgeRequired,
+    JoinProblem.guardianRequired => l10n.joinGuardianRequired,
     JoinProblem.generic => l10n.joinGenericError,
   };
 }
@@ -375,6 +379,10 @@ class _PhoneStepState extends ConsumerState<_PhoneStep> {
           grievance: state.salon?.grievance,
         ),
         const SizedBox(height: 16),
+        // Age, before anything is sent (0110, DPDP s.9). Nothing pre-selected:
+        // the person says which, and under 18 brings a parent or guardian in.
+        const _AgeQuestion(),
+        const SizedBox(height: 16),
         TextField(
           controller: _controller,
           // NOT autofocused, unlike the code and OTP fields. Focus scrolls the
@@ -397,21 +405,34 @@ class _PhoneStepState extends ConsumerState<_PhoneStep> {
           l10n.phoneServiceNote,
           style: Theme.of(context).textTheme.bodySmall,
         ),
-        CheckboxListTile(
-          value: state.promotional,
-          onChanged: (v) => notifier.setPromotional(v ?? false),
-          title: Text(l10n.phoneConsentPromotional),
-          contentPadding: EdgeInsets.zero,
-          controlAffinity: ListTileControlAffinity.leading,
-        ),
-        CheckboxListTile(
-          value: state.whatsapp,
-          onChanged: (v) => notifier.setWhatsapp(v ?? false),
-          title: Text(l10n.phoneConsentWhatsapp),
-          contentPadding: EdgeInsets.zero,
-          controlAffinity: ListTileControlAffinity.leading,
-        ),
+        // A child is never asked (DPDP s.9) - the box is not offered at all.
+        if (state.adult != false)
+          CheckboxListTile(
+            value: state.promotional,
+            onChanged: (v) => notifier.setPromotional(v ?? false),
+            title: Text(l10n.phoneConsentPromotional),
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(l10n.joinMinorNoOffers, style: Theme.of(context).textTheme.bodySmall),
+          ),
+        // WhatsApp offers are not asked for while the paid channels are off
+        // (0108): consent to a channel nothing uses is consent for nothing.
+        if (kWhatsappOffers && state.adult != false)
+          CheckboxListTile(
+            value: state.whatsapp,
+            onChanged: state.promotional ? (v) => notifier.setWhatsapp(v ?? false) : null,
+            title: Text(l10n.phoneConsentWhatsapp),
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+          ),
         _Problem(state.problem),
+        const SizedBox(height: 8),
+        Text(l10n.joinTermsLine, style: Theme.of(context).textTheme.bodySmall),
+        NoticeLink(label: l10n.linkTerms, url: termsUrl),
         const SizedBox(height: 24),
         FilledButton(
           onPressed: state.busy
@@ -570,6 +591,64 @@ class _DoneStep extends ConsumerWidget {
               : l10n.joinedBody,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
+      ],
+    );
+  }
+}
+
+/// "How old are you?" - 18 or older, or under 18 with a parent or guardian who
+/// gives their name and agrees (0110).
+class _AgeQuestion extends ConsumerWidget {
+  const _AgeQuestion();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppL10n.of(context);
+    final text = Theme.of(context).textTheme;
+    final state = ref.watch(joinControllerProvider);
+    final notifier = ref.read(joinControllerProvider.notifier);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(l10n.joinAgeQuestion, style: text.titleSmall),
+        RadioGroup<bool>(
+          groupValue: state.adult,
+          onChanged: (v) {
+            if (v != null) notifier.setAdult(v);
+          },
+          child: Column(
+            children: [
+              RadioListTile<bool>(
+                value: true,
+                title: Text(l10n.joinAgeAdult),
+                contentPadding: EdgeInsets.zero,
+              ),
+              RadioListTile<bool>(
+                value: false,
+                title: Text(l10n.joinAgeMinor),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ],
+          ),
+        ),
+        if (state.adult == false) ...[
+          const SizedBox(height: 4),
+          Text(l10n.joinGuardianIntro, style: text.bodyMedium),
+          const SizedBox(height: 12),
+          TextField(
+            textCapitalization: TextCapitalization.words,
+            decoration: InputDecoration(labelText: l10n.joinGuardianName),
+            onChanged: notifier.setGuardianName,
+          ),
+          CheckboxListTile(
+            value: state.guardianConfirms,
+            onChanged: (v) => notifier.setGuardianConfirms(v ?? false),
+            title: Text(l10n.joinGuardianConfirm(state.salon?.displayName ?? '')),
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+          ),
+        ],
       ],
     );
   }

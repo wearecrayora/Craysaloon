@@ -24,6 +24,7 @@ import '../features/referral/referral_screen.dart';
 import '../features/wallet/add_money_screen.dart';
 import '../features/wallet/wallet_screen.dart';
 import '../core/ui/glass.dart';
+import '../features/notifications/staff_push.dart';
 import '../features/owner/logins_screen.dart';
 import '../features/salon/salon_home.dart';
 import '../l10n/app_localizations.dart';
@@ -268,7 +269,9 @@ class OwnerShell extends ConsumerWidget {
     // (core/theme/brand_theme.dart) never reaches the bar at the bottom.
     return MeshBackground(
       child: Scaffold(
-        body: child,
+        // The salon's own people get push too (0108): a customer's booking,
+        // cancellation, counter payment or online payment.
+        body: StaffPush(child: child),
         bottomNavigationBar: NavigationBar(
           selectedIndex: index < 0 ? 0 : index,
           onDestinationSelected: (i) => context.go(tabs[i].path),
@@ -292,7 +295,7 @@ class _ConsoleOnly extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           child: Center(
             child: Text(
-              'This account is a Crayora operator account. Salons are managed in the console.',
+              AppL10n.of(context).consoleOnlyMessage,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium,
             ),

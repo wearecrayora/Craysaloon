@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/ui/load_failed.dart';
 import '../../domain/privacy/privacy.dart';
+import '../customer/customer_providers.dart' show myProfileProvider;
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
 import 'consent_notice.dart';
@@ -65,7 +66,10 @@ class YourDataScreen extends ConsumerWidget {
                         locked: true,
                       ),
                       const _ConsentRow(purpose: ConsentPurpose.promotional),
-                      const _ConsentRow(purpose: ConsentPurpose.whatsapp),
+                      // Not offered while WhatsApp is off (0108) - but still
+                      // here for anyone who gave it, so they can take it back.
+                      if (kWhatsappOffers || (state.consents[ConsentPurpose.whatsapp] ?? false))
+                        const _ConsentRow(purpose: ConsentPurpose.whatsapp),
                       const _ConsentRow(purpose: ConsentPurpose.photos),
                     ],
                     const SizedBox(height: 24),
@@ -132,6 +136,12 @@ class _ConsentRow extends ConsumerWidget {
     final l10n = AppL10n.of(context);
     final state = ref.watch(yourDataControllerProvider);
     final granted = state.consents[purpose] ?? false;
+    // Under 18: offers and reminders cannot be switched on (0110, DPDP s.9).
+    // Switching them OFF is always allowed - withdrawal is never locked.
+    final minor = ref.watch(myProfileProvider).value?.isMinor ?? false;
+    final childLocked = minor &&
+        !granted &&
+        (purpose == ConsentPurpose.promotional || purpose == ConsentPurpose.whatsapp);
 
     final title = switch (purpose) {
       ConsentPurpose.service => l10n.consentServiceTitle,
@@ -139,7 +149,7 @@ class _ConsentRow extends ConsumerWidget {
       ConsentPurpose.whatsapp => l10n.consentWhatsappTitle,
       _ => l10n.consentPhotosTitle,
     };
-    final subtitle = switch (purpose) {
+    final subtitle = childLocked ? l10n.consentMinorLocked : switch (purpose) {
       ConsentPurpose.service => l10n.consentServiceLocked,
       ConsentPurpose.photos => l10n.consentPhotosSubtitle,
       _ => null,
@@ -149,7 +159,7 @@ class _ConsentRow extends ConsumerWidget {
       value: locked ? true : granted,
       // Disabled, not hidden: someone looking for the messages they get should
       // find them here, with the reason, rather than conclude the app forgot.
-      onChanged: locked || state.busyPurpose == purpose
+      onChanged: locked || childLocked || state.busyPurpose == purpose
           ? null
           : (value) => ref
                 .read(yourDataControllerProvider.notifier)

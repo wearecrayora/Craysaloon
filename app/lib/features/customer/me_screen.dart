@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/ui/fine_print.dart';
 import '../../core/ui/glass.dart';
 import '../../core/ui/salon_mark.dart';
 import '../../l10n/app_localizations.dart';
@@ -66,7 +67,9 @@ class MeScreen extends ConsumerWidget {
             subtitle: l10n.meYourDataSub,
             onTap: () => context.push('/your-data'),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
+          const FinePrint(),
+          const SizedBox(height: 24),
           Text(l10n.meAppBy, style: text.bodySmall),
         ],
       ),

@@ -38,6 +38,10 @@ export function MessagingForm({
       <form action={save} className="card">
         <input type="hidden" name="salonId" value={salonId} />
         <h2 style={{ marginTop: 0 }}>SMS and WhatsApp</h2>
+        <p className="notice">
+          Switched off for every salon since 14 Oct 2026 - push is the only channel. What is saved
+          here is kept, and used again when the fallback is switched back on.
+        </p>
         <p className="hint" style={{ marginTop: 0 }}>
           When a push is not acknowledged, the message falls back to WhatsApp (cheaper) and then
           SMS - from the salon&rsquo;s own Message Central account, at the salon&rsquo;s cost. A

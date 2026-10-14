@@ -9,10 +9,13 @@ library;
 
 /// The customer's own row: how the app greets them and what "Me" shows.
 class CustomerProfile {
-  const CustomerProfile({this.name, this.phone});
+  const CustomerProfile({this.name, this.phone, this.isMinor = false});
 
   final String? name;
   final String? phone;
+
+  /// Declared under 18 at join (0110): no offers, no reminders, ever.
+  final bool isMinor;
 
   /// The first word of the name, for "Hi Asha". Null when there is no name -
   /// the greeting then says something true instead of "Hi null".

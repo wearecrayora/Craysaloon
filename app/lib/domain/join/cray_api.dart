@@ -186,6 +186,7 @@ abstract interface class CrayApi {
     required String code,
     bool promotional = false,
     bool whatsapp = false,
+    AgeDeclaration? age,
   });
 
   /// The signed-in caller's OWN salon, as currently published: name, branding
@@ -198,4 +199,26 @@ abstract interface class CrayApi {
 
   /// True when a session is already stored on the device.
   bool get hasSession;
+}
+
+/// What the person joining said about their age (0110, DPDP s.9). Under 18
+/// needs a parent or guardian, named, who confirmed on the spot.
+class AgeDeclaration {
+  const AgeDeclaration.adult()
+      : adult = true,
+        guardianName = null,
+        guardianConfirms = false;
+
+  const AgeDeclaration.minor({required String this.guardianName, required this.guardianConfirms})
+      : adult = false;
+
+  final bool adult;
+  final String? guardianName;
+  final bool guardianConfirms;
+
+  Map<String, Object?> toJson() => {
+        'adult': adult,
+        if (!adult) 'guardian_name': guardianName,
+        if (!adult) 'guardian_confirms': guardianConfirms,
+      };
 }

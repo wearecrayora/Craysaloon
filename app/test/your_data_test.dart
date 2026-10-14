@@ -101,12 +101,23 @@ void main() {
     await pump(tester);
 
     final switches = tester.widgetList<SwitchListTile>(find.byType(SwitchListTile)).toList();
-    expect(switches, hasLength(4), reason: 'four purposes, each consented to separately');
+    // Service, offers, photos. WhatsApp is not offered while the paid channels
+    // are off (0108) - and the fake holds it off, so there is nothing to withdraw.
+    expect(switches, hasLength(3), reason: 'each purpose consented to separately');
+    expect(find.text('Offers on WhatsApp'), findsNothing);
 
-    // The fake holds promotional on, whatsapp off, photos off.
+    // The fake holds promotional on, photos off.
     expect(switches[1].value, isTrue);
     expect(switches[2].value, isFalse);
-    expect(switches[3].value, isFalse);
+  });
+
+  testWidgets('WhatsApp consent already given stays on screen, so it can be withdrawn',
+      (tester) async {
+    privacy.whatsappGranted = true;
+    await pump(tester);
+
+    expect(find.text('Offers on WhatsApp'), findsOneWidget,
+        reason: 'withdrawal is never hidden, even for a channel that is off (s.6(4))');
   });
 
   testWidgets('withdrawing marketing consent is ONE tap, with no confirmation',
@@ -285,6 +296,9 @@ class FakePrivacyApi implements PrivacyApi {
   bool failReads = false;
   bool failWrites = false;
 
+  /// WhatsApp consent as the server holds it; off unless a test says otherwise.
+  bool whatsappGranted = false;
+
   final written = <(String, bool)>[];
   final requested = <String>[];
   final _requests = <DataRightRequest>[];
@@ -298,7 +312,9 @@ class FakePrivacyApi implements PrivacyApi {
       ConsentState(
           purpose: ConsentPurpose.promotional, granted: true, occurredAt: DateTime(2026, 9, 1)),
       ConsentState(
-          purpose: ConsentPurpose.whatsapp, granted: false, occurredAt: DateTime(2026, 9, 1)),
+          purpose: ConsentPurpose.whatsapp,
+          granted: whatsappGranted,
+          occurredAt: DateTime(2026, 9, 1)),
       ConsentState(
           purpose: ConsentPurpose.photos, granted: false, occurredAt: DateTime(2026, 9, 1)),
     ];

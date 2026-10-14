@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart' show LicenseEntryWithLineBreaks, LicenseRegistry;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -27,6 +29,14 @@ const supabasePublishableKey = String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY'
 Future<void> main() async {
   await runWithObservability(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    // The fonts are Google Fonts, under the SIL Open Font License, which asks
+    // that the licence travel with them: shown on Me / More -> licences.
+    LicenseRegistry.addLicense(() async* {
+      yield LicenseEntryWithLineBreaks(
+        const ['Google Fonts'],
+        await rootBundle.loadString('assets/licenses/OFL.txt'),
+      );
+    });
     await Push.init();
     // Registered before anything else touches Firebase: most pushes arrive when
     // nobody is looking at the app, and an unacked push escalates to a channel

@@ -102,7 +102,8 @@ Full list in `RULES.md`. The ones most often broken:
 11. Salons are provisioned **only** through the console — never SQL, never a deploy. Activation is
     a deliberate human action.
 12. Prefer push (free) over WhatsApp (paid, billed to the salon); gate escalation on a delivery
-    **ack**, never on FCM's response.
+    **ack**, never on FCM's response. **Since 14 Oct 2026 the paid fallback is OFF**
+    (`app.paid_fallback_enabled()`, 0108): push is the only channel; the OTP is unaffected.
 13. Owner write-actions — above all **mark-complete** — work offline and sync idempotently.
     Rejected actions surface in "Needs attention", never dropped.
 14. Consent is per-purpose and withdrawable, and **withdrawal must be as easy as consent**
@@ -141,13 +142,13 @@ Each feature passes its PRD acceptance criteria, the milestone gates in `PHASES.
 per-screen checklist in `IMPLEMENTATION.md` §7.
 
 **Hard CI gates:** the catalogue-driven cross-tenant leak test, the binding-exclusivity test, the
-money test, the index-scope test, the admin-plane test, the join-flow test, the bind-flow test, the **customer-scope test**, the **write-scope test**, the **customer-list test**, the **booking test**, the **data-rights test**, the **reminder test**, the **referral test**, the **dashboard test**, the **start-and-pay test**, the **billing test**, the **offboarding test**, the **documents test**, the **bonus-expiry test**, the **hours test**, the OTP test and the messaging-access test — plus their **negative controls**,
+money test, the index-scope test, the admin-plane test, the join-flow test, the bind-flow test, the **customer-scope test**, the **write-scope test**, the **customer-list test**, the **booking test**, the **data-rights test**, the **reminder test**, the **staff-push test**, the **age test**, the **referral test**, the **dashboard test**, the **start-and-pay test**, the **billing test**, the **offboarding test**, the **documents test**, the **bonus-expiry test**, the **hours test**, the OTP test and the messaging-access test — plus their **negative controls**,
 which create - on purpose - an unprotected table, an unaudited `app_admin` function, an
 owner-callable payment-key function, a customer table protected only by `salon_id`, a dropped
 one-reminder-per-cycle index, an escalation sweep that ignores the ack, a `start_service` that
 accepts any code, a bill payment that credits the wallet, a `salon_writable` that ignores a
 lapsed subscription, a purge that keeps the closed salon's bindings, a support view that needs
-no session, a top-up receipt numbered as a tax invoice, a console rules save that resets the owner's bonus expiry, a salon holiday that blocks no booking and a capture that accepts another salon's payment, and require
+no session, a top-up receipt numbered as a tax invoice, a console rules save that resets the owner's bonus expiry, a salon holiday that blocks no booking, a capture that accepts another salon's payment, a consent trigger that no longer looks at age and a staff notifier that messages stylists, and require
 the matching gate to go red. Never skipped, never deleted, never narrowed to pass. A gate that has
 only ever been seen passing is not known to be a gate.
 

@@ -13,7 +13,11 @@
 --   * **a salon with no WhatsApp templates and no RCS agent still works
 --     completely** - the rungs it cannot use are skipped, never errored on
 
-select plan(52);
+select plan(53);
+
+-- The paid fallback is OFF in production since 0108; this file proves the ladder
+-- behind the switch, so it turns the switch on for its own transaction.
+set local cray.paid_fallback = 'on';
 
 insert into auth.users (id) values
   ('eeeeeeee-aaaa-4000-8000-00000000000a'),
@@ -312,6 +316,14 @@ select is(
   app.next_channel('eeeeeeee-0000-4000-8000-000000000001', 'transactional', '{push}')::text,
   'rcs',
   'and a verified RCS agent sits above it: cheaper still, and branded in the Messages app');
+
+-- 0108: the switch. Fully configured - RCS, WhatsApp, SMS - and still push only.
+set local cray.paid_fallback = 'off';
+select is(
+  app.next_channel('eeeeeeee-0000-4000-8000-000000000001', 'transactional', '{push}')::text,
+  null,
+  'with the paid fallback switched off (0108), even a fully configured salon gets push only');
+set local cray.paid_fallback = 'on';
 
 -- ---------------------------------------------------------------------------
 -- Automation K: the ack is what gates the spend

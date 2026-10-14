@@ -66,6 +66,7 @@ flutter:
   # Salon spaces and tools, never people (DESIGN.md 10; credits in the folder).
   assets:
     - assets/images/
+    - assets/licenses/
 
   # Required for gen-l10n to run from l10n.yaml.
   generate: true

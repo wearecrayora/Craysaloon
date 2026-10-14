@@ -1307,6 +1307,20 @@ PRD §12 makes that a business metric, not just a behaviour.
 
 ### 12.2 The channel ladder
 
+> **Push only, since 14 Oct 2026 (0108).** Every rung below push - RCS, WhatsApp, SMS - is behind
+> one switch, `app.paid_fallback_enabled()`, and it is **off**: Message Central discontinued the
+> API it ran on, and no salon had it configured. A push that is not acked is simply not re-sent at
+> the salon's cost. The ladder below is unchanged and still tested (`reminder_test.sql` turns the
+> switch on for its own transaction); turning it back on is a one-line migration. The login OTP is
+> a different product (VerifyNow, §5.2) and is unaffected.
+>
+> **The salon's own people get push too (0108).** Owner and manager devices register
+> (`register_push_token` accepts a staff session), and triggers announce what a *customer* did: a
+> booking, a cancellation, "I'll pay at the counter", a bill paid online. Staff messages carry the
+> customer's id and the name is read at send time, so an erased customer leaves no name in the log;
+> they never escalate. 0108 also fixed every customer message that printed a raw `{{when}}` or
+> `{{amount}}`, and the wallet receipt that was never queued.
+
 **One sending identity, plus a safety net (v2.2).** Since the salon is known before the first
 OTP (§5.2), there is no longer a class of message that must come from Crayora:
 

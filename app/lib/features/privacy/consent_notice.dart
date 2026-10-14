@@ -73,13 +73,13 @@ class ConsentNotice extends ConsumerWidget {
               // address into a mail app is how a complaint quietly stops being
               // made. The address stays on screen either way.
               if (contact.email case final email? when email.isNotEmpty)
-                _LinkLine(label: email, url: Uri(scheme: 'mailto', path: email)),
+                NoticeLink(label: email, url: Uri(scheme: 'mailto', path: email)),
               if (contact.phone case final phone? when phone.isNotEmpty)
-                _LinkLine(label: phone, url: Uri(scheme: 'tel', path: phone)),
+                NoticeLink(label: phone, url: Uri(scheme: 'tel', path: phone)),
             ],
             if (showPolicyLink) ...[
               const SizedBox(height: 12),
-              _LinkLine(
+              NoticeLink(
                 label: l10n.noticePolicyLink,
                 url: privacyPolicyUrlFor(Localizations.localeOf(context)),
                 style: text.bodyMedium?.copyWith(color: scheme.primary),
@@ -115,18 +115,19 @@ class _Bullet extends StatelessWidget {
 /// A line that is both readable and openable. If nothing on the device can open
 /// it, the failure is said out loud rather than swallowed - the address above it
 /// is still the answer.
-class _LinkLine extends ConsumerStatefulWidget {
-  const _LinkLine({required this.label, required this.url, this.style});
+/// A tappable link in the notice's own words; says so if it cannot open.
+class NoticeLink extends ConsumerStatefulWidget {
+  const NoticeLink({required this.label, required this.url, this.style, super.key});
 
   final String label;
   final Uri url;
   final TextStyle? style;
 
   @override
-  ConsumerState<_LinkLine> createState() => _LinkLineState();
+  ConsumerState<NoticeLink> createState() => _NoticeLinkState();
 }
 
-class _LinkLineState extends ConsumerState<_LinkLine> {
+class _NoticeLinkState extends ConsumerState<NoticeLink> {
   bool _failed = false;
 
   @override

@@ -1697,6 +1697,67 @@ class AppL10nHi extends AppL10n {
   @override
   String get catalogueEmptyCanAdd =>
       'अभी यहां कुछ नहीं। मेन्यू में पहला जोड़ने के लिए Add दबाएँ।';
+
+  @override
+  String get joinAgeQuestion => 'आपकी उम्र क्या है?';
+
+  @override
+  String get joinAgeAdult => '18 या उससे ज़्यादा';
+
+  @override
+  String get joinAgeMinor => '18 से कम';
+
+  @override
+  String get joinGuardianIntro =>
+      '18 से कम उम्र वालों के लिए माता-पिता या अभिभावक की सहमति ज़रूरी है। कृपया फ़ोन उन्हें दें।';
+
+  @override
+  String get joinGuardianName => 'माता-पिता या अभिभावक का पूरा नाम';
+
+  @override
+  String joinGuardianConfirm(String salon) {
+    return 'मैं इनका माता-पिता या अभिभावक हूँ, और मैं सहमत हूँ कि $salon ऊपर बताए अनुसार इनकी जानकारी रखे।';
+  }
+
+  @override
+  String get joinMinorNoOffers =>
+      '18 से कम उम्र वालों को ऑफ़र और विज़िट रिमाइंडर कभी नहीं भेजे जाते।';
+
+  @override
+  String get joinAgeRequired =>
+      'कृपया बताएँ कि आपकी उम्र 18 या उससे ज़्यादा है या नहीं।';
+
+  @override
+  String get joinGuardianRequired =>
+      'माता-पिता या अभिभावक अपना नाम लिखें और बॉक्स पर टिक करें।';
+
+  @override
+  String get joinTermsLine => 'आगे बढ़कर आप सेवा की शर्तों से सहमत होते हैं।';
+
+  @override
+  String get linkTerms => 'सेवा की शर्तें';
+
+  @override
+  String get linkPrivacy => 'गोपनीयता नीति';
+
+  @override
+  String get linkRefunds => 'रिफ़ंड और रद्द करना';
+
+  @override
+  String get linkAbout => 'Crayora के बारे में';
+
+  @override
+  String get meLegalHeading => 'नियम और नीतियाँ';
+
+  @override
+  String get consoleOnlyMessage =>
+      'यह Crayora ऑपरेटर खाता है। सैलून कंसोल में संभाले जाते हैं।';
+
+  @override
+  String get consentMinorLocked => '18 से कम उम्र के लिए उपलब्ध नहीं';
+
+  @override
+  String get linkLicences => 'ओपन-सोर्स लाइसेंस';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -3406,4 +3467,66 @@ class AppL10nHiLatn extends AppL10nHi {
   @override
   String get catalogueEmptyCanAdd =>
       'Abhi yahan kuch nahi. Menu mein pehla jodne ke liye Add dabayein.';
+
+  @override
+  String get joinAgeQuestion => 'Aapki umar kya hai?';
+
+  @override
+  String get joinAgeAdult => '18 ya usse zyada';
+
+  @override
+  String get joinAgeMinor => '18 se kam';
+
+  @override
+  String get joinGuardianIntro =>
+      '18 se kam umar walon ke liye mata-pita ya abhibhavak ki sahmati zaroori hai. Kripya phone unhein dein.';
+
+  @override
+  String get joinGuardianName => 'Mata-pita ya abhibhavak ka poora naam';
+
+  @override
+  String joinGuardianConfirm(String salon) {
+    return 'Main inka mata-pita ya abhibhavak hoon, aur main sahmat hoon ki $salon upar bataye anusaar inki jaankari rakhe.';
+  }
+
+  @override
+  String get joinMinorNoOffers =>
+      '18 se kam umar walon ko offer aur visit reminder kabhi nahin bheje jaate.';
+
+  @override
+  String get joinAgeRequired =>
+      'Kripya batayein ki aapki umar 18 ya usse zyada hai ya nahin.';
+
+  @override
+  String get joinGuardianRequired =>
+      'Mata-pita ya abhibhavak apna naam likhein aur box par tick karein.';
+
+  @override
+  String get joinTermsLine =>
+      'Aage badhkar aap service ki sharton se sahmat hote hain.';
+
+  @override
+  String get linkTerms => 'Service ki sharten';
+
+  @override
+  String get linkPrivacy => 'Privacy policy';
+
+  @override
+  String get linkRefunds => 'Refund aur cancel karna';
+
+  @override
+  String get linkAbout => 'Crayora ke baare mein';
+
+  @override
+  String get meLegalHeading => 'Niyam aur neetiyan';
+
+  @override
+  String get consoleOnlyMessage =>
+      'Yeh Crayora operator khaata hai. Salon console mein sambhale jaate hain.';
+
+  @override
+  String get consentMinorLocked => '18 se kam umar ke liye uplabdh nahin';
+
+  @override
+  String get linkLicences => 'Open-source licence';
 }

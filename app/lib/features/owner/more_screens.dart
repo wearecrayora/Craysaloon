@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/ui/fine_print.dart';
 import '../../app/providers.dart';
 import '../../core/format/money.dart';
 import '../../core/theme/cray_glass.dart';
@@ -76,6 +77,8 @@ class MoreScreen extends ConsumerWidget {
             l10n.moreProfileSub,
             () => context.push('/more/profile'),
           ),
+          const SizedBox(height: 24),
+          const FinePrint(),
         ],
       ),
     );

@@ -40,9 +40,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     <ConsoleShell admin={admin} salon={salon} active="messaging">
       <h1>Messaging — {salon.display_name}</h1>
       <p className="hint">
-        The last 30 days. Every message tries push first - it is free - and only goes to WhatsApp or
-        SMS, at the salon&rsquo;s cost, when the push is not seen in time. What each channel is set
-        up to do is on <Link href={`/salon/${id}/credentials`}>Credentials</Link>.
+        The last 30 days. Every message goes by push - it is free.
+      </p>
+      <p className="notice">
+        <strong>The SMS and WhatsApp fallback is switched off for every salon</strong> (14 Oct 2026).
+        Push is the only channel; a message that is not seen is not re-sent at the salon&rsquo;s cost.
+        Login codes are separate and still go by SMS. Settings saved on{' '}
+        <Link href={`/salon/${id}/credentials`}>Credentials</Link> are kept for when it is switched
+        back on.
       </p>
 
       <div className="card" style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>

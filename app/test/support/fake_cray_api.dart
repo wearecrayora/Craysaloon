@@ -79,11 +79,13 @@ class FakeCrayApi implements CrayApi {
     required String code,
     bool promotional = false,
     bool whatsapp = false,
+    AgeDeclaration? age,
   }) async {
     verifications.add({
       'challenge_id': challengeId,
       'promotional': promotional,
       'whatsapp': whatsapp,
+      'age': age?.toJson(),
     });
     if (verifyError != null) throw verifyError!;
     return outcome;
