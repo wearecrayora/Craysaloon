@@ -1226,6 +1226,32 @@ export type AuditRow = {
 };
 
 /** The newest 200 audit rows, filtered. Read-only - the log is append-only. */
+export type Operator = { id: string; name: string; email: string; is_super: boolean; active: boolean };
+
+/** Every Crayora operator - super-admins only (0115). */
+export async function listOperators(actorAdminId: string): Promise<Operator[]> {
+  const sql = client();
+  const [row] = await sql<{ r: Operator[] }[]>`
+    select app_admin.list_operators(${actorAdminId}::uuid) as r`;
+  return row?.r ?? [];
+}
+
+/**
+ * Switch an operator off (or back on). Off ends their sessions at once - the
+ * breach runbook's containment for console access by the wrong person (0115).
+ */
+export async function setOperatorActive(
+  actorAdminId: string,
+  adminId: string,
+  active: boolean,
+  reason: string,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.set_operator_active(${actorAdminId}::uuid, ${adminId}::uuid,
+      ${active}::boolean, ${reason})`;
+}
+
 export async function listAudit(filter: {
   salonId?: string | null;
   action?: string | null;

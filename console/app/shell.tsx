@@ -33,6 +33,7 @@ const PLATFORM: Item[] = [
   { key: 'data-rights', href: '/data-rights', label: 'Data-rights requests', icon: 'shield' },
   { key: 'metrics', href: '/metrics', label: 'Metrics', icon: 'chart' },
   { key: 'audit', href: '/audit', label: 'Audit log', icon: 'list' },
+  { key: 'operators', href: '/operators', label: 'Operators', icon: 'users' },
 ];
 
 export function ConsoleShell({

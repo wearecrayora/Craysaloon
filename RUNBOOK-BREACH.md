@@ -6,8 +6,9 @@ tired, it is late, and you are not sure yet whether this is real.
 **Owner: Jyotiranjan (Crayora).** One named human, deliberately — not "the team". If that changes,
 change it here in the same week, and tell every salon whose agreement names a contact.
 
-> **Status: NEVER REHEARSED.** See §9. A runbook that has only ever been read is a belief, not a
-> capability. The first rehearsal is owed before the first real salon.
+> **Status: rehearsed once (tabletop, 15 Oct 2026) - see §9.** Two things are still blank and are
+> the owner's to fill: the contacts in §8 and the Board's channel. The notice drafts are in
+> `docs/runbooks/breach-notices.md`.
 
 ---
 
@@ -70,6 +71,10 @@ Do these in order. Write the time next to each as you go — that log becomes th
 4. **Contain** — §3.
 5. **Size it**: which salons, how many customers, which fields. Phone numbers? Names? Visit
    history? Money? Photos? **Write down what you do not yet know**, as a list of open questions.
+   The retained logs (`ops.ict_logs`) show **what was requested, from which IP, when** - not by
+   whom, and not how many rows. So: reproduce the leak in the gate suite (`node scripts/db/run.mjs
+   test`, ~11 s) to learn what was *exposable*, then bound *who* by matching request IPs and times
+   against the sign-in records (`source = 'auth_logs'`) in the same table.
 6. **Tell the affected salon(s).** They are the Data Fiduciary — the obligation and the penalty are
    theirs, and they cannot meet either if we sit on it. Plain language, what is known, what is not,
    what we are doing, when they will hear next.
@@ -83,8 +88,9 @@ Do these in order. Write the time next to each as you go — that log becomes th
 **Session and account compromise**
 
 - Revoke the customer's or operator's sessions. `app_admin.unbind_customer` ends a customer
-  binding and its sessions (audited). For an operator, deactivate the row in `platform_admins`
-  first, then rotate their credentials.
+  binding and its sessions (audited). For an operator: console -> **Operators** -> Switch off
+  (super-admin; ends their sessions at once, audited - 0115), **remove them from the Cloudflare
+  Access policy** (`docs/runbooks/console-access.md`), then rotate anything they held.
 - Never "wait and watch" a live session to gather evidence. Cut it.
 
 **A key or token**
@@ -118,8 +124,8 @@ Do these in order. Write the time next to each as you go — that log becomes th
 
 **Email:** incident@cert-in.org.in **Phone:** 1800-11-4949
 
-Use CERT-In's Annexure I format. Send what you have at the 5-hour mark even if half of it says
-"under investigation". Include:
+Use CERT-In's Annexure I format - **a filled-in draft is in `docs/runbooks/breach-notices.md` §1**.
+Send what you have at the 5-hour mark even if half of it says "under investigation". Include:
 
 - Time of occurrence, and time of detection (they differ; say both).
 - Type of incident: data breach / unauthorised access / compromise of systems.
@@ -139,6 +145,8 @@ Keep the sent copy. It is evidence that the clock was met.
 within **72 hours** the full report — the broader facts and circumstances, the mitigation measures,
 the findings about who caused it, remedial measures to prevent recurrence, and a copy of the
 intimations given to affected Data Principals.
+
+Drafts for the intimation and the 72-hour report: `docs/runbooks/breach-notices.md` §2.
 
 **The customers.** The salon is the Data Fiduciary, so the notice goes out **from the salon** —
 Crayora drafts it, provides the facts, and makes sure it goes. In their own language, in plain
@@ -201,7 +209,7 @@ no production changes — and record it here honestly.
 
 | Date | Scenario | Who | What broke in the runbook |
 |---|---|---|---|
-| — | *Never rehearsed* | — | — |
+| 15 Oct 2026 | A researcher reports seeing another salon's customer list (21:40, Saturday) | Claude, on Jyotiranjan's instruction - desk exercise, real read-only queries | No way to switch off an operator without SQL (**fixed, 0115**); no notice drafts (**fixed**); logs show what/where/when but not who or how many rows (**mitigation in §2**); log copy runs ~4-hourly, not hourly; contacts in §8 and the Board's channel still blank (**owner to fill**). Record: `docs/drills/2026-10-15-breach-tabletop.md` |
 
 Suggested first scenario: **"A researcher emails at 21:40 on a Saturday saying they can see another
 salon's customer list."** It exercises all three clocks, the salon relationship, and the one failure

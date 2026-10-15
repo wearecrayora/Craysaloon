@@ -490,7 +490,7 @@ in `_shared/runtime.ts` - previously it reached only the function log.
 **Closed 15 Oct 2026:** a shared trace id - the app sends `x-trace-id` on every function call,
 the Edge Functions log it, tag alerts with it and echo it, the cron Worker labels its calls, and the
 console shows a short ref on an unexpected error · nomination (s.14) and the children's-details rule
-(0112). **Still open:** the breach runbook is written, not rehearsed.
+(0112). The breach runbook was rehearsed on 15 Oct 2026 (`docs/drills/`); its contacts are the owner's to fill.
 
 ### Phase 5 — Ship *(M13)*
 
@@ -557,7 +557,7 @@ Do not take money from a salon owner until **all** of these hold. This is the on
 - [ ] ⚖️ Counsel has confirmed the closed-loop and non-payment-aggregator position
 - [ ] ⚖️ CA has confirmed GST treatment and the retention period
 - [ ] Grievance officer named and contactable, for the salon and for Crayora
-- [ ] Breach-notification runbook written **and rehearsed**
+- [x] Breach-notification runbook written **and rehearsed** (tabletop, 15 Oct 2026 - contacts still to fill)
 - [x] Backup restore **rehearsed**, not merely configured (13 Oct 2026, `restore-drill.yml`)
 - [ ] The salon's outstanding-credit settlement obligation is in the signed contract
 

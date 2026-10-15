@@ -24,6 +24,7 @@ import {
   recordIntegrationTest,
   recordSetupFee,
   recordSubscriptionPayment,
+  setOperatorActive,
   reverseSubscriptionPayment,
   recordExportOffered,
   recordCreditSettlement,
@@ -331,6 +332,27 @@ export async function reversePaymentAction(
     revalidatePath(`/salon/${salonId}/billing`);
     revalidatePath('/metrics');
     return { ok: 'Reversed. The months it added are off the paid-until date.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function operatorActiveAction(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const admin = await requireAdmin();
+  if (!admin.isSuper) return { error: 'Only a super-admin changes who can use the console.' };
+  const adminId = String(form.get('adminId') ?? '');
+  const active = String(form.get('active') ?? '') === 'true';
+  const reason = String(form.get('reason') ?? '').trim();
+  if (!reason) return { error: 'Say why - it is the audit entry.' };
+  try {
+    await setOperatorActive(admin.id, adminId, active, reason);
+    revalidatePath('/operators');
+    return {
+      ok: active ? 'Switched back on.' : 'Switched off. Their console sessions have ended.',
+    };
   } catch (e) {
     return { error: message(e) };
   }

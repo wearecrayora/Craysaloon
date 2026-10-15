@@ -99,6 +99,9 @@ select is(
         -- Read-only and STABLE: a customer's copy of their data, by request
         -- (0091). Closing the request is what audits.
         'access_request_export',
+        -- Read-only and STABLE: the operator list for super-admins (0115).
+        -- Switching one off is what audits.
+        'list_operators',
         -- Infrastructure: it changes grants, not tenant data, and is called
         -- from migrations rather than from the console (0020).
         'close_privileges'

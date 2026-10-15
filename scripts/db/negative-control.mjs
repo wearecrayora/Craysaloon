@@ -410,6 +410,23 @@ const BIRTHDAY_CANARY = `
 `;
 const BIRTHDAY_MUST_FAIL = [/ONCE a year/];
 
+// 0115: switching an operator off must end their sessions - a stolen phone
+// with a live console session is the case it exists for.
+const OPERATORS_TEST = 'supabase/tests/admin/operators_test.sql';
+const OPERATOR_CANARY = `
+  do $canary$
+  declare
+    v_def text := pg_get_functiondef('app_admin.set_operator_active(uuid,uuid,boolean,text)'::regprocedure);
+    v_new text;
+  begin
+    v_new := replace(v_def, 'delete from auth.sessions where user_id = p_admin_id;', 'null;');
+    if v_new = v_def then raise exception 'operator canary: the session cut moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+const OPERATOR_MUST_FAIL = [/no session of theirs is left/];
+
 const BILLING_TEST = 'supabase/tests/billing/billing_test.sql';
 const GRACE_CANARY = `
   do $canary$
@@ -701,6 +718,12 @@ try {
       BIRTHDAY_TEST,
       BIRTHDAY_CANARY,
       BIRTHDAY_MUST_FAIL,
+    ),
+    await check(
+      'operators / switching an operator off that leaves their session alive',
+      OPERATORS_TEST,
+      OPERATOR_CANARY,
+      OPERATOR_MUST_FAIL,
     ),
     await check(
       'billing / a salon_writable that ignores a lapsed subscription',
