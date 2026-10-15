@@ -381,12 +381,17 @@ class SupabaseCrayApi
 
   @override
   Future<CustomerProfile?> me() async {
-    final rows = await _rows(() => _client.from('customers').select('name,phone,is_minor').limit(1));
+    final rows = await _rows(
+        () => _client.from('customers').select('name,phone,is_minor,birthday').limit(1));
     if (rows.isEmpty) return null;
+    // Stored in the year 2000 (0113); only the day and month mean anything.
+    final birthday = DateTime.tryParse(rows.first['birthday'] as String? ?? '');
     return CustomerProfile(
       name: rows.first['name'] as String?,
       phone: rows.first['phone'] as String?,
       isMinor: rows.first['is_minor'] == true,
+      birthdayMonth: birthday?.month,
+      birthdayDay: birthday?.day,
     );
   }
 
@@ -1266,7 +1271,8 @@ class SupabaseCrayApi
           .from('salons')
           .select('display_name,legal_name,address,phone,email,gst_number,gst_rate_bp,'
               'working_hours,wallet_rule,reward_rule,cancellation_policy,'
-              'default_reminder_cycle_days,grievance_name,grievance_email,grievance_phone')
+              'default_reminder_cycle_days,grievance_name,grievance_email,grievance_phone,'
+              'birthday_offer')
           .limit(1),
     );
     if (rows.isEmpty) return null;
@@ -1287,7 +1293,30 @@ class SupabaseCrayApi
       grievanceName: r['grievance_name'] as String?,
       grievanceEmail: r['grievance_email'] as String?,
       grievancePhone: r['grievance_phone'] as String?,
+      birthdayOffer: r['birthday_offer'] as String?,
     );
+  }
+
+  @override
+  Future<void> setBirthdayOffer(String? offer) async {
+    await _call('set_birthday_offer', {'p_offer': offer});
+  }
+
+  @override
+  Future<void> setMyBirthday(int? month, int? day) async {
+    await _call('set_my_birthday', {'p_month': month, 'p_day': day});
+  }
+
+  @override
+  Future<String?> myBirthdayOffer() async {
+    try {
+      final body = _asMap(await _client.rpc<dynamic>('my_birthday_offer'));
+      return body?['offer'] as String?;
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
   }
 
   @override

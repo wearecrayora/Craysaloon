@@ -9,13 +9,23 @@ library;
 
 /// The customer's own row: how the app greets them and what "Me" shows.
 class CustomerProfile {
-  const CustomerProfile({this.name, this.phone, this.isMinor = false});
+  const CustomerProfile({
+    this.name,
+    this.phone,
+    this.isMinor = false,
+    this.birthdayMonth,
+    this.birthdayDay,
+  });
 
   final String? name;
   final String? phone;
 
   /// Declared under 18 at join (0110): no offers, no reminders, ever.
   final bool isMinor;
+
+  /// Day and month only - the year is never asked (0113).
+  final int? birthdayMonth;
+  final int? birthdayDay;
 
   /// The first word of the name, for "Hi Asha". Null when there is no name -
   /// the greeting then says something true instead of "Hi null".
@@ -154,6 +164,12 @@ abstract interface class CustomerApi {
   Future<List<SalonDocument>> documents();
 
   Future<CustomerProfile?> me();
+
+  /// The customer adds, changes or removes (both null) their birthday (0113).
+  Future<void> setMyBirthday(int? month, int? day);
+
+  /// The salon's birthday offer, during the customer's birthday month only.
+  Future<String?> myBirthdayOffer();
 
   Future<NextDue?> nextDue();
 

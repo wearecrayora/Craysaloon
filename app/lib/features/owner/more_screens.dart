@@ -424,6 +424,9 @@ class RulesScreen extends StatelessWidget {
                 ),
               ),
             ],
+            // The owner words it; nothing reaches the wallet (0113).
+            _Heading(l10n.rulesBirthdayHeading),
+            _BirthdayOfferRow(offer: p.birthdayOffer),
             if (p.reminderCycleDays != null) ...[
               _Heading(l10n.rulesReminders),
               _Field(
@@ -527,6 +530,155 @@ class ProfileScreen extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+
+/// The birthday offer, in the owner's words (0113). Shown to everyone on the
+/// team; changed by the owner only, as bonus expiry is.
+class _BirthdayOfferRow extends ConsumerStatefulWidget {
+  const _BirthdayOfferRow({required this.offer});
+
+  final String? offer;
+
+  @override
+  ConsumerState<_BirthdayOfferRow> createState() => _BirthdayOfferRowState();
+}
+
+class _BirthdayOfferRowState extends ConsumerState<_BirthdayOfferRow> {
+  bool _saving = false;
+
+  Future<void> _change() async {
+    final l10n = AppL10n.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    // null = dismissed; '' = turn off; anything else = the new offer. The sheet
+    // owns its text field: disposing it here, while the sheet is still
+    // animating closed, crashed (found by the widget test).
+    final picked = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _BirthdayOfferSheet(current: widget.offer),
+    );
+    if (picked == null || !mounted) return;
+    final next = picked.isEmpty ? null : picked;
+    if (next == widget.offer) return;
+    final api = ref.read(salonAccountApiProvider);
+    if (api == null) return;
+    setState(() => _saving = true);
+    try {
+      await api.setBirthdayOffer(next);
+      ref.invalidate(salonProfileProvider);
+      messenger.showSnackBar(SnackBar(content: Text(l10n.rulesBirthdaySaved)));
+    } on CrayApiException catch (e) {
+      messenger.showSnackBar(SnackBar(
+        content: Text(e.kind == CrayErrorKind.salonUnavailable
+            ? l10n.billingReadOnlyOther
+            : l10n.rulesSaveFailed),
+      ));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final text = Theme.of(context).textTheme;
+    final owner = ref.watch(sessionProvider)?.appRole == 'owner';
+
+    final row = Container(
+      constraints: const BoxConstraints(minHeight: 48),
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
+      ),
+      child: Row(
+        children: [
+          Expanded(flex: 2, child: Text(l10n.rulesBirthdayOffer, style: text.bodyMedium)),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 3,
+            child: Text(
+              widget.offer ?? l10n.rulesBirthdayOff,
+              textAlign: TextAlign.end,
+              style: text.titleMedium,
+            ),
+          ),
+          if (owner) ...[
+            const SizedBox(width: 8),
+            _saving
+                ? const SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.edit_outlined, size: 20),
+          ],
+        ],
+      ),
+    );
+    if (!owner) return row;
+    return Semantics(
+      button: true,
+      label: l10n.rulesBirthdayOffer,
+      child: InkWell(onTap: _saving ? null : _change, child: row),
+    );
+  }
+}
+
+class _BirthdayOfferSheet extends StatefulWidget {
+  const _BirthdayOfferSheet({required this.current});
+
+  final String? current;
+
+  @override
+  State<_BirthdayOfferSheet> createState() => _BirthdayOfferSheetState();
+}
+
+class _BirthdayOfferSheetState extends State<_BirthdayOfferSheet> {
+  late final _controller = TextEditingController(text: widget.current ?? '');
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + MediaQuery.viewInsetsOf(context).bottom),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(l10n.rulesBirthdayAsk, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 8),
+            Text(l10n.rulesBirthdayNote, style: Theme.of(context).textTheme.bodyMedium),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _controller,
+              maxLength: 120,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(hintText: l10n.rulesBirthdayHint),
+            ),
+            const SizedBox(height: 8),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(_controller.text.trim()),
+              child: Text(l10n.rulesBirthdaySave),
+            ),
+            if (widget.current != null) ...[
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () => Navigator.of(context).pop(''),
+                child: Text(l10n.rulesBirthdayTurnOff),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

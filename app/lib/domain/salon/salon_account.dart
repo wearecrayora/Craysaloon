@@ -52,6 +52,7 @@ class SalonProfile {
     this.grievanceName,
     this.grievanceEmail,
     this.grievancePhone,
+    this.birthdayOffer,
   });
 
   final String displayName;
@@ -69,6 +70,10 @@ class SalonProfile {
   final String? grievanceName;
   final String? grievanceEmail;
   final String? grievancePhone;
+
+  /// What a customer gets on their birthday, in the owner's words (0113).
+  /// Null when the salon gives nothing.
+  final String? birthdayOffer;
 }
 
 abstract interface class SalonAccountApi {
@@ -80,6 +85,9 @@ abstract interface class SalonAccountApi {
   /// Captured onto each bonus lot at issue - credit already given keeps its
   /// date (RULES 5.3.3-5.3.4, 0097). Throws [CrayApiException].
   Future<void> setBonusExpiry(int days);
+
+  /// The owner words the birthday offer; null turns it off (0113).
+  Future<void> setBirthdayOffer(String? offer);
 
   /// The features this salon has. Hiding a button is a courtesy: the server
   /// refuses the call either way.

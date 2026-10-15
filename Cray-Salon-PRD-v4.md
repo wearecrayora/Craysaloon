@@ -790,6 +790,13 @@ thank-you. All respect consent + opt-out, prefer push.
 **AC:** [ ] each trigger fires once per event, enforced by constraint · [ ] all respect opt-out ·
 [ ] lapsed detection uses the per-customer learned cycle.
 
+**Birthday - built 15 Oct 2026 (0113/0114).** The owner words the offer (Rules; a description
+honoured at the counter, never wallet credit - RULES 5.2 untouched). The customer adds their
+birthday under Me - day and month only, optional, never for an under-18. On the day, from 10 am salon
+time, a push - marketing, so only with the offers consent - **once a year by a unique constraint**
+(`lifecycle_messages`); through the month their home shows the offer to claim. Gate:
+`growth/birthday_test.sql` + negative control. Anniversary, win-back and package-expiry remain Tier 2.
+
 ### 10.6 Feedback / NPS + review routing (Tier 2)
 
 Post-visit push asks for a rating. High → prompt for a Google/Play review (the salon's own link,

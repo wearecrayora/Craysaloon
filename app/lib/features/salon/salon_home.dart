@@ -246,6 +246,8 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
               ),
               const SizedBox(height: 12),
             ],
+            // Through the birthday month: what to claim at the counter (0113).
+            const _BirthdayCard(),
             if (_confirmation != null) ...[
               Text(_confirmation!, style: text.bodySmall),
               const SizedBox(height: 12),
@@ -642,4 +644,46 @@ ButtonStyle _tonal(BuildContext context) {
     backgroundColor: scheme.primaryContainer,
     foregroundColor: scheme.onPrimaryContainer,
   );
+}
+
+
+/// The salon's birthday offer, in the customer's birthday month (0113): the
+/// thing to show at the counter. Nothing at all in any other month.
+class _BirthdayCard extends ConsumerWidget {
+  const _BirthdayCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final offer = ref.watch(myBirthdayOfferProvider).value;
+    if (offer == null) return const SizedBox.shrink();
+    final l10n = AppL10n.of(context);
+    final text = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Appear(
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.cake_outlined),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l10n.homeBirthdayTitle, style: text.titleMedium),
+                      const SizedBox(height: 2),
+                      Text(l10n.homeBirthdayBody(offer), style: text.bodyMedium),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

@@ -306,6 +306,27 @@ void main() {
     },
   );
 
+  testWidgets('the owner words the birthday offer (0113)', (tester) async {
+    final account = FakeAccount(
+      const SalonBilling(state: 'active', readOnly: false),
+      profile: profile,
+    );
+    await pump(tester, account: account);
+    await openRules(tester);
+
+    await tester.scrollUntilVisible(find.text('Birthday offer'), 120,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.text('Off'), findsOneWidget, reason: 'no offer until the owner words one');
+    await tester.tap(find.text('Birthday offer'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('nothing is added to their wallet'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'a free head massage');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(account.birthdayOffers, ['a free head massage']);
+  });
+
   testWidgets('a manager sees the expiry but cannot change it', (tester) async {
     final account = FakeAccount(
       const SalonBilling(state: 'active', readOnly: false),

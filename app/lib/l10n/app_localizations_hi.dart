@@ -1795,6 +1795,67 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get nomineeInvalidPhone => '10 अंकों का मोबाइल नंबर लिखें।';
+
+  @override
+  String get rulesBirthdayHeading => 'जन्मदिन';
+
+  @override
+  String get rulesBirthdayOffer => 'जन्मदिन ऑफ़र';
+
+  @override
+  String get rulesBirthdayOff => 'बंद';
+
+  @override
+  String get rulesBirthdayAsk => 'ग्राहकों को उनके जन्मदिन पर क्या मिलता है?';
+
+  @override
+  String get rulesBirthdayNote =>
+      'अपने शब्दों में, जैसे \"मुफ़्त हेड मसाज\"। जिन ग्राहकों ने अपना जन्मदिन जोड़ा है और ऑफ़र के लिए हाँ कहा है, उन्हें यह उस दिन मिलता है, और पूरे महीने दिखता है। आप इसे काउंटर पर देते हैं - उनके वॉलेट में कुछ नहीं जुड़ता।';
+
+  @override
+  String get rulesBirthdayHint => 'मुफ़्त हेड मसाज';
+
+  @override
+  String get rulesBirthdaySave => 'सहेजें';
+
+  @override
+  String get rulesBirthdayTurnOff => 'बंद करें';
+
+  @override
+  String get rulesBirthdaySaved => 'जन्मदिन ऑफ़र सहेजा गया।';
+
+  @override
+  String get meBirthday => 'आपका जन्मदिन';
+
+  @override
+  String meBirthdayAdd(String salon) {
+    return '$salon से जन्मदिन का तोहफ़ा पाने के लिए जोड़ें';
+  }
+
+  @override
+  String meBirthdayExplain(String salon) {
+    return 'सिर्फ़ दिन और महीना - साल कभी नहीं। $salon इसे जन्मदिन की शुभकामना और ऑफ़र के लिए इस्तेमाल करता है, अगर आपने ऑफ़र के लिए हाँ कहा है। इसे कभी भी हटा सकते हैं।';
+  }
+
+  @override
+  String get meBirthdayMonth => 'महीना';
+
+  @override
+  String get meBirthdayDay => 'दिन';
+
+  @override
+  String get meBirthdaySave => 'सहेजें';
+
+  @override
+  String get meBirthdayRemove => 'हटाएँ';
+
+  @override
+  String get homeBirthdayTitle => 'जन्मदिन का महीना मुबारक!';
+
+  @override
+  String homeBirthdayBody(String offer) {
+    return '$offer - इसे काउंटर पर दिखाएँ।';
+  }
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -3603,4 +3664,66 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get nomineeInvalidPhone => '10 ankon ka mobile number likhein.';
+
+  @override
+  String get rulesBirthdayHeading => 'Janamdin';
+
+  @override
+  String get rulesBirthdayOffer => 'Janamdin offer';
+
+  @override
+  String get rulesBirthdayOff => 'Band';
+
+  @override
+  String get rulesBirthdayAsk =>
+      'Customers ko unke janamdin par kya milta hai?';
+
+  @override
+  String get rulesBirthdayNote =>
+      'Apne shabdon mein, jaise \"free head massage\". Jin customers ne apna janamdin joda hai aur offer ke liye haan kaha hai, unhein yeh us din milta hai, aur poore mahine dikhta hai. Aap ise counter par dete hain - unke wallet mein kuch nahin judta.';
+
+  @override
+  String get rulesBirthdayHint => 'free head massage';
+
+  @override
+  String get rulesBirthdaySave => 'Save karein';
+
+  @override
+  String get rulesBirthdayTurnOff => 'Band karein';
+
+  @override
+  String get rulesBirthdaySaved => 'Janamdin offer save ho gaya.';
+
+  @override
+  String get meBirthday => 'Aapka janamdin';
+
+  @override
+  String meBirthdayAdd(String salon) {
+    return '$salon se janamdin ka tohfa paane ke liye jodein';
+  }
+
+  @override
+  String meBirthdayExplain(String salon) {
+    return 'Sirf din aur mahina - saal kabhi nahin. $salon ise janamdin ki shubhkaamna aur offer ke liye istemaal karta hai, agar aapne offer ke liye haan kaha hai. Ise kabhi bhi hata sakte hain.';
+  }
+
+  @override
+  String get meBirthdayMonth => 'Mahina';
+
+  @override
+  String get meBirthdayDay => 'Din';
+
+  @override
+  String get meBirthdaySave => 'Save karein';
+
+  @override
+  String get meBirthdayRemove => 'Hatayein';
+
+  @override
+  String get homeBirthdayTitle => 'Janamdin ka mahina mubarak!';
+
+  @override
+  String homeBirthdayBody(String offer) {
+    return '$offer - ise counter par dikhayein.';
+  }
 }

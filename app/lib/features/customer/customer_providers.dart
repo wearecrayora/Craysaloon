@@ -17,6 +17,12 @@ final myProfileProvider = FutureProvider<CustomerProfile?>((ref) async {
   return api?.me();
 });
 
+/// The salon's birthday offer, in the customer's birthday month only (0113).
+final myBirthdayOfferProvider = FutureProvider<String?>((ref) async {
+  final api = ref.watch(customerApiProvider);
+  return api?.myBirthdayOffer();
+});
+
 final nextDueProvider = FutureProvider<NextDue?>((ref) async {
   final api = ref.watch(customerApiProvider);
   return api?.nextDue();

@@ -1805,4 +1805,65 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get nomineeInvalidPhone => 'Enter a 10-digit mobile number.';
+
+  @override
+  String get rulesBirthdayHeading => 'Birthday';
+
+  @override
+  String get rulesBirthdayOffer => 'Birthday offer';
+
+  @override
+  String get rulesBirthdayOff => 'Off';
+
+  @override
+  String get rulesBirthdayAsk => 'What do customers get on their birthday?';
+
+  @override
+  String get rulesBirthdayNote =>
+      'In your words, like \"a free head massage\". Customers who added their birthday and said yes to offers get it on the day, and see it all month. You honour it at the counter - nothing is added to their wallet.';
+
+  @override
+  String get rulesBirthdayHint => 'a free head massage';
+
+  @override
+  String get rulesBirthdaySave => 'Save';
+
+  @override
+  String get rulesBirthdayTurnOff => 'Turn off';
+
+  @override
+  String get rulesBirthdaySaved => 'Birthday offer saved.';
+
+  @override
+  String get meBirthday => 'Your birthday';
+
+  @override
+  String meBirthdayAdd(String salon) {
+    return 'Add it for a birthday treat from $salon';
+  }
+
+  @override
+  String meBirthdayExplain(String salon) {
+    return 'Only the day and month - never the year. $salon uses it for a birthday wish and offer, if you said yes to offers. Remove it any time.';
+  }
+
+  @override
+  String get meBirthdayMonth => 'Month';
+
+  @override
+  String get meBirthdayDay => 'Day';
+
+  @override
+  String get meBirthdaySave => 'Save';
+
+  @override
+  String get meBirthdayRemove => 'Remove';
+
+  @override
+  String get homeBirthdayTitle => 'Happy birthday month!';
+
+  @override
+  String homeBirthdayBody(String offer) {
+    return '$offer - show this at the counter.';
+  }
 }

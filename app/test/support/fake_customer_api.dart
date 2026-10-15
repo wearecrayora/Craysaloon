@@ -61,6 +61,24 @@ class FakeCustomerApi extends FakeCrayApi implements CustomerApi, SalonReads, Sa
   @override
   Future<CustomerProfile?> me() async => profile;
 
+  /// The salon's birthday offer, as the server would show it this month.
+  String? birthdayOffer;
+
+  @override
+  Future<String?> myBirthdayOffer() async => birthdayOffer;
+
+  @override
+  Future<void> setMyBirthday(int? month, int? day) async {
+    final p = profile ?? const CustomerProfile();
+    profile = CustomerProfile(
+      name: p.name,
+      phone: p.phone,
+      isMinor: p.isMinor,
+      birthdayMonth: month,
+      birthdayDay: day,
+    );
+  }
+
   @override
   Future<NextDue?> nextDue() async => due;
 

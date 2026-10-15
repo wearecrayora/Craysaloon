@@ -390,6 +390,26 @@ const NOMINEE_TEST = 'supabase/tests/privacy/nominee_test.sql';
 const NOMINEE_CANARY = `drop policy customer_scope on public.customer_nominees;`;
 const NOMINEE_MUST_FAIL = [/another customer of the same salon cannot see it/];
 
+// 0113: a birthday offer fires once a year because a CONSTRAINT says so.
+// Drop it (and the conflict target that leans on it) and the scan sends one
+// every minute of the birthday.
+const BIRTHDAY_TEST = 'supabase/tests/growth/birthday_test.sql';
+const BIRTHDAY_CANARY = `
+  alter table public.lifecycle_messages drop constraint lifecycle_messages_once;
+  do $canary$
+  declare
+    v_def text := pg_get_functiondef('app.queue_birthday_offers(uuid)'::regprocedure);
+    v_new text;
+  begin
+    v_new := replace(v_def, 'on conflict (salon_id, customer_id, kind, period) do nothing',
+                            'on conflict do nothing');
+    if v_new = v_def then raise exception 'birthday canary: the conflict target moved'; end if;
+    execute v_new;
+  end;
+  $canary$;
+`;
+const BIRTHDAY_MUST_FAIL = [/ONCE a year/];
+
 const BILLING_TEST = 'supabase/tests/billing/billing_test.sql';
 const GRACE_CANARY = `
   do $canary$
@@ -675,6 +695,12 @@ try {
       NOMINEE_TEST,
       NOMINEE_CANARY,
       NOMINEE_MUST_FAIL,
+    ),
+    await check(
+      'birthday / a birthday scan with no once-a-year constraint',
+      BIRTHDAY_TEST,
+      BIRTHDAY_CANARY,
+      BIRTHDAY_MUST_FAIL,
     ),
     await check(
       'billing / a salon_writable that ignores a lapsed subscription',

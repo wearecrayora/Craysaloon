@@ -3121,6 +3121,114 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Enter a 10-digit mobile number.'**
   String get nomineeInvalidPhone;
+
+  /// No description provided for @rulesBirthdayHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday'**
+  String get rulesBirthdayHeading;
+
+  /// No description provided for @rulesBirthdayOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday offer'**
+  String get rulesBirthdayOffer;
+
+  /// No description provided for @rulesBirthdayOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get rulesBirthdayOff;
+
+  /// No description provided for @rulesBirthdayAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'What do customers get on their birthday?'**
+  String get rulesBirthdayAsk;
+
+  /// No description provided for @rulesBirthdayNote.
+  ///
+  /// In en, this message translates to:
+  /// **'In your words, like \"a free head massage\". Customers who added their birthday and said yes to offers get it on the day, and see it all month. You honour it at the counter - nothing is added to their wallet.'**
+  String get rulesBirthdayNote;
+
+  /// No description provided for @rulesBirthdayHint.
+  ///
+  /// In en, this message translates to:
+  /// **'a free head massage'**
+  String get rulesBirthdayHint;
+
+  /// No description provided for @rulesBirthdaySave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get rulesBirthdaySave;
+
+  /// No description provided for @rulesBirthdayTurnOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off'**
+  String get rulesBirthdayTurnOff;
+
+  /// No description provided for @rulesBirthdaySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday offer saved.'**
+  String get rulesBirthdaySaved;
+
+  /// No description provided for @meBirthday.
+  ///
+  /// In en, this message translates to:
+  /// **'Your birthday'**
+  String get meBirthday;
+
+  /// No description provided for @meBirthdayAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add it for a birthday treat from {salon}'**
+  String meBirthdayAdd(String salon);
+
+  /// No description provided for @meBirthdayExplain.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the day and month - never the year. {salon} uses it for a birthday wish and offer, if you said yes to offers. Remove it any time.'**
+  String meBirthdayExplain(String salon);
+
+  /// No description provided for @meBirthdayMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get meBirthdayMonth;
+
+  /// No description provided for @meBirthdayDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get meBirthdayDay;
+
+  /// No description provided for @meBirthdaySave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get meBirthdaySave;
+
+  /// No description provided for @meBirthdayRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get meBirthdayRemove;
+
+  /// No description provided for @homeBirthdayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Happy birthday month!'**
+  String get homeBirthdayTitle;
+
+  /// No description provided for @homeBirthdayBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{offer} - show this at the counter.'**
+  String homeBirthdayBody(String offer);
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

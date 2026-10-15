@@ -406,6 +406,11 @@ class FakeAccount implements SalonAccountApi {
   final List<int> expirySet = [];
   CrayApiException? expiryError;
 
+  final birthdayOffers = <String?>[];
+
+  @override
+  Future<void> setBirthdayOffer(String? offer) async => birthdayOffers.add(offer);
+
   @override
   Future<void> setBonusExpiry(int days) async {
     if (expiryError != null) throw expiryError!;

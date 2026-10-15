@@ -42,6 +42,7 @@ void refreshServerReads(WidgetRef ref) {
     ..invalidate(staffLoginsProvider)
     // The customer's own picture of the salon.
     ..invalidate(myProfileProvider)
+    ..invalidate(myBirthdayOfferProvider)
     ..invalidate(nextDueProvider)
     ..invalidate(upcomingProvider)
     ..invalidate(bookingDetailProvider)

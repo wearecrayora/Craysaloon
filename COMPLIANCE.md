@@ -218,9 +218,15 @@ do not leave the phone. The join site sets no cookies and loads no third-party s
 
 ### Data collected, against need (audited 14 Oct 2026)
 
-`customers.birthday` and `anniversary` exist in the schema but **nothing collects them**: no screen
-asks, no feature reads them, and every row is empty. The privacy policy no longer says they are
-collected. They are erased with the identity, and should be dropped if no occasion offer is built.
+`customers.birthday` is collected since 15 Oct 2026 for the birthday offer (0113): **day and month
+only** (stored in the year 2000; the year is never asked), optional, added and removed by the customer
+alone, never for an under-18 (a trigger clears it for a minor whatever path writes it), and in the
+privacy policy. `anniversary` is still collected by nothing.
+
+**Column grants (0113).** `authenticated` held UPDATE and INSERT on every column of `customers`, and
+row policies never limit columns - a customer could rewrite their own loyalty points, status, identity
+columns or `is_minor`, and staff could flip a child to an adult. The grant is now UPDATE on `name` and
+`language` only; every other write is a server function. Asserted in `birthday_test.sql`.
 
 ---
 

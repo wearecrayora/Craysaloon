@@ -1520,5 +1520,44 @@
   "nomineeRelation": "How they are related to you (optional)",
   "nomineeSave": "Save",
   "nomineeNameRequired": "Enter their name.",
-  "nomineeInvalidPhone": "Enter a 10-digit mobile number."
+  "nomineeInvalidPhone": "Enter a 10-digit mobile number.",
+  "rulesBirthdayHeading": "Birthday",
+  "rulesBirthdayOffer": "Birthday offer",
+  "rulesBirthdayOff": "Off",
+  "rulesBirthdayAsk": "What do customers get on their birthday?",
+  "rulesBirthdayNote": "In your words, like \"a free head massage\". Customers who added their birthday and said yes to offers get it on the day, and see it all month. You honour it at the counter - nothing is added to their wallet.",
+  "rulesBirthdayHint": "a free head massage",
+  "rulesBirthdaySave": "Save",
+  "rulesBirthdayTurnOff": "Turn off",
+  "rulesBirthdaySaved": "Birthday offer saved.",
+  "meBirthday": "Your birthday",
+  "meBirthdayAdd": "Add it for a birthday treat from {salon}",
+  "@meBirthdayAdd": {
+    "placeholders": {
+      "salon": {
+        "type": "String"
+      }
+    }
+  },
+  "meBirthdayExplain": "Only the day and month - never the year. {salon} uses it for a birthday wish and offer, if you said yes to offers. Remove it any time.",
+  "@meBirthdayExplain": {
+    "placeholders": {
+      "salon": {
+        "type": "String"
+      }
+    }
+  },
+  "meBirthdayMonth": "Month",
+  "meBirthdayDay": "Day",
+  "meBirthdaySave": "Save",
+  "meBirthdayRemove": "Remove",
+  "homeBirthdayTitle": "Happy birthday month!",
+  "homeBirthdayBody": "{offer} - show this at the counter.",
+  "@homeBirthdayBody": {
+    "placeholders": {
+      "offer": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -55,6 +55,61 @@ void main() {
   bool enabled(WidgetTester tester, String label) =>
       tester.widget<FilledButton>(filled(label)).onPressed != null;
 
+  group('birthday (0113)', () {
+    Future<void> openMe(WidgetTester tester) async {
+      await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('Me')));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('a customer adds their birthday - the day and month, never the year',
+        (tester) async {
+      final api = FakeCustomerApi();
+      await pump(tester, api);
+      await openMe(tester);
+
+      expect(find.textContaining('Add it for a birthday treat'), findsOneWidget);
+      await tester.tap(find.text('Your birthday'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('never the year'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(DropdownButtonFormField<int>, 'Month'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('March').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(DropdownButtonFormField<int>, 'Day'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('16').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(api.profile?.birthdayMonth, 3);
+      expect(api.profile?.birthdayDay, 16);
+      expect(find.text('March 16'), findsOneWidget);
+    });
+
+    testWidgets('a child is never asked for a birthday', (tester) async {
+      final api = FakeCustomerApi()
+        ..profile = const CustomerProfile(name: 'Chotu', phone: '9812344821', isMinor: true);
+      await pump(tester, api);
+      await openMe(tester);
+      expect(find.text('Your birthday'), findsNothing);
+    });
+
+    testWidgets('in the birthday month, home shows what to claim at the counter',
+        (tester) async {
+      final api = FakeCustomerApi()..birthdayOffer = 'a free head massage';
+      await pump(tester, api);
+      expect(find.text('Happy birthday month!'), findsOneWidget);
+      expect(find.text('a free head massage - show this at the counter.'), findsOneWidget);
+    });
+
+    testWidgets('and in any other month, nothing', (tester) async {
+      await pump(tester, FakeCustomerApi());
+      expect(find.text('Happy birthday month!'), findsNothing);
+    });
+  });
+
   group('C1 home', () {
     testWidgets('greets by first name, and says when they are due', (tester) async {
       final api = FakeCustomerApi()
