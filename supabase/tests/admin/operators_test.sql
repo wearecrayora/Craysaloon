@@ -18,8 +18,10 @@ insert into public.platform_admins (id, email, name, is_super, active) values
   ('c0c0c0c0-aaaa-4000-8000-00000000000c', 'op2@crayora.test', 'Operator Two', false, true);
 
 -- The operator is signed in - the stolen-phone case.
-insert into auth.sessions (id, user_id, created_at, updated_at)
-values ('c0c0c0c0-5555-4000-8000-000000000001', 'c0c0c0c0-aaaa-4000-8000-00000000000b', now(), now());
+-- Only id and user_id: the auth schema differs between the hosted project and
+-- CI's stack (CI's sessions table has no updated_at).
+insert into auth.sessions (id, user_id)
+values ('c0c0c0c0-5555-4000-8000-000000000001', 'c0c0c0c0-aaaa-4000-8000-00000000000b');
 
 select throws_ok(
   $q$select app_admin.set_operator_active('c0c0c0c0-aaaa-4000-8000-00000000000c',
