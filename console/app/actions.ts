@@ -13,6 +13,7 @@ import { parseRupees } from '@/lib/money';
 import { scrub } from '@/lib/scrub';
 import {
   activateSalon,
+  activateSalonAnyway,
   provisionSalon,
   getJoinCode,
   lookupBinding,
@@ -198,6 +199,36 @@ export async function grievanceAction(_prev: ActionState, form: FormData): Promi
     revalidatePath(`/salon/${salonId}/privacy`);
     revalidatePath('/');
     return { ok: 'Privacy contact saved. It appears in the consent notice customers see before login.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+const SKIPPED_WORDS: Record<string, string> = {
+  setup_fee: 'the setup fee is not recorded',
+  privacy_contact: 'there is no privacy contact',
+  message_central: "OTPs go through Crayora's Message Central account until the salon's own is entered",
+};
+
+/** Super-admin only: activate before setup is complete, with a reason (0116). */
+export async function activateAnywayAction(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const admin = await requireAdmin();
+  if (!admin.isSuper) return { error: 'Only a super-admin can activate a salon before its setup is complete.' };
+  const salonId = String(form.get('salonId') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+  if (!reason) return { error: 'Say why it is being switched on early - it is the audit entry.' };
+  try {
+    const skipped = await activateSalonAnyway(admin.id, salonId, reason);
+    revalidatePath('/');
+    revalidatePath(`/salon/${salonId}`);
+    return {
+      ok: skipped.length === 0
+        ? 'Salon activated.'
+        : `Salon activated. Still to do: ${skipped.map((k) => SKIPPED_WORDS[k] ?? k).join('; ')}.`,
+    };
   } catch (e) {
     return { error: message(e) };
   }

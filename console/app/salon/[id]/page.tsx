@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ActivateAnyway } from './activate-anyway';
 import { notFound } from 'next/navigation';
 import { requireAdmin } from '@/server/auth';
 import { getSalon, getSetupFacts, type SetupFacts } from '@/server/admin-db';
@@ -213,6 +214,18 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           ))}
         </ol>
       </div>
+
+      {facts.status === 'setup' &&
+        (admin.isSuper ? (
+          <ActivateAnyway
+            salonId={id}
+            missing={list.filter((s) => !s.done && s.title !== 'Switched on' && s.title !== 'QR pack printed').map((s) => s.title)}
+          />
+        ) : (
+          <p className="hint">
+            A super-admin can activate this salon before its setup is complete, from this page.
+          </p>
+        ))}
 
       <div className="card">
         <h2 style={{ marginTop: 0 }}>How people get in</h2>

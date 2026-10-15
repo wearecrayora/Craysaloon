@@ -263,6 +263,10 @@ export function SalonRow({ salon, feeLabel }: { salon: Row; feeLabel: string }) 
                     </>
                   )}
                 </p>
+                <p className="hint" style={{ margin: '0 0 8px' }}>
+                  Setup not finished?{' '}
+                  <Link href={`/salon/${salon.id}`}>A super-admin can activate it anyway →</Link>
+                </p>
                 <label htmlFor={`r-${salon.id}`}>Reason (optional, recorded in the audit log)</label>
                 <input id={`r-${salon.id}`} name="reason" placeholder="Fee received in cash, receipt #1042" />
                 <div className="actions">

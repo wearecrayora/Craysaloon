@@ -259,7 +259,9 @@ no payment event, no timer, no side effect of saving a form.
 
 6.4 The setup fee is collected **offline**. The console records amount, date, reference and who
 marked it paid. There is no payment integration for it. A salon cannot be activated until the fee
-is `paid`, or `waived` with a reason (0087).
+is `paid`, or `waived` with a reason (0087) - **except** by a super-admin's "Activate anyway"
+(`app_admin.activate_salon_anyway`, 0116/0117): still a human act (§6.3), a reason is required, and
+the audit row lists every check it skipped (setup fee, privacy contact, own Message Central).
 
 6.4a **A lapsed subscription is read-only, computed from dates** (0087). `salon_writable()` requires
 `billing_open()`; do not replace it with a job that flips `salons.status`, and do not add a write
@@ -652,7 +654,8 @@ A change is not done until all of these hold.
       of them passed against a database that could not have provisioned a single salon
 - [ ] **Admin plane test** — no `app_admin` function is reachable by a tenant role; every mutating
       one writes `audit_log` in the same transaction (§6.5); provisioning is atomic (§6.2);
-      `activate_salon` is the only door to `active` (§6.3); nothing reads a credential back
+      `activate_salon` - and, for a super-admin with a reason, `activate_salon_anyway` - are the
+      only doors to `active` (§6.3); nothing reads a credential back
 - [ ] **Negative controls** — an unprotected tenant table makes the leak test go red; an
       `app_admin` function that mutates without auditing, and an owner-callable function that
       changes a payment key (8.12), each make the admin-plane gate go red

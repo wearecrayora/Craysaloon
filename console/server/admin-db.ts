@@ -264,6 +264,22 @@ export async function activateSalon(actorAdminId: string, salonId: string, reaso
   await sql`select app_admin.activate_salon(${actorAdminId}::uuid, ${salonId}::uuid, ${reason})`;
 }
 
+/**
+ * Super-admin only: switch a salon on before its setup is complete (0116/0117).
+ * A reason is required; the audit row lists what was skipped, and so does the
+ * return value.
+ */
+export async function activateSalonAnyway(
+  actorAdminId: string,
+  salonId: string,
+  reason: string,
+): Promise<string[]> {
+  const sql = client();
+  const [row] = await sql<{ r: { skipped: string[] } }[]>`
+    select app_admin.activate_salon_anyway(${actorAdminId}::uuid, ${salonId}::uuid, ${reason}) as r`;
+  return row?.r?.skipped ?? [];
+}
+
 /** RULES 6.9 - status changes, never deletion. Cannot reach `active`. */
 export async function setSalonStatus(
   actorAdminId: string,
