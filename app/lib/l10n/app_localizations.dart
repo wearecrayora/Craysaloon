@@ -3049,6 +3049,78 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Open-source licences'**
   String get linkLicences;
+
+  /// No description provided for @nomineeHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone to act for you'**
+  String get nomineeHeading;
+
+  /// No description provided for @nomineeExplain.
+  ///
+  /// In en, this message translates to:
+  /// **'If you die or cannot act for yourself, the person you name here can use your rights over your data - see it, correct it or have it deleted.'**
+  String get nomineeExplain;
+
+  /// No description provided for @nomineeNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody named yet.'**
+  String get nomineeNone;
+
+  /// No description provided for @nomineeAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Name someone'**
+  String get nomineeAdd;
+
+  /// No description provided for @nomineeChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get nomineeChange;
+
+  /// No description provided for @nomineeRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get nomineeRemove;
+
+  /// No description provided for @nomineeName.
+  ///
+  /// In en, this message translates to:
+  /// **'Their full name'**
+  String get nomineeName;
+
+  /// No description provided for @nomineePhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Their mobile number'**
+  String get nomineePhone;
+
+  /// No description provided for @nomineeRelation.
+  ///
+  /// In en, this message translates to:
+  /// **'How they are related to you (optional)'**
+  String get nomineeRelation;
+
+  /// No description provided for @nomineeSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get nomineeSave;
+
+  /// No description provided for @nomineeNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter their name.'**
+  String get nomineeNameRequired;
+
+  /// No description provided for @nomineeInvalidPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a 10-digit mobile number.'**
+  String get nomineeInvalidPhone;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

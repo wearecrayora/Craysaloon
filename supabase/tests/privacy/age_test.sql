@@ -4,11 +4,11 @@
 --
 --   * an adult is recorded as an adult; a child is never recorded without a
 --     named parent or guardian who confirmed
---   * a child gets no marketing - withdrawn at declaration, and refused from
---     every later path, including the customer's own toggle
+--   * a child gets no marketing and no photos - withdrawn at declaration, and
+--     refused from every later path, including the customer's own toggle
 --   * erasure takes the guardian's name with the rest of the identity
 
-select plan(9);
+select plan(10);
 
 insert into auth.users (id) values
   ('8b8b8b8b-aaaa-4000-8000-00000000000a'),
@@ -56,8 +56,8 @@ select is(
 select results_eq(
   $q$select purpose::text, granted from public.consents
       where customer_id = '8b8b8b8b-1111-4000-8000-00000000000b' order by purpose$q$,
-  $q$values ('promotional', false), ('whatsapp', false)$q$,
-  'and the child''s marketing consent is withdrawn on the record');
+  $q$values ('photos', false), ('promotional', false), ('whatsapp', false)$q$,
+  'and the child''s marketing and photo consent is withdrawn on the record');
 
 select throws_ok(
   $q$insert into public.consents (salon_id, customer_id, purpose, granted, source)
@@ -65,6 +65,13 @@ select throws_ok(
              'promotional', true, 'app')$q$,
   '42501', NULL,
   'no path can grant a child offers or reminders - not even a direct insert');
+
+select throws_ok(
+  $q$insert into public.consents (salon_id, customer_id, purpose, granted, source)
+     values ('8b8b8b8b-0000-4000-8000-000000000001', '8b8b8b8b-1111-4000-8000-00000000000b',
+             'photos', true, 'app')$q$,
+  '42501', NULL,
+  'and no path can photograph a child either (0112)');
 
 select lives_ok(
   $q$insert into public.consents (salon_id, customer_id, purpose, granted, source)

@@ -1768,4 +1768,41 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get linkLicences => 'Open-source licences';
+
+  @override
+  String get nomineeHeading => 'Someone to act for you';
+
+  @override
+  String get nomineeExplain =>
+      'If you die or cannot act for yourself, the person you name here can use your rights over your data - see it, correct it or have it deleted.';
+
+  @override
+  String get nomineeNone => 'Nobody named yet.';
+
+  @override
+  String get nomineeAdd => 'Name someone';
+
+  @override
+  String get nomineeChange => 'Change';
+
+  @override
+  String get nomineeRemove => 'Remove';
+
+  @override
+  String get nomineeName => 'Their full name';
+
+  @override
+  String get nomineePhone => 'Their mobile number';
+
+  @override
+  String get nomineeRelation => 'How they are related to you (optional)';
+
+  @override
+  String get nomineeSave => 'Save';
+
+  @override
+  String get nomineeNameRequired => 'Enter their name.';
+
+  @override
+  String get nomineeInvalidPhone => 'Enter a 10-digit mobile number.';
 }

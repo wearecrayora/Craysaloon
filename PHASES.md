@@ -210,8 +210,9 @@ showing how much work is waiting; **walk-in (O2)** with add-ons that start untic
 come from the same function the database accepts; and **"Needs attention" (O3)** where a refusal
 lands with a reason a person can act on, a one-tap retry that reuses the same action id, and a
 discard that is always deliberate. Gates: `app/test/outbox_test.dart` (13) and
-`day_screen_test.dart` (8). **Still to build:** connectivity-triggered draining (today the queue
-drains when the day view opens or acts) and the reminder engine's side of visits (M8).
+`day_screen_test.dart` (8). ~~Still to build~~ **Built:** the queue drains on its own when the
+connection returns (`AutoSync`, 15 Oct 2026: on resume, and every 45 s while work waits), and the
+reminder engine's side of visits (M8).
 
 ### Phase 3 — The loop closes *(M7–M10)*
 
@@ -409,9 +410,9 @@ from the server and never guessed), add-on-to-service links in the console (with
 (erasure could be requested and never carried out), and correction on the binding desk (ledger
 caller 5 had no screen). In CI, with a canary.
 
-**Still open:** customer bind *rate* needs durable join-attempt counting (join intents are deleted
-at login); the owner's daily summary push (owner devices register since 0108). ~~O10 bonus expiry~~
-is built (the owner sets it on Rules).
+~~**Still open:**~~ all closed. Join attempts are counted durably in `rate_limit_counters`
+(`start_join`'s per-salon and per-phone buckets) and binds in `daily_salon_metrics.binds`; the
+owner's daily summary is pushed at 9 pm salon time (0112); O10 bonus expiry is built.
 
 **Added 2026-09-29 - start code and the customer paying their own bill** (PRD §9.2a; 0083-0086;
 `booking/start_and_pay_test.sql`, 34 assertions + two canaries; 16 app tests). Revised the same
@@ -447,8 +448,8 @@ a lapsed salon's **own people can still log in** - the login check moved to `sal
 a first join needs the salon writable. Activation now refuses an unpaid setup fee, which the
 console could not record at all before this milestone.
 
-**Still open:** billing notices are not yet pushed to the owner - owner devices register since 0108,
-so this is now a trigger, not a channel · plan
+**Closed 15 Oct 2026:** billing notices are pushed to the owner (0112) · a mistaken subscription
+payment is reversed from the console, by a new row with a reason (0112) · plan
 tiers are PRD §21 Q-A: every plan carries every feature until the pilot prices them · a mistaken
 subscription payment has no reversal action yet · the purge itself is M12 · the full O12 screen
 waits for the designs.
@@ -486,8 +487,10 @@ any run of six digits - tested), beside the app's.
 **Edge Function alerts (13 Oct 2026):** every function's alerts reach Sentry tagged by area (otp,
 payments, dispatch), and an exception nobody caught is reported as `<area>_crashed` by the guard
 in `_shared/runtime.ts` - previously it reached only the function log.
-**Still open:** the shared `trace_id` across surfaces is not built · nomination (s.14) and the children's-details
-rule remain · the breach runbook is written, not rehearsed.
+**Closed 15 Oct 2026:** a shared trace id - the app sends `x-trace-id` on every function call,
+the Edge Functions log it, tag alerts with it and echo it, the cron Worker labels its calls, and the
+console shows a short ref on an unexpected error · nomination (s.14) and the children's-details rule
+(0112). **Still open:** the breach runbook is written, not rehearsed.
 
 ### Phase 5 — Ship *(M13)*
 

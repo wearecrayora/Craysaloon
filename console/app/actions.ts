@@ -24,6 +24,7 @@ import {
   recordIntegrationTest,
   recordSetupFee,
   recordSubscriptionPayment,
+  reverseSubscriptionPayment,
   recordExportOffered,
   recordCreditSettlement,
   purgeSalon,
@@ -120,9 +121,12 @@ function message(e: unknown): string {
   // The message and SQLSTATE go to Workers Logs; never `detail`, which can
   // carry the values that were submitted (a phone, an email).
   const code = (e as { code?: unknown } | null)?.code;
+  // A short reference on screen and in the log line, so "it said ref 3f9a1c2e"
+  // finds the cause in Workers Logs (PHASES M12 trace id).
+  const ref = crypto.randomUUID().slice(0, 8);
   // Scrubbed too: our own functions sometimes name the value they refused.
-  console.error(`console action failed${typeof code === 'string' ? ` [${code}]` : ''}: ${scrub(raw.slice(0, 500))}`);
-  return 'Something went wrong. The action was not applied.';
+  console.error(`console action failed [ref ${ref}]${typeof code === 'string' ? ` [${code}]` : ''}: ${scrub(raw.slice(0, 500))}`);
+  return `Something went wrong (ref ${ref}). The action was not applied.`;
 }
 
 export async function provisionAction(
@@ -306,6 +310,27 @@ export async function subscriptionPaymentAction(
     revalidatePath(`/salon/${salonId}/billing`);
     revalidatePath('/metrics');
     return { ok: 'Payment recorded.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function reversePaymentAction(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const paymentId = Number(form.get('paymentId') ?? 0);
+  const reason = String(form.get('reason') ?? '').trim();
+  if (!Number.isInteger(paymentId) || paymentId <= 0) return { error: 'No payment chosen.' };
+  if (!reason) return { error: 'Say why it is being reversed - it is the audit entry.' };
+
+  try {
+    await reverseSubscriptionPayment(admin.id, paymentId, reason);
+    revalidatePath(`/salon/${salonId}/billing`);
+    revalidatePath('/metrics');
+    return { ok: 'Reversed. The months it added are off the paid-until date.' };
   } catch (e) {
     return { error: message(e) };
   }

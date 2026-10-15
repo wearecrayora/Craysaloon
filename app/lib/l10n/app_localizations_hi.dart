@@ -1758,6 +1758,43 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get linkLicences => 'ओपन-सोर्स लाइसेंस';
+
+  @override
+  String get nomineeHeading => 'आपकी ओर से काम करने वाला व्यक्ति';
+
+  @override
+  String get nomineeExplain =>
+      'अगर आपकी मृत्यु हो जाए या आप ख़ुद कुछ न कर सकें, तो यहाँ जिसका नाम आप देंगे, वह आपके डेटा पर आपके अधिकारों का इस्तेमाल कर सकता है - उसे देखना, सुधारना या मिटवाना।';
+
+  @override
+  String get nomineeNone => 'अभी किसी का नाम नहीं दिया।';
+
+  @override
+  String get nomineeAdd => 'किसी का नाम दें';
+
+  @override
+  String get nomineeChange => 'बदलें';
+
+  @override
+  String get nomineeRemove => 'हटाएँ';
+
+  @override
+  String get nomineeName => 'उनका पूरा नाम';
+
+  @override
+  String get nomineePhone => 'उनका मोबाइल नंबर';
+
+  @override
+  String get nomineeRelation => 'आपसे उनका रिश्ता (वैकल्पिक)';
+
+  @override
+  String get nomineeSave => 'सहेजें';
+
+  @override
+  String get nomineeNameRequired => 'उनका नाम लिखें।';
+
+  @override
+  String get nomineeInvalidPhone => '10 अंकों का मोबाइल नंबर लिखें।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -3529,4 +3566,41 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get linkLicences => 'Open-source licence';
+
+  @override
+  String get nomineeHeading => 'Aapki or se kaam karne wala vyakti';
+
+  @override
+  String get nomineeExplain =>
+      'Agar aapki mrityu ho jaaye ya aap khud kuch na kar sakein, to yahan jiska naam aap denge, woh aapke data par aapke adhikaron ka istemaal kar sakta hai - use dekhna, sudhaarna ya mitwana.';
+
+  @override
+  String get nomineeNone => 'Abhi kisi ka naam nahin diya.';
+
+  @override
+  String get nomineeAdd => 'Kisi ka naam dein';
+
+  @override
+  String get nomineeChange => 'Badlein';
+
+  @override
+  String get nomineeRemove => 'Hatayein';
+
+  @override
+  String get nomineeName => 'Unka poora naam';
+
+  @override
+  String get nomineePhone => 'Unka mobile number';
+
+  @override
+  String get nomineeRelation => 'Aapse unka rishta (vaikalpik)';
+
+  @override
+  String get nomineeSave => 'Save karein';
+
+  @override
+  String get nomineeNameRequired => 'Unka naam likhein.';
+
+  @override
+  String get nomineeInvalidPhone => '10 ankon ka mobile number likhein.';
 }

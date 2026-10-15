@@ -10,6 +10,7 @@ import {
 } from '@/server/admin-db';
 import { formatPaise } from '@/lib/money';
 import { BillingForms } from './forms';
+import { ReversePayment } from './reverse';
 import { GstForm } from './gst';
 import { Offboarding } from './offboarding';
 import { ConsoleShell } from '@/app/shell';
@@ -161,6 +162,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                   <th>Covers</th>
                   <th>Reference</th>
                   <th>Recorded by</th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
@@ -172,8 +174,20 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                       {p.months} month{p.months === 1 ? '' : 's'}: {fmt(p.period_start)} –{' '}
                       {fmt(p.period_end)}
                     </td>
-                    <td className="code">{p.reference}</td>
+                    <td className="code">
+                      {p.reference}
+                      {p.reason && <div className="hint" style={{ margin: 0 }}>{p.reason}</div>}
+                    </td>
                     <td>{p.recorded_by ?? '—'}</td>
+                    <td>
+                      {p.reverses_id !== null ? (
+                        <span className="pill">Reversal</span>
+                      ) : p.reversed ? (
+                        <span className="pill">Reversed</span>
+                      ) : (
+                        <ReversePayment salonId={id} paymentId={p.id} />
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -181,9 +195,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           </div>
         )}
         <p className="hint">
-          Payments are append-only and cannot be edited. There is no reversal action yet, so check
-          the amount and the months before saving: a payment recorded twice moves the paid-until
-          date twice.
+          Payments are append-only and cannot be edited. A payment recorded by mistake is reversed:
+          a new row, with a reason, that takes its months back off the paid-until date. The original
+          stays on the record.
         </p>
       </ConsoleShell>
     </>

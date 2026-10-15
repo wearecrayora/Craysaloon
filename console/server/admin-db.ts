@@ -329,6 +329,10 @@ export type BillingOverview = {
     reference: string;
     paid_on: string;
     recorded_by: string | null;
+    /** A reversal row points at the payment it undoes (0112). */
+    reverses_id: number | null;
+    reason: string | null;
+    reversed: boolean;
   }[];
   notices: { kind: string; due_at: string; cycle_renews_at: string }[];
   features: Record<Feature, { plan: boolean; override: boolean | null; effective: boolean }>;
@@ -372,6 +376,21 @@ export async function recordSubscriptionPayment(
   await sql`
     select app_admin.record_subscription_payment(${actorAdminId}::uuid, ${salonId}::uuid,
       ${amountPaise}::bigint, ${months}::int, ${reference}, ${paidOn}::date)`;
+}
+
+/**
+ * A payment recorded by mistake is reversed by a NEW row - the table is
+ * append-only - with a reason, audited, once per payment (0112).
+ */
+export async function reverseSubscriptionPayment(
+  actorAdminId: string,
+  paymentId: number,
+  reason: string,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.reverse_subscription_payment(${actorAdminId}::uuid, ${paymentId}::bigint,
+      ${reason})`;
 }
 
 /** A comp: time given away, so a reason is required and audited. */

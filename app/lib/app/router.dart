@@ -12,6 +12,7 @@ import '../features/customer/me_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/customers/customers_screen.dart';
 import '../features/day/attention_screen.dart';
+import '../features/day/auto_sync.dart';
 import '../features/day/day_screen.dart';
 import '../features/day/walk_in_screen.dart';
 import '../features/join/deep_link_listener.dart';
@@ -271,7 +272,8 @@ class OwnerShell extends ConsumerWidget {
       child: Scaffold(
         // The salon's own people get push too (0108): a customer's booking,
         // cancellation, counter payment or online payment.
-        body: StaffPush(child: child),
+        // And what was done offline is sent when the connection comes back.
+        body: StaffPush(child: AutoSync(child: child)),
         bottomNavigationBar: NavigationBar(
           selectedIndex: index < 0 ? 0 : index,
           onDestinationSelected: (i) => context.go(tabs[i].path),

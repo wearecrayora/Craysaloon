@@ -271,8 +271,8 @@ WhatsApp are unaffected — and push is the preferred channel anyway (RULES 12).
 | 2 | ~~**"Your data" screen**~~ | **Done.** `/your-data`, one tap from the customer's home. 13 widget tests assert the entitlements, including that a failed read is never shown as "consent off" | Done |
 | 3 | **Breach runbook** | **Written** (`RUNBOOK-BREACH.md`): three clocks, containment by what leaked, who says what to whom, named owner. **Not yet rehearsed** - that is the remaining half, and it is what turns it from a document into a capability | Rehearsal owed |
 | 4 | ~~**Grievance contact per salon**~~ | **Done** (0053/0055 + console). The *app* half — showing it — is part of item 1 | Done |
-| 5 | Nomination (s.14) | Statutory, low volume | M12 |
-| 6 | Children's-details rule: no DOB or photos for a minor, and a consent purpose if notes are kept | s.9 applies to a note as much as to a profile | M12 |
+| 5 | ~~Nomination (s.14)~~ | **Done (0112).** Your data -> Someone to act for you: the customer names, changes or removes a nominee; the salon can read it; it is in the copy of their data and erased with their identity. Gate: `nominee_test.sql` + control | Done |
+| 6 | ~~Children's-details rule~~ | **Done.** No date of birth is ever asked (only 18+ / under 18, 0110); photos consent is refused for a minor from every path (0112). No screen writes free-text notes, so the notes half applies only if one is ever built | Done |
 | 7 | ~~R2 bucket pinned to India/APAC at creation~~ | **Done.** Both buckets (`craysalon-assets`, `craysalon-brand`) report location APAC (checked 14 Oct 2026) | Done |
 | 7b | Fill the privacy policy's placeholders, and have a lawyer read it | A published policy naming nobody is evidence the obligation was noticed and skipped | Before first real salon |
 | 7c | ~~Hindi translation of the policy~~ | **Done** - and of every public page (14 Oct 2026). Hinglish readers get the English pages, as the app decides | Done |

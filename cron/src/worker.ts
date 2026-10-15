@@ -60,7 +60,12 @@ export default {
       mine.map(async (salon) => {
         const res = await fetch(`${env.SUPABASE_URL}/functions/v1/dispatch-notifications`, {
           method: 'POST',
-          headers: { Authorization: auth.Authorization, 'Content-Type': 'application/json' },
+          headers: {
+            Authorization: auth.Authorization,
+            'Content-Type': 'application/json',
+            // Which tick, which salon - the dispatcher's logs carry it.
+            'x-trace-id': `cron-${controller.scheduledTime}-${salon.slice(0, 8)}`,
+          },
           body: JSON.stringify({ salon_id: salon, limit: BATCH }),
         });
         const text = await res.text();

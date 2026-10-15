@@ -373,7 +373,7 @@ const STAFF_ACTIVE_CANARY = `
     v_def text;
     v_new text;
   begin
-    v_def := pg_get_functiondef('app.notify_staff(uuid,text,text,jsonb)'::regprocedure);
+    v_def := pg_get_functiondef('app.notify_staff(uuid,text,text,jsonb,text[])'::regprocedure);
     v_new := replace(v_def, E'and u.active
 ', E'and true
 ');
@@ -383,6 +383,12 @@ const STAFF_ACTIVE_CANARY = `
   $canary$;
 `;
 const STAFF_ACTIVE_MUST_FAIL = [/never a login the owner has switched off/];
+
+// 0112: a nominee is the customer's own. Drop the restrictive policy and
+// every customer of the salon can read every other customer's nominee.
+const NOMINEE_TEST = 'supabase/tests/privacy/nominee_test.sql';
+const NOMINEE_CANARY = `drop policy customer_scope on public.customer_nominees;`;
+const NOMINEE_MUST_FAIL = [/another customer of the same salon cannot see it/];
 
 const BILLING_TEST = 'supabase/tests/billing/billing_test.sql';
 const GRACE_CANARY = `
@@ -663,6 +669,12 @@ try {
       STAFF_PUSH_TEST,
       STAFF_ACTIVE_CANARY,
       STAFF_ACTIVE_MUST_FAIL,
+    ),
+    await check(
+      "nominee / a nominee table any customer of the salon can read",
+      NOMINEE_TEST,
+      NOMINEE_CANARY,
+      NOMINEE_MUST_FAIL,
     ),
     await check(
       'billing / a salon_writable that ignores a lapsed subscription',

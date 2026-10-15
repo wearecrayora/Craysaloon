@@ -15,7 +15,7 @@
 --   * the wallet receipt is actually sent when a top-up is captured
 --   * staff messages never escalate
 
-select plan(23);
+select plan(29);
 
 insert into auth.users (id) values
   ('7a7a7a7a-aaaa-4000-8000-00000000000a'),   -- Asha, a customer
@@ -246,5 +246,67 @@ reset role;
 select is(app.next_channel('7a7a7a7a-0000-4000-8000-000000000001', 'transactional', '{push}'),
   null::public.message_channel,
   'push is the only channel while the paid fallback is off (0108)');
+
+-- ---------------------------------------------------------------------------
+-- 0112: billing notices and the daily summary
+-- ---------------------------------------------------------------------------
+
+reset role;
+select set_config('request.jwt.claims', '{}', true);
+
+-- A billing notice is the OWNER's business: not the stylist's.
+insert into public.billing_notices (salon_id, kind, cycle_renews_at, due_at)
+values ('7a7a7a7a-0000-4000-8000-000000000001', 'grace_started', now(), now());
+
+select results_eq(
+  $q$select user_id from public.notifications where purpose = 'staff_billing_grace_started'$q$,
+  $q$values ('7a7a7a7a-2222-4000-8000-0000000000a1'::uuid)$q$,
+  'a billing notice reaches the owner''s phone - and only the owner''s');
+
+-- The daily summary, by the salon's own clock. Put the salon in a timezone where
+-- it is not yet 9 pm, then in one where it is past it, so the test does not
+-- depend on when it runs.
+update public.salons set timezone = (
+  select name from pg_timezone_names
+   where name like '%/%' and extract(hour from now() at time zone name) between 6 and 18
+   order by name limit 1)
+ where id = '7a7a7a7a-0000-4000-8000-000000000001';
+
+insert into public.daily_salon_metrics (salon_id, day, revenue_paise, completed)
+values ('7a7a7a7a-0000-4000-8000-000000000001',
+        app.salon_day('7a7a7a7a-0000-4000-8000-000000000001', now()), 150000, 3)
+on conflict (salon_id, day) do update set revenue_paise = 150000, completed = 3;
+
+select is((app.queue_daily_summary('7a7a7a7a-0000-4000-8000-000000000001') ->> 'queued')::int, 0,
+  'no summary before 9 pm in the salon''s own time');
+
+update public.salons set timezone = (
+  select name from pg_timezone_names
+   where name like '%/%' and extract(hour from now() at time zone name) between 21 and 23
+   order by name limit 1)
+ where id = '7a7a7a7a-0000-4000-8000-000000000001';
+
+insert into public.daily_salon_metrics (salon_id, day, revenue_paise, completed)
+values ('7a7a7a7a-0000-4000-8000-000000000001',
+        app.salon_day('7a7a7a7a-0000-4000-8000-000000000001', now()), 150000, 3)
+on conflict (salon_id, day) do update set revenue_paise = 150000, completed = 3;
+
+select is((app.queue_daily_summary('7a7a7a7a-0000-4000-8000-000000000001') ->> 'queued')::int, 1,
+  'after 9 pm the day is summed up - for the owner (the manager has no device)');
+
+select is((app.queue_daily_summary('7a7a7a7a-0000-4000-8000-000000000001') ->> 'queued')::int, 0,
+  'once a day: the next minute finds it already sent');
+
+select is(
+  (select count(*)::int from public.notifications
+    where purpose = 'staff_daily_summary' and user_id = '7a7a7a7a-2222-4000-8000-0000000000a3'),
+  0,
+  'the takings go to the owner and managers, not to every stylist');
+
+select is(
+  (select app.render_template(salon_id, template_key, 'en', 'push', params) from public.notifications
+    where purpose = 'staff_daily_summary'),
+  'Push Salon: today - 3 visits done, ₹1,500 billed.',
+  'and it reads as a sentence, in rupees with Indian grouping');
 
 select * from finish();

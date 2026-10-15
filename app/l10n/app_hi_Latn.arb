@@ -491,5 +491,17 @@
   "meLegalHeading": "Niyam aur neetiyan",
   "consoleOnlyMessage": "Yeh Crayora operator khaata hai. Salon console mein sambhale jaate hain.",
   "consentMinorLocked": "18 se kam umar ke liye uplabdh nahin",
-  "linkLicences": "Open-source licence"
+  "linkLicences": "Open-source licence",
+  "nomineeHeading": "Aapki or se kaam karne wala vyakti",
+  "nomineeExplain": "Agar aapki mrityu ho jaaye ya aap khud kuch na kar sakein, to yahan jiska naam aap denge, woh aapke data par aapke adhikaron ka istemaal kar sakta hai - use dekhna, sudhaarna ya mitwana.",
+  "nomineeNone": "Abhi kisi ka naam nahin diya.",
+  "nomineeAdd": "Kisi ka naam dein",
+  "nomineeChange": "Badlein",
+  "nomineeRemove": "Hatayein",
+  "nomineeName": "Unka poora naam",
+  "nomineePhone": "Unka mobile number",
+  "nomineeRelation": "Aapse unka rishta (vaikalpik)",
+  "nomineeSave": "Save karein",
+  "nomineeNameRequired": "Unka naam likhein.",
+  "nomineeInvalidPhone": "10 ankon ka mobile number likhein."
 }

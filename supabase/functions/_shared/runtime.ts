@@ -1,7 +1,22 @@
 // Shared plumbing for the Edge Functions: the service-role client, the
 // customer's address, JSON responses, alerting, and the crash guard.
 
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { createClient, type SupabaseClient } from 'jsr:@supabase/supabase-js@2';
+
+/**
+ * The request's trace id (PHASES M12, 15 Oct 2026). The app sends one with
+ * every call (`x-trace-id`); a caller that does not gets one made here. It is
+ * on every alert and log line this request writes, and goes back on the
+ * response - so a crash report in the app, a function log line and a Sentry
+ * alert can be matched to the same tap.
+ */
+const traceStore = new AsyncLocalStorage<string>();
+const TRACE = /^[A-Za-z0-9-]{8,64}$/;
+
+export function currentTrace(): string | null {
+  return traceStore.getStore() ?? null;
+}
 
 /**
  * The service-role client. Supabase injects SUPABASE_URL and a legacy
@@ -63,7 +78,8 @@ function areaOf(event: string): string {
  */
 export async function alert(event: string, extra: Record<string, string | number | null> = {}) {
   // Always visible in the function logs, even with no DSN configured.
-  console.error(JSON.stringify({ alert: event, ...extra }));
+  const trace = currentTrace();
+  console.error(JSON.stringify({ alert: event, trace_id: trace, ...extra }));
 
   const dsn = Deno.env.get('SENTRY_DSN');
   if (!dsn) return;
@@ -81,7 +97,7 @@ export async function alert(event: string, extra: Record<string, string | number
       platform: 'javascript',
       logger: area,
       message: { formatted: event },
-      tags: { area, event },
+      tags: { area, event, ...(trace ? { trace_id: trace } : {}) },
       extra,
       timestamp: Date.now() / 1000,
     });
@@ -108,12 +124,23 @@ export async function alert(event: string, extra: Record<string, string | number
  */
 export function serve(area: string, fn: string, handler: (req: Request) => Promise<Response>) {
   Deno.serve(async (req) => {
-    try {
-      return await handler(req);
-    } catch (e) {
-      console.error(`${fn} crashed:`, e);
-      await alert(`${area}_crashed`, { function: fn, error: e instanceof Error ? e.name : typeof e });
-      return json(500, { error: 'internal' });
-    }
+    const sent = req.headers.get('x-trace-id') ?? '';
+    const trace = TRACE.test(sent) ? sent : crypto.randomUUID();
+    return await traceStore.run(trace, async () => {
+      let res: Response;
+      try {
+        res = await handler(req);
+      } catch (e) {
+        console.error(`${fn} crashed [${trace}]:`, e);
+        await alert(`${area}_crashed`, { function: fn, error: e instanceof Error ? e.name : typeof e });
+        res = json(500, { error: 'internal' });
+      }
+      try {
+        res.headers.set('x-trace-id', trace);
+      } catch {
+        // An immutable response (a pass-through) keeps its headers; the log has the id.
+      }
+      return res;
+    });
   });
 }

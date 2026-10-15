@@ -1508,5 +1508,17 @@
   "meLegalHeading": "The fine print",
   "consoleOnlyMessage": "This account is a Crayora operator account. Salons are managed in the console.",
   "consentMinorLocked": "Not available under 18",
-  "linkLicences": "Open-source licences"
+  "linkLicences": "Open-source licences",
+  "nomineeHeading": "Someone to act for you",
+  "nomineeExplain": "If you die or cannot act for yourself, the person you name here can use your rights over your data - see it, correct it or have it deleted.",
+  "nomineeNone": "Nobody named yet.",
+  "nomineeAdd": "Name someone",
+  "nomineeChange": "Change",
+  "nomineeRemove": "Remove",
+  "nomineeName": "Their full name",
+  "nomineePhone": "Their mobile number",
+  "nomineeRelation": "How they are related to you (optional)",
+  "nomineeSave": "Save",
+  "nomineeNameRequired": "Enter their name.",
+  "nomineeInvalidPhone": "Enter a 10-digit mobile number."
 }

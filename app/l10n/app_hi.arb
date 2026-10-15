@@ -491,5 +491,17 @@
   "meLegalHeading": "नियम और नीतियाँ",
   "consoleOnlyMessage": "यह Crayora ऑपरेटर खाता है। सैलून कंसोल में संभाले जाते हैं।",
   "consentMinorLocked": "18 से कम उम्र के लिए उपलब्ध नहीं",
-  "linkLicences": "ओपन-सोर्स लाइसेंस"
+  "linkLicences": "ओपन-सोर्स लाइसेंस",
+  "nomineeHeading": "आपकी ओर से काम करने वाला व्यक्ति",
+  "nomineeExplain": "अगर आपकी मृत्यु हो जाए या आप ख़ुद कुछ न कर सकें, तो यहाँ जिसका नाम आप देंगे, वह आपके डेटा पर आपके अधिकारों का इस्तेमाल कर सकता है - उसे देखना, सुधारना या मिटवाना।",
+  "nomineeNone": "अभी किसी का नाम नहीं दिया।",
+  "nomineeAdd": "किसी का नाम दें",
+  "nomineeChange": "बदलें",
+  "nomineeRemove": "हटाएँ",
+  "nomineeName": "उनका पूरा नाम",
+  "nomineePhone": "उनका मोबाइल नंबर",
+  "nomineeRelation": "आपसे उनका रिश्ता (वैकल्पिक)",
+  "nomineeSave": "सहेजें",
+  "nomineeNameRequired": "उनका नाम लिखें।",
+  "nomineeInvalidPhone": "10 अंकों का मोबाइल नंबर लिखें।"
 }

@@ -31,6 +31,7 @@ import 'salon_home_test.dart' show FakeNotifications, FakeShortcut;
 import 'logins_screen_test.dart' show FakeLogins;
 import 'support/fake_cray_api.dart';
 import 'support/fake_customer_api.dart';
+import 'support/offline_api.dart';
 import 'wallet_test.dart' show FakeWalletApi;
 
 /// IMPLEMENTATION 7, for the screens built in the redesign, on a small phone:
@@ -423,6 +424,9 @@ void main() {
       join.confirmSalon();
       await tester.pumpAndSettle();
       await check(tester, 'join: phone and notice (${v.name})');
+      // The age question comes first since 0110; without it the code screen is
+      // never reached, and this sweep would stop covering it without a word.
+      join.setAdult(true);
       await join.submitPhone('9812344821');
       await tester.pumpAndSettle();
       await check(tester, 'join: one-time code (${v.name})');
@@ -439,5 +443,101 @@ void main() {
     await joinSweep(
         tester, lookVariants.where((v) => v.branded && v.brand == 'teal').toList(), accessible);
     handle.dispose();
+  });
+
+  // DESIGN 13: every route has an OFFLINE state. With the internet gone - every
+  // server call failing as "no network" - each screen must settle (a spinner
+  // that never stops times pumpAndSettle out) and render without an error.
+  final offline = <_Variant>[
+    (name: 'offline', locale: kEnglish, scale: 1.0, dark: false, branded: true, brand: 'teal'),
+  ];
+
+  testWidgets('customer screens: every route settles and renders with no connection',
+      (tester) async {
+    final api = OfflineApi();
+    await sweep(
+      tester,
+      role: 'customer',
+      routes: customerRoutes,
+      overrides: [
+        crayApiProvider.overrideWithValue(api),
+        walletApiProvider.overrideWithValue(api),
+      ],
+      variants: offline,
+      check: noOverflow,
+    );
+    expect(api.calls, isNotEmpty, reason: 'the screens did try the server');
+  });
+
+  testWidgets('owner screens: every route settles and renders with no connection',
+      (tester) async {
+    final cache = CacheDb(NativeDatabase.memory());
+    addTearDown(cache.close);
+    final api = OfflineApi();
+    final outbox = Outbox(cache);
+    final remote = FakeBookings()..failure = const CrayApiException(CrayErrorKind.network);
+    await sweep(
+      tester,
+      role: 'owner',
+      routes: ownerRoutes,
+      overrides: [
+        crayApiProvider.overrideWithValue(api),
+        staffLoginsApiProvider.overrideWithValue(api),
+        cacheDbProvider.overrideWithValue(cache),
+        outboxProvider.overrideWithValue(outbox),
+        dayRepositoryProvider.overrideWithValue(DayRepository(
+          remote: remote,
+          cache: cache,
+          outbox: outbox,
+          salonId: '11111111-0000-4000-8000-000000000001',
+        )),
+        salonHoursApiProvider.overrideWithValue(api),
+        salonAccountApiProvider.overrideWithValue(api),
+      ],
+      variants: offline,
+      check: noOverflow,
+    );
+  });
+
+  // DESIGN 4.3: the bottom third is the action zone. Every action FIXED to the
+  // screen - a floating button, or a filled button outside any scrolling list -
+  // sits there. One inside a list scrolls into reach, so it is not judged here.
+  Future<void> reachable(WidgetTester tester, String where) async {
+    const height = 740.0;
+    final fixed = [
+      ...find.byType(FloatingActionButton).evaluate(),
+      ...find.byType(FilledButton).evaluate().where((e) =>
+          find.ancestor(of: find.byElementPredicate((x) => x == e), matching: find.byType(Scrollable))
+              .evaluate()
+              .isEmpty),
+    ];
+    for (final e in fixed) {
+      final box = e.renderObject! as RenderBox;
+      final centre = box.localToGlobal(box.size.center(Offset.zero));
+      expect(centre.dy, greaterThanOrEqualTo(height * 2 / 3),
+          reason: '$where: a fixed action sits at y=${centre.dy.round()}, above the bottom third');
+    }
+  }
+
+  testWidgets('one-handed: every fixed action on a customer screen sits in the bottom third',
+      (tester) async {
+    await sweep(tester,
+        role: 'customer',
+        routes: customerRoutes,
+        overrides: customer(),
+        variants: lookVariants.where((v) => v.name == 'light').toList(),
+        check: reachable);
+  });
+
+  testWidgets('one-handed: every fixed action on an owner screen sits in the bottom third',
+      (tester) async {
+    final cache = CacheDb(NativeDatabase.memory());
+    addTearDown(cache.close);
+    await sweep(tester,
+        role: 'owner',
+        routes: ownerRoutes,
+        overrides: owner(cache),
+        variants: lookVariants.where((v) => v.name == 'light').toList(),
+        check: reachable);
   });
 }

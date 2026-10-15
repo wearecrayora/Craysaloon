@@ -120,7 +120,8 @@ class HoursScreen extends ConsumerWidget {
                     ),
                 ],
               ),
-              AsyncError() => LoadFailed(
+              // Shown at once, even while a background retry runs.
+              AsyncValue(hasError: true) => LoadFailed(
                 inline: true,
                 onRetry: () => ref.invalidate(shiftsProvider),
               ),
@@ -450,8 +451,12 @@ class _StaffHoursScreenState extends ConsumerState<StaffHoursScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const SalonTitle()),
+      // An error is an answer, not a wait: without this the stylist's week
+      // spun forever when the hours could not be read.
       body: week == null
-          ? const Center(child: CircularProgressIndicator())
+          ? (shifts.hasError
+              ? LoadFailed(onRetry: () => ref.invalidate(shiftsProvider))
+              : const Center(child: CircularProgressIndicator()))
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
               children: [

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:sentry_flutter/sentry_flutter.dart' show Breadcrumb, Sentry;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../local/outbox.dart' show Outbox;
 import '../../domain/customer/customer.dart';
 import '../../domain/dashboard/dashboard.dart';
 import '../../domain/join/cray_api.dart';
@@ -183,9 +185,18 @@ class SupabaseCrayApi
   }
 
   Future<FunctionResponse> _invoke(String name, Map<String, Object?> body) async {
+    // One id per call, sent as x-trace-id: the function logs it and puts it on
+    // any alert, so this tap can be found in the server's logs (PHASES M12).
+    final trace = Outbox.newActionId();
     try {
-      return await _client.functions.invoke(name, body: body);
+      return await _client.functions.invoke(name, body: body, headers: {'x-trace-id': trace});
     } on FunctionException catch (e) {
+      // On the crash timeline: a report from this session names the call.
+      Sentry.addBreadcrumb(Breadcrumb(
+        category: 'edge',
+        message: '$name -> ${e.status}',
+        data: {'trace_id': trace},
+      ));
       // A non-2xx from an Edge Function arrives as an exception, with the body
       // we deliberately shaped. Treat it as a response, not a crash.
       return FunctionResponse(status: e.status, data: e.details);
@@ -852,6 +863,61 @@ class SupabaseCrayApi
           occurredAt: _time(row['occurred_at']) ?? DateTime.now(),
         ),
     ];
+  }
+
+  @override
+  Future<Nominee?> nominee() async {
+    try {
+      final body = _asMap(await _client.rpc<dynamic>('my_nominee'));
+      if (body == null || body['name'] == null) return null;
+      return Nominee(
+        name: body['name'] as String,
+        phone: body['phone'] as String? ?? '',
+        relationship: body['relationship'] as String?,
+      );
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  @override
+  Future<NomineeRefusal?> setNominee({
+    required String name,
+    required String phone,
+    String? relationship,
+  }) async {
+    try {
+      final body = _asMap(await _client.rpc<dynamic>(
+            'set_nominee',
+            params: {'p_name': name, 'p_phone': phone, 'p_relationship': relationship},
+          )) ??
+          const {};
+      if (body['ok'] == true) return null;
+      return switch (body['reason']) {
+        'invalid_phone' => NomineeRefusal.invalidPhone,
+        'name_required' => NomineeRefusal.nameRequired,
+        _ => throw const CrayApiException(CrayErrorKind.server),
+      };
+    } on PostgrestException catch (e) {
+      throw CrayApiException(e.code == '42501' ? CrayErrorKind.forbidden : _postgrestKind(e));
+    } on CrayApiException {
+      rethrow;
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  @override
+  Future<void> clearNominee() async {
+    try {
+      await _client.rpc<dynamic>('clear_nominee');
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
   }
 
   @override

@@ -1318,7 +1318,9 @@ PRD §12 makes that a business metric, not just a behaviour.
 > (`register_push_token` accepts a staff session), and triggers announce what a *customer* did: a
 > booking, a cancellation, "I'll pay at the counter", a bill paid online. Staff messages carry the
 > customer's id and the name is read at send time, so an erased customer leaves no name in the log;
-> they never escalate. A login the owner switched off is told nothing. 0108 also fixed every customer message that printed a raw `{{when}}` or
+> they never escalate. A login the owner switched off is told nothing. **0112** adds the owner's
+> billing notices (owner only) and a daily summary at 9 pm salon time (owner and managers), queued
+> by `app.run_due_automations`. 0108 also fixed every customer message that printed a raw `{{when}}` or
 > `{{amount}}`, and the wallet receipt that was never queued.
 
 **One sending identity, plus a safety net (v2.2).** Since the salon is known before the first

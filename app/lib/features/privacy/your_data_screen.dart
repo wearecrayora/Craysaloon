@@ -7,6 +7,7 @@ import '../customer/customer_providers.dart' show myProfileProvider;
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
 import 'consent_notice.dart';
+import 'nominee_card.dart';
 import 'your_data_controller.dart';
 
 /// One screen for every right the DPDP Act gives a customer.
@@ -84,6 +85,10 @@ class YourDataScreen extends ConsumerWidget {
                     // before it happens rather than after (RULES 11.8).
                     const _RightTile(kind: 'erasure', confirm: true),
                     const SizedBox(height: 24),
+                    // DPDP s.14: someone to use these rights if the customer
+                    // cannot (0112).
+                    const NomineeCard(),
+                    const SizedBox(height: 24),
                     Text(
                       l10n.yourDataFiduciaryHeading,
                       style: Theme.of(context).textTheme.titleMedium,
@@ -136,12 +141,15 @@ class _ConsentRow extends ConsumerWidget {
     final l10n = AppL10n.of(context);
     final state = ref.watch(yourDataControllerProvider);
     final granted = state.consents[purpose] ?? false;
-    // Under 18: offers and reminders cannot be switched on (0110, DPDP s.9).
+    // Under 18: offers, reminders and photos cannot be switched on (0110,
+    // 0112, DPDP s.9).
     // Switching them OFF is always allowed - withdrawal is never locked.
     final minor = ref.watch(myProfileProvider).value?.isMinor ?? false;
     final childLocked = minor &&
         !granted &&
-        (purpose == ConsentPurpose.promotional || purpose == ConsentPurpose.whatsapp);
+        (purpose == ConsentPurpose.promotional ||
+            purpose == ConsentPurpose.whatsapp ||
+            purpose == ConsentPurpose.photos);
 
     final title = switch (purpose) {
       ConsentPurpose.service => l10n.consentServiceTitle,

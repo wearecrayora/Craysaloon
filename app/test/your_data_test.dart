@@ -274,6 +274,38 @@ void main() {
     expect(find.text('Sunita Rao'), findsNothing);
   });
 
+  testWidgets('a customer names someone to act for them, and can remove them (DPDP s.14)',
+      (tester) async {
+    await pump(tester);
+    await scrollTo(tester, find.text('Name someone'));
+    expect(find.text('Nobody named yet.'), findsOneWidget);
+
+    await tester.tap(find.text('Name someone'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, 'Their full name'), 'Ravi Rao');
+    await tester.enterText(find.widgetWithText(TextField, 'Their mobile number'), '98765');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('Enter a 10-digit mobile number.'), findsOneWidget,
+        reason: 'a nominee needs a number someone can call');
+
+    await tester.enterText(find.widgetWithText(TextField, 'Their mobile number'), '9876500011');
+    await tester.enterText(
+        find.widgetWithText(TextField, 'How they are related to you (optional)'), 'Brother');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    await scrollTo(tester, find.text('Ravi Rao'));
+    expect(find.text('Brother · +91 98xxx x0011'), findsOneWidget,
+        reason: "the number is masked on screen, like the customer's own");
+
+    await tester.tap(find.text('Remove'));
+    await tester.pumpAndSettle();
+    expect(privacy.nomineeHeld, isNull);
+    await scrollTo(tester, find.text('Nobody named yet.'));
+    expect(find.text('Nobody named yet.'), findsOneWidget);
+  });
+
   testWidgets('nothing clips at 200% text scale', (tester) async {
     await pump(tester, textScale: 2.0);
     expect(tester.takeException(), isNull);
@@ -298,6 +330,26 @@ class FakePrivacyApi implements PrivacyApi {
 
   /// WhatsApp consent as the server holds it; off unless a test says otherwise.
   bool whatsappGranted = false;
+
+  Nominee? nomineeHeld;
+
+  @override
+  Future<Nominee?> nominee() async => nomineeHeld;
+
+  @override
+  Future<NomineeRefusal?> setNominee({
+    required String name,
+    required String phone,
+    String? relationship,
+  }) async {
+    if (failWrites) throw const CrayApiException(CrayErrorKind.network);
+    if (phone.replaceAll(RegExp(r'\D'), '').length != 10) return NomineeRefusal.invalidPhone;
+    nomineeHeld = Nominee(name: name, phone: '+91$phone', relationship: relationship);
+    return null;
+  }
+
+  @override
+  Future<void> clearNominee() async => nomineeHeld = null;
 
   final written = <(String, bool)>[];
   final requested = <String>[];

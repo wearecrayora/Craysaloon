@@ -622,13 +622,16 @@ console itself.
 - [x] Renders correctly in `en`, `hi` (Devanagari metrics) and `hi_Latn` (longest strings) -
       `screen_sweep_test.dart`, `localisation_test.dart`, `scripts/l10n-check.sh`
 - [x] Readable at **200% text scale** with no clipping - `screen_sweep_test.dart`
-- [ ] Empty, loading, error and **offline** states all implemented - asserted for the day view,
+- [x] Empty, loading, error and **offline** states all implemented - asserted for the day view,
       history, wallet, checkout, catalogue and branding (`day_screen_test`, `customer_test`,
-      `wallet_test`, `checkout_test`, `catalogue_edit_test`, `branding_refresh_test`); **not yet
-      asserted screen by screen for every route**
-- [ ] All targets ≥48dp; primary action reachable one-handed - **48dp is proven** on every screen
-      (`screen_sweep_test.dart`, `androidTapTargetGuideline`); one-handed reach is **not asserted**
-      by any test yet
+      `wallet_test`, `checkout_test`, `catalogue_edit_test`, `branding_refresh_test`), and **for
+      every route** since 15 Oct 2026: the offline sweep in `screen_sweep_test.dart` renders every
+      customer and owner route with every server call failing, and each must settle (no spinner
+      left turning) and render. It found three that spun forever - Rules, Hours, a stylist's week
+- [x] All targets ≥48dp; primary action reachable one-handed - **48dp is proven** on every screen
+      (`screen_sweep_test.dart`, `androidTapTargetGuideline`); **one-handed reach is asserted** since
+      15 Oct 2026: every action fixed to the screen (a floating button, or a filled button outside a
+      scrolling list) sits in the bottom third (4.3), on every route
 - [x] All money uses tabular figures and Indian grouping - `money_test.dart`, `dashboard_test.dart`
 - [x] No raw hex, no raw font size, no spacing value outside the scale - GATE-2, GATE-4b, GATE-4
       (`scripts/lint-gates.sh`)

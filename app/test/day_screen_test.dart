@@ -126,6 +126,27 @@ void main() {
     expect(remote.sent, isEmpty);
   });
 
+  testWidgets('when the connection comes back, the waiting work is sent - no tap needed',
+      (tester) async {
+    remote.dayRows = [booking()];
+    await pump(tester);
+
+    remote.failure = const CrayApiException(CrayErrorKind.network);
+    await tester.tap(find.text('Mark complete'));
+    await tester.pumpAndSettle();
+    expect(remote.sent, isEmpty);
+
+    // The network returns. Nobody touches the phone.
+    remote.failure = null;
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
+    await tester.pump(const Duration(seconds: 46));
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 200)));
+    await tester.pumpAndSettle();
+
+    expect(remote.sent, hasLength(1), reason: 'AutoSync sent it on its own');
+    expect(find.text('1 change waiting to sync'), findsNothing);
+  });
+
   testWidgets('a refusal reaches Needs attention, with a reason and a fix',
       (tester) async {
     remote.dayRows = [booking()];

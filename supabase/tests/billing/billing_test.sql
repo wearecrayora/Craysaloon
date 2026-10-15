@@ -12,7 +12,7 @@
 -- Plus RULES 6.3: billing never flips a salon's status - a payment does not
 -- activate, a date does not suspend.
 
-select plan(36);
+select plan(41);
 
 insert into auth.users (id) values
   ('77777777-aaaa-4000-8000-00000000000a'),   -- operator
@@ -280,6 +280,47 @@ select throws_ok(
   $q$update public.subscription_payments set amount_paise = 1$q$,
   '42501', null,
   'subscription payments are append-only');
+
+-- 0112: a payment recorded by mistake is REVERSED by a new row - never edited.
+create temp table before_reversal as
+  select renews_at from public.subscriptions where salon_id = '77777777-0000-4000-8000-000000000001';
+grant select on before_reversal to public;
+
+select throws_ok(
+  $q$select app_admin.reverse_subscription_payment('77777777-aaaa-4000-8000-00000000000a',
+       (select id from public.subscription_payments where reference = 'NEFT UTR 4471'), '  ')$q$,
+  'P0001', null,
+  'a reversal needs a reason - it is the audit entry');
+
+select app_admin.reverse_subscription_payment('77777777-aaaa-4000-8000-00000000000a',
+  (select id from public.subscription_payments where reference = 'NEFT UTR 4471'),
+  'Recorded twice by mistake');
+
+select is(
+  (select renews_at from public.subscriptions where salon_id = '77777777-0000-4000-8000-000000000001'),
+  (select renews_at - interval '4 months' from before_reversal),
+  'reversing takes the four months it added back off the paid-until date');
+
+select results_eq(
+  $q$select amount_paise, months, reverses_id from public.subscription_payments
+      where reverses_id is not null$q$,
+  $q$select -319600::bigint, -4, id from public.subscription_payments where reference = 'NEFT UTR 4471'$q$,
+  'as a new row pointing at the payment it undoes - the original is untouched');
+
+select throws_ok(
+  $q$select app_admin.reverse_subscription_payment('77777777-aaaa-4000-8000-00000000000a',
+       (select id from public.subscription_payments where reference = 'NEFT UTR 4471'), 'again')$q$,
+  'P0001', null,
+  'and once only');
+
+select is(
+  (select count(*)::int from public.audit_log where action = 'subscription.payment_reversed'),
+  1,
+  'and the reversal is in the audit log, with its reason');
+
+-- Paid properly, as before, so the rest of this file sees the same salon.
+select app_admin.record_subscription_payment('77777777-aaaa-4000-8000-00000000000a',
+  '77777777-0000-4000-8000-000000000001', 319600, 4, 'NEFT UTR 4471 (corrected)', current_date);
 
 -- A salon an operator suspended BY HAND stays suspended when it pays.
 select app_admin.set_salon_status('77777777-aaaa-4000-8000-00000000000a',

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/ui/fine_print.dart';
+import '../../core/ui/load_failed.dart';
 import '../../app/providers.dart';
 import '../../core/format/money.dart';
 import '../../core/theme/cray_glass.dart';
@@ -214,17 +215,14 @@ class _WithProfile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppL10n.of(context);
-    return switch (ref.watch(salonProfileProvider)) {
+    final profile = ref.watch(salonProfileProvider);
+    // An error is shown the moment there is one - not after Riverpod's
+    // background retries run out, which offline is a spinner for ~40 seconds.
+    return switch (profile) {
       AsyncData(:final value?) => builder(context, value),
-      AsyncData() || AsyncError() => Scaffold(
+      AsyncData() || AsyncValue(hasError: true) => Scaffold(
         appBar: AppBar(title: const SalonTitle()),
-        body: Center(
-          child: TextButton(
-            onPressed: () => ref.invalidate(salonProfileProvider),
-            child: Text(l10n.retry),
-          ),
-        ),
+        body: LoadFailed(onRetry: () => ref.invalidate(salonProfileProvider)),
       ),
       _ => Scaffold(
         appBar: AppBar(title: const SalonTitle()),
