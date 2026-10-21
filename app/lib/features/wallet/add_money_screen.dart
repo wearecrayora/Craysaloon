@@ -177,7 +177,7 @@ class _AddMoneyScreenState extends ConsumerState<AddMoneyScreen> {
                 quote: value,
                 salonName: salonName,
               ),
-              AsyncError() => Text(
+              AsyncValue(hasError: true) => Text(
                 l10n.joinOffline,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),

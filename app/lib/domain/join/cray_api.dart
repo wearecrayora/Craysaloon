@@ -201,6 +201,18 @@ abstract interface class CrayApi {
   bool get hasSession;
 }
 
+/// Signing out of this device (21 Oct 2026). Ends THIS device's session only:
+/// the binding stays, so signing back in is the salon code and an OTP, and it
+/// lands in the same salon (RULES 4 - there is no switch path, and this is not
+/// one: the server still refuses a number bound elsewhere).
+abstract interface class SessionApi {
+  Future<void> signOut();
+
+  /// Fires when the stored session changes - signed in, refreshed, ended
+  /// server-side by a transfer or an unbind. Listeners re-read [CrayApi.session].
+  Stream<void> get sessionChanges;
+}
+
 /// What the person joining said about their age (0110, DPDP s.9). Under 18
 /// needs a parent or guardian, named, who confirmed on the spot.
 class AgeDeclaration {

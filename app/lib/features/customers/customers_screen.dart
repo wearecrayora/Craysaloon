@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../app/providers.dart';
 import '../../core/format/money.dart';
 import '../../core/ui/cache_banner.dart';
+import '../../core/ui/skeleton.dart';
 import '../../domain/records/records.dart';
 import '../../l10n/app_localizations.dart';
 import 'customers_controller.dart';
@@ -96,9 +97,9 @@ class _CustomersScreenState extends ConsumerState<CustomersScreen> {
     final l10n = AppL10n.of(context);
 
     if (state.loading && state.customers.isEmpty) {
-      // A skeleton would be a lie about how many rows are coming; this screen
-      // has no way to know. Skeletons also never shimmer (DESIGN 11).
-      return const Center(child: CircularProgressIndicator());
+      // Still rows in the shape of a customer row (DESIGN 6.8): the page does
+      // not jump when the list lands. Static - skeletons never shimmer (7.4).
+      return const SkeletonList(padding: EdgeInsets.all(16));
     }
 
     if (state.customers.isEmpty) {
@@ -235,10 +236,9 @@ class CustomerDetailScreen extends ConsumerWidget {
             Text(l10n.customerVisits(customer.visitCount), style: text.titleMedium),
             const SizedBox(height: 8),
             visits.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
-              ),
+              loading: () => visits.hasError
+                  ? Text(l10n.joinOffline, style: text.bodySmall)
+                  : const SkeletonList(rows: 3, padding: EdgeInsets.all(16)),
               error: (_, _) => Text(l10n.joinOffline, style: text.bodySmall),
               data: (cached) => Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

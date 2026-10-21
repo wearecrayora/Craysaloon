@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/local/branding_store.dart';
+import '../../domain/customer/customer.dart' show CustomerApi;
 import '../../domain/join/cray_api.dart';
 import '../../domain/referral/referral.dart';
 import '../../domain/join/join_code.dart';
+import '../../main.dart' show localeCode, localeProvider;
 
 /// Where the customer is in the join flow.
 ///
@@ -143,6 +145,9 @@ class ResolvedBranding extends Notifier<CachedBranding?> {
   CachedBranding? build() => ref.watch(initialBrandingProvider);
 
   void wear(CachedBranding branding) => state = branding;
+
+  /// Signed out: back to neutral, never still wearing the salon just left.
+  void clear() => state = null;
 }
 
 final resolvedBrandingProvider =
@@ -202,6 +207,16 @@ class JoinController extends Notifier<JoinState> {
   void confirmSalon() => state = state.copyWith(step: JoinStep.phone, problem: JoinProblem.none);
 
   void backToCode() => state = const JoinState();
+
+  /// One step back, for the app bar's back arrow: the number from the code
+  /// screen, the salon from the number. Nothing typed so far is lost, and a
+  /// code already sent simply expires.
+  void back() => state = switch (state.step) {
+        JoinStep.otp => state.copyWith(step: JoinStep.phone, problem: JoinProblem.none),
+        JoinStep.phone => state.copyWith(step: JoinStep.confirm, problem: JoinProblem.none),
+        JoinStep.confirm => const JoinState(),
+        _ => state,
+      };
 
   /// A child is never asked for marketing consent (DPDP s.9): the box is off
   /// and stays off. WhatsApp offers are offers, so they need this box first -
@@ -317,6 +332,21 @@ class JoinController extends Notifier<JoinState> {
           } on CrayApiException {
             // Nothing to say and nothing to retry: the customer can enter the
             // code by hand on the Refer & Earn screen.
+          }
+        }
+      }
+
+      // The language they joined in is the language their messages use
+      // (0118). Best effort, like the referral: it can be changed on Me.
+      if (outcome != LoginOutcome.staff) {
+        final api = _api;
+        if (api is CustomerApi) {
+          try {
+            await (api as CustomerApi).updateMyProfile(
+              language: localeCode(ref.read(localeProvider)),
+            );
+          } catch (_) {
+            // Saved the next time they choose a language.
           }
         }
       }

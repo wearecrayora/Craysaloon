@@ -5,6 +5,8 @@ import '../../core/ui/load_failed.dart';
 import '../../core/format/money.dart';
 import '../../core/theme/cray_glass.dart';
 import '../../core/ui/salon_mark.dart';
+import '../../core/ui/skeleton.dart';
+import '../../core/ui/notice.dart';
 import '../../data/local/outbox.dart';
 import '../../domain/customer/customer.dart';
 import '../../domain/join/cray_api.dart';
@@ -91,9 +93,9 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       );
       ref.invalidate(bookingDetailProvider(widget.id));
       ref.invalidate(upcomingProvider);
-      messenger.showSnackBar(SnackBar(content: Text(l10n.bookingCancelled)));
+      messenger.notice(l10n.bookingCancelled);
     } on CrayApiException {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.bookingCancelFailed)));
+      messenger.notice(l10n.bookingCancelFailed, kind: NoticeKind.problem);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -162,10 +164,10 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         AsyncData() => Center(
           child: Text(l10n.bookingNotFound, style: text.bodyLarge),
         ),
-        AsyncError() => LoadFailed(
+        AsyncValue(hasError: true) => LoadFailed(
           onRetry: () => ref.invalidate(bookingDetailProvider(widget.id)),
         ),
-        _ => const Center(child: CircularProgressIndicator()),
+        _ => const SkeletonList(padding: EdgeInsets.all(16)),
       },
     );
   }

@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import '../../core/ui/load_failed.dart';
 import '../../app/providers.dart';
 import '../../core/ui/salon_mark.dart';
+import '../../core/ui/skeleton.dart';
+import '../../core/ui/notice.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/records/records.dart';
 import '../../l10n/app_localizations.dart';
@@ -125,10 +127,7 @@ class HoursScreen extends ConsumerWidget {
                 inline: true,
                 onRetry: () => ref.invalidate(shiftsProvider),
               ),
-              _ => const Padding(
-                padding: EdgeInsets.all(24),
-                child: Center(child: CircularProgressIndicator()),
-              ),
+              _ => const SkeletonList(rows: 3, padding: EdgeInsets.all(24)),
             },
             const SizedBox(height: 24),
             Text(l10n.hoursHolidays, style: text.titleLarge),
@@ -287,9 +286,9 @@ class HoursScreen extends ConsumerWidget {
         reason: reason.text.trim().isEmpty ? null : reason.text.trim(),
       );
       ref.invalidate(timeOffProvider);
-      messenger.showSnackBar(SnackBar(content: Text(l10n.hoursHolidayAdded)));
+      messenger.notice(l10n.hoursHolidayAdded);
     } on CrayApiException {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.hoursSaveFailed)));
+      messenger.notice(l10n.hoursSaveFailed, kind: NoticeKind.problem);
     }
   }
 
@@ -302,7 +301,7 @@ class HoursScreen extends ConsumerWidget {
       await api.removeTimeOff(t.id);
       ref.invalidate(timeOffProvider);
     } on CrayApiException {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.hoursSaveFailed)));
+      messenger.notice(l10n.hoursSaveFailed, kind: NoticeKind.problem);
     }
   }
 }
@@ -405,9 +404,7 @@ class _StaffHoursScreenState extends ConsumerState<StaffHoursScreen> {
     for (final d in weekOrder) {
       final day = week[d]!;
       if (day.working && day.ends.compareTo(day.starts) <= 0) {
-        messenger.showSnackBar(
-          SnackBar(content: Text(l10n.staffHoursInvalid(dayName(context, d)))),
-        );
+        messenger.notice(l10n.staffHoursInvalid(dayName(context, d)), kind: NoticeKind.problem);
         return;
       }
     }
@@ -426,12 +423,10 @@ class _StaffHoursScreenState extends ConsumerState<StaffHoursScreen> {
             ),
       ]);
       ref.invalidate(shiftsProvider);
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.staffHoursSaved(name))),
-      );
+      messenger.notice(l10n.staffHoursSaved(name));
       if (mounted) context.pop();
     } on CrayApiException {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.hoursSaveFailed)));
+      messenger.notice(l10n.hoursSaveFailed, kind: NoticeKind.problem);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -456,7 +451,7 @@ class _StaffHoursScreenState extends ConsumerState<StaffHoursScreen> {
       body: week == null
           ? (shifts.hasError
               ? LoadFailed(onRetry: () => ref.invalidate(shiftsProvider))
-              : const Center(child: CircularProgressIndicator()))
+              : const SkeletonList(padding: EdgeInsets.all(16)))
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
               children: [

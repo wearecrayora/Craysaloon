@@ -830,7 +830,7 @@ export async function setServiceAddOn(
 export type DataRightsRequest = {
   request_id: string;
   salon_name: string;
-  kind: 'access' | 'erasure' | 'grievance';
+  kind: 'access' | 'erasure' | 'grievance' | 'correction';
   status: string;
   requested_at: string;
   due_at: string;

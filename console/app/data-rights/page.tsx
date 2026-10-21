@@ -11,6 +11,7 @@ const KIND: Record<string, string> = {
   access: 'A copy of their data',
   erasure: 'Erasure',
   grievance: 'A complaint about their data',
+  correction: 'A correction to their details',
 };
 
 /**
@@ -59,6 +60,13 @@ export default async function Page() {
                 <ErasureForm requestId={r.request_id} />
               ) : r.kind === 'access' ? (
                 <AccessForm requestId={r.request_id} />
+              ) : r.kind === 'correction' ? (
+                <p className="hint">
+                  The customer asked for something they cannot change themselves - most often a
+                  new phone number. The salon confirms it is really them (its{' '}
+                  <strong>Privacy contact</strong> calls the number on file). A new number is then a{' '}
+                  <strong>Transfer</strong> on the salon&rsquo;s binding desk - never an edit.
+                </p>
               ) : (
                 <p className="hint">
                   The salon answers this one. If it is overdue, contact the salon&rsquo;s privacy

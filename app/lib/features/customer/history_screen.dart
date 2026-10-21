@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/format/money.dart';
 import '../../core/ui/glass.dart';
 import '../../core/ui/salon_mark.dart';
+import '../../core/ui/skeleton.dart';
 import '../../l10n/app_localizations.dart';
 import 'customer_providers.dart';
 import 'documents_screen.dart';
@@ -122,7 +123,7 @@ class HistoryScreen extends ConsumerWidget {
                     ),
                 ],
               ),
-              AsyncError() => Column(
+              AsyncValue(hasError: true) => Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(l10n.historyFailed, style: text.bodyLarge),
@@ -133,10 +134,7 @@ class HistoryScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              _ => const Padding(
-                padding: EdgeInsets.all(32),
-                child: Center(child: CircularProgressIndicator()),
-              ),
+              _ => const SkeletonList(rows: 3, padding: EdgeInsets.all(32)),
             },
           ],
         ),

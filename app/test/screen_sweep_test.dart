@@ -239,6 +239,9 @@ void main() {
     '/your-data',
     '/wallet/add',
     '/refer',
+    // 21 Oct 2026: the profile editor, and search over the menu.
+    '/me/edit',
+    '/search',
   ];
 
   List<Override> owner(CacheDb cache) {
@@ -430,6 +433,10 @@ void main() {
       await join.submitPhone('9812344821');
       await tester.pumpAndSettle();
       await check(tester, 'join: one-time code (${v.name})');
+      // The welcome, with its success check and "Let's go".
+      await join.submitOtp('573649');
+      await tester.pumpAndSettle();
+      await check(tester, 'join: welcome (${v.name})');
     }
   }
 

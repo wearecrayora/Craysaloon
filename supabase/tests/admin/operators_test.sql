@@ -50,7 +50,9 @@ select throws_ok(
   'and they can no longer act in the console');
 
 select is(
-  (select reason from public.audit_log where action = 'operator.deactivated'),
+  (select reason from public.audit_log
+    where action = 'operator.deactivated'
+      and entity_id = 'c0c0c0c0-aaaa-4000-8000-00000000000b'),
   'Phone stolen, ticket 7',
   'and it is in the audit log, with its reason');
 

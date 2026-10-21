@@ -20,6 +20,7 @@ import 'package:craysalon/domain/customer/customer.dart';
 import 'package:craysalon/domain/join/cray_api.dart';
 import 'package:craysalon/domain/records/records.dart';
 import 'package:craysalon/domain/salon/salon_account.dart';
+import 'package:craysalon/features/join/deep_link_listener.dart';
 import 'package:craysalon/features/join/join_controller.dart';
 import 'package:craysalon/features/owner/hours_screens.dart';
 import 'package:craysalon/features/owner/logins_screen.dart';
@@ -273,7 +274,23 @@ void main() {
       tester.element(find.byType(CraySalonApp)),
     );
     for (final route in routes) {
-      if (role != 'join' && role != 'platform_admin') container.read(routerProvider).go(route);
+      if (role == 'join') {
+        // The join flow's steps, driven as the customer would.
+        final join = container.read(joinControllerProvider.notifier);
+        switch (route) {
+          case '/confirm':
+            await join.submitCode('CRAY-22335S');
+          case '/phone':
+            join.confirmSalon();
+          case '/otp':
+            join.setAdult(true);
+            await join.submitPhone('9812344821');
+          case '/welcome':
+            await join.submitOtp('573649');
+        }
+      } else if (role != 'platform_admin') {
+        container.read(routerProvider).go(route);
+      }
       await tester.pumpAndSettle();
       await tester.runAsync(() async {
         final boundary =
@@ -290,6 +307,7 @@ void main() {
 
   const customerRoutes = [
     '/home', '/book', '/wallet', '/me', '/visits', '/documents', '/booking/b-9', '/wallet/add', '/refer', '/your-data',
+    '/me/edit', '/search',
   ];
   const ownerRoutes = [
     '/day', '/day/walk-in', '/attention', '/dashboard', '/customers', '/catalogue/services', '/catalogue/addons',
@@ -333,8 +351,10 @@ void main() {
         crayApiProvider.overrideWithValue(
           FakeCrayApi(salon: fakeSalon(displayName: 'Studio Nine Salon')),
         ),
+        deviceKeyProvider.overrideWithValue('preview'),
+        appLinkStreamProvider.overrideWithValue(const Stream.empty()),
       ],
-      const ['/join'],
+      const ['/join', '/confirm', '/phone', '/otp', '/welcome'],
       branded: false,
     );
   });

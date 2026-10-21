@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/ui/load_failed.dart';
+import '../../core/ui/skeleton.dart';
 import '../../domain/privacy/privacy.dart';
 import '../customer/customer_providers.dart' show myProfileProvider;
 import '../../l10n/app_localizations.dart';
@@ -34,7 +35,7 @@ class YourDataScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.yourDataTitle)),
       body: SafeArea(
         child: state.loading
-            ? const Center(child: CircularProgressIndicator())
+            ? const SkeletonList(padding: EdgeInsets.all(16))
             : RefreshIndicator(
                 onRefresh: () =>
                     ref.read(yourDataControllerProvider.notifier).load(),

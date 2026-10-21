@@ -142,8 +142,8 @@ void main() {
     expect(find.textContaining('8114325023'), findsNothing);
     expect(find.textContaining('5023'), findsOneWidget);
 
+    // The sixth digit sends it - no button to find (21 Oct 2026).
     await tester.enterText(find.byType(TextField), '573649');
-    await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
     expect(api.verifications.single['promotional'], false);
@@ -181,8 +181,8 @@ void main() {
     await tapBelow(tester, find.text('Get my code'));
     expect(api.sentTo, ['8114325023']);
 
+    // The sixth digit sends it - no button to find (21 Oct 2026).
     await tester.enterText(find.byType(TextField), '573649');
-    await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
     expect(api.verifications.single['age'],
@@ -219,8 +219,8 @@ void main() {
     await scrollTo(tester, find.byType(TextField));
     await tester.enterText(find.byType(TextField), '8114325023');
     await tapBelow(tester, find.text('Get my code'));
+    // The sixth digit sends it - no button to find (21 Oct 2026).
     await tester.enterText(find.byType(TextField), '573649');
-    await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
     expect(find.text('This number is already registered with a salon.'), findsOneWidget);
@@ -265,8 +265,8 @@ void main() {
     await scrollTo(tester, find.byType(TextField));
     await tester.enterText(find.byType(TextField), '8114325023');
     await tapBelow(tester, find.text('Get my code'));
+    // The sixth digit sends it - no button to find (21 Oct 2026).
     await tester.enterText(find.byType(TextField), '111111');
-    await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
     expect(find.text("That code didn't match. 2 left."), findsOneWidget);

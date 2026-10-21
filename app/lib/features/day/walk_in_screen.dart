@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 
 import '../../app/providers.dart';
 import '../../core/format/money.dart';
+import '../../core/ui/skeleton.dart';
+import '../../core/ui/notice.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/records/records.dart';
 import '../../l10n/app_localizations.dart';
@@ -92,12 +94,9 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
     // Queued either way; the message says which happened, because "booked" when
     // it is only queued is the kind of small lie that costs trust at a till.
     final waiting = await ref.read(outboxProvider)?.pending() ?? const [];
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(
-          waiting.isEmpty ? l10n.walkInBooked : l10n.walkInQueuedOffline,
-        ),
-      ),
+    messenger.notice(
+      waiting.isEmpty ? l10n.walkInBooked : l10n.walkInQueuedOffline,
+      kind: waiting.isEmpty ? NoticeKind.done : NoticeKind.info,
     );
     ref.read(dayControllerProvider.notifier).refresh();
     router.go('/day');
@@ -242,10 +241,7 @@ class _WalkInScreenState extends ConsumerState<WalkInScreen> {
               style: Theme.of(context).textTheme.labelMedium,
             ),
             if (_loadingSlots)
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
-              )
+              const SkeletonList(rows: 3, padding: EdgeInsets.all(16))
             else if (_service == null)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),

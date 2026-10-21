@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../core/format/money.dart';
 import '../../core/ui/cache_banner.dart';
 import '../../core/ui/salon_mark.dart';
+import '../../core/ui/skeleton.dart';
 import '../../domain/records/records.dart';
 import '../../l10n/app_localizations.dart';
 import '../salon/salon_account.dart';
@@ -105,7 +106,7 @@ class DayScreen extends ConsumerWidget {
               if (state.loading && state.bookings.isEmpty)
                 const SliverFillRemaining(
                   hasScrollBody: false,
-                  child: Center(child: CircularProgressIndicator()),
+                  child: SkeletonList(padding: EdgeInsets.all(16)),
                 )
               else if (state.bookings.isEmpty)
                 const SliverFillRemaining(

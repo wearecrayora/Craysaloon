@@ -70,10 +70,10 @@ disagrees, the fix is small: add it as a fourth tick at binding.
 | Right | Status | Where |
 |---|---|---|
 | **Access** — a copy of their data | **Built** | `request_data_right('access')` raises a tracked request with a 30-day due date; the console produces the copy by request id (`access_request_export`, 0091) and closes it with how it reached the person, which the customer sees. Gated in `data_rights_test` |
-| **Correction** | **Partial** | A customer can edit their own profile (0041 own-rows writes). No dedicated screen yet |
+| **Correction** | **Built** (0118) | Me -> Edit profile: the customer changes their own name and language (`update_my_profile`); anything else - above all a new phone number - is `request_data_right('correction')`, on the same 30-day clock. A new number is then a **transfer** by a Crayora super-admin once the salon confirms who is asking: the binding never moves from the app (RULES 4). Gate: `privacy/profile_test.sql` |
 | **Erasure** | **Built** | `app_admin.anonymise_customer` (0051): name, number, birthday and the login link go; the salted hash and every financial row stay. Gated |
 | **Grievance redressal** | **Built (channel)** / **Decision (who answers)** | `request_data_right('grievance')`. The salon must name a contact — see §6 |
-| **Nomination** (s.14) | **Gap** | Nobody can nominate someone to exercise their rights if they die or are incapacitated. Low volume, real obligation. §7 item 5 |
+| **Nomination** (s.14) | **Built** (0112) | Your data -> Someone to act for you. See §7 item 5. Gate: `nominee_test.sql` |
 | Requests are answered, and a refusal is explained | **Built** | Every request carries `status` + `outcome`; erasure writes its outcome sentence automatically |
 
 ### 3.3 Children (s. 9)

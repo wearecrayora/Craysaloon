@@ -73,6 +73,18 @@ class Push {
     }
   }
 
+  /// Forgets this device's token, on sign-out: the server's next send to it is
+  /// answered UNREGISTERED and the token is marked dead (RULES 7.3.3), so a
+  /// signed-out phone stops receiving the customer's messages.
+  static Future<void> forget() async {
+    if (!_available) return;
+    try {
+      await FirebaseMessaging.instance.deleteToken();
+    } catch (error) {
+      debugPrint('Could not delete FCM token: $error');
+    }
+  }
+
   /// Fires whenever FCM rotates the token. Wired to the server at M8.
   static Stream<String> get onTokenRefresh =>
       _available

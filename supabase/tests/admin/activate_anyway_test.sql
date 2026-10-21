@@ -45,7 +45,9 @@ select is((select status::text from public.salons where id = 'd1d1d1d1-0000-4000
   'active', 'the salon is live');
 
 select is(
-  (select after_state -> 'skipped' from public.audit_log where action = 'salon.activated_anyway'),
+  (select after_state -> 'skipped' from public.audit_log
+    where action = 'salon.activated_anyway'
+      and salon_id = 'd1d1d1d1-0000-4000-8000-000000000001'),
   '["setup_fee", "privacy_contact", "message_central"]'::jsonb,
   'and the audit log records what was skipped, with the reason');
 

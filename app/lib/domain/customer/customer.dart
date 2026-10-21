@@ -15,9 +15,13 @@ class CustomerProfile {
     this.isMinor = false,
     this.birthdayMonth,
     this.birthdayDay,
+    this.language,
   });
 
   final String? name;
+
+  /// en | hi | hi_Latn - the language their messages are sent in (0118).
+  final String? language;
   final String? phone;
 
   /// Declared under 18 at join (0110): no offers, no reminders, ever.
@@ -33,6 +37,16 @@ class CustomerProfile {
     final n = name?.trim();
     if (n == null || n.isEmpty) return null;
     return n.split(RegExp(r'\s+')).first;
+  }
+
+  /// "AR" for Asha Rao, for the round mark on the profile. Null with no name.
+  String? get initials {
+    final parts = (name ?? '').trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return null;
+    String head(String w) => String.fromCharCode(w.runes.first);
+    final first = head(parts.first);
+    final last = parts.length > 1 ? head(parts.last) : '';
+    return (first + last).toUpperCase();
   }
 
   /// `+91 98xxx x4821`: enough to recognise, not enough to read out.
@@ -159,6 +173,9 @@ class SalonDocument {
   bool get isReceipt => kind == DocumentKind.receipt;
 }
 
+/// Why a profile change was not made (0118).
+enum ProfileRefusal { nameLength, nameInvalid, language, erased }
+
 abstract interface class CustomerApi {
   /// Receipts and invoices together, newest first.
   Future<List<SalonDocument>> documents();
@@ -170,6 +187,10 @@ abstract interface class CustomerApi {
 
   /// The salon's birthday offer, during the customer's birthday month only.
   Future<String?> myBirthdayOffer();
+
+  /// Their own name and language (0118) - never the phone, which is the
+  /// binding. Null when it took effect, otherwise why not.
+  Future<ProfileRefusal?> updateMyProfile({String? name, String? language});
 
   Future<NextDue?> nextDue();
 

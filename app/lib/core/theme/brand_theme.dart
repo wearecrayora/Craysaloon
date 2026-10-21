@@ -1,10 +1,10 @@
-import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 
 import '../ui/glass.dart';
 import 'brand_tokens.dart';
 import 'cray_glass.dart';
 import 'fonts.dart';
+import 'motion.dart';
 
 /// Every page paints its own mesh, underneath its (transparent) scaffold.
 ///
@@ -15,6 +15,14 @@ class _MeshPageTransitions extends PageTransitionsBuilder {
   const _MeshPageTransitions(this.inner);
 
   final PageTransitionsBuilder inner;
+
+  // Forwarded, or the route falls back to its own default and the motion
+  // tokens never reach a page transition.
+  @override
+  Duration get transitionDuration => inner.transitionDuration;
+
+  @override
+  Duration get reverseTransitionDuration => inner.reverseTransitionDuration;
 
   @override
   Widget buildTransitions<T>(
@@ -104,23 +112,16 @@ ThemeData brandTheme(BrandTokens t) {
     extensions: [glass],
     // Transparent: the mesh is painted per page, beneath (see above).
     scaffoldBackgroundColor: Colors.transparent,
+    // One transition on every platform (DESIGN 7.1): a short fade and rise
+    // forward, a fade under reduced motion. iOS gets the same as Android, so
+    // the two builds look and test the same (RULES 15b).
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
-        TargetPlatform.android: _MeshPageTransitions(
-          ZoomPageTransitionsBuilder(),
-        ),
-        TargetPlatform.iOS: _MeshPageTransitions(
-          CupertinoPageTransitionsBuilder(),
-        ),
-        TargetPlatform.linux: _MeshPageTransitions(
-          ZoomPageTransitionsBuilder(),
-        ),
-        TargetPlatform.macOS: _MeshPageTransitions(
-          CupertinoPageTransitionsBuilder(),
-        ),
-        TargetPlatform.windows: _MeshPageTransitions(
-          ZoomPageTransitionsBuilder(),
-        ),
+        TargetPlatform.android: _MeshPageTransitions(CrayPageTransitionsBuilder()),
+        TargetPlatform.iOS: _MeshPageTransitions(CrayPageTransitionsBuilder()),
+        TargetPlatform.linux: _MeshPageTransitions(CrayPageTransitionsBuilder()),
+        TargetPlatform.macOS: _MeshPageTransitions(CrayPageTransitionsBuilder()),
+        TargetPlatform.windows: _MeshPageTransitions(CrayPageTransitionsBuilder()),
       },
     ),
     bottomSheetTheme: BottomSheetThemeData(
@@ -280,6 +281,9 @@ ThemeData brandTheme(BrandTokens t) {
     snackBarTheme: SnackBarThemeData(
       backgroundColor: t.surfaceSunken,
       contentTextStyle: body(15),
+      // The computed ink, not inversePrimary: the bar is a light surface in
+      // light mode, and the M3 default action colour is made for a dark one.
+      actionTextColor: t.brandInk,
       behavior: SnackBarBehavior.floating,
       insetPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       shape: RoundedRectangleBorder(

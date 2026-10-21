@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/ui/load_failed.dart';
 import '../../app/providers.dart';
 import '../../core/ui/salon_mark.dart';
+import '../../core/ui/skeleton.dart';
+import '../../core/ui/notice.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/salon/staff_logins.dart';
 import '../../l10n/app_localizations.dart';
@@ -64,14 +66,11 @@ class LoginsScreen extends ConsumerWidget {
               AsyncData(:final value) => Column(
                 children: [for (final l in value) _LoginTile(login: l)],
               ),
-              AsyncError() => LoadFailed(
+              AsyncValue(hasError: true) => LoadFailed(
                 inline: true,
                 onRetry: () => ref.invalidate(staffLoginsProvider),
               ),
-              _ => const Padding(
-                padding: EdgeInsets.all(24),
-                child: Center(child: CircularProgressIndicator()),
-              ),
+              _ => const SkeletonList(rows: 3, padding: EdgeInsets.all(24)),
             },
           ],
         ),
@@ -97,18 +96,13 @@ class LoginsScreen extends ConsumerWidget {
         phone: draft.phone,
         role: draft.role,
       );
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            r.ok
-                ? l10n.loginsAdded(draft.name)
-                : loginRefusalText(l10n, r.refusal!),
-          ),
-        ),
+      messenger.notice(
+        r.ok ? l10n.loginsAdded(draft.name) : loginRefusalText(l10n, r.refusal!),
+        kind: r.ok ? NoticeKind.done : NoticeKind.problem,
       );
       if (r.ok) ref.invalidate(staffLoginsProvider);
     } on CrayApiException {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.loginsFailed)));
+      messenger.notice(l10n.loginsFailed, kind: NoticeKind.problem);
     }
   }
 }
@@ -174,13 +168,11 @@ class _LoginTile extends ConsumerWidget {
     try {
       final r = await api.setStaffLoginActive(login.id, active: on);
       if (!r.ok) {
-        messenger.showSnackBar(
-          SnackBar(content: Text(loginRefusalText(l10n, r.refusal!))),
-        );
+        messenger.notice(loginRefusalText(l10n, r.refusal!), kind: NoticeKind.problem);
       }
       ref.invalidate(staffLoginsProvider);
     } on CrayApiException {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.loginsFailed)));
+      messenger.notice(l10n.loginsFailed, kind: NoticeKind.problem);
     }
   }
 }

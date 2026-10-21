@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/format/money.dart';
 import '../../core/ui/glass.dart';
 import '../../core/ui/salon_mark.dart';
+import '../../core/ui/skeleton.dart';
 import '../../domain/customer/customer.dart';
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
@@ -92,7 +93,7 @@ class DocumentsScreen extends ConsumerWidget {
                     ),
                 ],
               ),
-              AsyncError() => Column(
+              AsyncValue(hasError: true) => Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(l10n.docsFailed, style: text.bodyLarge),
@@ -103,10 +104,7 @@ class DocumentsScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              _ => const Padding(
-                padding: EdgeInsets.all(32),
-                child: Center(child: CircularProgressIndicator()),
-              ),
+              _ => const SkeletonList(rows: 3, padding: EdgeInsets.all(32)),
             },
           ],
         ),

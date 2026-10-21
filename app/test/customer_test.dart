@@ -486,7 +486,12 @@ void main() {
       expect(find.text('Asha Rao'), findsOneWidget);
       expect(find.text('+91 98xxx x4821'), findsOneWidget);
       expect(find.text('9812344821'), findsNothing);
+
+      await tester.scrollUntilVisible(find.text('App by Crayora'), 200,
+          scrollable: find.byType(Scrollable).first);
       expect(find.text('App by Crayora'), findsOneWidget);
+      await tester.scrollUntilVisible(find.text('Language'), -200,
+          scrollable: find.byType(Scrollable).first);
 
       await tester.tap(find.text('Language'));
       await tester.pumpAndSettle();

@@ -31,13 +31,18 @@ final pushApiProvider = Provider<PushApi?>((ref) {
 /// escalation; an exception thrown out of a notification handler costs the
 /// customer the screen they were looking at.
 class PushRegistration {
-  PushRegistration(this._api, {this.onArrived});
+  PushRegistration(this._api, {this.onArrived, this.onForeground});
 
   final PushApi _api;
 
   /// Told the purpose of each push that lands or is opened, so a screen can
   /// react - "your bill is ready" opens the pay sheet (29 Sep 2026).
   final void Function(String purpose)? onArrived;
+
+  /// Told the words of a push that lands while the app is OPEN. Android shows
+  /// nothing in the tray then - the app is in front - so without this a
+  /// customer looking at the screen would never see "your bill is ready".
+  final void Function(String text)? onForeground;
 
   /// Kept so the subscriptions can be cancelled when the session ends.
   final List<StreamSubscription<dynamic>> _subscriptions = [];
@@ -57,7 +62,7 @@ class PushRegistration {
 
     // Foreground. The customer is looking at the app, so the message has
     // unambiguously arrived.
-    _subscriptions.add(FirebaseMessaging.onMessage.listen(_ack));
+    _subscriptions.add(FirebaseMessaging.onMessage.listen(_foreground));
 
     // Opened from the tray. It arrived earlier; the ack is late but still
     // cheaper than an escalation that has not fired yet.
@@ -105,6 +110,22 @@ class PushRegistration {
       }
     }
     return acknowledge(message.data);
+  }
+
+  Future<void> _foreground(RemoteMessage message) {
+    final n = message.notification;
+    final text = [n?.title, n?.body]
+        .whereType<String>()
+        .where((t) => t.trim().isNotEmpty)
+        .join(' - ');
+    if (text.isNotEmpty) {
+      try {
+        onForeground?.call(text);
+      } catch (e) {
+        debugPrint('A push handler failed: ${e.runtimeType}');
+      }
+    }
+    return _ack(message);
   }
 
   Future<void> dispose() async {

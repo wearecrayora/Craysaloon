@@ -1559,5 +1559,109 @@
         "type": "String"
       }
     }
-  }
+  },
+  "joinStepSalon": "Salon",
+  "joinStepNumber": "Number",
+  "joinStepCode": "Code",
+  "joinScanSub": "Fastest. It's on the poster or card at the counter.",
+  "joinCodeGuide": "Starts with CRAY-. Ask at the counter if you can't find it.",
+  "joinPerkBook": "Book your visit in a few taps",
+  "joinPerkWallet": "Your wallet, bills and receipts in one place",
+  "joinPerkRemind": "A reminder when you're due for a visit",
+  "phoneSub": "We'll send a 6-digit code to this number by SMS.",
+  "phoneGuide": "10 digits, without 0 or +91 in front.",
+  "otpVerify": "Verify",
+  "otpChangeNumber": "Change",
+  "otpWaitingForSms": "Waiting for the SMS. Your phone will ask before the app reads it.",
+  "otpFilledFromSms": "Code filled in from your SMS.",
+  "joinedContinue": "Let's go",
+  "meTileVisits": "Visits",
+  "meTileBills": "Bills",
+  "meSectionDetails": "Your details",
+  "meSectionActivity": "Your activity",
+  "meSectionPrivacy": "Privacy",
+  "meEditProfile": "Edit profile",
+  "meEditProfileSub": "Your name, number and language",
+  "meNoName": "Add your name",
+  "signOut": "Sign out",
+  "signOutTitle": "Sign out of this phone?",
+  "signOutBody": "Your visits, wallet and bills stay safe with the salon. To come back, enter the salon code and your number again.",
+  "signOutUnsent": "Some changes on this phone haven't been sent yet. Connect to the internet, let them send, then sign out.",
+  "profileSaved": "Profile saved",
+  "profileLoadFailed": "Couldn't load your profile. Check your connection and try again.",
+  "profileNameLabel": "Full name",
+  "profileNameHint": "e.g. Asha Rao",
+  "profileNameHelp": "How {salon} greets you and writes your bills.",
+  "@profileNameHelp": {
+    "placeholders": {
+      "salon": {
+        "type": "String"
+      }
+    }
+  },
+  "profileNameLength": "A name needs 2 to 60 characters.",
+  "profileNameInvalid": "That doesn't look like a name. Use letters.",
+  "profileErased": "Your details were erased at your request, so there is nothing to edit.",
+  "profileLanguageHelp": "The app, and the salon's messages to you, will use it.",
+  "profileBirthdayAdd": "Add your birthday",
+  "profileSave": "Save changes",
+  "profileChangeNumber": "Change",
+  "profileChangeNumberTitle": "Change your number",
+  "profileChangeNumberBody": "Your number is how {salon} knows it's you, so it can't be changed in the app. Ask for the change here: the salon will confirm it's you, then your account, wallet and visits move to the new number.",
+  "@profileChangeNumberBody": {
+    "placeholders": {
+      "salon": {
+        "type": "String"
+      }
+    }
+  },
+  "profileOtherCorrection": "Something else wrong? Ask for a correction",
+  "profileCorrectionBody": "Tell {salon} what is wrong in what they hold about you. They must answer within 30 days.",
+  "@profileCorrectionBody": {
+    "placeholders": {
+      "salon": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCorrectionDetail": "What should change? (optional)",
+  "profileCorrectionDetailHint": "e.g. my birthday is wrong on my bill",
+  "profileNumberDetailHint": "e.g. a good time to call me",
+  "profileNumberRequestPrefix": "Change of phone number",
+  "profileCorrectionSend": "Ask for the change",
+  "homeQuickTitle": "What would you like to do?",
+  "homeTileBirthday": "Birthday",
+  "homeServicesTitle": "Services",
+  "homeSeeAll": "See all",
+  "searchHint": "Search haircut, facial, spa…",
+  "searchNothing": "Nothing called \"{query}\" here. Try another word, or see everything.",
+  "@searchNothing": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchAll": "All {count} services",
+  "@searchAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchFound": "{count} found",
+  "@searchFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moreTileWalkIn": "Walk-in",
+  "moreTileAttention": "Needs attention",
+  "moreSectionMenu": "Menu and team",
+  "moreSectionSalon": "Your salon",
+  "moreLoginsTitle": "Who can sign in",
+  "moreLoginsSub": "Phone numbers your team signs in with"
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/sign_out.dart' show SignOutButton;
+import '../../core/ui/action_tile.dart';
 import '../../core/ui/fine_print.dart';
 import '../../core/ui/load_failed.dart';
 import '../../app/providers.dart';
@@ -9,7 +11,10 @@ import '../../core/format/money.dart';
 import '../../core/theme/cray_glass.dart';
 import '../../domain/join/cray_api.dart';
 import '../../core/ui/glass.dart';
+import '../../core/ui/menu.dart';
 import '../../core/ui/salon_mark.dart';
+import '../../core/ui/skeleton.dart';
+import '../../core/ui/notice.dart';
 import '../../domain/salon/salon_account.dart';
 import '../../l10n/app_localizations.dart';
 import '../salon/salon_account.dart';
@@ -27,102 +32,108 @@ class MoreScreen extends ConsumerWidget {
     final l10n = AppL10n.of(context);
     final text = Theme.of(context).textTheme;
     final ownerOrManager = ref.watch(canEditCatalogueProvider);
+    final owner = ref.watch(sessionProvider)?.appRole == 'owner';
+    final dashboard = ownerOrManager && hasFeature(ref, 'dashboard');
 
     return Scaffold(
       appBar: AppBar(title: const SalonTitle()),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
         children: [
           Text(l10n.moreTitle, style: text.headlineMedium),
-          const SizedBox(height: 12),
-          _Row(
-            Icons.content_cut,
-            l10n.catalogueServices,
-            l10n.moreServicesSub,
-            () => context.push('/catalogue/services'),
+          const SizedBox(height: 16),
+          // The day's shortcuts, as tiles: the things done between customers.
+          ActionGrid(
+            tiles: [
+              ActionTile(
+                icon: Icons.person_add_alt_1_outlined,
+                label: l10n.moreTileWalkIn,
+                onTap: () => context.go('/day/walk-in'),
+              ),
+              ActionTile(
+                icon: Icons.people_outline,
+                label: l10n.customersTitle,
+                onTap: () => context.go('/customers'),
+              ),
+              ActionTile(
+                icon: Icons.report_gmailerrorred_outlined,
+                label: l10n.moreTileAttention,
+                onTap: () => context.go('/attention'),
+              ),
+              if (dashboard)
+                ActionTile(
+                  icon: Icons.insights_outlined,
+                  label: l10n.dashTitle,
+                  onTap: () => context.go('/dashboard'),
+                ),
+            ],
           ),
-          _Row(
-            Icons.add_circle_outline,
-            l10n.catalogueAddOns,
-            l10n.moreAddOnsSub,
-            () => context.push('/catalogue/addons'),
+          MenuSection(
+            title: l10n.moreSectionMenu,
+            children: [
+              MenuRow(
+                icon: Icons.content_cut,
+                title: l10n.catalogueServices,
+                subtitle: l10n.moreServicesSub,
+                onTap: () => context.push('/catalogue/services'),
+              ),
+              MenuRow(
+                icon: Icons.add_circle_outline,
+                title: l10n.catalogueAddOns,
+                subtitle: l10n.moreAddOnsSub,
+                onTap: () => context.push('/catalogue/addons'),
+              ),
+              MenuRow(
+                icon: Icons.badge_outlined,
+                title: l10n.staffTitle,
+                subtitle: l10n.moreTeamSub,
+                onTap: () => context.push('/staff'),
+              ),
+              // Who can sign in - the owner's alone; the database refuses others.
+              if (owner)
+                MenuRow(
+                  icon: Icons.key_outlined,
+                  title: l10n.moreLoginsTitle,
+                  subtitle: l10n.moreLoginsSub,
+                  onTap: () => context.push('/staff/logins'),
+                ),
+            ],
           ),
-          _Row(
-            Icons.badge_outlined,
-            l10n.staffTitle,
-            l10n.moreTeamSub,
-            () => context.push('/staff'),
-          ),
-          _Row(
-            Icons.rule,
-            l10n.rulesTitle,
-            l10n.moreRulesSub,
-            () => context.push('/more/rules'),
-          ),
-          _Row(
-            Icons.schedule,
-            l10n.hoursTitle,
-            l10n.moreHoursSub,
-            () => context.push('/more/hours'),
-          ),
-          if (ownerOrManager)
-            _Row(
-              Icons.receipt_long_outlined,
-              l10n.billingTitle,
-              l10n.moreBillingSub,
-              () => context.push('/more/billing'),
-            ),
-          _Row(
-            Icons.storefront_outlined,
-            l10n.profileTitle,
-            l10n.moreProfileSub,
-            () => context.push('/more/profile'),
+          MenuSection(
+            title: l10n.moreSectionSalon,
+            children: [
+              MenuRow(
+                icon: Icons.rule,
+                title: l10n.rulesTitle,
+                subtitle: l10n.moreRulesSub,
+                onTap: () => context.push('/more/rules'),
+              ),
+              MenuRow(
+                icon: Icons.schedule,
+                title: l10n.hoursTitle,
+                subtitle: l10n.moreHoursSub,
+                onTap: () => context.push('/more/hours'),
+              ),
+              if (ownerOrManager)
+                MenuRow(
+                  icon: Icons.receipt_long_outlined,
+                  title: l10n.billingTitle,
+                  subtitle: l10n.moreBillingSub,
+                  onTap: () => context.push('/more/billing'),
+                ),
+              MenuRow(
+                icon: Icons.storefront_outlined,
+                title: l10n.profileTitle,
+                subtitle: l10n.moreProfileSub,
+                onTap: () => context.push('/more/profile'),
+              ),
+            ],
           ),
           const SizedBox(height: 24),
           const FinePrint(),
+          const SizedBox(height: 24),
+          const SignOutButton(),
         ],
-      ),
-    );
-  }
-}
-
-class _Row extends StatelessWidget {
-  const _Row(this.icon, this.title, this.subtitle, this.onTap);
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    return Pressable(
-      onTap: onTap,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 56),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Theme.of(context).dividerColor),
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(icon),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: text.titleMedium),
-                  Text(subtitle, style: text.bodySmall),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right),
-          ],
-        ),
       ),
     );
   }
@@ -226,7 +237,7 @@ class _WithProfile extends ConsumerWidget {
       ),
       _ => Scaffold(
         appBar: AppBar(title: const SalonTitle()),
-        body: const Center(child: CircularProgressIndicator()),
+        body: const SkeletonList(padding: EdgeInsets.all(16)),
       ),
     };
   }
@@ -303,18 +314,13 @@ class _BonusExpiryRowState extends ConsumerState<_BonusExpiryRow> {
     try {
       await api.setBonusExpiry(picked);
       ref.invalidate(salonProfileProvider);
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.rulesExpirySaved(_label(l10n, picked)))),
-      );
+      messenger.notice(l10n.rulesExpirySaved(_label(l10n, picked)));
     } on CrayApiException catch (e) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            e.kind == CrayErrorKind.salonUnavailable
-                ? l10n.billingReadOnlyOther
-                : l10n.rulesSaveFailed,
-          ),
-        ),
+      messenger.notice(
+        e.kind == CrayErrorKind.salonUnavailable
+            ? l10n.billingReadOnlyOther
+            : l10n.rulesSaveFailed,
+        kind: NoticeKind.problem,
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -569,13 +575,14 @@ class _BirthdayOfferRowState extends ConsumerState<_BirthdayOfferRow> {
     try {
       await api.setBirthdayOffer(next);
       ref.invalidate(salonProfileProvider);
-      messenger.showSnackBar(SnackBar(content: Text(l10n.rulesBirthdaySaved)));
+      messenger.notice(l10n.rulesBirthdaySaved);
     } on CrayApiException catch (e) {
-      messenger.showSnackBar(SnackBar(
-        content: Text(e.kind == CrayErrorKind.salonUnavailable
+      messenger.notice(
+        e.kind == CrayErrorKind.salonUnavailable
             ? l10n.billingReadOnlyOther
-            : l10n.rulesSaveFailed),
-      ));
+            : l10n.rulesSaveFailed,
+        kind: NoticeKind.problem,
+      );
     } finally {
       if (mounted) setState(() => _saving = false);
     }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/ui/notice.dart';
 import '../salon/salon_home.dart' show salonNotificationsProvider;
 import '../day/day_controller.dart';
 import '../join/join_controller.dart';
@@ -50,6 +51,11 @@ class _StaffPushState extends ConsumerState<StaffPush> {
         if (purpose.startsWith('staff_') && mounted) {
           ref.read(dayControllerProvider.notifier).refresh();
         }
+      },
+      // "New booking, 4:30 pm" while the owner has the app open: a pop-up,
+      // since the tray stays empty for an app in front.
+      onForeground: (text) {
+        if (mounted) showNotice(context, text, kind: NoticeKind.info);
       },
     );
     _push = push;

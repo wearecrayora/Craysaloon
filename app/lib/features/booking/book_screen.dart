@@ -6,7 +6,9 @@ import 'package:intl/intl.dart';
 import '../../core/format/money.dart';
 import '../../core/theme/cray_glass.dart';
 import '../../core/ui/glass.dart';
+import '../../core/ui/skeleton.dart';
 import '../../core/ui/salon_mark.dart';
+import '../../core/ui/notice.dart';
 import '../../data/local/outbox.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/records/records.dart';
@@ -29,7 +31,11 @@ import '../customer/customer_providers.dart';
 /// * **Nothing is paid here.** Payment follows the visit, so the review says
 ///   so rather than implying a charge.
 class BookScreen extends ConsumerStatefulWidget {
-  const BookScreen({super.key});
+  const BookScreen({this.initialServiceId, super.key});
+
+  /// The service the customer tapped on search or home - chosen by them, so
+  /// it is ticked here. Everything else still starts empty.
+  final String? initialServiceId;
 
   @override
   ConsumerState<BookScreen> createState() => _BookScreenState();
@@ -47,6 +53,7 @@ class _BookScreenState extends ConsumerState<BookScreen> {
   String? _actionId;
   bool _busy = false;
   String? _problem;
+  bool _initialApplied = false;
 
   List<AddOn> get _addOns => ref.read(bookableAddOnsProvider).value ?? const [];
   List<AddOn> get _chosenAddOns =>
@@ -121,11 +128,7 @@ class _BookScreenState extends ConsumerState<BookScreen> {
       );
       ref.invalidate(upcomingProvider);
       if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(l10n.bookDone(ml.formatShortMonthDay(slot.startsAt))),
-        ),
-      );
+      messenger.notice(l10n.bookDone(ml.formatShortMonthDay(slot.startsAt)));
       _reset();
       context.push('/booking/$id');
     } on CrayApiException catch (e) {
@@ -166,6 +169,17 @@ class _BookScreenState extends ConsumerState<BookScreen> {
     final text = Theme.of(context).textTheme;
     final steps = _steps;
     final index = steps.indexOf(_step);
+
+    // The tapped service, once the menu has loaded - and only once, so
+    // changing it afterwards is the customer's to do.
+    final initial = widget.initialServiceId;
+    if (initial != null && !_initialApplied) {
+      final list = ref.watch(bookableServicesProvider).value;
+      if (list != null) {
+        _initialApplied = true;
+        _service = list.where((s) => s.id == initial).firstOrNull;
+      }
+    }
 
     return PopScope(
       canPop: index <= 0,
@@ -346,13 +360,10 @@ class _ServiceStep extends ConsumerWidget {
           ],
         ],
       ),
-      AsyncError() => _Retry(
+      AsyncValue(hasError: true) => _Retry(
         onRetry: () => ref.invalidate(bookableServicesProvider),
       ),
-      _ => const Padding(
-        padding: EdgeInsets.all(32),
-        child: Center(child: CircularProgressIndicator()),
-      ),
+      _ => const SkeletonList(rows: 4, leading: false),
     };
   }
 
@@ -658,14 +669,11 @@ class _TimeStep extends ConsumerWidget {
                 ),
             ],
           ),
-          AsyncError() => _Retry(
+          AsyncValue(hasError: true) => _Retry(
             message: l10n.bookTimesFailed,
             onRetry: () => ref.invalidate(_slotsProvider(key)),
           ),
-          _ => const Padding(
-            padding: EdgeInsets.all(24),
-            child: Center(child: CircularProgressIndicator()),
-          ),
+          _ => const SkeletonList(rows: 3, padding: EdgeInsets.all(24)),
         },
       ],
     );

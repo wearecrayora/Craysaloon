@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/format/money.dart';
+import '../../core/ui/skeleton.dart';
+import '../../core/ui/notice.dart';
 import '../../domain/records/records.dart';
 import '../../l10n/app_localizations.dart';
 import 'day_controller.dart';
@@ -69,7 +71,7 @@ class _CheckoutSheetState extends ConsumerState<CheckoutSheet> {
     if (!mounted) return;
     final l10n = AppL10n.of(context);
     Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.payQueued)));
+    ScaffoldMessenger.of(context).notice(l10n.payQueued);
   }
 
   @override
@@ -93,10 +95,7 @@ class _CheckoutSheetState extends ConsumerState<CheckoutSheet> {
           16, 0, 16, 16 + MediaQuery.viewInsetsOf(context).bottom,
         ),
         child: _loading
-            ? const Padding(
-                padding: EdgeInsets.all(24),
-                child: Center(child: CircularProgressIndicator()),
-              )
+            ? const SkeletonList(rows: 3, padding: EdgeInsets.all(24))
             : Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,

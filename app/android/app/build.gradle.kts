@@ -113,4 +113,7 @@ dependencies {
     // transitively; naming it here means a future embedding change cannot
     // silently take the shortcut away.
     implementation("androidx.core:core-ktx:1.13.1")
+    // SMS User Consent: Android asks the customer before the app may read the
+    // one SMS carrying their code - no READ_SMS permission (SmsConsentChannel).
+    implementation("com.google.android.gms:play-services-auth-api-phone:18.1.0")
 }

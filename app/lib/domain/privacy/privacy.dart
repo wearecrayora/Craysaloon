@@ -47,7 +47,7 @@ class DataRightRequest {
     this.outcome,
   });
 
-  /// `access`, `erasure` or `grievance`.
+  /// `access`, `erasure`, `grievance` or `correction` (0118).
   final String kind;
   final String id;
   final String status;

@@ -67,6 +67,25 @@ class FakeCustomerApi extends FakeCrayApi implements CustomerApi, SalonReads, Sa
   @override
   Future<String?> myBirthdayOffer() async => birthdayOffer;
 
+  /// What the last profile save sent, for the edit-profile tests.
+  ({String? name, String? language})? savedProfile;
+
+  @override
+  Future<ProfileRefusal?> updateMyProfile({String? name, String? language}) async {
+    savedProfile = (name: name, language: language);
+    if (name != null && name.trim().length < 2) return ProfileRefusal.nameLength;
+    final p = profile ?? const CustomerProfile();
+    profile = CustomerProfile(
+      name: name ?? p.name,
+      phone: p.phone,
+      isMinor: p.isMinor,
+      birthdayMonth: p.birthdayMonth,
+      birthdayDay: p.birthdayDay,
+      language: language ?? p.language,
+    );
+    return null;
+  }
+
   @override
   Future<void> setMyBirthday(int? month, int? day) async {
     final p = profile ?? const CustomerProfile();

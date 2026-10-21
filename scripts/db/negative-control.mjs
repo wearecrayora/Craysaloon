@@ -427,6 +427,13 @@ const OPERATOR_CANARY = `
 `;
 const OPERATOR_MUST_FAIL = [/no session of theirs is left/];
 
+// 0118: the phone is the binding. Grant customers a write on it - the
+// "simplification" an edit-profile screen invites - and the gate must see that
+// a customer can now move their own binding.
+const PROFILE_TEST = 'supabase/tests/privacy/profile_test.sql';
+const PROFILE_CANARY = `grant update (phone) on public.customers to authenticated;`;
+const PROFILE_MUST_FAIL = [/the phone number is the binding/];
+
 const BILLING_TEST = 'supabase/tests/billing/billing_test.sql';
 const GRACE_CANARY = `
   do $canary$
@@ -724,6 +731,12 @@ try {
       OPERATORS_TEST,
       OPERATOR_CANARY,
       OPERATOR_MUST_FAIL,
+    ),
+    await check(
+      'profile / a customer who can write their own phone number',
+      PROFILE_TEST,
+      PROFILE_CANARY,
+      PROFILE_MUST_FAIL,
     ),
     await check(
       'billing / a salon_writable that ignores a lapsed subscription',

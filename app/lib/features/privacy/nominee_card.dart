@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/ui/load_failed.dart';
+import '../../core/ui/skeleton.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/privacy/privacy.dart';
 import '../../l10n/app_localizations.dart';
@@ -79,14 +80,11 @@ class NomineeCard extends ConsumerWidget {
                 ),
               ),
             ),
-          AsyncError() => LoadFailed(
+          AsyncValue(hasError: true) => LoadFailed(
               inline: true,
               onRetry: () => ref.invalidate(nomineeProvider),
             ),
-          _ => const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator()),
-            ),
+          _ => const SkeletonList(rows: 3, padding: EdgeInsets.all(16)),
         },
       ],
     );

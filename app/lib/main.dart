@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show LicenseEntryWithLineBreaks, Licens
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/providers.dart';
@@ -68,7 +69,24 @@ Future<void> main() async {
       ProviderScope(
         overrides: [
           if (api != null) crayApiProvider.overrideWithValue(api),
-          if (api != null) sessionProvider.overrideWithValue(api.session),
+          // Live, not read once: signing in at the end of the join flow, signing
+          // out, and a session ended server-side (a transfer, an unbind) all
+          // move the app to the right shell without a restart. Only a change of
+          // WHO (role or salon) re-reads it - an hourly token refresh must not
+          // rebuild the router under someone mid-booking.
+          if (api != null)
+            sessionProvider.overrideWith((ref) {
+              final current = api!.session;
+              final sub = api.sessionChanges.listen((_) {
+                final next = api!.session;
+                if (next?.appRole != current?.appRole ||
+                    next?.salonId != current?.salonId) {
+                  ref.invalidateSelf();
+                }
+              });
+              ref.onDispose(sub.cancel);
+              return current;
+            }),
           if (deviceKey != null) deviceKeyProvider.overrideWithValue(deviceKey),
           if (cached != null) initialBrandingProvider.overrideWithValue(cached),
           cacheDbProvider.overrideWithValue(cache),
@@ -86,14 +104,50 @@ final kEnglish = const Locale('en');
 final kHindi = const Locale('hi');
 final kHinglish = Locale.fromSubtags(languageCode: 'hi', scriptCode: 'Latn');
 
-/// The locale in use. At M5 this follows customer.language ??
-/// salon.default_language ?? 'en' (DESIGN.md 12.5); until a customer has
-/// settings, it follows the device.
-class LocaleNotifier extends Notifier<Locale> {
-  @override
-  Locale build() => kEnglish;
+/// The code the server keeps for a locale (customers.language, 0118) and the
+/// message templates are keyed by: en | hi | hi_Latn.
+String localeCode(Locale locale) => locale.languageCode == 'hi'
+    ? (locale.scriptCode == 'Latn' ? 'hi_Latn' : 'hi')
+    : 'en';
 
-  void select(Locale locale) => state = locale;
+Locale localeFromCode(String? code) => switch (code) {
+  'hi' => kHindi,
+  'hi_Latn' => kHinglish,
+  _ => kEnglish,
+};
+
+/// The locale in use: the customer's own choice, kept on the phone so it
+/// survives a restart, and - for a signed-in customer - saved to their profile
+/// too, so their messages arrive in it (0118).
+class LocaleNotifier extends Notifier<Locale> {
+  static const _key = 'cray.locale';
+
+  @override
+  Locale build() {
+    _restore();
+    return kEnglish;
+  }
+
+  bool _chosen = false;
+
+  Future<void> _restore() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final saved = prefs.getString(_key);
+      // A choice made while this was reading wins over what was saved.
+      if (saved != null && !_chosen) state = localeFromCode(saved);
+    } catch (_) {
+      // No storage (tests, a broken install): English until they choose.
+    }
+  }
+
+  void select(Locale locale) {
+    _chosen = true;
+    state = locale;
+    SharedPreferences.getInstance()
+        .then((prefs) => prefs.setString(_key, localeCode(locale)))
+        .catchError((Object _) => false);
+  }
 }
 
 final localeProvider = NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);

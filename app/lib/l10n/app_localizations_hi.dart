@@ -1856,6 +1856,212 @@ class AppL10nHi extends AppL10n {
   String homeBirthdayBody(String offer) {
     return '$offer - इसे काउंटर पर दिखाएँ।';
   }
+
+  @override
+  String get joinStepSalon => 'सैलून';
+
+  @override
+  String get joinStepNumber => 'नंबर';
+
+  @override
+  String get joinStepCode => 'कोड';
+
+  @override
+  String get joinScanSub => 'सबसे तेज़। यह काउंटर पर पोस्टर या कार्ड पर है।';
+
+  @override
+  String get joinCodeGuide =>
+      'CRAY- से शुरू होता है। न मिले तो काउंटर पर पूछें।';
+
+  @override
+  String get joinPerkBook => 'कुछ टैप में अपनी विज़िट बुक करें';
+
+  @override
+  String get joinPerkWallet => 'आपका वॉलेट, बिल और रसीदें एक जगह';
+
+  @override
+  String get joinPerkRemind => 'विज़िट का समय होने पर याद दिलाना';
+
+  @override
+  String get phoneSub => 'हम इस नंबर पर SMS से 6 अंकों का कोड भेजेंगे।';
+
+  @override
+  String get phoneGuide => '10 अंक, आगे 0 या +91 के बिना।';
+
+  @override
+  String get otpVerify => 'जाँचें';
+
+  @override
+  String get otpChangeNumber => 'बदलें';
+
+  @override
+  String get otpWaitingForSms =>
+      'SMS का इंतज़ार है। ऐप के पढ़ने से पहले आपका फ़ोन आपसे पूछेगा।';
+
+  @override
+  String get otpFilledFromSms => 'कोड आपके SMS से भरा गया।';
+
+  @override
+  String get joinedContinue => 'चलिए शुरू करें';
+
+  @override
+  String get meTileVisits => 'विज़िट';
+
+  @override
+  String get meTileBills => 'बिल';
+
+  @override
+  String get meSectionDetails => 'आपकी जानकारी';
+
+  @override
+  String get meSectionActivity => 'आपकी गतिविधि';
+
+  @override
+  String get meSectionPrivacy => 'निजता';
+
+  @override
+  String get meEditProfile => 'प्रोफ़ाइल बदलें';
+
+  @override
+  String get meEditProfileSub => 'आपका नाम, नंबर और भाषा';
+
+  @override
+  String get meNoName => 'अपना नाम जोड़ें';
+
+  @override
+  String get signOut => 'साइन आउट';
+
+  @override
+  String get signOutTitle => 'इस फ़ोन से साइन आउट करें?';
+
+  @override
+  String get signOutBody =>
+      'आपकी विज़िट, वॉलेट और बिल सैलून के पास सुरक्षित रहते हैं। वापस आने के लिए सैलून कोड और अपना नंबर फिर से डालें।';
+
+  @override
+  String get signOutUnsent =>
+      'इस फ़ोन के कुछ बदलाव अभी भेजे नहीं गए हैं। इंटरनेट से जुड़ें, उन्हें जाने दें, फिर साइन आउट करें।';
+
+  @override
+  String get profileSaved => 'प्रोफ़ाइल सहेजी गई';
+
+  @override
+  String get profileLoadFailed =>
+      'आपकी प्रोफ़ाइल लोड नहीं हो सकी। कनेक्शन जाँचें और फिर कोशिश करें।';
+
+  @override
+  String get profileNameLabel => 'पूरा नाम';
+
+  @override
+  String get profileNameHint => 'जैसे आशा राव';
+
+  @override
+  String profileNameHelp(String salon) {
+    return '$salon आपको इसी नाम से बुलाएगा और बिल पर लिखेगा।';
+  }
+
+  @override
+  String get profileNameLength => 'नाम में 2 से 60 अक्षर होने चाहिए।';
+
+  @override
+  String get profileNameInvalid =>
+      'यह नाम जैसा नहीं लगता। अक्षरों का उपयोग करें।';
+
+  @override
+  String get profileErased =>
+      'आपके अनुरोध पर आपकी जानकारी मिटा दी गई थी, इसलिए बदलने को कुछ नहीं है।';
+
+  @override
+  String get profileLanguageHelp =>
+      'ऐप और सैलून के आपके संदेश इसी भाषा में होंगे।';
+
+  @override
+  String get profileBirthdayAdd => 'अपना जन्मदिन जोड़ें';
+
+  @override
+  String get profileSave => 'बदलाव सहेजें';
+
+  @override
+  String get profileChangeNumber => 'बदलें';
+
+  @override
+  String get profileChangeNumberTitle => 'अपना नंबर बदलें';
+
+  @override
+  String profileChangeNumberBody(String salon) {
+    return 'आपका नंबर ही $salon की पहचान है कि यह आप हैं, इसलिए इसे ऐप में नहीं बदला जा सकता। यहाँ बदलाव माँगें: सैलून पुष्टि करेगा कि यह आप हैं, फिर आपका खाता, वॉलेट और विज़िट नए नंबर पर आ जाएँगे।';
+  }
+
+  @override
+  String get profileOtherCorrection => 'कुछ और गलत है? सुधार माँगें';
+
+  @override
+  String profileCorrectionBody(String salon) {
+    return '$salon को बताएँ कि आपकी जानकारी में क्या गलत है। उन्हें 30 दिनों में जवाब देना होगा।';
+  }
+
+  @override
+  String get profileCorrectionDetail => 'क्या बदलना चाहिए? (वैकल्पिक)';
+
+  @override
+  String get profileCorrectionDetailHint => 'जैसे मेरे बिल पर जन्मदिन गलत है';
+
+  @override
+  String get profileNumberDetailHint => 'जैसे मुझे कॉल करने का सही समय';
+
+  @override
+  String get profileNumberRequestPrefix => 'फ़ोन नंबर बदलना';
+
+  @override
+  String get profileCorrectionSend => 'बदलाव माँगें';
+
+  @override
+  String get homeQuickTitle => 'आप क्या करना चाहेंगे?';
+
+  @override
+  String get homeTileBirthday => 'जन्मदिन';
+
+  @override
+  String get homeServicesTitle => 'सेवाएँ';
+
+  @override
+  String get homeSeeAll => 'सब देखें';
+
+  @override
+  String get searchHint => 'हेयरकट, फेशियल, स्पा खोजें…';
+
+  @override
+  String searchNothing(String query) {
+    return 'यहाँ \"$query\" नाम का कुछ नहीं है। कोई और शब्द आज़माएँ या सब देखें।';
+  }
+
+  @override
+  String searchAll(int count) {
+    return 'सभी $count सेवाएँ';
+  }
+
+  @override
+  String searchFound(int count) {
+    return '$count मिलीं';
+  }
+
+  @override
+  String get moreTileWalkIn => 'वॉक-इन';
+
+  @override
+  String get moreTileAttention => 'ध्यान दें';
+
+  @override
+  String get moreSectionMenu => 'मेन्यू और टीम';
+
+  @override
+  String get moreSectionSalon => 'आपका सैलून';
+
+  @override
+  String get moreLoginsTitle => 'कौन साइन इन कर सकता है';
+
+  @override
+  String get moreLoginsSub => 'जिन नंबरों से आपकी टीम साइन इन करती है';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -3726,4 +3932,212 @@ class AppL10nHiLatn extends AppL10nHi {
   String homeBirthdayBody(String offer) {
     return '$offer - ise counter par dikhayein.';
   }
+
+  @override
+  String get joinStepSalon => 'Salon';
+
+  @override
+  String get joinStepNumber => 'Number';
+
+  @override
+  String get joinStepCode => 'Code';
+
+  @override
+  String get joinScanSub =>
+      'Sabse tez. Yeh counter par poster ya card par hai.';
+
+  @override
+  String get joinCodeGuide =>
+      'CRAY- se shuru hota hai. Na mile to counter par poochhein.';
+
+  @override
+  String get joinPerkBook => 'Kuch tap mein apni visit book karein';
+
+  @override
+  String get joinPerkWallet => 'Aapka wallet, bill aur raseedein ek jagah';
+
+  @override
+  String get joinPerkRemind => 'Visit ka samay hone par yaad dilana';
+
+  @override
+  String get phoneSub => 'Hum is number par SMS se 6 ankon ka code bhejenge.';
+
+  @override
+  String get phoneGuide => '10 ank, aage 0 ya +91 ke bina.';
+
+  @override
+  String get otpVerify => 'Verify karein';
+
+  @override
+  String get otpChangeNumber => 'Badlein';
+
+  @override
+  String get otpWaitingForSms =>
+      'SMS ka intezaar hai. App ke padhne se pehle aapka phone aapse poochhega.';
+
+  @override
+  String get otpFilledFromSms => 'Code aapke SMS se bhara gaya.';
+
+  @override
+  String get joinedContinue => 'Chaliye shuru karein';
+
+  @override
+  String get meTileVisits => 'Visits';
+
+  @override
+  String get meTileBills => 'Bills';
+
+  @override
+  String get meSectionDetails => 'Aapki jaankari';
+
+  @override
+  String get meSectionActivity => 'Aapki activity';
+
+  @override
+  String get meSectionPrivacy => 'Privacy';
+
+  @override
+  String get meEditProfile => 'Profile badlein';
+
+  @override
+  String get meEditProfileSub => 'Aapka naam, number aur bhasha';
+
+  @override
+  String get meNoName => 'Apna naam jodein';
+
+  @override
+  String get signOut => 'Sign out';
+
+  @override
+  String get signOutTitle => 'Is phone se sign out karein?';
+
+  @override
+  String get signOutBody =>
+      'Aapki visits, wallet aur bill salon ke paas surakshit rehte hain. Wapas aane ke liye salon code aur apna number phir se daalein.';
+
+  @override
+  String get signOutUnsent =>
+      'Is phone ke kuch badlav abhi bheje nahi gaye hain. Internet se judein, unhe jaane dein, phir sign out karein.';
+
+  @override
+  String get profileSaved => 'Profile save ho gayi';
+
+  @override
+  String get profileLoadFailed =>
+      'Aapki profile load nahi ho saki. Connection check karein aur phir koshish karein.';
+
+  @override
+  String get profileNameLabel => 'Poora naam';
+
+  @override
+  String get profileNameHint => 'Jaise Asha Rao';
+
+  @override
+  String profileNameHelp(String salon) {
+    return '$salon aapko isi naam se bulayega aur bill par likhega.';
+  }
+
+  @override
+  String get profileNameLength => 'Naam mein 2 se 60 akshar hone chahiye.';
+
+  @override
+  String get profileNameInvalid =>
+      'Yeh naam jaisa nahi lagta. Akshar use karein.';
+
+  @override
+  String get profileErased =>
+      'Aapke anurodh par aapki jaankari mita di gayi thi, isliye badalne ko kuch nahi hai.';
+
+  @override
+  String get profileLanguageHelp =>
+      'App aur salon ke aapko messages isi bhasha mein honge.';
+
+  @override
+  String get profileBirthdayAdd => 'Apna janamdin jodein';
+
+  @override
+  String get profileSave => 'Badlav save karein';
+
+  @override
+  String get profileChangeNumber => 'Badlein';
+
+  @override
+  String get profileChangeNumberTitle => 'Apna number badlein';
+
+  @override
+  String profileChangeNumberBody(String salon) {
+    return 'Aapka number hi $salon ki pehchaan hai ki yeh aap hain, isliye ise app mein nahi badla ja sakta. Yahan badlav maangein: salon confirm karega ki yeh aap hain, phir aapka account, wallet aur visits naye number par aa jayenge.';
+  }
+
+  @override
+  String get profileOtherCorrection => 'Kuch aur galat hai? Sudhaar maangein';
+
+  @override
+  String profileCorrectionBody(String salon) {
+    return '$salon ko batayein ki aapki jaankari mein kya galat hai. Unhe 30 dinon mein jawab dena hoga.';
+  }
+
+  @override
+  String get profileCorrectionDetail => 'Kya badalna chahiye? (optional)';
+
+  @override
+  String get profileCorrectionDetailHint =>
+      'Jaise mere bill par janamdin galat hai';
+
+  @override
+  String get profileNumberDetailHint => 'Jaise mujhe call karne ka sahi samay';
+
+  @override
+  String get profileNumberRequestPrefix => 'Phone number badalna';
+
+  @override
+  String get profileCorrectionSend => 'Badlav maangein';
+
+  @override
+  String get homeQuickTitle => 'Aap kya karna chahenge?';
+
+  @override
+  String get homeTileBirthday => 'Janamdin';
+
+  @override
+  String get homeServicesTitle => 'Services';
+
+  @override
+  String get homeSeeAll => 'Sab dekhein';
+
+  @override
+  String get searchHint => 'Haircut, facial, spa khojein…';
+
+  @override
+  String searchNothing(String query) {
+    return 'Yahan \"$query\" naam ka kuch nahi hai. Koi aur shabd try karein ya sab dekhein.';
+  }
+
+  @override
+  String searchAll(int count) {
+    return 'Sabhi $count services';
+  }
+
+  @override
+  String searchFound(int count) {
+    return '$count mili';
+  }
+
+  @override
+  String get moreTileWalkIn => 'Walk-in';
+
+  @override
+  String get moreTileAttention => 'Dhyaan dein';
+
+  @override
+  String get moreSectionMenu => 'Menu aur team';
+
+  @override
+  String get moreSectionSalon => 'Aapka salon';
+
+  @override
+  String get moreLoginsTitle => 'Kaun sign in kar sakta hai';
+
+  @override
+  String get moreLoginsSub => 'Jin numbers se aapki team sign in karti hai';
 }

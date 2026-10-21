@@ -402,7 +402,7 @@ Every screen implements four states. A screen with only the happy path is not do
 | State | Rule |
 |---|---|
 | **Empty** | Says what will appear here and gives the one action that fills it. Never an illustration with no next step |
-| **Loading** | Static skeletons matching the final layout. **No shimmer sweep** — see §7.4 |
+| **Loading** | Static skeletons matching the final layout (`core/ui/skeleton.dart`: `SkeletonList`, `SkeletonCard`, `SkeletonBlock`). **No shimmer sweep** — see §7.4. No full-page spinner anywhere (21 Oct 2026); a small spinner inside a busy button is the only one |
 | **Error** | Says what failed in plain language and offers retry. Never a code, never "something went wrong" |
 | **Offline** | A persistent, quiet banner — not a modal. The app keeps working; say what is queued |
 
@@ -438,6 +438,18 @@ Motion exists to explain a change in state — where something came from, or wha
 | List insertion | Fade + 8dp rise. Never a slide across the screen |
 | Selection | `micro` fill and border change |
 | Add-on toggle → total | The **total** cross-fades to its new value. It does not count up |
+
+**Decided 21 Oct 2026 (the "premium" pass):**
+
+| What | How |
+|---|---|
+| Opening a page | Fade in while rising from 8% to the right; the page beneath recedes 4% and dims to 60%. `large`, enter curve (`core/theme/motion.dart`). Same on Android and iOS |
+| Switching bottom-bar tabs | A `standard` cross-fade - tabs are side by side, not a stack. Each tab paints its own mesh so two never show through each other |
+| Join steps | Cross-fade with a 4% rise, and a three-part progress bar (salon, number, code) that fills |
+| Something worked | `SuccessCheck`: a ring that closes and a tick that draws, once, ~560ms, painted in code (no Lottie file to ship or license). Shown on joining |
+| A notice | `showNotice` / `messenger.notice` (`core/ui/notice.dart`): a floating bar in the thumb zone, a fixed status icon (done / info / problem), a light haptic. Never a modal. A push that lands while the app is open is shown this way - Android puts nothing in the tray for an app in front |
+
+All of it honours reduced motion: slides and scales become a 100ms fade.
 
 ### 7.3 What must never animate
 
@@ -571,6 +583,17 @@ targets are larger than the marks. On mobile, tap-to-pin rather than hover.
   states - within §7: money never animates, mark-complete stays instant, reduced motion is
   honoured, and skeletons still do not shimmer.
 - The salon logo appears **once per screen** — in the app bar. Not repeated in cards.
+- **Menus you can see (decided 21 Oct 2026).** Every option a customer or owner has is on
+  the surface, never behind a menu they would have to know to open: the home and Me screens
+  carry a grid of **action tiles** (`core/ui/action_tile.dart`) - a 56dp soft square in the
+  salon's `primaryContainer` with its computed ink, the icon inside, the label always under
+  it, the whole 88dp+ tile the target. This is the action itself, so it is **not** the
+  "icon tile above a heading" of §14. Menus are labelled groups of `MenuRow`s
+  (`core/ui/menu.dart`): a 40dp soft square, title, one line, chevron.
+- **A picture for every service.** `serviceIcon()` (`core/ui/service_icon.dart`) reads the
+  service's name and category (English, Hindi, Hinglish) and picks from the one outline set;
+  anything unrecognised gets the neutral spa mark - a wrong guess is worse than a neutral one.
+  The salon uploads nothing per service.
 
 ---
 

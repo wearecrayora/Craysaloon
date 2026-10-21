@@ -1866,4 +1866,213 @@ class AppL10nEn extends AppL10n {
   String homeBirthdayBody(String offer) {
     return '$offer - show this at the counter.';
   }
+
+  @override
+  String get joinStepSalon => 'Salon';
+
+  @override
+  String get joinStepNumber => 'Number';
+
+  @override
+  String get joinStepCode => 'Code';
+
+  @override
+  String get joinScanSub =>
+      'Fastest. It\'s on the poster or card at the counter.';
+
+  @override
+  String get joinCodeGuide =>
+      'Starts with CRAY-. Ask at the counter if you can\'t find it.';
+
+  @override
+  String get joinPerkBook => 'Book your visit in a few taps';
+
+  @override
+  String get joinPerkWallet => 'Your wallet, bills and receipts in one place';
+
+  @override
+  String get joinPerkRemind => 'A reminder when you\'re due for a visit';
+
+  @override
+  String get phoneSub => 'We\'ll send a 6-digit code to this number by SMS.';
+
+  @override
+  String get phoneGuide => '10 digits, without 0 or +91 in front.';
+
+  @override
+  String get otpVerify => 'Verify';
+
+  @override
+  String get otpChangeNumber => 'Change';
+
+  @override
+  String get otpWaitingForSms =>
+      'Waiting for the SMS. Your phone will ask before the app reads it.';
+
+  @override
+  String get otpFilledFromSms => 'Code filled in from your SMS.';
+
+  @override
+  String get joinedContinue => 'Let\'s go';
+
+  @override
+  String get meTileVisits => 'Visits';
+
+  @override
+  String get meTileBills => 'Bills';
+
+  @override
+  String get meSectionDetails => 'Your details';
+
+  @override
+  String get meSectionActivity => 'Your activity';
+
+  @override
+  String get meSectionPrivacy => 'Privacy';
+
+  @override
+  String get meEditProfile => 'Edit profile';
+
+  @override
+  String get meEditProfileSub => 'Your name, number and language';
+
+  @override
+  String get meNoName => 'Add your name';
+
+  @override
+  String get signOut => 'Sign out';
+
+  @override
+  String get signOutTitle => 'Sign out of this phone?';
+
+  @override
+  String get signOutBody =>
+      'Your visits, wallet and bills stay safe with the salon. To come back, enter the salon code and your number again.';
+
+  @override
+  String get signOutUnsent =>
+      'Some changes on this phone haven\'t been sent yet. Connect to the internet, let them send, then sign out.';
+
+  @override
+  String get profileSaved => 'Profile saved';
+
+  @override
+  String get profileLoadFailed =>
+      'Couldn\'t load your profile. Check your connection and try again.';
+
+  @override
+  String get profileNameLabel => 'Full name';
+
+  @override
+  String get profileNameHint => 'e.g. Asha Rao';
+
+  @override
+  String profileNameHelp(String salon) {
+    return 'How $salon greets you and writes your bills.';
+  }
+
+  @override
+  String get profileNameLength => 'A name needs 2 to 60 characters.';
+
+  @override
+  String get profileNameInvalid =>
+      'That doesn\'t look like a name. Use letters.';
+
+  @override
+  String get profileErased =>
+      'Your details were erased at your request, so there is nothing to edit.';
+
+  @override
+  String get profileLanguageHelp =>
+      'The app, and the salon\'s messages to you, will use it.';
+
+  @override
+  String get profileBirthdayAdd => 'Add your birthday';
+
+  @override
+  String get profileSave => 'Save changes';
+
+  @override
+  String get profileChangeNumber => 'Change';
+
+  @override
+  String get profileChangeNumberTitle => 'Change your number';
+
+  @override
+  String profileChangeNumberBody(String salon) {
+    return 'Your number is how $salon knows it\'s you, so it can\'t be changed in the app. Ask for the change here: the salon will confirm it\'s you, then your account, wallet and visits move to the new number.';
+  }
+
+  @override
+  String get profileOtherCorrection =>
+      'Something else wrong? Ask for a correction';
+
+  @override
+  String profileCorrectionBody(String salon) {
+    return 'Tell $salon what is wrong in what they hold about you. They must answer within 30 days.';
+  }
+
+  @override
+  String get profileCorrectionDetail => 'What should change? (optional)';
+
+  @override
+  String get profileCorrectionDetailHint =>
+      'e.g. my birthday is wrong on my bill';
+
+  @override
+  String get profileNumberDetailHint => 'e.g. a good time to call me';
+
+  @override
+  String get profileNumberRequestPrefix => 'Change of phone number';
+
+  @override
+  String get profileCorrectionSend => 'Ask for the change';
+
+  @override
+  String get homeQuickTitle => 'What would you like to do?';
+
+  @override
+  String get homeTileBirthday => 'Birthday';
+
+  @override
+  String get homeServicesTitle => 'Services';
+
+  @override
+  String get homeSeeAll => 'See all';
+
+  @override
+  String get searchHint => 'Search haircut, facial, spa…';
+
+  @override
+  String searchNothing(String query) {
+    return 'Nothing called \"$query\" here. Try another word, or see everything.';
+  }
+
+  @override
+  String searchAll(int count) {
+    return 'All $count services';
+  }
+
+  @override
+  String searchFound(int count) {
+    return '$count found';
+  }
+
+  @override
+  String get moreTileWalkIn => 'Walk-in';
+
+  @override
+  String get moreTileAttention => 'Needs attention';
+
+  @override
+  String get moreSectionMenu => 'Menu and team';
+
+  @override
+  String get moreSectionSalon => 'Your salon';
+
+  @override
+  String get moreLoginsTitle => 'Who can sign in';
+
+  @override
+  String get moreLoginsSub => 'Phone numbers your team signs in with';
 }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/format/money.dart';
 import '../../core/ui/load_failed.dart';
+import '../../core/ui/skeleton.dart';
 import '../../domain/wallet/wallet.dart';
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
@@ -68,10 +69,10 @@ class WalletScreen extends ConsumerWidget {
             ),
           ),
           // Money is never served stale. Offline, this says so (RULES 5).
-          AsyncError() => LoadFailed(
+          AsyncValue(hasError: true) => LoadFailed(
             onRetry: () => ref.invalidate(walletProvider),
           ),
-          _ => const Center(child: CircularProgressIndicator()),
+          _ => const SkeletonList(padding: EdgeInsets.all(16)),
         },
       ),
     );

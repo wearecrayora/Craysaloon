@@ -28,13 +28,22 @@ import '../../domain/wallet/wallet.dart';
 class SupabaseCrayApi
     implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi, WalletApi,
         PushApi, ReferralApi, DashboardApi, VisitApi, SalonAccountApi, CustomerApi,
-        SalonHoursApi, StaffLoginsApi {
+        SalonHoursApi, StaffLoginsApi, SessionApi {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
 
   @override
   bool get hasSession => _client.auth.currentSession != null;
+
+  /// Local scope: this device's refresh token is revoked and nothing else -
+  /// a customer signing out of a shared phone does not sign their own phone out.
+  @override
+  Future<void> signOut() => _client.auth.signOut(scope: SignOutScope.local);
+
+  @override
+  Stream<void> get sessionChanges =>
+      _client.auth.onAuthStateChange.map((_) {});
 
   @override
   AppSession? get session {
@@ -382,7 +391,7 @@ class SupabaseCrayApi
   @override
   Future<CustomerProfile?> me() async {
     final rows = await _rows(
-        () => _client.from('customers').select('name,phone,is_minor,birthday').limit(1));
+        () => _client.from('customers').select('name,phone,is_minor,birthday,language').limit(1));
     if (rows.isEmpty) return null;
     // Stored in the year 2000 (0113); only the day and month mean anything.
     final birthday = DateTime.tryParse(rows.first['birthday'] as String? ?? '');
@@ -392,6 +401,7 @@ class SupabaseCrayApi
       isMinor: rows.first['is_minor'] == true,
       birthdayMonth: birthday?.month,
       birthdayDay: birthday?.day,
+      language: rows.first['language'] as String?,
     );
   }
 
@@ -1305,6 +1315,21 @@ class SupabaseCrayApi
   @override
   Future<void> setMyBirthday(int? month, int? day) async {
     await _call('set_my_birthday', {'p_month': month, 'p_day': day});
+  }
+
+  @override
+  Future<ProfileRefusal?> updateMyProfile({String? name, String? language}) async {
+    final body = await _call('update_my_profile', {
+      'p_name': name,
+      'p_language': language,
+    });
+    if (body['ok'] == true) return null;
+    return switch (body['reason']) {
+      'name_length' => ProfileRefusal.nameLength,
+      'name_invalid' => ProfileRefusal.nameInvalid,
+      'erased' => ProfileRefusal.erased,
+      _ => ProfileRefusal.language,
+    };
   }
 
   @override

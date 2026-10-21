@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/format/money.dart';
 import '../../core/platform/payment_sheet.dart';
+import '../../core/ui/notice.dart';
 import '../../data/local/outbox.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/visit/visit.dart';
@@ -217,8 +218,7 @@ class _PayBillSheetState extends ConsumerState<PayBillSheet> {
         _refreshAll();
         if (!mounted) return;
         if (left == 0) {
-          ScaffoldMessenger.maybeOf(context)
-              ?.showSnackBar(SnackBar(content: Text(l10n.billPaidFromWallet)));
+          showNotice(context, l10n.billPaidFromWallet);
           Navigator.of(context).pop();
           return;
         }

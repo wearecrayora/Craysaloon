@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../features/booking/book_screen.dart';
 import '../features/booking/booking_detail_screen.dart';
+import '../features/booking/search_screen.dart';
 import '../features/catalogue/catalogue_screens.dart';
 import '../features/customer/customer_shell.dart';
 import '../features/customer/documents_screen.dart';
+import '../features/customer/edit_profile_screen.dart';
 import '../features/customer/history_screen.dart';
 import '../features/customer/me_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
@@ -16,6 +18,7 @@ import '../features/day/auto_sync.dart';
 import '../features/day/day_screen.dart';
 import '../features/day/walk_in_screen.dart';
 import '../features/join/deep_link_listener.dart';
+import '../features/join/join_controller.dart' show JoinStep, joinControllerProvider;
 import '../features/join/join_screen.dart';
 import '../features/owner/hours_screens.dart';
 import '../features/owner/more_screens.dart';
@@ -24,6 +27,7 @@ import '../features/privacy/your_data_screen.dart';
 import '../features/referral/referral_screen.dart';
 import '../features/wallet/add_money_screen.dart';
 import '../features/wallet/wallet_screen.dart';
+import '../core/theme/motion.dart';
 import '../core/ui/glass.dart';
 import '../features/notifications/staff_push.dart';
 import '../features/owner/logins_screen.dart';
@@ -38,6 +42,22 @@ import 'providers.dart';
 GoRouterPageBuilder _page(Widget child) =>
     (context, state) => MaterialPage(key: state.pageKey, child: child);
 
+/// A bottom-bar tab: tabs are places side by side, not a stack, so moving
+/// between them is a quick cross-fade (DESIGN 7.1 "standard"), never the
+/// forward slide of opening a page. Each tab paints its own mesh, so the two
+/// never show through each other while they fade.
+GoRouterPageBuilder _tab(Widget child) => (context, state) => CustomTransitionPage(
+  key: state.pageKey,
+  transitionDuration: Motion.standard,
+  reverseTransitionDuration: Motion.exitOf(Motion.standard),
+  child: MeshBackground(child: child),
+  transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+      FadeTransition(
+        opacity: CurvedAnimation(parent: animation, curve: Motion.enter),
+        child: child,
+      ),
+);
+
 /// Routes, and the shell each role gets (`ARCHITECTURE.md` 9.1).
 ///
 /// The shell is chosen from `app_role`, and **the redirect is the whole point**:
@@ -50,11 +70,17 @@ GoRouterPageBuilder _page(Widget child) =>
 final routerProvider = Provider<GoRouter>((ref) {
   final session = ref.watch(sessionProvider);
 
+  // Signing in at the end of the join flow changes the session, and with it
+  // this router. The welcome screen stays up until the person taps Continue -
+  // otherwise the moment they joined would flash by unseen.
+  bool welcoming() => ref.read(joinControllerProvider).step == JoinStep.done;
+
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: welcoming() ? '/join' : '/',
     redirect: (context, state) {
       final role = session?.appRole;
       final location = state.matchedLocation;
+      if (location == '/join' && session != null && welcoming()) return null;
 
       // Nobody signed in, or signed in with no salon: the join flow, and
       // nothing else exists to navigate to.
@@ -93,7 +119,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         const customerRoutes = {
           '/home',
           '/book',
+          '/search',
           '/me',
+          '/me/edit',
           '/visits',
           '/documents',
           '/your-data',
@@ -117,13 +145,26 @@ final routerProvider = Provider<GoRouter>((ref) {
       ShellRoute(
         builder: (context, state, child) => CustomerShell(child: child),
         routes: [
-          GoRoute(path: '/home', pageBuilder: _page(const SalonHome())),
-          GoRoute(path: '/book', pageBuilder: _page(const BookScreen())),
-          GoRoute(path: '/wallet', pageBuilder: _page(const WalletScreen())),
-          GoRoute(path: '/me', pageBuilder: _page(const MeScreen())),
+          GoRoute(path: '/home', pageBuilder: _tab(const SalonHome())),
+          // `?service=` arrives from search or a home card: that service is
+          // chosen because the customer just tapped it - nothing else is.
+          GoRoute(
+            path: '/book',
+            pageBuilder: (context, state) {
+              final service = state.uri.queryParameters['service'];
+              return _tab(BookScreen(key: ValueKey(service), initialServiceId: service))(
+                context,
+                state,
+              );
+            },
+          ),
+          GoRoute(path: '/wallet', pageBuilder: _tab(const WalletScreen())),
+          GoRoute(path: '/me', pageBuilder: _tab(const MeScreen())),
         ],
       ),
       GoRoute(path: '/your-data', pageBuilder: _page(const YourDataScreen())),
+      GoRoute(path: '/me/edit', pageBuilder: _page(const EditProfileScreen())),
+      GoRoute(path: '/search', pageBuilder: _page(const SearchScreen())),
       GoRoute(path: '/visits', pageBuilder: _page(const HistoryScreen())),
       GoRoute(path: '/documents', pageBuilder: _page(const DocumentsScreen())),
       GoRoute(
@@ -144,7 +185,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         // once - on every move. It paints its own mesh (see OwnerShell).
         builder: (context, state, child) => OwnerShell(child: child),
         routes: [
-          GoRoute(path: '/day', pageBuilder: _page(const DayScreen())),
+          GoRoute(path: '/day', pageBuilder: _tab(const DayScreen())),
           GoRoute(
             path: '/day/walk-in',
             pageBuilder: _page(const WalkInScreen()),
@@ -155,11 +196,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/dashboard',
-            pageBuilder: _page(const DashboardScreen()),
+            pageBuilder: _tab(const DashboardScreen()),
           ),
           GoRoute(
             path: '/customers',
-            pageBuilder: _page(const CustomersScreen()),
+            pageBuilder: _tab(const CustomersScreen()),
           ),
           GoRoute(
             path: '/catalogue/services',
@@ -179,7 +220,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               child: StaffHoursScreen(staffId: state.pathParameters['id']!),
             ),
           ),
-          GoRoute(path: '/more', pageBuilder: _page(const MoreScreen())),
+          GoRoute(path: '/more', pageBuilder: _tab(const MoreScreen())),
           GoRoute(path: '/more/rules', pageBuilder: _page(const RulesScreen())),
           GoRoute(path: '/more/hours', pageBuilder: _page(const HoursScreen())),
           GoRoute(

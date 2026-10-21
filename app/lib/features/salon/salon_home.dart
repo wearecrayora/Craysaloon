@@ -9,12 +9,19 @@ import '../../core/platform/home_shortcut.dart';
 import '../../core/platform/salon_notifications.dart';
 import '../../core/theme/brand_tokens.dart';
 import '../../core/theme/cray_glass.dart';
+import '../../core/ui/action_tile.dart';
 import '../../core/ui/glass.dart';
+import '../../core/ui/notice.dart';
 import '../../core/ui/salon_mark.dart';
+import '../../core/ui/service_icon.dart';
+import '../../core/ui/skeleton.dart';
 import '../../domain/customer/customer.dart';
+import '../../domain/records/records.dart' show Service;
 import '../../domain/visit/visit.dart';
 import '../../l10n/app_localizations.dart';
 import '../customer/customer_providers.dart';
+import '../../core/ui/menu.dart' show Initials;
+import '../customer/me_screen.dart' show editBirthday;
 import '../join/join_controller.dart';
 import '../notifications/push_registration.dart';
 import '../visit/visit_cards.dart';
@@ -104,6 +111,10 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
           ref.invalidate(visitsTodayProvider);
         }
       },
+      // The app is open: say it here, as a pop-up, since Android will not.
+      onForeground: (text) {
+        if (mounted) showNotice(context, text, kind: NoticeKind.info);
+      },
     );
     _push = push;
     await push.start();
@@ -160,7 +171,9 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
       (_, next) => _askAboutNewBill(next.value ?? const []),
     );
 
-    final firstName = ref.watch(myProfileProvider).value?.firstName;
+    final profile = ref.watch(myProfileProvider).value;
+    final firstName = profile?.firstName;
+    final billCount = ref.watch(billsProvider).value?.length ?? 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -172,6 +185,16 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
             onPressed: () => context.push('/your-data'),
             icon: const Icon(Icons.shield_outlined),
             tooltip: l10n.yourDataTitle,
+          ),
+          // The profile, one tap from anywhere it is needed: the round mark
+          // with their initials, as on any app they already use.
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              tooltip: l10n.navMe,
+              onPressed: () => context.go('/me'),
+              icon: Initials(profile?.initials, size: 36),
+            ),
           ),
         ],
       ),
@@ -185,17 +208,22 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
           ref.invalidate(walletProvider);
           ref.invalidate(upcomingProvider);
           ref.invalidate(nextDueProvider);
+          ref.invalidate(bookableServicesProvider);
         },
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
           children: [
+            // Search first, where the eye lands: "what do they do here, and
+            // what does it cost?" is the question most people open the app with.
+            const _SearchBar(),
+            const SizedBox(height: 20),
             Text(
               firstName == null
                   ? l10n.homeGreetingNoName
                   : _greeting(l10n, firstName, DateTime.now()),
               style: text.headlineMedium,
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 4),
             Text(
               _today(context),
               style: text.bodyMedium?.copyWith(color: text.bodySmall?.color),
@@ -211,9 +239,17 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          l10n.shortcutTitle(salonName),
-                          style: text.titleMedium,
+                        Row(
+                          children: [
+                            const Icon(Icons.add_to_home_screen_outlined),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                l10n.shortcutTitle(salonName),
+                                style: text.titleMedium,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 8),
                         Text(l10n.shortcutBody, style: text.bodySmall),
@@ -258,20 +294,203 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
             // Today's booking and the code to read to the stylist (0084).
             const TodayVisitsCard(),
             const _NextCard(),
-            const SizedBox(height: 12),
+            // Everything a customer can do, as tiles they can see - nothing
+            // behind a menu they would have to know to open.
+            SectionHeader(l10n.homeQuickTitle),
+            ActionGrid(
+              tiles: [
+                ActionTile(
+                  icon: Icons.event_available_outlined,
+                  label: l10n.navBook,
+                  onTap: () => context.go('/book'),
+                ),
+                ActionTile(
+                  icon: Icons.add_card_outlined,
+                  label: l10n.walletAddMoney,
+                  onTap: () => context.push('/wallet/add'),
+                ),
+                ActionTile(
+                  icon: Icons.history_rounded,
+                  label: l10n.meTileVisits,
+                  onTap: () => context.push('/visits'),
+                ),
+                ActionTile(
+                  icon: Icons.receipt_long_outlined,
+                  label: l10n.meTileBills,
+                  badge: billCount > 0 ? '$billCount' : null,
+                  onTap: () => context.push('/documents'),
+                ),
+                // Only when the salon's plan carries it (0087). The server
+                // refuses the code either way; this avoids a tile that cannot work.
+                if (hasFeature(ref, 'referrals'))
+                  ActionTile(
+                    icon: Icons.card_giftcard_outlined,
+                    label: l10n.referTitle,
+                    onTap: () => context.push('/refer'),
+                  ),
+                if (profile != null && !profile.isMinor)
+                  ActionTile(
+                    icon: Icons.cake_outlined,
+                    label: l10n.homeTileBirthday,
+                    onTap: () => editBirthday(context, ref, profile, salonName),
+                  ),
+                ActionTile(
+                  icon: Icons.person_outline,
+                  label: l10n.meEditProfile,
+                  onTap: () => context.push('/me/edit'),
+                ),
+                ActionTile(
+                  icon: Icons.privacy_tip_outlined,
+                  label: l10n.yourDataTitle,
+                  onTap: () => context.push('/your-data'),
+                ),
+              ],
+            ),
+            const _ServicesRow(),
+            const SizedBox(height: 24),
             _WalletCard(salonName: salonName),
-            // Only when the salon's plan carries it (0087). The server refuses
-            // the code either way; this just avoids a row that cannot work.
-            if (hasFeature(ref, 'referrals')) ...[
-              const SizedBox(height: 12),
-              _RowCard(
-                icon: Icons.card_giftcard_outlined,
-                title: l10n.referTitle,
-                subtitle: l10n.referSubtitle,
-                onTap: () => context.push('/refer'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The search bar: looks like a field, opens the search page. A real field
+/// here would put the keyboard up on the home screen for anyone who brushed it.
+class _SearchBar extends StatelessWidget {
+  const _SearchBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final g = CrayGlass.of(context);
+    final text = Theme.of(context).textTheme;
+    return Pressable(
+      onTap: () => context.push('/search'),
+      scale: 0.98,
+      child: Semantics(
+        label: l10n.searchHint,
+        button: true,
+        excludeSemantics: true,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 56),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: g.card,
+            borderRadius: BorderRadius.circular(g.radius),
+            border: Border.all(color: g.line),
+            boxShadow: g.shadows,
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.search, color: text.bodyMedium?.color),
+              const SizedBox(width: 12),
+              Expanded(child: Text(l10n.searchHint, style: text.bodyLarge)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The salon's services as a row of cards - picture, name, time, price - each
+/// one tap from booking it. Nothing is booked or chosen until they say so:
+/// the card opens the booking with that service ticked, nothing else.
+class _ServicesRow extends ConsumerWidget {
+  const _ServicesRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppL10n.of(context);
+    final services = ref.watch(bookableServicesProvider);
+    final list = services.value;
+    if (services.hasError || (list != null && list.isEmpty)) {
+      return const SizedBox.shrink();
+    }
+    final height = 176 * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SectionHeader(
+          l10n.homeServicesTitle,
+          action: l10n.homeSeeAll,
+          onAction: () => context.push('/search'),
+        ),
+        SizedBox(
+          height: height,
+          child: list == null
+              // Loading: still cards the size of the real ones (DESIGN 7.4).
+              ? ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    for (var i = 0; i < 3; i++) ...[
+                      if (i > 0) const SizedBox(width: 12),
+                      SizedBox(width: 148, child: SkeletonCard(height: height)),
+                    ],
+                  ],
+                )
+              : ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: list.length.clamp(0, 10),
+                  separatorBuilder: (_, _) => const SizedBox(width: 12),
+                  itemBuilder: (context, i) => _ServiceCard(service: list[i]),
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ServiceCard extends StatelessWidget {
+  const _ServiceCard({required this.service});
+
+  final Service service;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final text = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final g = CrayGlass.of(context);
+    return SizedBox(
+      width: 148,
+      child: Pressable(
+        onTap: () => context.go('/book?service=${service.id}'),
+        child: GlassPanel(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(g.radius),
+                ),
+                child: Icon(
+                  serviceIcon(service.name, category: service.category),
+                  color: scheme.onPrimaryContainer,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Text(
+                  service.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: text.titleMedium,
+                ),
+              ),
+              Text(l10n.bookMinutes(service.durationMinutes), style: text.bodySmall),
+              Text(
+                rupees(service.pricePaise),
+                style: text.titleMedium?.copyWith(fontFeatures: moneyFeatures),
               ),
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -441,13 +660,13 @@ class _WalletCard extends ConsumerWidget {
                   ),
                 ],
               ),
-              AsyncError() => Text(
+              AsyncValue(hasError: true) => Text(
                 l10n.homeWalletUnavailable,
                 style: text.bodyMedium,
               ),
               // A still block, not a shimmer (DESIGN 7.3), the height of the
               // number it stands in for.
-              _ => const _Placeholder(height: 64),
+              _ => const SkeletonBlock(height: 64),
             },
             const SizedBox(height: 16),
             Row(
@@ -473,21 +692,6 @@ class _WalletCard extends ConsumerWidget {
       ),
     );
   }
-}
-
-class _Placeholder extends StatelessWidget {
-  const _Placeholder({required this.height});
-
-  final double height;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    height: height,
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(8),
-    ),
-  );
 }
 
 /// "Good morning, Asha" - by the phone's clock, which is the customer's.
@@ -579,50 +783,6 @@ class _NextBookingCard extends StatelessWidget {
                       Text(booking.serviceNames, style: text.bodyMedium),
                     if (staff != null && staff.isNotEmpty)
                       Text(l10n.homeWithStylist(staff), style: text.bodySmall),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// A tappable glass row: icon, title, one line under it, a chevron.
-class _RowCard extends StatelessWidget {
-  const _RowCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    return Pressable(
-      onTap: onTap,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              Icon(icon),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: text.titleMedium),
-                    Text(subtitle, style: text.bodySmall),
                   ],
                 ),
               ),

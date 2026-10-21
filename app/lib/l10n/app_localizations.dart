@@ -3229,6 +3229,378 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'{offer} - show this at the counter.'**
   String homeBirthdayBody(String offer);
+
+  /// No description provided for @joinStepSalon.
+  ///
+  /// In en, this message translates to:
+  /// **'Salon'**
+  String get joinStepSalon;
+
+  /// No description provided for @joinStepNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get joinStepNumber;
+
+  /// No description provided for @joinStepCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get joinStepCode;
+
+  /// No description provided for @joinScanSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Fastest. It\'s on the poster or card at the counter.'**
+  String get joinScanSub;
+
+  /// No description provided for @joinCodeGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts with CRAY-. Ask at the counter if you can\'t find it.'**
+  String get joinCodeGuide;
+
+  /// No description provided for @joinPerkBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Book your visit in a few taps'**
+  String get joinPerkBook;
+
+  /// No description provided for @joinPerkWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wallet, bills and receipts in one place'**
+  String get joinPerkWallet;
+
+  /// No description provided for @joinPerkRemind.
+  ///
+  /// In en, this message translates to:
+  /// **'A reminder when you\'re due for a visit'**
+  String get joinPerkRemind;
+
+  /// No description provided for @phoneSub.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll send a 6-digit code to this number by SMS.'**
+  String get phoneSub;
+
+  /// No description provided for @phoneGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'10 digits, without 0 or +91 in front.'**
+  String get phoneGuide;
+
+  /// No description provided for @otpVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get otpVerify;
+
+  /// No description provided for @otpChangeNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get otpChangeNumber;
+
+  /// No description provided for @otpWaitingForSms.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the SMS. Your phone will ask before the app reads it.'**
+  String get otpWaitingForSms;
+
+  /// No description provided for @otpFilledFromSms.
+  ///
+  /// In en, this message translates to:
+  /// **'Code filled in from your SMS.'**
+  String get otpFilledFromSms;
+
+  /// No description provided for @joinedContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s go'**
+  String get joinedContinue;
+
+  /// No description provided for @meTileVisits.
+  ///
+  /// In en, this message translates to:
+  /// **'Visits'**
+  String get meTileVisits;
+
+  /// No description provided for @meTileBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills'**
+  String get meTileBills;
+
+  /// No description provided for @meSectionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Your details'**
+  String get meSectionDetails;
+
+  /// No description provided for @meSectionActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Your activity'**
+  String get meSectionActivity;
+
+  /// No description provided for @meSectionPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get meSectionPrivacy;
+
+  /// No description provided for @meEditProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get meEditProfile;
+
+  /// No description provided for @meEditProfileSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name, number and language'**
+  String get meEditProfileSub;
+
+  /// No description provided for @meNoName.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your name'**
+  String get meNoName;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get signOut;
+
+  /// No description provided for @signOutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of this phone?'**
+  String get signOutTitle;
+
+  /// No description provided for @signOutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your visits, wallet and bills stay safe with the salon. To come back, enter the salon code and your number again.'**
+  String get signOutBody;
+
+  /// No description provided for @signOutUnsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Some changes on this phone haven\'t been sent yet. Connect to the internet, let them send, then sign out.'**
+  String get signOutUnsent;
+
+  /// No description provided for @profileSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile saved'**
+  String get profileSaved;
+
+  /// No description provided for @profileLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your profile. Check your connection and try again.'**
+  String get profileLoadFailed;
+
+  /// No description provided for @profileNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get profileNameLabel;
+
+  /// No description provided for @profileNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Asha Rao'**
+  String get profileNameHint;
+
+  /// No description provided for @profileNameHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'How {salon} greets you and writes your bills.'**
+  String profileNameHelp(String salon);
+
+  /// No description provided for @profileNameLength.
+  ///
+  /// In en, this message translates to:
+  /// **'A name needs 2 to 60 characters.'**
+  String get profileNameLength;
+
+  /// No description provided for @profileNameInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'That doesn\'t look like a name. Use letters.'**
+  String get profileNameInvalid;
+
+  /// No description provided for @profileErased.
+  ///
+  /// In en, this message translates to:
+  /// **'Your details were erased at your request, so there is nothing to edit.'**
+  String get profileErased;
+
+  /// No description provided for @profileLanguageHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'The app, and the salon\'s messages to you, will use it.'**
+  String get profileLanguageHelp;
+
+  /// No description provided for @profileBirthdayAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your birthday'**
+  String get profileBirthdayAdd;
+
+  /// No description provided for @profileSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get profileSave;
+
+  /// No description provided for @profileChangeNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get profileChangeNumber;
+
+  /// No description provided for @profileChangeNumberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change your number'**
+  String get profileChangeNumberTitle;
+
+  /// No description provided for @profileChangeNumberBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your number is how {salon} knows it\'s you, so it can\'t be changed in the app. Ask for the change here: the salon will confirm it\'s you, then your account, wallet and visits move to the new number.'**
+  String profileChangeNumberBody(String salon);
+
+  /// No description provided for @profileOtherCorrection.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else wrong? Ask for a correction'**
+  String get profileOtherCorrection;
+
+  /// No description provided for @profileCorrectionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell {salon} what is wrong in what they hold about you. They must answer within 30 days.'**
+  String profileCorrectionBody(String salon);
+
+  /// No description provided for @profileCorrectionDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'What should change? (optional)'**
+  String get profileCorrectionDetail;
+
+  /// No description provided for @profileCorrectionDetailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. my birthday is wrong on my bill'**
+  String get profileCorrectionDetailHint;
+
+  /// No description provided for @profileNumberDetailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. a good time to call me'**
+  String get profileNumberDetailHint;
+
+  /// No description provided for @profileNumberRequestPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Change of phone number'**
+  String get profileNumberRequestPrefix;
+
+  /// No description provided for @profileCorrectionSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for the change'**
+  String get profileCorrectionSend;
+
+  /// No description provided for @homeQuickTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to do?'**
+  String get homeQuickTitle;
+
+  /// No description provided for @homeTileBirthday.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday'**
+  String get homeTileBirthday;
+
+  /// No description provided for @homeServicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get homeServicesTitle;
+
+  /// No description provided for @homeSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get homeSeeAll;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search haircut, facial, spa…'**
+  String get searchHint;
+
+  /// No description provided for @searchNothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing called \"{query}\" here. Try another word, or see everything.'**
+  String searchNothing(String query);
+
+  /// No description provided for @searchAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All {count} services'**
+  String searchAll(int count);
+
+  /// No description provided for @searchFound.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} found'**
+  String searchFound(int count);
+
+  /// No description provided for @moreTileWalkIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in'**
+  String get moreTileWalkIn;
+
+  /// No description provided for @moreTileAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get moreTileAttention;
+
+  /// No description provided for @moreSectionMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu and team'**
+  String get moreSectionMenu;
+
+  /// No description provided for @moreSectionSalon.
+  ///
+  /// In en, this message translates to:
+  /// **'Your salon'**
+  String get moreSectionSalon;
+
+  /// No description provided for @moreLoginsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can sign in'**
+  String get moreLoginsTitle;
+
+  /// No description provided for @moreLoginsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone numbers your team signs in with'**
+  String get moreLoginsSub;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

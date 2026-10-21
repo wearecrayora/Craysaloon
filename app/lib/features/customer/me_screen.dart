@@ -3,22 +3,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../app/sign_out.dart' show SignOutButton;
+import '../../core/ui/action_tile.dart';
 import '../../core/ui/fine_print.dart';
 import '../../core/ui/glass.dart';
+import '../../core/ui/menu.dart';
 import '../../core/ui/salon_mark.dart';
 import '../../domain/customer/customer.dart';
 import '../../domain/join/cray_api.dart';
 import '../../l10n/app_localizations.dart';
-import '../../main.dart' show kEnglish, kHindi, kHinglish, localeProvider;
+import '../../main.dart' show kEnglish, kHindi, kHinglish, localeCode, localeProvider;
 import '../join/join_controller.dart' show resolvedBrandingProvider;
+import '../salon/salon_account.dart' show hasFeature;
 import 'customer_providers.dart';
 
-/// C12 - Me: who the app thinks you are, your language, your visits, your data.
+/// C12 - Me: the customer's profile, and every menu they have, in plain sight
+/// (redesigned 21 Oct 2026).
 ///
-/// Read-only by design: the name and number are the salon's record of the
-/// customer, and there is no path here to change the phone a binding hangs on
-/// (RULES 4). "App by Crayora" at the foot is the only place the customer app
-/// names its maker.
+/// Who the app thinks you are, with Edit right there; your things as tiles;
+/// then labelled menus - your details, privacy, the fine print - and Sign out
+/// at the foot. "App by Crayora" is the only place the customer app names its
+/// maker.
 class MeScreen extends ConsumerWidget {
   const MeScreen({super.key});
 
@@ -30,171 +35,213 @@ class MeScreen extends ConsumerWidget {
     final salonName = ref.watch(resolvedBrandingProvider)?.displayName ?? l10n.appTitle;
     final locale = ref.watch(localeProvider);
 
-    final languageName = locale == kHindi
-        ? l10n.languageHindi
-        : locale == kHinglish
-        ? l10n.languageHinglish
-        : l10n.languageEnglish;
-
     return Scaffold(
       appBar: AppBar(title: const SalonTitle()),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
         children: [
-          Text(l10n.meTitle, style: text.headlineMedium),
-          const SizedBox(height: 12),
-          if (profile?.name case final name? when name.trim().isNotEmpty)
-            _Field(label: l10n.meName, value: name),
-          if (profile?.maskedPhone case final phone?)
-            _Field(label: l10n.mePhone, value: phone),
-          const SizedBox(height: 12),
-          _Row(
-            icon: Icons.translate,
-            title: l10n.meLanguage,
-            subtitle: languageName,
-            onTap: () => _pickLanguage(context, ref),
+          _ProfileCard(profile: profile),
+          const SizedBox(height: 24),
+          ActionGrid(
+            tiles: [
+              ActionTile(
+                icon: Icons.history_rounded,
+                label: l10n.meTileVisits,
+                onTap: () => context.push('/visits'),
+              ),
+              ActionTile(
+                icon: Icons.receipt_long_outlined,
+                label: l10n.meTileBills,
+                onTap: () => context.push('/documents'),
+              ),
+              ActionTile(
+                icon: Icons.account_balance_wallet_outlined,
+                label: l10n.walletTitle,
+                onTap: () => context.go('/wallet'),
+              ),
+              if (hasFeature(ref, 'referrals'))
+                ActionTile(
+                  icon: Icons.card_giftcard_outlined,
+                  label: l10n.referTitle,
+                  onTap: () => context.push('/refer'),
+                )
+              else
+                ActionTile(
+                  icon: Icons.shield_outlined,
+                  label: l10n.yourDataTitle,
+                  onTap: () => context.push('/your-data'),
+                ),
+            ],
           ),
-          // Optional, and never for a child (0113): day and month only.
-          if (profile != null && !profile.isMinor)
-            _Row(
-              icon: Icons.cake_outlined,
-              title: l10n.meBirthday,
-              subtitle: profile.birthdayMonth == null
-                  ? l10n.meBirthdayAdd(salonName)
-                  : _dayMonth(context, profile.birthdayMonth!, profile.birthdayDay!),
-              onTap: () => _editBirthday(context, ref, profile, salonName),
-            ),
-          _Row(
-            icon: Icons.history,
-            title: l10n.historyTitle,
-            subtitle: l10n.meHistorySub,
-            onTap: () => context.push('/visits'),
+          MenuSection(
+            title: l10n.meSectionDetails,
+            children: [
+              MenuRow(
+                icon: Icons.person_outline,
+                title: l10n.meEditProfile,
+                subtitle: l10n.meEditProfileSub,
+                onTap: () => context.push('/me/edit'),
+              ),
+              MenuRow(
+                icon: Icons.translate,
+                title: l10n.meLanguage,
+                subtitle: languageName(l10n, locale),
+                onTap: () => pickLanguage(context, ref),
+              ),
+              // Optional, and never for a child (0113): day and month only.
+              if (profile != null && !profile.isMinor)
+                MenuRow(
+                  icon: Icons.cake_outlined,
+                  title: l10n.meBirthday,
+                  subtitle: profile.birthdayMonth == null
+                      ? l10n.meBirthdayAdd(salonName)
+                      : dayMonthLabel(context, profile.birthdayMonth!, profile.birthdayDay!),
+                  onTap: () => editBirthday(context, ref, profile, salonName),
+                ),
+            ],
           ),
-          _Row(
-            icon: Icons.receipt_long_outlined,
-            title: l10n.docsTitle,
-            subtitle: l10n.docsSub,
-            onTap: () => context.push('/documents'),
+          MenuSection(
+            title: l10n.meSectionActivity,
+            children: [
+              MenuRow(
+                icon: Icons.history,
+                title: l10n.historyTitle,
+                subtitle: l10n.meHistorySub,
+                onTap: () => context.push('/visits'),
+              ),
+              MenuRow(
+                icon: Icons.receipt_long_outlined,
+                title: l10n.docsTitle,
+                subtitle: l10n.docsSub,
+                onTap: () => context.push('/documents'),
+              ),
+            ],
           ),
-          _Row(
-            icon: Icons.shield_outlined,
-            title: l10n.yourDataTitle,
-            subtitle: l10n.meYourDataSub,
-            onTap: () => context.push('/your-data'),
+          MenuSection(
+            title: l10n.meSectionPrivacy,
+            children: [
+              MenuRow(
+                icon: Icons.shield_outlined,
+                title: l10n.yourDataTitle,
+                subtitle: l10n.meYourDataSub,
+                onTap: () => context.push('/your-data'),
+              ),
+            ],
           ),
           const SizedBox(height: 24),
           const FinePrint(),
           const SizedBox(height: 24),
+          const SignOutButton(),
+          const SizedBox(height: 16),
           Text(l10n.meAppBy, style: text.bodySmall),
         ],
       ),
     );
   }
+}
 
-  Future<void> _pickLanguage(BuildContext context, WidgetRef ref) async {
-    final l10n = AppL10n.of(context);
-    final current = ref.read(localeProvider);
-    final choice = await showModalBottomSheet<Locale>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final (locale, name) in [
-              (kEnglish, l10n.languageEnglish),
-              (kHindi, l10n.languageHindi),
-              (kHinglish, l10n.languageHinglish),
-            ])
-              ListTile(
-                minTileHeight: 56,
-                title: Text(name),
-                trailing: locale == current ? const Icon(Icons.check) : null,
-                onTap: () => Navigator.of(context).pop(locale),
-              ),
-          ],
-        ),
+String languageName(AppL10n l10n, Locale locale) => locale == kHindi
+    ? l10n.languageHindi
+    : locale == kHinglish
+    ? l10n.languageHinglish
+    : l10n.languageEnglish;
+
+/// The language sheet: the choice applies at once, on the phone, and is saved
+/// to the profile so the salon's messages follow it (0118).
+Future<void> pickLanguage(BuildContext context, WidgetRef ref) async {
+  final l10n = AppL10n.of(context);
+  final current = ref.read(localeProvider);
+  final choice = await showModalBottomSheet<Locale>(
+    context: context,
+    builder: (context) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+            child: Text(l10n.meLanguage, style: Theme.of(context).textTheme.titleLarge),
+          ),
+          for (final (locale, name) in [
+            (kEnglish, l10n.languageEnglish),
+            (kHindi, l10n.languageHindi),
+            (kHinglish, l10n.languageHinglish),
+          ])
+            ListTile(
+              minTileHeight: 56,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+              title: Text(name),
+              trailing: locale == current ? const Icon(Icons.check_circle) : null,
+              onTap: () => Navigator.of(context).pop(locale),
+            ),
+        ],
       ),
-    );
-    if (choice != null) ref.read(localeProvider.notifier).select(choice);
+    ),
+  );
+  if (choice == null || choice == current) return;
+  ref.read(localeProvider.notifier).select(choice);
+  final api = ref.read(customerApiProvider);
+  if (api == null) return;
+  try {
+    await api.updateMyProfile(language: localeCode(choice));
+    ref.invalidate(myProfileProvider);
+  } on CrayApiException {
+    // The app is already in the new language; the next save carries it.
   }
 }
 
-class _Field extends StatelessWidget {
-  const _Field({required this.label, required this.value});
+/// Who you are, at the top: your initials in a soft circle, your name, your
+/// number (partly hidden), and Edit.
+class _ProfileCard extends StatelessWidget {
+  const _ProfileCard({required this.profile});
 
-  final String label;
-  final String value;
+  final CustomerProfile? profile;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     final text = Theme.of(context).textTheme;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
-      ),
+    final name = profile?.name?.trim();
+    return GlassPanel(
+      padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(label, style: text.bodySmall),
-          Text(value, style: text.titleMedium),
+          Row(
+            children: [
+              Initials(profile?.initials, size: 64),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name == null || name.isEmpty ? l10n.meNoName : name,
+                      style: text.titleLarge,
+                    ),
+                    if (profile?.maskedPhone case final phone?) ...[
+                      const SizedBox(height: 4),
+                      Text(phone, style: text.bodyMedium),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            onPressed: () => context.push('/me/edit'),
+            icon: const Icon(Icons.edit_outlined),
+            label: Text(l10n.meEditProfile),
+          ),
         ],
       ),
     );
   }
 }
 
-class _Row extends StatelessWidget {
-  const _Row({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    return Pressable(
-      onTap: onTap,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 56),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Theme.of(context).dividerColor),
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(icon),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: text.titleMedium),
-                  Text(subtitle, style: text.bodySmall),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-
 /// "16 March" in the reader's language - no year, because none is kept.
-String _dayMonth(BuildContext context, int month, int day) {
+String dayMonthLabel(BuildContext context, int month, int day) {
   final locale = Localizations.localeOf(context);
   final tag = locale.scriptCode == 'Latn' ? 'en' : locale.toLanguageTag();
   try {
@@ -204,7 +251,7 @@ String _dayMonth(BuildContext context, int month, int day) {
   }
 }
 
-Future<void> _editBirthday(
+Future<void> editBirthday(
   BuildContext context,
   WidgetRef ref,
   CustomerProfile profile,

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/ui/load_failed.dart';
 import '../../core/format/money.dart';
+import '../../core/ui/skeleton.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/join/join_code.dart';
 import '../../domain/join/join_link.dart';
@@ -91,10 +92,10 @@ class ReferralScreen extends ConsumerWidget {
               ],
             ),
           ),
-          AsyncError() => LoadFailed(
+          AsyncValue(hasError: true) => LoadFailed(
             onRetry: () => ref.invalidate(referralProvider),
           ),
-          _ => const Center(child: CircularProgressIndicator()),
+          _ => const SkeletonList(padding: EdgeInsets.all(16)),
         },
       ),
     );

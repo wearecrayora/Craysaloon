@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../core/ui/skeleton.dart';
 import '../../app/providers.dart';
 import '../../l10n/app_localizations.dart';
 import 'day_controller.dart';
@@ -27,7 +28,12 @@ class AttentionScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.needsAttention)),
       body: SafeArea(
         child: rejected.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => rejected.hasError
+              ? Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(l10n.joinGenericError),
+                )
+              : const SkeletonList(padding: EdgeInsets.all(16)),
           error: (_, _) => Padding(
             padding: const EdgeInsets.all(16),
             child: Text(l10n.joinGenericError),

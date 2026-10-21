@@ -6,6 +6,8 @@ import '../../app/providers.dart';
 import '../../core/format/money.dart';
 import '../../core/ui/cache_banner.dart';
 import '../../core/ui/load_failed.dart';
+import '../../core/ui/skeleton.dart';
+import '../../core/ui/notice.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../domain/join/cray_api.dart';
 import '../../domain/records/records.dart';
@@ -226,14 +228,13 @@ Future<void> saveAndReport(
   try {
     await save();
   } on CrayApiException catch (e) {
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(switch (e.kind) {
-          CrayErrorKind.forbidden => l10n.saveFailedRefused,
-          CrayErrorKind.network => l10n.saveFailedOffline,
-          _ => l10n.saveFailed,
-        }),
-      ),
+    messenger.notice(
+      switch (e.kind) {
+        CrayErrorKind.forbidden => l10n.saveFailedRefused,
+        CrayErrorKind.network => l10n.saveFailedOffline,
+        _ => l10n.saveFailed,
+      },
+      kind: NoticeKind.problem,
     );
   }
 }
@@ -271,7 +272,10 @@ class _CatalogueList<T> extends ConsumerWidget {
           : null,
       body: SafeArea(
         child: cached.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          // A retrying load is "loading with an error" in Riverpod 3: say it.
+          loading: () => cached.hasError
+              ? LoadFailed(onRetry: onRetry)
+              : const SkeletonList(padding: EdgeInsets.all(16)),
           error: (_, _) => LoadFailed(onRetry: onRetry),
           data: (result) {
             if (result.value.isEmpty) {

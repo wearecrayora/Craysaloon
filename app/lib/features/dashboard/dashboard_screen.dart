@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/ui/load_failed.dart';
 import '../../core/format/money.dart';
 import '../../core/theme/chart_palette.dart';
+import '../../core/ui/skeleton.dart';
 import '../../domain/dashboard/dashboard.dart';
 import '../../domain/join/cray_api.dart';
 import '../../l10n/app_localizations.dart';
@@ -48,10 +49,10 @@ class DashboardScreen extends ConsumerWidget {
             onRefresh: () async => ref.invalidate(dashboardProvider),
             child: _Body(value),
           ),
-          AsyncError() => LoadFailed(
+          AsyncValue(hasError: true) => LoadFailed(
             onRetry: () => ref.invalidate(dashboardProvider),
           ),
-          _ => const Center(child: CircularProgressIndicator()),
+          _ => const SkeletonList(padding: EdgeInsets.all(16)),
         },
       ),
     );
