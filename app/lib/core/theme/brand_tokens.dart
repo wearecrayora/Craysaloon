@@ -106,43 +106,55 @@ class BrandTokens {
   bool get isDevanagari => script == 'devanagari';
 
   // ---------------------------------------------------------------------------
-  // The glass chassis (Claude Design, 29 Sep 2026; DESIGN.md 3.5).
+  // The tactile chassis (22 Oct 2026; DESIGN.md 3.5). It replaced the frosted
+  // glass of 29 Sep: solid surfaces lit from the top-left - raised cards and
+  // keys with a soft shadow below and a bright edge above, recessed fields and
+  // wells - over a clean, warm-grey background with one faint wash of the
+  // salon's own primary at the top. The greys are fixed chassis, like the
+  // surface ramp; only that wash follows the brand, mixed far enough toward
+  // the base that text on it still clears 4.5:1 (test/brand_tokens_test.dart).
   //
-  // Frosted cards, bars and sheets over a soft colour mesh made from the
-  // salon's OWN primary and accent. The translucent whites and darks are part
-  // of the fixed chassis, like the surface ramp - only the mesh tint follows the
-  // brand, and it is mixed far enough toward the base that text on it still
-  // clears 4.5:1 (checked in test/glass_contrast_test.dart).
+  // The `glass*` names are kept so every screen keeps reading the same roles.
   // ---------------------------------------------------------------------------
 
   bool get _isLight => brightness == Brightness.light;
 
-  /// A card: translucent enough for the mesh to show, opaque enough to read on.
-  Color get glassCard => _isLight ? const Color(0x94FFFFFF) : const Color(0x8C2C1E24);
+  /// A raised card's face, at its lower edge (the top is [cardTop]).
+  Color get glassCard => _isLight ? const Color(0xFFFBFAF7) : const Color(0xFF242226);
 
-  /// App bar and bottom navigation, drawn over a blur.
-  Color get glassBar => _isLight ? const Color(0x80FFFFFF) : const Color(0x801E1418);
+  /// The top of a raised face: a touch lighter, so it reads as domed.
+  Color get cardTop => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF2B292D);
 
-  /// Bottom sheets: the most opaque glass, because money is read on them.
-  Color get glassSheet => _isLight ? const Color(0xD1FFFAFA) : const Color(0xDB22161C);
+  /// App bar and bottom navigation: a raised bar, nearly opaque.
+  Color get glassBar => _isLight ? const Color(0xF7FBFAF7) : const Color(0xF7242226);
 
-  /// The bright hairline that makes glass read as glass.
-  Color get glassLine => _isLight ? const Color(0xC7FFFFFF) : const Color(0x1FFFFFFF);
+  /// Bottom sheets: opaque, because money is read on them.
+  Color get glassSheet => _isLight ? const Color(0xFFFBFAF7) : const Color(0xFF242226);
 
-  /// Soft, brand-warm shadow under glass.
-  Color get glassShadow => _isLight ? const Color(0x14783C46) : const Color(0x59000000);
+  /// The bright bevel along a raised edge.
+  Color get glassLine => _isLight ? const Color(0xE6FFFFFF) : const Color(0x14FFFFFF);
 
-  /// The mesh's base wash, top to bottom.
-  Color get meshTop => _isLight ? const Color(0xFFFCF4F3) : const Color(0xFF1A1216);
-  Color get meshBottom => _isLight ? const Color(0xFFF8E9E9) : const Color(0xFF120C0F);
+  /// The shadow below a raised surface: warm grey, never brand-coloured.
+  Color get glassShadow => _isLight ? const Color(0x2E6B625A) : const Color(0x8C000000);
 
-  Color get _meshMixBase => _isLight ? const Color(0xFFFFFFFF) : const Color(0xFF140E11);
+  /// The light that falls on the top-left of a raised surface.
+  Color get raisedHighlight => _isLight ? const Color(0xE6FFFFFF) : const Color(0x0FFFFFFF);
 
-  /// The brand's two glows in the mesh, mixed toward the base (the design's
-  /// `color-mix` values): primary top-left and bottom, accent top-right.
-  Color get meshPrimaryGlow => Color.lerp(_meshMixBase, primary, _isLight ? 0.38 : 0.34)!;
-  Color get meshAccentGlow => Color.lerp(_meshMixBase, accent, _isLight ? 0.55 : 0.22)!;
-  Color get meshPrimaryLow => Color.lerp(_meshMixBase, primary, _isLight ? 0.26 : 0.22)!;
+  /// A recessed well or field, pressed into the surface.
+  Color get sunken => _isLight ? const Color(0xFFEDEAE5) : const Color(0xFF19181A);
+
+  /// The background, top to bottom: clean warm grey.
+  Color get meshTop => _isLight ? const Color(0xFFF7F5F2) : const Color(0xFF1E1C1F);
+  Color get meshBottom => _isLight ? const Color(0xFFEFECE7) : const Color(0xFF161517);
+
+  Color get _meshMixBase => _isLight ? const Color(0xFFF7F5F2) : const Color(0xFF1E1C1F);
+
+  /// The one wash of the salon's colour, top-left - faint, a hint of whose
+  /// app this is rather than a coloured page. Accent and low are kept as
+  /// tokens (and contrast-checked) but no longer painted.
+  Color get meshPrimaryGlow => Color.lerp(_meshMixBase, primary, _isLight ? 0.16 : 0.18)!;
+  Color get meshAccentGlow => Color.lerp(_meshMixBase, accent, _isLight ? 0.16 : 0.14)!;
+  Color get meshPrimaryLow => Color.lerp(_meshMixBase, primary, _isLight ? 0.10 : 0.12)!;
 
   /// Reads the published document. Returns null if it carries no resolved set
   /// for [brightness] - the caller then renders the neutral default rather than

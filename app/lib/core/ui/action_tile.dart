@@ -39,8 +39,8 @@ class ActionTile extends StatelessWidget {
         HapticFeedback.selectionClick();
         onTap();
       },
-      scale: 0.94,
-      child: Semantics(
+      scale: 0.97,
+      builder: (context, pressed) => Semantics(
         label: badge == null ? label : '$label, $badge',
         excludeSemantics: true,
         button: true,
@@ -52,16 +52,10 @@ class ActionTile extends StatelessWidget {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: scheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(g.radius + 4),
-                      border: Border.all(color: g.line),
-                      boxShadow: g.shadows,
-                    ),
-                    child: Icon(icon, color: scheme.onPrimaryContainer, size: 28),
+                  // A raised key that goes in under the thumb.
+                  RaisedKey(
+                    pressed: pressed,
+                    child: Icon(icon, color: g.ink, size: 28),
                   ),
                   if (badge != null)
                     Positioned(

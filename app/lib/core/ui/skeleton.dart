@@ -49,7 +49,7 @@ class SkeletonRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: g.card,
+        gradient: g.face,
         borderRadius: BorderRadius.circular(g.radius),
         border: Border.all(color: g.line),
       ),
@@ -128,7 +128,7 @@ class SkeletonCard extends StatelessWidget {
         height: height,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: g.card,
+          gradient: g.face,
           borderRadius: BorderRadius.circular(g.radius),
           border: Border.all(color: g.line),
         ),

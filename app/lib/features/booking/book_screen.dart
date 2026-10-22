@@ -447,14 +447,16 @@ class _ChoiceRow extends StatelessWidget {
           margin: const EdgeInsets.symmetric(vertical: 4),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           decoration: BoxDecoration(
-            // Glass whether chosen or not, so the list reads as a list over the
-            // background; the choice is the ink outline, not a fill.
-            color: g.card,
+            // A raised key; the chosen one is pressed IN - its light flips and
+            // its shadow closes - with the ink outline, so the choice is never
+            // colour alone (DESIGN 3.5, the tactile chassis).
+            gradient: selected ? g.pressedFace : g.face,
             borderRadius: BorderRadius.circular(g.radius),
             border: Border.all(
               color: selected ? g.ink : g.line,
               width: selected ? 1.5 : 1,
             ),
+            boxShadow: selected ? g.pressedShadows : g.shadows,
           ),
           child: Row(
             children: [
@@ -743,11 +745,13 @@ class _Chip extends StatelessWidget {
           constraints: BoxConstraints(minHeight: 48, minWidth: wide ? 100 : 72),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: selected ? scheme.primary : g.card,
+            color: selected ? scheme.primary : null,
+            gradient: selected ? null : g.face,
             borderRadius: BorderRadius.circular(g.radiusChip + 4),
             border: Border.all(
               color: selected ? scheme.primary : scheme.outline,
             ),
+            boxShadow: selected ? g.pressedShadows : g.shadows,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -802,9 +806,11 @@ class _DayChip extends StatelessWidget {
               : const Duration(milliseconds: 160),
           width: 56,
           decoration: BoxDecoration(
-            color: selected ? scheme.primary : g.card,
+            color: selected ? scheme.primary : null,
+            gradient: selected ? null : g.face,
             borderRadius: BorderRadius.circular(g.radiusChip + 6),
             border: Border.all(color: selected ? scheme.primary : g.line),
+            boxShadow: selected ? g.pressedShadows : g.shadows,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

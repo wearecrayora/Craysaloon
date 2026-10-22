@@ -266,7 +266,8 @@ class _StatusChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: g.card,
+        gradient: g.face,
+        boxShadow: g.shadows,
         borderRadius: BorderRadius.circular(g.radiusChip),
         border: Border.all(color: g.line),
       ),

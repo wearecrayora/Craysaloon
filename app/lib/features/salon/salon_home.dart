@@ -420,11 +420,11 @@ class _SearchBarState extends ConsumerState<_SearchBar> {
         child: Container(
           constraints: const BoxConstraints(minHeight: 56),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          // Recessed, like the field it opens.
           decoration: BoxDecoration(
-            color: g.card,
+            color: g.sunken,
             borderRadius: BorderRadius.circular(g.radius),
             border: Border.all(color: g.line),
-            boxShadow: g.shadows,
           ),
           child: Row(
             children: [

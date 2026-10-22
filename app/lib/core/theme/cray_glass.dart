@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'brand_tokens.dart';
 
-/// The glass chassis, carried on the theme so any widget can reach it with
-/// `CrayGlass.of(context)`. Values come from [BrandTokens] - this file names no
-/// colour of its own (GATE-2).
+/// The tactile chassis (DESIGN 3.5), carried on the theme so any widget can
+/// reach it with `CrayGlass.of(context)`. Named for the glass it replaced, so
+/// every screen kept its roles. Values come from [BrandTokens] - this file
+/// names no colour of its own (GATE-2).
 @immutable
 class CrayGlass extends ThemeExtension<CrayGlass> {
   const CrayGlass({
@@ -23,6 +24,9 @@ class CrayGlass extends ThemeExtension<CrayGlass> {
     required this.radiusSheet,
     required this.ink,
     required this.success,
+    required this.cardTop,
+    required this.highlight,
+    required this.sunken,
   });
 
   factory CrayGlass.fromTokens(BrandTokens t) => CrayGlass(
@@ -41,6 +45,9 @@ class CrayGlass extends ThemeExtension<CrayGlass> {
         radiusSheet: t.radiusSheet,
         ink: t.brandInk,
         success: t.success,
+        cardTop: t.cardTop,
+        highlight: t.raisedHighlight,
+        sunken: t.sunken,
       );
 
   final Color card;
@@ -63,6 +70,15 @@ class CrayGlass extends ThemeExtension<CrayGlass> {
 
   /// The fixed status green - never themed (DESIGN 3.4).
   final Color success;
+
+  /// The top of a raised face, lighter than [card] - the dome.
+  final Color cardTop;
+
+  /// The light on a raised surface's top-left edge.
+  final Color highlight;
+
+  /// A recessed well or field.
+  final Color sunken;
 
   /// Falls back to a transparent, square chassis in a theme built without the
   /// extension (a bare MaterialApp in a widget test), rather than throwing.
@@ -87,13 +103,37 @@ class CrayGlass extends ThemeExtension<CrayGlass> {
       radiusSheet: 18,
       ink: theme.colorScheme.primary,
       success: theme.colorScheme.primary,
+      cardTop: s,
+      highlight: Colors.transparent,
+      sunken: theme.colorScheme.surfaceContainerHighest,
     );
   }
 
-  /// The soft shadow every glass surface shares.
+  /// A raised surface, lit from the top-left: a soft shadow down and to the
+  /// right, a glow of light up and to the left.
   List<BoxShadow> get shadows => [
-        BoxShadow(color: shadow, blurRadius: 28, offset: const Offset(0, 8)),
+        BoxShadow(color: shadow, blurRadius: 18, offset: const Offset(4, 6)),
+        BoxShadow(color: highlight, blurRadius: 12, offset: const Offset(-4, -4)),
       ];
+
+  /// The same surface pressed in: the shadows close up almost to nothing.
+  List<BoxShadow> get pressedShadows => [
+        BoxShadow(color: shadow, blurRadius: 4, offset: const Offset(1, 1)),
+      ];
+
+  /// A raised face: lighter at the top, as a domed key catches the light.
+  Gradient get face => LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [cardTop, card],
+      );
+
+  /// A face pressed in: the light moves to the bottom.
+  Gradient get pressedFace => LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [sunken, card],
+      );
 
   @override
   CrayGlass copyWith() => this;
@@ -119,6 +159,9 @@ class CrayGlass extends ThemeExtension<CrayGlass> {
       radiusSheet: d(radiusSheet, other.radiusSheet),
       ink: c(ink, other.ink),
       success: c(success, other.success),
+      cardTop: c(cardTop, other.cardTop),
+      highlight: c(highlight, other.highlight),
+      sunken: c(sunken, other.sunken),
     );
   }
 }

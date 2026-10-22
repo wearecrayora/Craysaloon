@@ -131,11 +131,17 @@ ThemeData brandTheme(BrandTokens t) {
       shape: sheetShape,
       showDragHandle: true,
       dragHandleColor: t.borderStrong,
-      elevation: 0,
+      // A sheet is raised above the page it slides over.
+      elevation: 8,
+      modalElevation: 8,
+      shadowColor: t.glassShadow,
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: t.glassBar,
       surfaceTintColor: Colors.transparent,
+      // The chosen tab sits in a soft brand well on a solid bar. No cast
+      // shadow: it would fall upward over the list scrolling beneath and dim
+      // its text below 4.5:1 (caught by the screen sweep, 22 Oct 2026).
       indicatorColor: t.primaryContainer,
       elevation: 0,
       height: 72,
@@ -201,35 +207,76 @@ ThemeData brandTheme(BrandTokens t) {
       centerTitle: false,
       titleTextStyle: heading(20),
     ),
+    // The primary button is a domed key (DESIGN 3.5, the tactile chassis): a
+    // touch lighter at the top, a touch darker at the foot, lifted on a soft
+    // shadow - and when pressed the light flips and the shadow closes, so it
+    // goes IN under the thumb. The middle of the gradient is the brand's own
+    // primary, where the label sits, so the computed onPrimary keeps its
+    // contrast (the screen sweep measures it).
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         backgroundColor: t.primary,
         foregroundColor: t.onPrimary,
+        shadowColor: t.glassShadow,
         // 48dp minimum touch target (`DESIGN.md` 4.4).
         minimumSize: const Size.fromHeight(48),
         textStyle: body(16, weight: 600),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(t.radiusBase),
         ),
+      ).copyWith(
+        elevation: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.disabled) ||
+                  states.contains(WidgetState.pressed)
+              ? 0
+              : 3,
+        ),
+        backgroundBuilder: (context, states, child) {
+          if (states.contains(WidgetState.disabled)) return child!;
+          final light = Color.lerp(t.primary, const Color(0xFFFFFFFF), 0.10)!;
+          final dark = Color.lerp(t.primary, const Color(0xFF000000), 0.10)!;
+          final pressed = states.contains(WidgetState.pressed);
+          return DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: pressed ? [dark, light] : [light, dark],
+              ),
+            ),
+            child: child,
+          );
+        },
       ),
     ),
+    // The secondary button is a raised neutral key that presses in.
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: t.brandInk,
+        backgroundColor: t.glassCard,
+        shadowColor: t.glassShadow,
         minimumSize: const Size.fromHeight(48),
         side: BorderSide(color: t.border),
         textStyle: body(16, weight: 600),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(t.radiusBase),
         ),
+      ).copyWith(
+        elevation: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.disabled) ||
+                  states.contains(WidgetState.pressed)
+              ? 0
+              : 2,
+        ),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(foregroundColor: t.brandInk),
     ),
+    // Fields are recessed: a sunken floor you type into (DESIGN 3.5).
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: t.glassCard,
+      fillColor: t.sunken,
       hintStyle: body(16).copyWith(color: t.textMuted),
       labelStyle: body(15).copyWith(color: t.textSecondary),
       border: OutlineInputBorder(
@@ -249,13 +296,13 @@ ThemeData brandTheme(BrandTokens t) {
         borderSide: BorderSide(color: t.danger),
       ),
     ),
-    // Every Card in the app becomes a glass card: translucent over the mesh,
-    // with the bright hairline. No blur here - see GlassPanel.
+    // Every Card is a raised surface: solid, lifted on a soft warm shadow,
+    // with the bright bevel along its edge.
     cardTheme: CardThemeData(
       color: t.glassCard,
       surfaceTintColor: Colors.transparent,
       shadowColor: t.glassShadow,
-      elevation: 0,
+      elevation: 3,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(t.radiusBase),
@@ -263,7 +310,12 @@ ThemeData brandTheme(BrandTokens t) {
       ),
     ),
     chipTheme: ChipThemeData(
-      backgroundColor: t.surfaceAlt,
+      backgroundColor: t.glassCard,
+      selectedColor: t.primaryContainer,
+      elevation: 2,
+      pressElevation: 0,
+      shadowColor: t.glassShadow,
+      selectedShadowColor: Colors.transparent,
       side: BorderSide(color: t.border),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(t.radiusChip),

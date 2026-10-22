@@ -3,14 +3,15 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../theme/cray_glass.dart';
-import 'beauty_still_life.dart';
 
-/// The soft colour mesh behind every screen (Claude Design, 29 Sep 2026).
+/// The background behind every screen (22 Oct 2026): a clean warm-grey
+/// gradient with one faint wash of the salon's own primary at the top-left -
+/// enough to say whose app this is, never a coloured page (DESIGN 3.5).
 ///
-/// A warm base wash with three glows from the salon's own primary and accent -
-/// top-left, top-right and bottom - so each salon's app carries its colour
-/// without a single surface being painted with the brand (DESIGN.md 3.5).
-/// Painted once per frame as gradients: no image, nothing to download.
+/// Nothing floats in it any more: the still life of beauty objects (3.5a) was
+/// retired from the app the same day - a busy background competes with the
+/// raised surfaces that now carry the depth. Painted as two gradients: no
+/// image, nothing to download.
 class MeshBackground extends StatelessWidget {
   const MeshBackground({required this.child, super.key});
 
@@ -44,45 +45,33 @@ class _MeshPainter extends CustomPainter {
         ),
     );
 
-    void glow(Offset centre, double rx, double ry, Color colour, double stop) {
-      // An elliptical glow: a radial gradient in a unit circle, scaled.
-      canvas.save();
-      canvas.translate(centre.dx, centre.dy);
-      canvas.scale(rx, ry);
-      canvas.drawCircle(
-        Offset.zero,
-        1,
-        Paint()
-          ..shader = ui.Gradient.radial(
-            Offset.zero,
-            1,
-            [colour, colour.withValues(alpha: 0)],
-            [0, stop],
-          ),
-      );
-      canvas.restore();
-    }
-
-    final w = size.width, h = size.height;
-    glow(Offset(0, 0), w * 0.9, h * 0.55, g.primaryGlow, 0.62);
-    glow(Offset(w, h * 0.22), w * 0.8, h * 0.45, g.accentGlow, 0.60);
-    glow(Offset(w * 0.3, h), w * 1.1, h * 0.6, g.primaryLow, 0.70);
-
-    // The still life of beauty objects in frosted glass (DESIGN.md 3.5a):
-    // neutral, faint, still, at the edges. Dark mode is read from the mesh's
-    // own base, so the objects follow the theme the salon's tokens resolved.
-    paintBeautyStillLife(canvas, size, dark: g.meshBottom.computeLuminance() < 0.2);
+    // One soft elliptical wash of the brand, top-left.
+    canvas.save();
+    canvas.scale(size.width * 0.95, size.height * 0.42);
+    canvas.drawCircle(
+      Offset.zero,
+      1,
+      Paint()
+        ..shader = ui.Gradient.radial(
+          Offset.zero,
+          1,
+          [g.primaryGlow, g.primaryGlow.withValues(alpha: 0)],
+          [0, 0.9],
+        ),
+    );
+    canvas.restore();
   }
 
   @override
   bool shouldRepaint(_MeshPainter old) => old.g != g;
 }
 
-/// A frosted-glass panel: translucent fill, a bright hairline, a soft shadow.
+/// A raised surface: a solid face a touch lighter at the top, a bright bevel
+/// along its edge, a soft shadow down-right and a glow of light up-left - a
+/// card you could press (DESIGN 3.5, the tactile chassis).
 ///
-/// [blur] adds a real backdrop blur. It is off by default: blur is expensive on
-/// the budget phones this app runs on, and over the mesh a translucent card
-/// already reads as glass. Bars and sheets - a few per screen - turn it on.
+/// [blur] is kept for the few bars drawn over scrolling content; a raised
+/// face is opaque, so it is rarely needed.
 class GlassPanel extends StatelessWidget {
   const GlassPanel({
     required this.child,
@@ -105,7 +94,8 @@ class GlassPanel extends StatelessWidget {
     final r = BorderRadius.circular(radius ?? g.radius);
     final panel = DecoratedBox(
       decoration: BoxDecoration(
-        color: color ?? g.card,
+        color: color,
+        gradient: color == null ? g.face : null,
         borderRadius: r,
         border: Border.all(color: g.line),
         boxShadow: g.shadows,
@@ -123,14 +113,97 @@ class GlassPanel extends StatelessWidget {
   }
 }
 
+/// A recessed well, pressed into the surface: a darker floor with a shadow
+/// along its top edge, as light falls into a hollow. For the small squares
+/// icons sit in on menus.
+class Sunken extends StatelessWidget {
+  const Sunken({required this.child, this.size = 40, this.radius = 12, super.key});
+
+  final Widget child;
+  final double size;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final g = CrayGlass.of(context);
+    return Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(radius),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color.lerp(g.sunken, g.shadow, 0.35)!, g.sunken, g.sunken],
+          stops: const [0, 0.35, 1],
+        ),
+        border: Border.all(color: g.line),
+      ),
+      child: child,
+    );
+  }
+}
+
+/// A raised key that presses in under the thumb: its face and shadows change
+/// in 120ms from raised to pressed, so a tap is felt on the frame it lands.
+/// With reduced motion the change is instant, never absent (DESIGN 7.4).
+///
+/// The tap itself is handled by whatever wraps it (a [Pressable], usually),
+/// so the key can sit inside a larger target with its label.
+class RaisedKey extends StatelessWidget {
+  const RaisedKey({
+    required this.child,
+    this.pressed = false,
+    this.size = 56,
+    this.radius,
+    super.key,
+  });
+
+  final Widget child;
+  final bool pressed;
+  final double size;
+  final double? radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final g = CrayGlass.of(context);
+    final reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    return AnimatedContainer(
+      duration: reduced ? Duration.zero : const Duration(milliseconds: 120),
+      curve: const Cubic(0.2, 0, 0, 1),
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        gradient: pressed ? g.pressedFace : g.face,
+        borderRadius: BorderRadius.circular(radius ?? g.radius + 4),
+        border: Border.all(color: g.line),
+        boxShadow: pressed ? g.pressedShadows : g.shadows,
+      ),
+      child: child,
+    );
+  }
+}
+
 /// Press feedback: the target settles slightly under the thumb (120ms, the
 /// design's decelerate curve) - so a tap is acknowledged on the frame it lands,
 /// even before the network answers. Honours reduced motion (DESIGN.md 7.4):
 /// with animations off, the scale is skipped and the tap still works.
+///
+/// [builder], when given, is told whether the thumb is down - for a raised
+/// key that presses in rather than shrinks.
 class Pressable extends StatefulWidget {
-  const Pressable({required this.child, this.onTap, this.scale = 0.97, super.key});
+  const Pressable({
+    this.child,
+    this.builder,
+    this.onTap,
+    this.scale = 0.97,
+    super.key,
+  }) : assert(child != null || builder != null);
 
-  final Widget child;
+  final Widget? child;
+  final Widget Function(BuildContext context, bool pressed)? builder;
   final VoidCallback? onTap;
   final double scale;
 
@@ -149,6 +222,7 @@ class _PressableState extends State<Pressable> {
   @override
   Widget build(BuildContext context) {
     final reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    final content = widget.builder?.call(context, _down) ?? widget.child!;
     final pressable = GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (_) => _set(true),
@@ -159,7 +233,7 @@ class _PressableState extends State<Pressable> {
         scale: _down && !reduced ? widget.scale : 1,
         duration: const Duration(milliseconds: 120),
         curve: const Cubic(0.2, 0, 0, 1),
-        child: widget.child,
+        child: content,
       ),
     );
     if (widget.onTap == null) return pressable;

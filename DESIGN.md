@@ -145,48 +145,39 @@ tinting every surface is how a white-label app becomes unreadable at a window se
 
 ---
 
-### 3.5 The glass chassis *(Claude Design, adopted 29 Sep 2026)*
+### 3.5 The tactile chassis *(22 Oct 2026; replaced the glass of 29 Sep)*
 
-The app wears **frosted glass over a soft colour mesh**. Tokens in `core/theme/brand_tokens.dart`,
-theme in `core/theme/cray_glass.dart`, widgets in `core/ui/glass.dart`.
+The app is built from **solid surfaces lit from the top-left** - skeuomorphic, but quiet. Tokens in
+`core/theme/brand_tokens.dart` (the `glass*` names kept for their roles), theme in
+`core/theme/cray_glass.dart` and `brand_theme.dart`, widgets in `core/ui/glass.dart`.
 
-- **The mesh** (`MeshBackground`) is the one place the brand colour reaches the background: a warm
-  base wash with three glows mixed from the salon's own primary and accent (primary 38%, accent
-  55%, primary 26% toward white in light mode; darker mixes in dark). It is a *background wash*,
-  not a surface: cards, sheets, fields and text surfaces stay neutral glass. Text that sits
-  directly on the mesh must clear 4.5:1 - asserted for every glow stop, light and dark
-  (`test/brand_tokens_test.dart`).
-- **Every page paints its own mesh**, beneath a transparent scaffold, through the page-transition
-  builder - a single mesh behind the Navigator would let two transparent pages show through each
-  other during a transition. So every route is an explicit `MaterialPage`; the owner shell, which
-  is not a page, paints its own.
-- **Glass** - `glassCard` (58% white), `glassBar` (50%), `glassSheet` (82%, because money is read
-  on it), a bright `glassLine` hairline and a soft brand-warm shadow. **Real backdrop blur only on
-  bars and sheets**: blur is expensive on the budget phones this runs on, and over the mesh a
-  translucent card already reads as glass. Long lists never blur.
-- Every `Card` is a glass card through the theme; `GlassPanel` for custom surfaces; `Pressable`
-  (0.97 scale, 120ms) and `Appear` (fade + 8dp rise, 220ms) are the micro-interactions, both off
-  under reduced motion.
+- **The background** (`MeshBackground`) is a clean warm-grey gradient with **one** faint wash of
+  the salon's own primary at the top-left (16% light, 18% dark, mixed toward the base) - whose
+  app it is, never a coloured page. Text on it clears 4.5:1 at every stop, light and dark
+  (`test/brand_tokens_test.dart`). Every page paints its own, beneath a transparent scaffold,
+  through the page-transition builder, and every bottom-bar tab paints its own so two never show
+  through each other.
+- **Raised** - cards, panels, keys, outlined buttons, chips: a solid face a touch lighter at the
+  top (`face`), a bright bevel along the edge (`line`), a warm-grey shadow down-right and a glow
+  of light up-left (`shadows`). Never brand-coloured: surfaces stay neutral (§3.4).
+- **Pressed** - a key under the thumb, a chosen option: the light flips to the bottom
+  (`pressedFace`) and the shadow closes (`pressedShadows`), in 120ms; with reduced motion,
+  instantly. A chosen booking option is pressed in **and** outlined in ink - never colour alone.
+- **Recessed** - text fields, the OTP boxes, the home search bar, the wells menu icons sit in
+  (`Sunken`): a darker floor with shade along the top edge.
+- **The primary button** is a domed key in the brand's primary: 10% lighter at the top, 10%
+  darker at the foot, lifted on a soft shadow; pressed, the gradient flips and the shadow drops.
+  The middle of the gradient - where the label is - is the primary itself, so the computed
+  `onPrimary` keeps its contrast (measured on every screen by the sweep).
+- **Bars** are solid and cast no shadow upward: one would dim the text scrolling beneath them
+  below 4.5:1. Sheets lift on a shadow; they cover the page while open.
 - Status and chart colours are untouched by any of this.
 
-### 3.5a The still life *(decided 14 Oct 2026)*
+### 3.5a The still life *(14 Oct 2026; retired from the app 22 Oct 2026)*
 
-Behind every screen of the app, the console and the join site: a **still life of beauty objects
-in frosted glass** - lipstick, an open compact, a brush, nail polish, perfume, a comb, scissors and
-a mascara wand. Painted in the mesh (`core/ui/beauty_still_life.dart`) on the app; one SVG on the
-web (`scripts/design/still-life-svg.py` writes `still-life-light.svg` / `-dark.svg`).
-
-- **Neutral, never brand-tinted.** A violet-ink in light mode, white in dark
-  (`core/theme/still_life_palette.dart`). The salon's colour still reaches the background only
-  through the mesh glows.
-- **Faint.** Fill under 6%, a hairline edge under 13%, one catch-light per object. Text over it
-  clears 4.5:1 - asserted on every screen, light and dark, by the screen sweep.
-- **At the edges, partly cropped.** The middle of the screen, where people read, is left to the
-  content. Objects are placed in fractions of the shorter side so a tablet looks like a phone.
-- **Still.** Nothing in it moves - a moving background competes with the content and costs a
-  budget phone its battery. Vector, painted in one pass: no image to download.
-- It is decoration of the **chassis**, like the mesh - so it is not the "decorative gradient" of
-  §14, and photographs keep their own rules (§10).
+The faint beauty objects behind every screen are **gone from the app**: a busy background
+competed with the raised surfaces that now carry the depth. The join site and the console still
+draw them (`scripts/design/still-life-svg.py`) until those are restyled to match.
 
 ## 4. Layout
 
@@ -690,8 +681,8 @@ entry here, it is wrong.
 
 **Generic AI-design tells:**
 
-- Purple-to-blue gradients. Any decorative gradient, really - *except the salon-coloured mesh of
-  §3.5, which is the chassis, not decoration.*
+- Purple-to-blue gradients. Any decorative gradient, really - *except the chassis of §3.5: the
+  background wash and the light on a raised face, which describe a surface, not decorate one.*
 - Inter (or the system font) for absolutely everything.
 - Cards nested inside cards. Then a card inside that.
 - A rounded-square icon tile floating above every section heading.
@@ -704,7 +695,7 @@ entry here, it is wrong.
 **Specific to this product:**
 
 - **Tinting every surface with the brand colour.** It is how a white-label app becomes unreadable.
-  (The §3.5 mesh is a background wash under neutral glass, with its contrast asserted - not this.)
+  (The §3.5 background wash sits under neutral raised surfaces, with its contrast asserted - not this.)
   Brand goes on buttons and accents; surfaces stay neutral (§3.4).
 - **Animating a money value.** (§7.3)
 - **A pre-checked add-on.** (`RULES.md` §2)

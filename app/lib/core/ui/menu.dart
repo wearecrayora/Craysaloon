@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/cray_glass.dart';
 import 'glass.dart';
 
 /// A round mark with someone's initials - the salon's soft container, its
@@ -85,7 +86,6 @@ class MenuRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
-    final scheme = Theme.of(context).colorScheme;
     return Pressable(
       onTap: onTap,
       scale: 0.98,
@@ -95,15 +95,8 @@ class MenuRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           child: Row(
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: scheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, size: 22, color: scheme.onPrimaryContainer),
-              ),
+              // The icon sits in a recessed well (DESIGN 3.5).
+              Sunken(child: Icon(icon, size: 22, color: CrayGlass.of(context).ink)),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

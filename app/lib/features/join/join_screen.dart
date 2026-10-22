@@ -917,8 +917,9 @@ class _OtpBoxesState extends State<_OtpBoxes> {
                       width: box,
                       height: height,
                       alignment: Alignment.center,
+                      // Each digit sits in a recessed well.
                       decoration: BoxDecoration(
-                        color: g.card,
+                        color: g.sunken,
                         borderRadius: BorderRadius.circular(g.radius),
                         border: Border.all(
                           color: widget.error
