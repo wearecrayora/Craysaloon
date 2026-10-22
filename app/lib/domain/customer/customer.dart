@@ -199,6 +199,10 @@ abstract interface class CustomerApi {
 
   Future<UpcomingBooking?> booking(String id);
 
+  /// Bookings that did not happen - cancelled, or missed - newest first, so
+  /// "My bookings" can show everything in one place, as an order list does.
+  Future<List<UpcomingBooking>> closedBookings({int limit = 30});
+
   /// Newest first.
   Future<List<PastVisit>> history({int limit = 30});
 }

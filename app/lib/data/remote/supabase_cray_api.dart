@@ -437,6 +437,19 @@ class SupabaseCrayApi
   }
 
   @override
+  Future<List<UpcomingBooking>> closedBookings({int limit = 30}) async {
+    final rows = await _rows(
+      () => _client
+          .from('bookings')
+          .select(_bookingSelect)
+          .inFilter('status', ['cancelled', 'no_show'])
+          .order('starts_at', ascending: false)
+          .limit(limit),
+    );
+    return rows.map(_upcoming).whereType<UpcomingBooking>().toList();
+  }
+
+  @override
   Future<UpcomingBooking?> booking(String id) async {
     final rows = await _rows(
       () => _client.from('bookings').select(_bookingSelect).eq('id', id).limit(1),

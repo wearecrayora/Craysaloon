@@ -1,25 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/ui/glass.dart';
 import '../../l10n/app_localizations.dart';
+import 'customer_providers.dart';
 
-/// The customer's shell: Home, Book, Wallet, Me (Claude Design C1/C5/C2/C12).
+/// The customer's shell: Home, Book, Bookings, Wallet, Me (Claude Design
+/// C1/C5/C2/C12; Bookings added 21 Oct 2026 - every booking in one place, with
+/// a count of the ones still to come, as an order list carries).
 ///
-/// Four destinations and no drawer, like the owner's: the things a customer
+/// No drawer, like the owner's: the things a customer
 /// comes back for are one thumb away. "Your data" is NOT hidden behind Me - it
 /// stays on the home app bar too, because a right nobody can find is a right
 /// nobody has (DPDP s.6(4)).
-class CustomerShell extends StatelessWidget {
+class CustomerShell extends ConsumerWidget {
   const CustomerShell({required this.child, super.key});
 
   final Widget child;
 
-  static const destinations = ['/home', '/book', '/wallet', '/me'];
+  static const destinations = ['/home', '/book', '/bookings', '/wallet', '/me'];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppL10n.of(context);
+    final coming = ref.watch(upcomingProvider).value?.length ?? 0;
     final location = GoRouterState.of(context).matchedLocation;
     final index = destinations.indexOf(location);
 
@@ -41,6 +46,19 @@ class CustomerShell extends StatelessWidget {
               icon: const Icon(Icons.event_outlined),
               selectedIcon: const Icon(Icons.event),
               label: l10n.navBook,
+            ),
+            NavigationDestination(
+              icon: Badge(
+                isLabelVisible: coming > 0,
+                label: Text('$coming'),
+                child: const Icon(Icons.receipt_long_outlined),
+              ),
+              selectedIcon: Badge(
+                isLabelVisible: coming > 0,
+                label: Text('$coming'),
+                child: const Icon(Icons.receipt_long),
+              ),
+              label: l10n.navBookings,
             ),
             NavigationDestination(
               icon: const Icon(Icons.account_balance_wallet_outlined),

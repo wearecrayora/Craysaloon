@@ -449,7 +449,25 @@ Motion exists to explain a change in state — where something came from, or wha
 | Something worked | `SuccessCheck`: a ring that closes and a tick that draws, once, ~560ms, painted in code (no Lottie file to ship or license). Shown on joining |
 | A notice | `showNotice` / `messenger.notice` (`core/ui/notice.dart`): a floating bar in the thumb zone, a fixed status icon (done / info / problem), a light haptic. Never a modal. A push that lands while the app is open is shown this way - Android puts nothing in the tray for an app in front |
 
+| A booking made, a salon joined | `Celebrate` (`core/ui/celebrate.dart`): one burst of confetti, ~1.6s, plain projectile motion (decelerates, never overshoots), in the salon's primary and accent with the fixed success green. Behind the words, takes no taps, never near a money value. Off entirely under reduced motion |
+| A booking's journey | `StepTracker` (`core/ui/live.dart`), as a delivery app tracks an order: Booked → Your visit day → Done, the line filling as it moves; the current step is a `LiveDot` that **pings three times and rests** - a ring pulsing forever competes with the screen and costs battery |
+| Today's booking in a list | The same `LiveDot` beside "Today" |
+| The home search hint | Rolls up through the salon's own service names every 3s ("Search "Haircut"") - it tells a newcomer what the salon does before they type. Still under reduced motion |
+| The booking total | Slides up into the bottom bar the moment a service is chosen (the cart bar), and changes by a 120ms cross-fade - never counted (§7.3) |
+| A choice ticked | The tick pops in: a 120ms scale from 60% on the enter curve, no overshoot |
+| Filters | One sideways-scrolling row of chips, each with its count; the list cross-fades when narrowed |
+| Tiles | A selection-click haptic on every action tile |
+
 All of it honours reduced motion: slides and scales become a 100ms fade.
+
+**Taken from the food and grocery apps, and left there (21 Oct 2026).** Copied: the order list,
+the order tracker, the "placed!" moment, the pinned search with rolling hints, the cart bar,
+sideways filter chips, haptics. **Not copied**, because a rule here forbids it: shimmer
+skeletons (§7.4), springy over-shooting buttons (§7.1), totals and savings that count up (§7.3),
+"only 2 slots left" urgency and countdown offers (dark patterns, COMPLIANCE §8), auto-playing
+offer carousels (there is no offers feature, and an offer the salon never made is a claim the
+counter will not keep), and their animation files themselves (other companies' work - ours are
+painted in code).
 
 ### 7.3 What must never animate
 

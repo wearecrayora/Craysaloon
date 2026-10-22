@@ -1201,19 +1201,10 @@ class AppL10nHi extends AppL10n {
   }
 
   @override
-  String get historyTitle => 'विज़िट इतिहास';
-
-  @override
-  String get historyEmpty => 'अभी तक कोई विज़िट नहीं। पहली विज़िट यहाँ दिखेगी।';
-
-  @override
   String get historyPaid => 'भुगतान हो गया';
 
   @override
   String get historyUnpaid => 'अभी भुगतान नहीं हुआ';
-
-  @override
-  String get historyFailed => 'आपकी विज़िट लोड नहीं हो सकीं।';
 
   @override
   String get meTitle => 'मैं';
@@ -1226,9 +1217,6 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get meLanguage => 'भाषा';
-
-  @override
-  String get meHistorySub => 'आपने क्या करवाया, और कब';
 
   @override
   String get meYourDataSub => 'कॉपी, मिटाना, और किससे पूछें';
@@ -1905,9 +1893,6 @@ class AppL10nHi extends AppL10n {
   String get joinedContinue => 'चलिए शुरू करें';
 
   @override
-  String get meTileVisits => 'विज़िट';
-
-  @override
   String get meTileBills => 'बिल';
 
   @override
@@ -2062,6 +2047,76 @@ class AppL10nHi extends AppL10n {
 
   @override
   String get moreLoginsSub => 'जिन नंबरों से आपकी टीम साइन इन करती है';
+
+  @override
+  String get navBookings => 'बुकिंग';
+
+  @override
+  String get bookingsTitle => 'मेरी बुकिंग';
+
+  @override
+  String get bookingsSub => 'आने वाली, पूरी हुई और रद्द - सब एक जगह';
+
+  @override
+  String get bookingsAll => 'सभी';
+
+  @override
+  String get bookingsUpcoming => 'आने वाली';
+
+  @override
+  String get bookingsDone => 'पूरी हुई';
+
+  @override
+  String get bookingsCancelled => 'रद्द';
+
+  @override
+  String get bookingsToday => 'आज';
+
+  @override
+  String get bookingsTomorrow => 'कल';
+
+  @override
+  String bookingsInDays(int days) {
+    return '$days दिन में';
+  }
+
+  @override
+  String get bookingsPayNow => 'अभी भुगतान करें';
+
+  @override
+  String get bookingsBookAgain => 'फिर से बुक करें';
+
+  @override
+  String get bookingsNone =>
+      'अभी कोई बुकिंग नहीं। आपकी पहली बुकिंग और उसके बाद की सब यहाँ दिखेंगी।';
+
+  @override
+  String get bookingsNoneDone => 'अभी कोई पूरी हुई विज़िट नहीं।';
+
+  @override
+  String get bookingsNoneCancelled => 'कुछ भी रद्द या छूटा नहीं।';
+
+  @override
+  String get bookingStepBooked => 'बुक हो गई';
+
+  @override
+  String get bookingStepDay => 'आपकी विज़िट का दिन';
+
+  @override
+  String get bookingStepDone => 'पूरा हुआ';
+
+  @override
+  String get bookingBookedTitle => 'आपकी बुकिंग हो गई!';
+
+  @override
+  String bookingBookedBody(String date, String time) {
+    return '$date को $time बजे मिलते हैं।';
+  }
+
+  @override
+  String searchFor(String name) {
+    return '\"$name\" खोजें';
+  }
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -3272,20 +3327,10 @@ class AppL10nHiLatn extends AppL10nHi {
   }
 
   @override
-  String get historyTitle => 'Visit history';
-
-  @override
-  String get historyEmpty =>
-      'Abhi tak koi visit nahi. Pehli visit yahan dikhegi.';
-
-  @override
   String get historyPaid => 'Paid';
 
   @override
   String get historyUnpaid => 'Abhi payment nahi hua';
-
-  @override
-  String get historyFailed => 'Aapki visits load nahi hui.';
 
   @override
   String get meTitle => 'Main';
@@ -3298,9 +3343,6 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get meLanguage => 'Bhasha';
-
-  @override
-  String get meHistorySub => 'Aapne kya karwaya, aur kab';
 
   @override
   String get meYourDataSub => 'Copy, mitana, aur kisse poochein';
@@ -3982,9 +4024,6 @@ class AppL10nHiLatn extends AppL10nHi {
   String get joinedContinue => 'Chaliye shuru karein';
 
   @override
-  String get meTileVisits => 'Visits';
-
-  @override
   String get meTileBills => 'Bills';
 
   @override
@@ -4140,4 +4179,74 @@ class AppL10nHiLatn extends AppL10nHi {
 
   @override
   String get moreLoginsSub => 'Jin numbers se aapki team sign in karti hai';
+
+  @override
+  String get navBookings => 'Bookings';
+
+  @override
+  String get bookingsTitle => 'Meri bookings';
+
+  @override
+  String get bookingsSub => 'Aane wali, poori hui aur cancel - sab ek jagah';
+
+  @override
+  String get bookingsAll => 'Sabhi';
+
+  @override
+  String get bookingsUpcoming => 'Aane wali';
+
+  @override
+  String get bookingsDone => 'Poori hui';
+
+  @override
+  String get bookingsCancelled => 'Cancel';
+
+  @override
+  String get bookingsToday => 'Aaj';
+
+  @override
+  String get bookingsTomorrow => 'Kal';
+
+  @override
+  String bookingsInDays(int days) {
+    return '$days din mein';
+  }
+
+  @override
+  String get bookingsPayNow => 'Abhi pay karein';
+
+  @override
+  String get bookingsBookAgain => 'Phir se book karein';
+
+  @override
+  String get bookingsNone =>
+      'Abhi koi booking nahi. Aapki pehli booking aur uske baad ki sab yahan dikhengi.';
+
+  @override
+  String get bookingsNoneDone => 'Abhi koi poori hui visit nahi.';
+
+  @override
+  String get bookingsNoneCancelled => 'Kuch bhi cancel ya chhoota nahi.';
+
+  @override
+  String get bookingStepBooked => 'Book ho gayi';
+
+  @override
+  String get bookingStepDay => 'Aapki visit ka din';
+
+  @override
+  String get bookingStepDone => 'Poora hua';
+
+  @override
+  String get bookingBookedTitle => 'Aapki booking ho gayi!';
+
+  @override
+  String bookingBookedBody(String date, String time) {
+    return '$date ko $time baje milte hain.';
+  }
+
+  @override
+  String searchFor(String name) {
+    return '\"$name\" khojein';
+  }
 }

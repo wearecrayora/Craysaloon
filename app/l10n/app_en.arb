@@ -1110,16 +1110,10 @@
       }
     }
   },
-  "historyTitle": "Visit history",
-  "@historyTitle": {},
-  "historyEmpty": "No visits yet. Your first one will show here.",
-  "@historyEmpty": {},
   "historyPaid": "Paid",
   "@historyPaid": {},
   "historyUnpaid": "Not paid yet",
   "@historyUnpaid": {},
-  "historyFailed": "Your visits could not be loaded.",
-  "@historyFailed": {},
   "meTitle": "Me",
   "@meTitle": {},
   "meName": "Name",
@@ -1128,8 +1122,6 @@
   "@mePhone": {},
   "meLanguage": "Language",
   "@meLanguage": {},
-  "meHistorySub": "What you had, and when",
-  "@meHistorySub": {},
   "meYourDataSub": "Copy, erase, and who to ask",
   "@meYourDataSub": {},
   "meAppBy": "App by Crayora",
@@ -1575,7 +1567,6 @@
   "otpWaitingForSms": "Waiting for the SMS. Your phone will ask before the app reads it.",
   "otpFilledFromSms": "Code filled in from your SMS.",
   "joinedContinue": "Let's go",
-  "meTileVisits": "Visits",
   "meTileBills": "Bills",
   "meSectionDetails": "Your details",
   "meSectionActivity": "Your activity",
@@ -1663,5 +1654,50 @@
   "moreSectionMenu": "Menu and team",
   "moreSectionSalon": "Your salon",
   "moreLoginsTitle": "Who can sign in",
-  "moreLoginsSub": "Phone numbers your team signs in with"
+  "moreLoginsSub": "Phone numbers your team signs in with",
+  "navBookings": "Bookings",
+  "bookingsTitle": "My bookings",
+  "bookingsSub": "Coming up, done and cancelled - all in one place",
+  "bookingsAll": "All",
+  "bookingsUpcoming": "Upcoming",
+  "bookingsDone": "Completed",
+  "bookingsCancelled": "Cancelled",
+  "bookingsToday": "Today",
+  "bookingsTomorrow": "Tomorrow",
+  "bookingsInDays": "In {days} days",
+  "@bookingsInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "bookingsPayNow": "Pay now",
+  "bookingsBookAgain": "Book again",
+  "bookingsNone": "No bookings yet. Your first one will show here, with everything after it.",
+  "bookingsNoneDone": "No completed visits yet.",
+  "bookingsNoneCancelled": "Nothing cancelled or missed.",
+  "bookingStepBooked": "Booked",
+  "bookingStepDay": "Your visit day",
+  "bookingStepDone": "Done",
+  "bookingBookedTitle": "You're booked!",
+  "bookingBookedBody": "See you on {date} at {time}.",
+  "@bookingBookedBody": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "Search \"{name}\"",
+  "@searchFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -104,6 +104,16 @@ void main() {
           staffName: 'Suresh Kumar',
         ),
       ]
+      ..closedList = [
+        UpcomingBooking(
+          id: 'b-4',
+          startsAt: DateTime(2026, 8, 30, 11),
+          endsAt: DateTime(2026, 8, 30, 12),
+          status: 'cancelled',
+          totalPaise: 80000,
+          serviceNames: 'Hair spa and head massage',
+        ),
+      ]
       ..visitsList = [
         PastVisit(
           id: 'v1',
@@ -307,7 +317,7 @@ void main() {
 
   const customerRoutes = [
     '/home', '/book', '/wallet', '/me', '/visits', '/documents', '/booking/b-9', '/wallet/add', '/refer', '/your-data',
-    '/me/edit', '/search',
+    '/me/edit', '/search', '/bookings',
   ];
   const ownerRoutes = [
     '/day', '/day/walk-in', '/attention', '/dashboard', '/customers', '/catalogue/services', '/catalogue/addons',

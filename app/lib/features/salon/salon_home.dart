@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +11,7 @@ import '../../core/platform/home_shortcut.dart';
 import '../../core/platform/salon_notifications.dart';
 import '../../core/theme/brand_tokens.dart';
 import '../../core/theme/cray_glass.dart';
+import '../../core/theme/motion.dart';
 import '../../core/ui/action_tile.dart';
 import '../../core/ui/glass.dart';
 import '../../core/ui/notice.dart';
@@ -198,7 +201,16 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
           ),
         ],
       ),
-      body: RefreshIndicator(
+      // The search bar stays put while the rest scrolls under it, as on a
+      // shopping app's home: the question people open it with is always in
+      // reach.
+      body: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16, 4, 16, 8),
+            child: _SearchBar(),
+          ),
+          Expanded(child: RefreshIndicator(
         // A "your bill is ready" push can arrive while this screen is open;
         // pulling down shows it - and re-reads the balance, which is never
         // served from a cache.
@@ -211,12 +223,8 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
           ref.invalidate(bookableServicesProvider);
         },
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
           children: [
-            // Search first, where the eye lands: "what do they do here, and
-            // what does it cost?" is the question most people open the app with.
-            const _SearchBar(),
-            const SizedBox(height: 20),
             Text(
               firstName == null
                   ? l10n.homeGreetingNoName
@@ -310,12 +318,12 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
                   onTap: () => context.push('/wallet/add'),
                 ),
                 ActionTile(
-                  icon: Icons.history_rounded,
-                  label: l10n.meTileVisits,
-                  onTap: () => context.push('/visits'),
+                  icon: Icons.receipt_long_outlined,
+                  label: l10n.bookingsTitle,
+                  onTap: () => context.go('/bookings'),
                 ),
                 ActionTile(
-                  icon: Icons.receipt_long_outlined,
+                  icon: Icons.request_quote_outlined,
                   label: l10n.meTileBills,
                   badge: billCount > 0 ? '$billCount' : null,
                   onTap: () => context.push('/documents'),
@@ -351,6 +359,8 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
             _WalletCard(salonName: salonName),
           ],
         ),
+      )),
+        ],
       ),
     );
   }
@@ -358,14 +368,48 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
 
 /// The search bar: looks like a field, opens the search page. A real field
 /// here would put the keyboard up on the home screen for anyone who brushed it.
-class _SearchBar extends StatelessWidget {
+///
+/// Its hint walks through the salon's own services - "Search "Haircut"", then
+/// "Search "Facial"" - every three seconds, rolling up, as a grocery app's
+/// does: it tells a first-time customer what the salon offers before they
+/// type anything. With reduced motion it holds still on the general hint.
+class _SearchBar extends ConsumerStatefulWidget {
   const _SearchBar();
+
+  @override
+  ConsumerState<_SearchBar> createState() => _SearchBarState();
+}
+
+class _SearchBarState extends ConsumerState<_SearchBar> {
+  Timer? _tick;
+  int _i = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _tick = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (mounted && !Motion.isReduced(context)) setState(() => _i++);
+    });
+  }
+
+  @override
+  void dispose() {
+    _tick?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppL10n.of(context);
     final g = CrayGlass.of(context);
     final text = Theme.of(context).textTheme;
+    final names = (ref.watch(bookableServicesProvider).value ?? const <Service>[])
+        .map((s) => s.name)
+        .take(6)
+        .toList();
+    final hint = names.isEmpty || Motion.isReduced(context)
+        ? l10n.searchHint
+        : l10n.searchFor(names[_i % names.length]);
     return Pressable(
       onTap: () => context.push('/search'),
       scale: 0.98,
@@ -386,7 +430,37 @@ class _SearchBar extends StatelessWidget {
             children: [
               Icon(Icons.search, color: text.bodyMedium?.color),
               const SizedBox(width: 12),
-              Expanded(child: Text(l10n.searchHint, style: text.bodyLarge)),
+              Expanded(
+                child: ClipRect(
+                  child: AnimatedSwitcher(
+                    duration: Motion.standard,
+                    switchInCurve: Motion.enter,
+                    switchOutCurve: Motion.exit,
+                    layoutBuilder: (current, previous) => Stack(
+                      alignment: Alignment.centerLeft,
+                      children: [...previous, ?current],
+                    ),
+                    // The new hint rises in from below; the old one rises out.
+                    transitionBuilder: (child, animation) => FadeTransition(
+                      opacity: animation,
+                      child: SlideTransition(
+                        position: Tween(
+                          begin: Offset(0, child.key == ValueKey(hint) ? 0.6 : -0.6),
+                          end: Offset.zero,
+                        ).animate(animation),
+                        child: child,
+                      ),
+                    ),
+                    child: Text(
+                      hint,
+                      key: ValueKey(hint),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: text.bodyLarge,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

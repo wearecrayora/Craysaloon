@@ -44,6 +44,12 @@ final documentsProvider = FutureProvider<List<SalonDocument>>((ref) async {
   return await api?.documents() ?? const [];
 });
 
+/// Cancelled and missed bookings, for "My bookings".
+final closedBookingsProvider = FutureProvider<List<UpcomingBooking>>((ref) async {
+  final api = ref.watch(customerApiProvider);
+  return await api?.closedBookings() ?? const [];
+});
+
 final historyProvider = FutureProvider<List<PastVisit>>((ref) async {
   final api = ref.watch(customerApiProvider);
   return await api?.history() ?? const [];

@@ -2,6 +2,7 @@ import 'package:craysalon/app/providers.dart';
 import 'package:craysalon/app/router.dart';
 import 'package:craysalon/core/platform/otp_autofill.dart';
 import 'package:craysalon/core/ui/service_icon.dart';
+import 'package:craysalon/domain/customer/customer.dart';
 import 'package:craysalon/data/local/branding_store.dart';
 import 'package:craysalon/features/join/deep_link_listener.dart';
 import 'package:craysalon/features/join/join_controller.dart';
@@ -119,6 +120,101 @@ void main() {
       expect(privacy.requested, ['correction']);
       expect(api.savedProfile, isNull, reason: 'no profile write carries a phone');
       expect(find.text('Asked. The salon has 30 days to answer.'), findsOneWidget);
+    });
+  });
+
+  group('my bookings', () {
+    FakeCustomerApi api0() {
+      final soon = DateTime.now().add(const Duration(days: 3));
+      return FakeCustomerApi()
+        ..upcomingList = [
+          UpcomingBooking(
+            id: 'b-up',
+            startsAt: DateTime(soon.year, soon.month, soon.day, 16, 30),
+            endsAt: DateTime(soon.year, soon.month, soon.day, 17, 30),
+            status: 'confirmed',
+            totalPaise: 50000,
+            serviceNames: 'Haircut',
+          ),
+        ]
+        ..visitsList = [
+          PastVisit(
+            id: 'v-1',
+            completedAt: DateTime(2026, 9, 12),
+            amountPaise: 120000,
+            paid: true,
+            serviceNames: 'Haircut + Beard trim',
+          ),
+        ]
+        ..closedList = [
+          UpcomingBooking(
+            id: 'b-x',
+            startsAt: DateTime(2026, 8, 30, 11),
+            endsAt: DateTime(2026, 8, 30, 12),
+            status: 'cancelled',
+            totalPaise: 80000,
+            serviceNames: 'Gold facial',
+          ),
+        ];
+    }
+
+    testWidgets('upcoming, done and cancelled are in one place', (tester) async {
+      final app = await pump(tester, api0());
+      app.read(routerProvider).go('/bookings');
+      await tester.pumpAndSettle();
+
+      expect(find.text('My bookings'), findsWidgets);
+      expect(find.text('In 3 days · 4:30 PM'), findsOneWidget);
+      expect(find.text('Haircut + Beard trim'), findsOneWidget);
+      expect(find.text('Gold facial'), findsOneWidget);
+      expect(find.text('Book again'), findsNWidgets(2));
+
+      // Narrowing to Cancelled keeps only the cancelled one.
+      await tester.ensureVisible(find.text('Cancelled · 1'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancelled · 1'));
+      await tester.pumpAndSettle();
+      expect(find.text('Gold facial'), findsOneWidget);
+      expect(find.text('Haircut + Beard trim'), findsNothing);
+      expect(find.text('In 3 days · 4:30 PM'), findsNothing);
+    });
+
+    testWidgets('book again chooses the same service, and nothing else', (tester) async {
+      final api = api0();
+      final app = await pump(tester, api);
+      app.read(routerProvider).go('/bookings');
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Completed · 1'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Completed · 1'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Book again'));
+      await tester.pumpAndSettle();
+
+      final haircut = api.serviceList.where((s) => s.name == 'Haircut').firstOrNull;
+      expect(app.read(routerProvider).state.uri.queryParameters['service'], haircut?.id);
+    });
+
+    testWidgets('right after booking: the moment, then the journey', (tester) async {
+      final app = await pump(tester, api0());
+      app.read(routerProvider).push('/booking/b-up?new=1');
+      await tester.pumpAndSettle();
+      expect(find.text("You're booked!"), findsOneWidget);
+      expect(find.text('Your visit day'), findsOneWidget);
+
+      // Opened again later, it is just the booking.
+      app.read(routerProvider).pop();
+      await tester.pumpAndSettle();
+      app.read(routerProvider).push('/booking/b-up');
+      await tester.pumpAndSettle();
+      expect(find.text("You're booked!"), findsNothing);
+    });
+
+    testWidgets('the Bookings tab counts what is still to come', (tester) async {
+      await pump(tester, api0());
+      final bar = find.byType(NavigationBar);
+      expect(find.descendant(of: bar, matching: find.text('Bookings')), findsOneWidget);
+      expect(find.descendant(of: bar, matching: find.text('1')), findsWidgets);
     });
   });
 

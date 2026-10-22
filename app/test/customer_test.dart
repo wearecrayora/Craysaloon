@@ -246,7 +246,8 @@ void main() {
       expect(b['addOns'], isEmpty);
       // Never names a customer: the server takes it from the token.
       expect(b['customer'], isNull);
-      expect(find.text('Your booking'), findsOneWidget);
+      // Straight from Confirm: the moment, not just the record (21 Oct 2026).
+      expect(find.text("You're booked!"), findsOneWidget);
     });
 
     testWidgets('a time taken meanwhile sends them back to pick again, never double-books',
@@ -411,9 +412,9 @@ void main() {
 
     testWidgets('a paid visit opens its tax invoice: GST as issued, to the paisa', (tester) async {
       await pump(tester, withDocs());
-      await tester.tap(find.text('Me').last);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Visit history'));
+      // Past visits live in My bookings now, under the Bookings tab.
+      await tester.tap(find.descendant(
+          of: find.byType(NavigationBar), matching: find.text('Bookings')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Haircut'));
       await tester.pumpAndSettle();
@@ -456,9 +457,9 @@ void main() {
           ),
         ];
       await pump(tester, api);
-      await tester.tap(find.text('Me').last);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Visit history'));
+      // Past visits live in My bookings now, under the Bookings tab.
+      await tester.tap(find.descendant(
+          of: find.byType(NavigationBar), matching: find.text('Bookings')));
       await tester.pumpAndSettle();
 
       expect(find.text('Haircut'), findsOneWidget);
@@ -470,12 +471,13 @@ void main() {
 
     testWidgets('no visits yet: an empty state, not a blank screen', (tester) async {
       await pump(tester, FakeCustomerApi());
-      await tester.tap(find.text('Me').last);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Visit history'));
+      // Past visits live in My bookings now, under the Bookings tab.
+      await tester.tap(find.descendant(
+          of: find.byType(NavigationBar), matching: find.text('Bookings')));
       await tester.pumpAndSettle();
 
-      expect(find.text('No visits yet. Your first one will show here.'), findsOneWidget);
+      expect(find.text('No bookings yet. Your first one will show here, with everything after it.'),
+          findsOneWidget);
     });
 
     testWidgets('Me shows the number masked, and switches language', (tester) async {

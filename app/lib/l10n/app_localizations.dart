@@ -2048,18 +2048,6 @@ abstract class AppL10n {
   /// **'with {name}'**
   String withStylist(String name);
 
-  /// No description provided for @historyTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Visit history'**
-  String get historyTitle;
-
-  /// No description provided for @historyEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'No visits yet. Your first one will show here.'**
-  String get historyEmpty;
-
   /// No description provided for @historyPaid.
   ///
   /// In en, this message translates to:
@@ -2071,12 +2059,6 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Not paid yet'**
   String get historyUnpaid;
-
-  /// No description provided for @historyFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Your visits could not be loaded.'**
-  String get historyFailed;
 
   /// No description provided for @meTitle.
   ///
@@ -2101,12 +2083,6 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Language'**
   String get meLanguage;
-
-  /// No description provided for @meHistorySub.
-  ///
-  /// In en, this message translates to:
-  /// **'What you had, and when'**
-  String get meHistorySub;
 
   /// No description provided for @meYourDataSub.
   ///
@@ -3320,12 +3296,6 @@ abstract class AppL10n {
   /// **'Let\'s go'**
   String get joinedContinue;
 
-  /// No description provided for @meTileVisits.
-  ///
-  /// In en, this message translates to:
-  /// **'Visits'**
-  String get meTileVisits;
-
   /// No description provided for @meTileBills.
   ///
   /// In en, this message translates to:
@@ -3601,6 +3571,132 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Phone numbers your team signs in with'**
   String get moreLoginsSub;
+
+  /// No description provided for @navBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get navBookings;
+
+  /// No description provided for @bookingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My bookings'**
+  String get bookingsTitle;
+
+  /// No description provided for @bookingsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming up, done and cancelled - all in one place'**
+  String get bookingsSub;
+
+  /// No description provided for @bookingsAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get bookingsAll;
+
+  /// No description provided for @bookingsUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get bookingsUpcoming;
+
+  /// No description provided for @bookingsDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get bookingsDone;
+
+  /// No description provided for @bookingsCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get bookingsCancelled;
+
+  /// No description provided for @bookingsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get bookingsToday;
+
+  /// No description provided for @bookingsTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get bookingsTomorrow;
+
+  /// No description provided for @bookingsInDays.
+  ///
+  /// In en, this message translates to:
+  /// **'In {days} days'**
+  String bookingsInDays(int days);
+
+  /// No description provided for @bookingsPayNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay now'**
+  String get bookingsPayNow;
+
+  /// No description provided for @bookingsBookAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Book again'**
+  String get bookingsBookAgain;
+
+  /// No description provided for @bookingsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings yet. Your first one will show here, with everything after it.'**
+  String get bookingsNone;
+
+  /// No description provided for @bookingsNoneDone.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed visits yet.'**
+  String get bookingsNoneDone;
+
+  /// No description provided for @bookingsNoneCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing cancelled or missed.'**
+  String get bookingsNoneCancelled;
+
+  /// No description provided for @bookingStepBooked.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get bookingStepBooked;
+
+  /// No description provided for @bookingStepDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Your visit day'**
+  String get bookingStepDay;
+
+  /// No description provided for @bookingStepDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get bookingStepDone;
+
+  /// No description provided for @bookingBookedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re booked!'**
+  String get bookingBookedTitle;
+
+  /// No description provided for @bookingBookedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'See you on {date} at {time}.'**
+  String bookingBookedBody(String date, String time);
+
+  /// No description provided for @searchFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Search \"{name}\"'**
+  String searchFor(String name);
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

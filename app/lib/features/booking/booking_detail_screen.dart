@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/ui/celebrate.dart';
+import '../../core/ui/live.dart';
 import '../../core/ui/load_failed.dart';
+import '../../core/ui/success_check.dart';
 import '../../core/format/money.dart';
 import '../../core/theme/cray_glass.dart';
 import '../../core/ui/salon_mark.dart';
@@ -22,9 +25,13 @@ import 'book_screen.dart' show DetailRow;
 /// server would refuse nothing else but a completed one, and cancelling a
 /// haircut already in progress is a conversation, not a button.
 class BookingDetailScreen extends ConsumerStatefulWidget {
-  const BookingDetailScreen({required this.id, super.key});
+  const BookingDetailScreen({required this.id, this.justBooked = false, super.key});
 
   final String id;
+
+  /// Opened straight from Confirm: the success check and a burst of confetti,
+  /// once, above the details.
+  final bool justBooked;
 
   @override
   ConsumerState<BookingDetailScreen> createState() =>
@@ -114,12 +121,31 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         AsyncData(:final value?) => ListView(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
           children: [
-            Text(l10n.bookingTitle, style: text.headlineMedium),
+            if (widget.justBooked && value.cancellable)
+              _Booked(booking: value)
+            else
+              Text(l10n.bookingTitle, style: text.headlineMedium),
             const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: _StatusChip(value.status),
-            ),
+            // A booking that did not happen says so as a chip; a live one
+            // shows where it is up to instead.
+            if (value.status == 'cancelled' || value.status == 'no_show')
+              Align(
+                alignment: Alignment.centerLeft,
+                child: _StatusChip(value.status),
+              ),
+            // Where it is up to, as a food app tracks an order: booked, the
+            // day, done - the current step live (DESIGN 7: pings, then rests).
+            if (value.status != 'cancelled' && value.status != 'no_show') ...[
+              const SizedBox(height: 16),
+              StepTracker(
+                steps: [l10n.bookingStepBooked, l10n.bookingStepDay, l10n.bookingStepDone],
+                current: value.status == 'completed'
+                    ? 3
+                    : DateUtils.dateOnly(DateTime.now()).isBefore(DateUtils.dateOnly(value.startsAt))
+                    ? 1
+                    : 2,
+              ),
+            ],
             const SizedBox(height: 8),
             DetailRow(
               label: l10n.bookDateTime,
@@ -169,6 +195,44 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         ),
         _ => const SkeletonList(padding: EdgeInsets.all(16)),
       },
+    );
+  }
+}
+
+/// The moment after Confirm: confetti once, the success check, "You're
+/// booked", and when - then the details underneath, as usual.
+class _Booked extends StatelessWidget {
+  const _Booked({required this.booking});
+
+  final UpcomingBooking booking;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final text = Theme.of(context).textTheme;
+    final ml = MaterialLocalizations.of(context);
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        const Positioned(left: 0, right: 0, top: -48, child: Celebrate(height: 240)),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+            const SuccessCheck(size: 72),
+            const SizedBox(height: 16),
+            Text(l10n.bookingBookedTitle, style: text.headlineMedium),
+            const SizedBox(height: 4),
+            Text(
+              l10n.bookingBookedBody(
+                ml.formatFullDate(booking.startsAt),
+                ml.formatTimeOfDay(TimeOfDay.fromDateTime(booking.startsAt)),
+              ),
+              style: text.bodyLarge,
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

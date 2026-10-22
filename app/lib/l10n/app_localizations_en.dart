@@ -1209,19 +1209,10 @@ class AppL10nEn extends AppL10n {
   }
 
   @override
-  String get historyTitle => 'Visit history';
-
-  @override
-  String get historyEmpty => 'No visits yet. Your first one will show here.';
-
-  @override
   String get historyPaid => 'Paid';
 
   @override
   String get historyUnpaid => 'Not paid yet';
-
-  @override
-  String get historyFailed => 'Your visits could not be loaded.';
 
   @override
   String get meTitle => 'Me';
@@ -1234,9 +1225,6 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get meLanguage => 'Language';
-
-  @override
-  String get meHistorySub => 'What you had, and when';
 
   @override
   String get meYourDataSub => 'Copy, erase, and who to ask';
@@ -1916,9 +1904,6 @@ class AppL10nEn extends AppL10n {
   String get joinedContinue => 'Let\'s go';
 
   @override
-  String get meTileVisits => 'Visits';
-
-  @override
   String get meTileBills => 'Bills';
 
   @override
@@ -2075,4 +2060,74 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get moreLoginsSub => 'Phone numbers your team signs in with';
+
+  @override
+  String get navBookings => 'Bookings';
+
+  @override
+  String get bookingsTitle => 'My bookings';
+
+  @override
+  String get bookingsSub => 'Coming up, done and cancelled - all in one place';
+
+  @override
+  String get bookingsAll => 'All';
+
+  @override
+  String get bookingsUpcoming => 'Upcoming';
+
+  @override
+  String get bookingsDone => 'Completed';
+
+  @override
+  String get bookingsCancelled => 'Cancelled';
+
+  @override
+  String get bookingsToday => 'Today';
+
+  @override
+  String get bookingsTomorrow => 'Tomorrow';
+
+  @override
+  String bookingsInDays(int days) {
+    return 'In $days days';
+  }
+
+  @override
+  String get bookingsPayNow => 'Pay now';
+
+  @override
+  String get bookingsBookAgain => 'Book again';
+
+  @override
+  String get bookingsNone =>
+      'No bookings yet. Your first one will show here, with everything after it.';
+
+  @override
+  String get bookingsNoneDone => 'No completed visits yet.';
+
+  @override
+  String get bookingsNoneCancelled => 'Nothing cancelled or missed.';
+
+  @override
+  String get bookingStepBooked => 'Booked';
+
+  @override
+  String get bookingStepDay => 'Your visit day';
+
+  @override
+  String get bookingStepDone => 'Done';
+
+  @override
+  String get bookingBookedTitle => 'You\'re booked!';
+
+  @override
+  String bookingBookedBody(String date, String time) {
+    return 'See you on $date at $time.';
+  }
+
+  @override
+  String searchFor(String name) {
+    return 'Search \"$name\"';
+  }
 }

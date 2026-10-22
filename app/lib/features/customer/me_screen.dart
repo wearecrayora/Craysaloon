@@ -45,12 +45,12 @@ class MeScreen extends ConsumerWidget {
           ActionGrid(
             tiles: [
               ActionTile(
-                icon: Icons.history_rounded,
-                label: l10n.meTileVisits,
-                onTap: () => context.push('/visits'),
+                icon: Icons.receipt_long_outlined,
+                label: l10n.bookingsTitle,
+                onTap: () => context.go('/bookings'),
               ),
               ActionTile(
-                icon: Icons.receipt_long_outlined,
+                icon: Icons.request_quote_outlined,
                 label: l10n.meTileBills,
                 onTap: () => context.push('/documents'),
               ),
@@ -104,10 +104,10 @@ class MeScreen extends ConsumerWidget {
             title: l10n.meSectionActivity,
             children: [
               MenuRow(
-                icon: Icons.history,
-                title: l10n.historyTitle,
-                subtitle: l10n.meHistorySub,
-                onTap: () => context.push('/visits'),
+                icon: Icons.receipt_long_outlined,
+                title: l10n.bookingsTitle,
+                subtitle: l10n.bookingsSub,
+                onTap: () => context.go('/bookings'),
               ),
               MenuRow(
                 icon: Icons.receipt_long_outlined,

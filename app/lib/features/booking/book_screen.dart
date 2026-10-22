@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/format/money.dart';
 import '../../core/theme/cray_glass.dart';
+import '../../core/theme/motion.dart';
 import '../../core/ui/glass.dart';
 import '../../core/ui/skeleton.dart';
 import '../../core/ui/salon_mark.dart';
@@ -130,7 +132,9 @@ class _BookScreenState extends ConsumerState<BookScreen> {
       if (!mounted) return;
       messenger.notice(l10n.bookDone(ml.formatShortMonthDay(slot.startsAt)));
       _reset();
-      context.push('/booking/$id');
+      // A firm "it's done" under the thumb, then the booking with its moment.
+      HapticFeedback.heavyImpact();
+      context.push('/booking/$id?new=1');
     } on CrayApiException catch (e) {
       if (!mounted) return;
       if (e.kind == CrayErrorKind.slotTaken) {
@@ -207,7 +211,25 @@ class _BookScreenState extends ConsumerState<BookScreen> {
                     l10n.bookStep(index + 1, steps.length),
                     style: text.bodySmall,
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
+                  // The bar fills as they go - where they are, at a glance.
+                  ExcludeSemantics(
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween(end: (index + 1) / steps.length),
+                      duration: Motion.of(context, Motion.standard),
+                      curve: Motion.enter,
+                      builder: (context, v, _) => ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: v,
+                          minHeight: 4,
+                          color: Theme.of(context).colorScheme.primary,
+                          backgroundColor: Theme.of(context).colorScheme.outlineVariant,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   // The step heading changes with a short cross-fade; with
                   // reduced motion it simply changes.
                   AnimatedSwitcher(
@@ -436,15 +458,26 @@ class _ChoiceRow extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(
-                radio
-                    ? (selected
-                          ? Icons.radio_button_checked
-                          : Icons.radio_button_unchecked)
-                    : (selected
-                          ? Icons.check_box
-                          : Icons.check_box_outline_blank),
-                color: selected ? scheme.primary : scheme.outline,
+              // The tick pops in - a quick scale on the decelerate curve, no
+              // overshoot (DESIGN 7.1) - so the choice registers under the thumb.
+              AnimatedSwitcher(
+                duration: Motion.of(context, Motion.micro),
+                switchInCurve: Motion.enter,
+                transitionBuilder: (child, a) => ScaleTransition(
+                  scale: Tween<double>(begin: 0.6, end: 1).animate(a),
+                  child: FadeTransition(opacity: a, child: child),
+                ),
+                child: Icon(
+                  radio
+                      ? (selected
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_unchecked)
+                      : (selected
+                            ? Icons.check_box
+                            : Icons.check_box_outline_blank),
+                  key: ValueKey(selected),
+                  color: selected ? scheme.primary : scheme.outline,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -934,23 +967,37 @@ class _BottomBar extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (totalPaise != null) ...[
-                Row(
+              // The total slides up into the bar the moment there is one -
+              // the cart bar of a shopping app - and changes by cross-fading,
+              // never counting (DESIGN 6.1, 7.2).
+              AnimatedSize(
+                duration: Motion.of(context, Motion.standard),
+                curve: Motion.enter,
+                alignment: Alignment.bottomCenter,
+                child: totalPaise == null
+                    ? const SizedBox(width: double.infinity)
+                    : Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
                   children: [
                     Text(l10n.bookTotal, style: text.bodyMedium),
                     const Spacer(),
                     // A total that changes as add-ons are ticked is shown, not
                     // counted up: money never animates (DESIGN 6.1).
-                    Text(
-                      '${rupees(totalPaise!)} · ${l10n.bookMinutes(minutes)}',
-                      style: text.titleMedium?.copyWith(
-                        fontFeatures: moneyFeatures,
+                    AnimatedSwitcher(
+                      duration: Motion.of(context, Motion.micro),
+                      child: Text(
+                        '${rupees(totalPaise!)} · ${l10n.bookMinutes(minutes)}',
+                        key: ValueKey('$totalPaise/$minutes'),
+                        style: text.titleMedium?.copyWith(
+                          fontFeatures: moneyFeatures,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-              ],
+                      ),
+              ),
               FilledButton(
                 onPressed: busy ? null : onPressed,
                 child: busy

@@ -4,12 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import '../features/booking/book_screen.dart';
 import '../features/booking/booking_detail_screen.dart';
+import '../features/booking/bookings_screen.dart';
 import '../features/booking/search_screen.dart';
 import '../features/catalogue/catalogue_screens.dart';
 import '../features/customer/customer_shell.dart';
 import '../features/customer/documents_screen.dart';
 import '../features/customer/edit_profile_screen.dart';
-import '../features/customer/history_screen.dart';
 import '../features/customer/me_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/customers/customers_screen.dart';
@@ -119,6 +119,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         const customerRoutes = {
           '/home',
           '/book',
+          '/bookings',
           '/search',
           '/me',
           '/me/edit',
@@ -158,6 +159,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               );
             },
           ),
+          GoRoute(path: '/bookings', pageBuilder: _tab(const BookingsScreen())),
           GoRoute(path: '/wallet', pageBuilder: _tab(const WalletScreen())),
           GoRoute(path: '/me', pageBuilder: _tab(const MeScreen())),
         ],
@@ -165,13 +167,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/your-data', pageBuilder: _page(const YourDataScreen())),
       GoRoute(path: '/me/edit', pageBuilder: _page(const EditProfileScreen())),
       GoRoute(path: '/search', pageBuilder: _page(const SearchScreen())),
-      GoRoute(path: '/visits', pageBuilder: _page(const HistoryScreen())),
+      // Kept for links already out there: visit history is My bookings now,
+      // showing what was done (21 Oct 2026).
+      GoRoute(
+        path: '/visits',
+        pageBuilder: _page(const BookingsScreen(initialFilter: BookingFilter.done)),
+      ),
       GoRoute(path: '/documents', pageBuilder: _page(const DocumentsScreen())),
       GoRoute(
         path: '/booking/:id',
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: BookingDetailScreen(id: state.pathParameters['id']!),
+          // `?new=1` straight after booking: the "you're booked" moment.
+          child: BookingDetailScreen(
+            id: state.pathParameters['id']!,
+            justBooked: state.uri.queryParameters['new'] == '1',
+          ),
         ),
       ),
       GoRoute(path: '/wallet/add', pageBuilder: _page(const AddMoneyScreen())),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/cray_glass.dart';
 import 'glass.dart';
@@ -34,7 +35,10 @@ class ActionTile extends StatelessWidget {
     final g = CrayGlass.of(context);
 
     return Pressable(
-      onTap: onTap,
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
       scale: 0.94,
       child: Semantics(
         label: badge == null ? label : '$label, $badge',

@@ -10,6 +10,7 @@ import '../../core/platform/external_link.dart';
 import '../../core/platform/otp_autofill.dart';
 import '../../core/theme/cray_glass.dart';
 import '../../core/theme/motion.dart';
+import '../../core/ui/celebrate.dart';
 import '../../core/ui/glass.dart';
 import '../../core/ui/salon_mark.dart';
 import '../../core/ui/success_check.dart';
@@ -1002,7 +1003,13 @@ class _DoneStep extends ConsumerWidget {
         const SizedBox(height: 32),
         // Start-aligned like every other screen: centred body text is one of
         // the tells DESIGN 14 names.
-        const Align(alignment: Alignment.centerLeft, child: SuccessCheck(size: 80)),
+        const Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(left: 0, right: 0, top: -64, child: Celebrate(height: 240)),
+            Align(alignment: Alignment.centerLeft, child: SuccessCheck(size: 80)),
+          ],
+        ),
         const SizedBox(height: 24),
         Text(l10n.joinedTitle(salon?.displayName ?? ''), style: text.headlineMedium),
         const SizedBox(height: 12),

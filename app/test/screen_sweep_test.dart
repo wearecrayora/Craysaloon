@@ -197,6 +197,16 @@ void main() {
           staffName: 'Suresh Kumar',
         ),
       ]
+      ..closedList = [
+        UpcomingBooking(
+          id: 'b-4',
+          startsAt: DateTime(2026, 8, 30, 11),
+          endsAt: DateTime(2026, 8, 30, 12),
+          status: 'cancelled',
+          totalPaise: 80000,
+          serviceNames: 'Hair spa and head massage',
+        ),
+      ]
       ..visitsList = [
         PastVisit(
           id: 'v1',
@@ -242,6 +252,7 @@ void main() {
     // 21 Oct 2026: the profile editor, and search over the menu.
     '/me/edit',
     '/search',
+    '/bookings',
   ];
 
   List<Override> owner(CacheDb cache) {

@@ -15,6 +15,9 @@ class FakeCustomerApi extends FakeCrayApi implements CustomerApi, SalonReads, Sa
   CustomerProfile? profile = const CustomerProfile(name: 'Asha Rao', phone: '9812344821');
   NextDue? due;
   List<UpcomingBooking> upcomingList = [];
+
+  /// Cancelled and missed bookings, for "My bookings".
+  List<UpcomingBooking> closedList = [];
   List<PastVisit> visitsList = [];
 
   List<Service> serviceList = const [
@@ -106,7 +109,10 @@ class FakeCustomerApi extends FakeCrayApi implements CustomerApi, SalonReads, Sa
 
   @override
   Future<UpcomingBooking?> booking(String id) async =>
-      upcomingList.where((b) => b.id == id).firstOrNull;
+      [...upcomingList, ...closedList].where((b) => b.id == id).firstOrNull;
+
+  @override
+  Future<List<UpcomingBooking>> closedBookings({int limit = 30}) async => closedList;
 
   @override
   Future<List<PastVisit>> history({int limit = 30}) async => visitsList;
