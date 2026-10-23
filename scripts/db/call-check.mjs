@@ -51,6 +51,15 @@ function balanced(src, open) {
       if (c === quote) quote = null;
       continue;
     }
+    // A // comment runs to the end of the line. Without this, an apostrophe
+    // in a comment ("the token's") opened a "string" that closed in the wrong
+    // place, and the scan drifted into whatever code came next (23 Oct 2026).
+    if (c === '/' && src[i + 1] === '/') {
+      const end = src.indexOf('\n', i);
+      if (end < 0) break;
+      i = end;
+      continue;
+    }
     if (c === "'" || c === '"') { quote = c; continue; }
     if (pairs[c]) stack.push(pairs[c]);
     else if (c === stack[stack.length - 1]) {
@@ -71,6 +80,11 @@ function splitTop(s) {
       cur += c;
       if (c === '\\') { cur += s[++i] ?? ''; continue; }
       if (c === quote) quote = null;
+      continue;
+    }
+    if (c === '/' && s[i + 1] === '/') {
+      const end = s.indexOf('\n', i);
+      i = end < 0 ? s.length : end;
       continue;
     }
     if (c === "'" || c === '"' || c === '`') { quote = c; cur += c; continue; }
