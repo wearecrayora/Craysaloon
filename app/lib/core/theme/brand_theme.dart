@@ -40,6 +40,16 @@ class _MeshPageTransitions extends PageTransitionsBuilder {
   );
 }
 
+/// How far the primary button's dome lightens at the top and darkens at the
+/// foot. The label must clear 4.5:1 at BOTH ends, not only on the primary -
+/// asserted for every test brand in test/button_contrast_test.dart.
+const kButtonDome = 0.08;
+
+(Color, Color) buttonDome(BrandTokens t) => (
+  Color.lerp(t.primary, const Color(0xFFFFFFFF), kButtonDome)!,
+  Color.lerp(t.primary, const Color(0xFF000000), kButtonDome)!,
+);
+
 /// Builds Flutter's theme from the salon's resolved tokens.
 ///
 /// Every colour here comes from [BrandTokens]. Nothing is tinted with the brand
@@ -233,8 +243,7 @@ ThemeData brandTheme(BrandTokens t) {
         ),
         backgroundBuilder: (context, states, child) {
           if (states.contains(WidgetState.disabled)) return child!;
-          final light = Color.lerp(t.primary, const Color(0xFFFFFFFF), 0.10)!;
-          final dark = Color.lerp(t.primary, const Color(0xFF000000), 0.10)!;
+          final (light, dark) = buttonDome(t);
           final pressed = states.contains(WidgetState.pressed);
           return DecoratedBox(
             decoration: BoxDecoration(

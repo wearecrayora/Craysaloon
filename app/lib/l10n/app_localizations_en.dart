@@ -2130,4 +2130,54 @@ class AppL10nEn extends AppL10n {
   String searchFor(String name) {
     return 'Search \"$name\"';
   }
+
+  @override
+  String get homeTileSearch => 'Search';
+
+  @override
+  String get homeCategoriesTitle => 'What are you looking for?';
+
+  @override
+  String get updateAvailable => 'A new version of the app is ready.';
+
+  @override
+  String get updateNow => 'Update';
+
+  @override
+  String get updateRequiredTitle => 'Please update the app';
+
+  @override
+  String get updateRequiredBody =>
+      'This version no longer works with the salon. Updating takes a minute, and your bookings, wallet and bills are all kept.';
+
+  @override
+  String get walletTopupPaused =>
+      'Adding money in the app is paused for now. You can still pay at the counter.';
+
+  @override
+  String get kindHair => 'Hair';
+
+  @override
+  String get kindBeard => 'Beard';
+
+  @override
+  String get kindNails => 'Nails';
+
+  @override
+  String get kindFacial => 'Facial';
+
+  @override
+  String get kindSpa => 'Spa';
+
+  @override
+  String get kindMakeup => 'Makeup';
+
+  @override
+  String get kindColour => 'Colour';
+
+  @override
+  String get kindWax => 'Waxing';
+
+  @override
+  String get kindOther => 'More';
 }

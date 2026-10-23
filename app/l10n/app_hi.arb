@@ -599,5 +599,21 @@
   "bookingStepDone": "पूरा हुआ",
   "bookingBookedTitle": "आपकी बुकिंग हो गई!",
   "bookingBookedBody": "{date} को {time} बजे मिलते हैं।",
-  "searchFor": "\"{name}\" खोजें"
+  "searchFor": "\"{name}\" खोजें",
+  "homeTileSearch": "खोजें",
+  "homeCategoriesTitle": "आप क्या ढूँढ रहे हैं?",
+  "updateAvailable": "ऐप का नया संस्करण तैयार है।",
+  "updateNow": "अपडेट करें",
+  "updateRequiredTitle": "कृपया ऐप अपडेट करें",
+  "updateRequiredBody": "यह संस्करण अब सैलून के साथ काम नहीं करता। अपडेट में एक मिनट लगता है, और आपकी बुकिंग, वॉलेट और बिल सब सुरक्षित रहते हैं।",
+  "walletTopupPaused": "ऐप में पैसे जोड़ना अभी रुका हुआ है। आप काउंटर पर भुगतान कर सकते हैं।",
+  "kindHair": "बाल",
+  "kindBeard": "दाढ़ी",
+  "kindNails": "नाखून",
+  "kindFacial": "फेशियल",
+  "kindSpa": "स्पा",
+  "kindMakeup": "मेकअप",
+  "kindColour": "रंग",
+  "kindWax": "वैक्सिंग",
+  "kindOther": "और"
 }

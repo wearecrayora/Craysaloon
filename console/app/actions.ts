@@ -55,7 +55,12 @@ import {
   upsertAddOn,
   upsertService,
   upsertStaff,
+  setAppConfig,
+  setAppVersions,
+  publishAnnouncement,
+  endAnnouncement,
 } from '@/server/admin-db';
+import { APP_TILES, APP_SECTIONS, APP_SWITCHES, ANNOUNCEMENT_ICONS } from '@/lib/app-config';
 
 /**
  * Server actions. Every one of them calls requireAdmin() FIRST and passes the
@@ -1363,6 +1368,105 @@ export async function reactivateAction(_prev: ActionState, form: FormData): Prom
     await reactivateSalon(admin.id, salonId, reason);
     revalidatePath('/');
     return { ok: 'Salon reactivated.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The app, run from the console (0119)
+// ---------------------------------------------------------------------------
+
+function orderedList(raw: FormDataEntryValue | null, allowed: readonly string[]): string[] | null {
+  try {
+    const list = JSON.parse(String(raw ?? '[]'));
+    if (!Array.isArray(list)) return null;
+    const clean = list.map(String).filter((x) => allowed.includes(x));
+    return Array.from(new Set(clean));
+  } catch {
+    return null;
+  }
+}
+
+export async function appConfigAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const salonId = String(form.get('salonId') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+  const tiles = orderedList(form.get('tiles'), APP_TILES);
+  const sections = orderedList(form.get('sections'), APP_SECTIONS);
+  if (!tiles || !sections) return { error: 'The layout could not be read. Reload and try again.' };
+  if (!reason) return { error: 'Say why - it is the audit entry, and the next operator will ask.' };
+  const switches: Record<string, boolean> = {};
+  for (const key of APP_SWITCHES) switches[key] = form.get(`switch_${key}`) === 'on';
+  try {
+    await setAppConfig(admin.id, salonId, tiles, sections, switches, reason);
+    revalidatePath(`/salon/${salonId}/app`);
+    return { ok: 'Saved. Open apps update within seconds; the rest the next time they open.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function appVersionsAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  if (!admin.isSuper) return { error: 'Only a super-admin sets which app versions may run.' };
+  const minBuild = Number(form.get('minBuild') ?? 0);
+  const latestBuild = Number(form.get('latestBuild') ?? 0);
+  const updateUrl = String(form.get('updateUrl') ?? '').trim() || null;
+  const reason = String(form.get('reason') ?? '').trim();
+  if (!Number.isInteger(minBuild) || !Number.isInteger(latestBuild) || minBuild < 0 || latestBuild < minBuild) {
+    return { error: 'Builds are whole numbers, and the newest cannot be below the lowest allowed.' };
+  }
+  if (updateUrl && !updateUrl.startsWith('https://')) return { error: 'The update link must start with https://' };
+  if (!reason) return { error: 'Say why - forcing an update stops every older app until it is updated.' };
+  try {
+    const n = await setAppVersions(admin.id, minBuild, latestBuild, updateUrl, reason);
+    revalidatePath('/app-versions');
+    return { ok: `Saved for ${n} salons.` };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function announceAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const target = String(form.get('salonId') ?? '');
+  const all = target === 'all';
+  if (all && !admin.isSuper) return { error: 'Only a super-admin announces to every salon.' };
+  const title = String(form.get('title') ?? '').trim();
+  const icon = String(form.get('icon') ?? 'campaign');
+  const endsAt = String(form.get('endsAt') ?? '');
+  const startsAt = String(form.get('startsAt') ?? '') || null;
+  if (!title || title.length > 80) return { error: 'A title of 1 to 80 characters.' };
+  if (!endsAt) return { error: 'Say when it ends - an announcement that never ends is one nobody reads.' };
+  if (!(ANNOUNCEMENT_ICONS as readonly string[]).includes(icon)) return { error: 'Pick an icon from the list.' };
+  // datetime-local inputs carry no zone: these are India times.
+  const ist = (v: string) => (v.length === 16 ? `${v}:00+05:30` : v);
+  try {
+    const n = await publishAnnouncement(admin.id, all ? null : [target], {
+      title,
+      body: String(form.get('body') ?? '').trim() || null,
+      titleHi: String(form.get('titleHi') ?? '').trim() || null,
+      bodyHi: String(form.get('bodyHi') ?? '').trim() || null,
+      icon,
+      startsAt: startsAt ? ist(startsAt) : null,
+      endsAt: ist(endsAt),
+    });
+    revalidatePath(all ? '/app-versions' : `/salon/${target}/app`);
+    return { ok: all ? `Announced to ${n} salons.` : 'Announced. Open apps show it within seconds.' };
+  } catch (e) {
+    return { error: message(e) };
+  }
+}
+
+export async function endAnnouncementAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const id = String(form.get('id') ?? '');
+  const salonId = String(form.get('salonId') ?? '');
+  try {
+    await endAnnouncement(admin.id, id);
+    revalidatePath(`/salon/${salonId}/app`);
+    return { ok: 'Ended. It is gone from the app.' };
   } catch (e) {
     return { error: message(e) };
   }

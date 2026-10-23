@@ -11,6 +11,7 @@ import '../../core/ui/skeleton.dart';
 import '../../domain/records/records.dart' show Service;
 import '../../l10n/app_localizations.dart';
 import '../customer/customer_providers.dart';
+import 'kind_label.dart';
 
 /// Search the salon's menu (21 Oct 2026): type "hair", "facial", "बाल", see
 /// what they do and what it costs, and book it in one tap.
@@ -19,7 +20,10 @@ import '../customer/customer_providers.dart';
 /// the phone, as you type. Nothing is booked from here: a tap opens booking
 /// with that service chosen, and the customer goes on from there.
 class SearchScreen extends ConsumerStatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({this.kind, super.key});
+
+  /// Opened from a home category: only this kind, until cleared.
+  final ServiceKind? kind;
 
   @override
   ConsumerState<SearchScreen> createState() => _SearchScreenState();
@@ -27,11 +31,18 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _query = TextEditingController();
+  late ServiceKind? _kind = widget.kind;
 
   @override
   void dispose() {
     _query.dispose();
     super.dispose();
+  }
+
+  static ServiceKind _kindOf(Service s) {
+    final k = serviceKind(s.name, category: s.category);
+    // Styling sits under hair, as the home category does.
+    return k == ServiceKind.styling ? ServiceKind.hair : k;
   }
 
   static List<Service> _match(List<Service> all, String query) {
@@ -76,7 +87,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       ),
       body: switch (services) {
         AsyncValue(:final value?, hasValue: true) => () {
-          final found = _match(value, _query.text);
+          final found = _match(value, _query.text)
+              .where((s) => _kind == null || _kindOf(s) == _kind)
+              .toList();
           if (value.isEmpty) {
             return _Empty(text: l10n.bookNoServices);
           }
@@ -88,11 +101,25 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             itemCount: found.length + 1,
             separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, i) => i == 0
-                ? Text(
-                    _query.text.trim().isEmpty
-                        ? l10n.searchAll(value.length)
-                        : l10n.searchFound(found.length),
-                    style: text.labelMedium,
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _query.text.trim().isEmpty && _kind == null
+                              ? l10n.searchAll(value.length)
+                              : l10n.searchFound(found.length),
+                          style: text.labelMedium,
+                        ),
+                      ),
+                      // The category it was opened with, removable.
+                      if (_kind != null)
+                        InputChip(
+                          label: Text(kindLabel(l10n, _kind!)),
+                          onDeleted: () => setState(() => _kind = null),
+                          deleteButtonTooltipMessage:
+                              MaterialLocalizations.of(context).deleteButtonTooltip,
+                        ),
+                    ],
                   )
                 : _ServiceRow(service: found[i - 1]),
           );
@@ -144,16 +171,20 @@ class _ServiceRow extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: scheme.primaryContainer,
-                borderRadius: BorderRadius.circular(g.radius),
-              ),
-              child: Icon(
-                serviceIcon(service.name, category: service.category),
-                color: scheme.onPrimaryContainer,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(g.radius),
+              child: SizedBox.square(
+                dimension: 56,
+                child: switch (kindImage(serviceKind(service.name, category: service.category))) {
+                  final String asset => Image.asset(asset, fit: BoxFit.cover, excludeFromSemantics: true),
+                  null => ColoredBox(
+                    color: scheme.primaryContainer,
+                    child: Icon(
+                      serviceIcon(service.name, category: service.category),
+                      color: scheme.onPrimaryContainer,
+                    ),
+                  ),
+                },
               ),
             ),
             const SizedBox(width: 12),

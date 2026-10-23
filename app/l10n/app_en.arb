@@ -1699,5 +1699,21 @@
         "type": "String"
       }
     }
-  }
+  },
+  "homeTileSearch": "Search",
+  "homeCategoriesTitle": "What are you looking for?",
+  "updateAvailable": "A new version of the app is ready.",
+  "updateNow": "Update",
+  "updateRequiredTitle": "Please update the app",
+  "updateRequiredBody": "This version no longer works with the salon. Updating takes a minute, and your bookings, wallet and bills are all kept.",
+  "walletTopupPaused": "Adding money in the app is paused for now. You can still pay at the counter.",
+  "kindHair": "Hair",
+  "kindBeard": "Beard",
+  "kindNails": "Nails",
+  "kindFacial": "Facial",
+  "kindSpa": "Spa",
+  "kindMakeup": "Makeup",
+  "kindColour": "Colour",
+  "kindWax": "Waxing",
+  "kindOther": "More"
 }

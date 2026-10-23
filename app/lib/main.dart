@@ -20,6 +20,7 @@ import 'features/join/join_controller.dart';
 import 'features/notifications/background_ack.dart';
 import 'features/salon/branding_refresh.dart';
 import 'l10n/app_localizations.dart';
+import 'features/app_config/update_gate.dart';
 
 /// Configuration arrives with `--dart-define`, never from a file in the repo.
 /// The publishable key is designed to ship in a client; the secret key never
@@ -182,7 +183,11 @@ class CraySalonApp extends ConsumerWidget {
       // customer's salon when there is, the owner's shell for staff (ARCH 9.1).
       routerConfig: ref.watch(routerProvider),
       // Republished branding reaches the phone on its next open (PRD 20).
-      builder: (context, child) => BrandingRefresh(child: child ?? const SizedBox.shrink()),
+      // The refresher keeps the app current with the console; the gate stops
+      // a build the console has retired (0119).
+      builder: (context, child) => BrandingRefresh(
+        child: UpdateGate(child: child ?? const SizedBox.shrink()),
+      ),
     );
   }
 }

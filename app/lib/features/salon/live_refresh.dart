@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../app_config/app_config_providers.dart';
 import '../../app/providers.dart';
 import '../customer/customer_providers.dart';
 import '../dashboard/dashboard_screen.dart';
@@ -58,6 +59,9 @@ void refreshServerReads(WidgetRef ref) {
     // The salon itself: its details, features and billing state.
     ..invalidate(salonProfileProvider)
     ..invalidate(salonFeaturesProvider)
+    // What the console decides about the app itself (0119).
+    ..invalidate(appConfigProvider)
+    ..invalidate(announcementsProvider)
     ..invalidate(salonBillingProvider)
     ..invalidate(dashboardProvider);
 }

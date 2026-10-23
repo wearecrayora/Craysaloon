@@ -16,6 +16,7 @@ import '../../main.dart' show kEnglish, kHindi, kHinglish, localeCode, localePro
 import '../join/join_controller.dart' show resolvedBrandingProvider;
 import '../privacy/your_data_controller.dart' show privacyApiProvider;
 import 'customer_providers.dart';
+import '../app_config/app_config_providers.dart' show switchOn;
 import '../../core/ui/menu.dart' show Initials;
 import 'me_screen.dart' show dayMonthLabel, editBirthday;
 
@@ -176,7 +177,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     ),
                 ],
               ),
-              if (!p.isMinor) ...[
+              if (!p.isMinor && switchOn(ref, 'birthday')) ...[
                 const SizedBox(height: 24),
                 Text(l10n.meBirthday, style: text.titleMedium),
                 const SizedBox(height: 8),

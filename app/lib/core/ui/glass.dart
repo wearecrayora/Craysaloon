@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 import '../theme/cray_glass.dart';
 
-/// The background behind every screen (22 Oct 2026): a clean warm-grey
-/// gradient with one faint wash of the salon's own primary at the top-left -
-/// enough to say whose app this is, never a coloured page (DESIGN 3.5).
+/// The background behind every screen: a clean warm-grey gradient with soft
+/// washes of the salon's own primary (top-left) and accent (right) - its
+/// colours in the room, never a coloured page (DESIGN 3.5).
 ///
 /// Nothing floats in it any more: the still life of beauty objects (3.5a) was
 /// retired from the app the same day - a busy background competes with the
@@ -45,21 +45,29 @@ class _MeshPainter extends CustomPainter {
         ),
     );
 
-    // One soft elliptical wash of the brand, top-left.
-    canvas.save();
-    canvas.scale(size.width * 0.95, size.height * 0.42);
-    canvas.drawCircle(
-      Offset.zero,
-      1,
-      Paint()
-        ..shader = ui.Gradient.radial(
-          Offset.zero,
-          1,
-          [g.primaryGlow, g.primaryGlow.withValues(alpha: 0)],
-          [0, 0.9],
-        ),
-    );
-    canvas.restore();
+    // Two soft elliptical washes: the brand's primary top-left, its accent
+    // from the right, a third of the way down. No shapes, nothing floating.
+    void wash(Offset centre, double rx, double ry, Color colour) {
+      canvas.save();
+      canvas.translate(centre.dx, centre.dy);
+      canvas.scale(rx, ry);
+      canvas.drawCircle(
+        Offset.zero,
+        1,
+        Paint()
+          ..shader = ui.Gradient.radial(
+            Offset.zero,
+            1,
+            [colour, colour.withValues(alpha: 0)],
+            [0, 0.9],
+          ),
+      );
+      canvas.restore();
+    }
+
+    final w = size.width, h = size.height;
+    wash(Offset.zero, w * 1.0, h * 0.45, g.primaryGlow);
+    wash(Offset(w, h * 0.35), w * 0.8, h * 0.4, g.accentGlow);
   }
 
   @override

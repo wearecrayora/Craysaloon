@@ -22,6 +22,7 @@ const salonItems = (id: string): Item[] => [
   { key: 'credentials', href: `/salon/${id}/credentials`, label: 'Credentials', icon: 'key' },
   { key: 'messaging', href: `/salon/${id}/messaging`, label: 'Messaging', icon: 'chat' },
   { key: 'privacy', href: `/salon/${id}/privacy`, label: 'Privacy contact', icon: 'shield' },
+  { key: 'app', href: `/salon/${id}/app`, label: 'App home & announcements', icon: 'phone' },
   { key: 'qr', href: `/salon/${id}/qr`, label: 'QR pack', icon: 'qr' },
   { key: 'billing', href: `/salon/${id}/billing`, label: 'Billing and activation', icon: 'receipt' },
   { key: 'logins', href: `/salon/${id}/logins`, label: 'Logins (owner, staff)', icon: 'users' },
@@ -34,6 +35,7 @@ const PLATFORM: Item[] = [
   { key: 'metrics', href: '/metrics', label: 'Metrics', icon: 'chart' },
   { key: 'audit', href: '/audit', label: 'Audit log', icon: 'list' },
   { key: 'operators', href: '/operators', label: 'Operators', icon: 'users' },
+  { key: 'app-versions', href: '/app-versions', label: 'App versions & broadcast', icon: 'phone' },
 ];
 
 export function ConsoleShell({
@@ -106,6 +108,7 @@ const ICONS = {
   check: 'M4 12l5 5L20 6',
   chat: 'M4 5h16v11H9l-5 4V5zM8 9h8M8 12h5',
   list: 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',
+  phone: 'M7 2h10v20H7zM11 18h2',
   users: 'M9 11a4 4 0 100-8 4 4 0 000 8zM2 21v-1a6 6 0 0112 0v1M16 3.5a4 4 0 010 7.5M22 21v-1a6 6 0 00-4-5.7',
 };
 

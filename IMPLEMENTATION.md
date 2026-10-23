@@ -225,6 +225,7 @@ re-themes installed apps on their next open.
 | `public.cancel_booking(client_action_id, booking_id, reason)` | customer, owner | `{ok}` | Status transition · emits `booking.cancelled` · frees the slot at once (the constraint counts only pending/confirmed) · charges nothing, because a fee is money (M7) · *built 2026-09-27* |
 | `public.mark_visit_complete(client_action_id, booking_id, final_amount, tip)` | owner, staff | `{ok, visit_id, already}` | **Idempotent** · offline-queued · emits `visit.completed` · a customer cannot call it at all · *built 2026-09-27; the wallet debit, loyalty award and package decrement land here at M7 (RULES 9.5)* |
 | `app.record_consent(purpose, granted)` | customer | `{ok}` | Append-only |
+| `public.my_app_config()` | any tenant | `{version, pulse, home_tiles, home_sections, switches, min_build, latest_build, update_url}` | The salon's own row only · `pulse` moves on any change a customer should see (branding, menu, plan, rules, config, announcement - triggers, 0119) · the app re-reads on it, live through Realtime on `salon_app_config`, and on open, resume and every 3 minutes |
 | `public.update_my_profile(name, language)` | customer | `{ok}` or `{ok:false, reason}` | Their own row, those two columns only - never the phone (the binding) · name tidied, 2-60 characters with a letter · language one of `en`/`hi`/`hi_Latn`, which `app.notify` reads first · an erased customer has nothing to edit · *0118* |
 | `public.request_data_right(kind, detail)` | customer | `{ok, already, request_id}` | `access` / `erasure` / `grievance` / **`correction`** (0118) · one open request per kind · 30-day due date |
 | `app.ack_notification(delivery_id)` | any tenant | `{ok}` | Stamps `acked_at` — gates escalation |
@@ -260,6 +261,18 @@ being logged.
 | `wallet_correct(customer_id, amount_paise, reason)` | The only human path to a balance |
 | `record_setup_fee(salon_id, amount_paise, paid_on, reference)` | Offline payment record |
 | `start_support_session(salon_id, reason)` | Time-boxed; every read inside is logged |
+
+**The app, run from the console (0119, 23 Oct 2026)** - `app_admin.set_app_config` (home tiles
+and sections in order, feature switches; any operator, reason required, audited),
+`app_admin.set_app_versions` (lowest build allowed and newest, update link; super-admin, every
+salon at once), `app_admin.publish_announcement` (one salon, or every live/setup salon for a
+super-admin) and `end_announcement`, read-only `get_app_config` / `list_announcements`. Console:
+**Salon → App home & announcements** and **App versions & broadcast**. In the app: the home grid
+and sections follow the config; a switch off hides `referrals`, `birthday`, `search`,
+`wallet_topup` (Add money says it is paused) or `announcements`; below `min_build` only "Please
+update" shows (`UpdateGate`); below `latest_build` a dismissible banner. Fixed, never configurable:
+a bill, today's booking and the next come first, and Your data stays in the app bar. Not possible
+from here: new screens or features - those still need an app update (store policy).
 
 ### 3.4 Edge Functions
 

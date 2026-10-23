@@ -1,3 +1,4 @@
+import 'package:craysalon/domain/app_config/app_config.dart';
 import 'package:craysalon/domain/customer/customer.dart';
 import 'package:craysalon/domain/join/cray_api.dart';
 import 'package:craysalon/domain/records/records.dart';
@@ -7,7 +8,8 @@ import 'fake_cray_api.dart';
 /// The server as a signed-in CUSTOMER sees it: their own rows, the salon's
 /// catalogue, and the booking calls. Owner-only calls are not implemented -
 /// a customer screen that reached one would fail the test loudly.
-class FakeCustomerApi extends FakeCrayApi implements CustomerApi, SalonReads, SalonBookings {
+class FakeCustomerApi extends FakeCrayApi
+    implements CustomerApi, SalonReads, SalonBookings, AppConfigApi {
   FakeCustomerApi() {
     sessionValue = const AppSession(appRole: 'customer', salonId: '11111111-0000-4000-8000-000000000001');
   }
@@ -15,6 +17,19 @@ class FakeCustomerApi extends FakeCrayApi implements CustomerApi, SalonReads, Sa
   CustomerProfile? profile = const CustomerProfile(name: 'Asha Rao', phone: '9812344821');
   NextDue? due;
   List<UpcomingBooking> upcomingList = [];
+
+  /// What the console decided (0119) - the defaults unless a test says.
+  AppConfig config = AppConfig.defaults;
+  List<Announcement> announcementList = [];
+
+  @override
+  Future<AppConfig?> myAppConfig() async => config;
+
+  @override
+  Future<List<Announcement>> announcements() async => announcementList;
+
+  @override
+  Stream<void> configChanges(String salonId) => const Stream.empty();
 
   /// Cancelled and missed bookings, for "My bookings".
   List<UpcomingBooking> closedList = [];

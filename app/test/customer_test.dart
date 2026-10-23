@@ -131,12 +131,14 @@ void main() {
 
     testWidgets('the balance never appears without its line (DESIGN 6.1)', (tester) async {
       await pump(tester, FakeCustomerApi(), wallet: true);
+      // The wallet card sits below the categories, tiles and services now.
+      final line = find.text('Usable only at Studio Nine Salon. Cannot be withdrawn as cash.');
+      await tester.scrollUntilVisible(line, 300, scrollable: find.byType(Scrollable).first);
 
-      expect(find.textContaining('₹'), findsWidgets);
-      expect(
-        find.text('Usable only at Studio Nine Salon. Cannot be withdrawn as cash.'),
-        findsOneWidget,
-      );
+      expect(line, findsOneWidget);
+      // The balance is in the same card as its line, never apart from it.
+      final card = find.ancestor(of: line, matching: find.byType(Card)).first;
+      expect(find.descendant(of: card, matching: find.textContaining('₹')), findsWidgets);
     });
 
     testWidgets('only somebody who never came is told it would be their first visit',

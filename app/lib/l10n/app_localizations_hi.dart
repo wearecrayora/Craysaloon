@@ -2117,6 +2117,56 @@ class AppL10nHi extends AppL10n {
   String searchFor(String name) {
     return '\"$name\" खोजें';
   }
+
+  @override
+  String get homeTileSearch => 'खोजें';
+
+  @override
+  String get homeCategoriesTitle => 'आप क्या ढूँढ रहे हैं?';
+
+  @override
+  String get updateAvailable => 'ऐप का नया संस्करण तैयार है।';
+
+  @override
+  String get updateNow => 'अपडेट करें';
+
+  @override
+  String get updateRequiredTitle => 'कृपया ऐप अपडेट करें';
+
+  @override
+  String get updateRequiredBody =>
+      'यह संस्करण अब सैलून के साथ काम नहीं करता। अपडेट में एक मिनट लगता है, और आपकी बुकिंग, वॉलेट और बिल सब सुरक्षित रहते हैं।';
+
+  @override
+  String get walletTopupPaused =>
+      'ऐप में पैसे जोड़ना अभी रुका हुआ है। आप काउंटर पर भुगतान कर सकते हैं।';
+
+  @override
+  String get kindHair => 'बाल';
+
+  @override
+  String get kindBeard => 'दाढ़ी';
+
+  @override
+  String get kindNails => 'नाखून';
+
+  @override
+  String get kindFacial => 'फेशियल';
+
+  @override
+  String get kindSpa => 'स्पा';
+
+  @override
+  String get kindMakeup => 'मेकअप';
+
+  @override
+  String get kindColour => 'रंग';
+
+  @override
+  String get kindWax => 'वैक्सिंग';
+
+  @override
+  String get kindOther => 'और';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -4249,4 +4299,54 @@ class AppL10nHiLatn extends AppL10nHi {
   String searchFor(String name) {
     return '\"$name\" khojein';
   }
+
+  @override
+  String get homeTileSearch => 'Khojein';
+
+  @override
+  String get homeCategoriesTitle => 'Aap kya dhoondh rahe hain?';
+
+  @override
+  String get updateAvailable => 'App ka naya version taiyaar hai.';
+
+  @override
+  String get updateNow => 'Update karein';
+
+  @override
+  String get updateRequiredTitle => 'Kripya app update karein';
+
+  @override
+  String get updateRequiredBody =>
+      'Yeh version ab salon ke saath kaam nahi karta. Update mein ek minute lagta hai, aur aapki bookings, wallet aur bill sab surakshit rehte hain.';
+
+  @override
+  String get walletTopupPaused =>
+      'App mein paise jodna abhi ruka hua hai. Aap counter par pay kar sakte hain.';
+
+  @override
+  String get kindHair => 'Baal';
+
+  @override
+  String get kindBeard => 'Daadhi';
+
+  @override
+  String get kindNails => 'Nakhoon';
+
+  @override
+  String get kindFacial => 'Facial';
+
+  @override
+  String get kindSpa => 'Spa';
+
+  @override
+  String get kindMakeup => 'Makeup';
+
+  @override
+  String get kindColour => 'Rang';
+
+  @override
+  String get kindWax => 'Waxing';
+
+  @override
+  String get kindOther => 'Aur';
 }

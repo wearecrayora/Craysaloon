@@ -7,6 +7,7 @@ import '../../core/theme/chart_palette.dart';
 import '../../domain/salon/salon_account.dart';
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
+import '../app_config/app_config_providers.dart' show switchOn;
 
 final salonAccountApiProvider = Provider<SalonAccountApi?>((ref) {
   final api = ref.watch(crayApiProvider);
@@ -47,7 +48,10 @@ final salonProfileProvider = FutureProvider<SalonProfile?>((ref) async {
 
 bool hasFeature(WidgetRef ref, String feature) {
   final features = ref.watch(salonFeaturesProvider).value;
-  return features == null || features.contains(feature);
+  final planned = features == null || features.contains(feature);
+  // And the console has not switched it off (0119) - a display switch on top
+  // of the plan, never instead of the server's own check.
+  return planned && switchOn(ref, feature);
 }
 
 /// Shown at the top of the owner's day when the salon cannot record anything.

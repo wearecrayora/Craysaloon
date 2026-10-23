@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/providers.dart';
 import '../../data/local/branding_store.dart';
 import '../../domain/join/cray_api.dart';
+import '../app_config/app_config_providers.dart' show appConfigApiProvider;
 import '../join/join_controller.dart';
 import 'live_refresh.dart';
 
@@ -93,6 +94,11 @@ class _BrandingRefreshState extends ConsumerState<BrandingRefresh>
   bool _running = false;
   Timer? _timer;
 
+  /// The console's pulse, live (0119): anything a customer should see changed,
+  /// so re-read now rather than at the next timer tick.
+  StreamSubscription<void>? _live;
+  String? _liveFor;
+
   @override
   void initState() {
     super.initState();
@@ -101,8 +107,26 @@ class _BrandingRefreshState extends ConsumerState<BrandingRefresh>
     _startTimer();
   }
 
+  /// One subscription per salon in the session; none without one.
+  void _watchPulse() {
+    final salonId = ref.read(sessionProvider)?.salonId;
+    if (salonId == _liveFor) return;
+    _live?.cancel();
+    _live = null;
+    _liveFor = salonId;
+    final api = ref.read(appConfigApiProvider);
+    if (salonId == null || api == null) return;
+    // A burst of changes (a whole menu saved) is one re-read, not twenty.
+    Timer? settle;
+    _live = api.configChanges(salonId).listen((_) {
+      settle?.cancel();
+      settle = Timer(const Duration(milliseconds: 800), () => _refresh(reads: true));
+    });
+  }
+
   @override
   void dispose() {
+    _live?.cancel();
     _timer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -140,5 +164,11 @@ class _BrandingRefreshState extends ConsumerState<BrandingRefresh>
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) {
+    ref.watch(sessionProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _watchPulse();
+    });
+    return widget.child;
+  }
 }

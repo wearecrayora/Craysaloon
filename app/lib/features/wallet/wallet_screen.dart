@@ -9,6 +9,7 @@ import '../../domain/wallet/wallet.dart';
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
 import 'wallet_controller.dart';
+import '../app_config/app_config_providers.dart' show switchOn;
 
 /// C2 — the wallet.
 ///
@@ -36,10 +37,13 @@ class WalletScreen extends ConsumerWidget {
               children: [
                 _BalanceCard(summary: value.summary, salonName: salonName),
                 const SizedBox(height: 24),
-                FilledButton(
-                  onPressed: () => context.push('/wallet/add'),
-                  child: Text(l10n.walletAddMoney),
-                ),
+                if (switchOn(ref, 'wallet_topup'))
+                  FilledButton(
+                    onPressed: () => context.push('/wallet/add'),
+                    child: Text(l10n.walletAddMoney),
+                  )
+                else
+                  Text(l10n.walletTopupPaused, style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: 32),
                 Text(
                   l10n.walletHistoryHeading,

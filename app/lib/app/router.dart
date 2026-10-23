@@ -34,6 +34,7 @@ import '../features/owner/logins_screen.dart';
 import '../features/salon/salon_home.dart';
 import '../l10n/app_localizations.dart';
 import 'providers.dart';
+import '../core/ui/service_icon.dart' show ServiceKind;
 
 /// Every route is an explicit [MaterialPage], so the theme's page transitions
 /// run - and with them the glass chassis's mesh, which each page paints beneath
@@ -166,7 +167,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/your-data', pageBuilder: _page(const YourDataScreen())),
       GoRoute(path: '/me/edit', pageBuilder: _page(const EditProfileScreen())),
-      GoRoute(path: '/search', pageBuilder: _page(const SearchScreen())),
+      GoRoute(
+        path: '/search',
+        pageBuilder: (context, state) {
+          final kind = state.uri.queryParameters['kind'];
+          return MaterialPage(
+            key: state.pageKey,
+            child: SearchScreen(
+              kind: ServiceKind.values.where((k) => k.name == kind).firstOrNull,
+            ),
+          );
+        },
+      ),
       // Kept for links already out there: visit history is My bookings now,
       // showing what was done (21 Oct 2026).
       GoRoute(

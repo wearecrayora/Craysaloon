@@ -10,6 +10,7 @@ import '../../domain/wallet/wallet.dart';
 import '../../l10n/app_localizations.dart';
 import '../join/join_controller.dart';
 import 'wallet_controller.dart';
+import '../app_config/app_config_providers.dart' show switchOn;
 
 /// Razorpay Checkout, against the salon's own account. Overridden with a fake
 /// in tests: a pay button has to be testable without a payment gateway, and
@@ -125,6 +126,18 @@ class _AddMoneyScreenState extends ConsumerState<AddMoneyScreen> {
     final l10n = AppL10n.of(context);
     final salonName = ref.watch(resolvedBrandingProvider)?.displayName ?? '';
     final quote = ref.watch(topupQuoteProvider(_amountPaise));
+
+    // Paused from the console (0119): say so, rather than a form that leads
+    // nowhere. A display switch - the server's own rules still apply.
+    if (!switchOn(ref, 'wallet_topup')) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l10n.addMoneyTitle)),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(l10n.walletTopupPaused, style: Theme.of(context).textTheme.bodyLarge),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.addMoneyTitle)),

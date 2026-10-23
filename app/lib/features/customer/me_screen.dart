@@ -16,6 +16,7 @@ import '../../main.dart' show kEnglish, kHindi, kHinglish, localeCode, localePro
 import '../join/join_controller.dart' show resolvedBrandingProvider;
 import '../salon/salon_account.dart' show hasFeature;
 import 'customer_providers.dart';
+import '../app_config/app_config_providers.dart' show switchOn;
 
 /// C12 - Me: the customer's profile, and every menu they have, in plain sight
 /// (redesigned 21 Oct 2026).
@@ -89,7 +90,7 @@ class MeScreen extends ConsumerWidget {
                 onTap: () => pickLanguage(context, ref),
               ),
               // Optional, and never for a child (0113): day and month only.
-              if (profile != null && !profile.isMinor)
+              if (profile != null && !profile.isMinor && switchOn(ref, 'birthday'))
                 MenuRow(
                   icon: Icons.cake_outlined,
                   title: l10n.meBirthday,

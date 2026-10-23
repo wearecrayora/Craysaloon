@@ -3697,6 +3697,102 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Search \"{name}\"'**
   String searchFor(String name);
+
+  /// No description provided for @homeTileSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get homeTileSearch;
+
+  /// No description provided for @homeCategoriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you looking for?'**
+  String get homeCategoriesTitle;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of the app is ready.'**
+  String get updateAvailable;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get updateNow;
+
+  /// No description provided for @updateRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please update the app'**
+  String get updateRequiredTitle;
+
+  /// No description provided for @updateRequiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This version no longer works with the salon. Updating takes a minute, and your bookings, wallet and bills are all kept.'**
+  String get updateRequiredBody;
+
+  /// No description provided for @walletTopupPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Adding money in the app is paused for now. You can still pay at the counter.'**
+  String get walletTopupPaused;
+
+  /// No description provided for @kindHair.
+  ///
+  /// In en, this message translates to:
+  /// **'Hair'**
+  String get kindHair;
+
+  /// No description provided for @kindBeard.
+  ///
+  /// In en, this message translates to:
+  /// **'Beard'**
+  String get kindBeard;
+
+  /// No description provided for @kindNails.
+  ///
+  /// In en, this message translates to:
+  /// **'Nails'**
+  String get kindNails;
+
+  /// No description provided for @kindFacial.
+  ///
+  /// In en, this message translates to:
+  /// **'Facial'**
+  String get kindFacial;
+
+  /// No description provided for @kindSpa.
+  ///
+  /// In en, this message translates to:
+  /// **'Spa'**
+  String get kindSpa;
+
+  /// No description provided for @kindMakeup.
+  ///
+  /// In en, this message translates to:
+  /// **'Makeup'**
+  String get kindMakeup;
+
+  /// No description provided for @kindColour.
+  ///
+  /// In en, this message translates to:
+  /// **'Colour'**
+  String get kindColour;
+
+  /// No description provided for @kindWax.
+  ///
+  /// In en, this message translates to:
+  /// **'Waxing'**
+  String get kindWax;
+
+  /// No description provided for @kindOther.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get kindOther;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

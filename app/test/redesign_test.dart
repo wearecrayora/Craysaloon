@@ -1,4 +1,8 @@
 import 'package:craysalon/app/providers.dart';
+import 'package:craysalon/features/app_config/app_config_providers.dart';
+import 'package:craysalon/domain/app_config/app_config.dart';
+import 'package:craysalon/core/ui/action_tile.dart';
+import 'package:craysalon/core/platform/app_version.dart';
 import 'package:craysalon/app/router.dart';
 import 'package:craysalon/core/platform/otp_autofill.dart';
 import 'package:craysalon/core/ui/service_icon.dart';
@@ -42,6 +46,7 @@ void main() {
     WidgetTester tester,
     FakeCustomerApi api, {
     FakePrivacyApi? privacy,
+    int build = 10,
   }) async {
     tester.view.physicalSize = const Size(420, 1400);
     tester.view.devicePixelRatio = 1;
@@ -56,6 +61,7 @@ void main() {
           homeShortcutProvider.overrideWithValue(FakeShortcut(supported: false)),
           salonNotificationsProvider.overrideWithValue(FakeNotifications()),
           if (privacy != null) privacyApiProvider.overrideWithValue(privacy),
+          appVersionProvider.overrideWithValue(_Build(build)),
         ],
         child: const CraySalonApp(),
       ),
@@ -218,6 +224,75 @@ void main() {
     });
   });
 
+  group('the app, from the console (0119)', () {
+    testWidgets('the home tiles follow the console: its order, only what it ticked',
+        (tester) async {
+      final api = FakeCustomerApi()
+        ..config = const AppConfig(homeTiles: ['bookings', 'book'], homeSections: ['quick']);
+      await pump(tester, api);
+      final grid = find.byType(ActionGrid);
+      expect(find.descendant(of: grid, matching: find.byType(ActionTile)), findsNWidgets(2));
+      final first = tester.getTopLeft(find.descendant(of: grid, matching: find.text('My bookings')));
+      final second = tester.getTopLeft(find.descendant(of: grid, matching: find.text('Book')));
+      expect(first.dx, lessThan(second.dx), reason: 'in the order the console chose');
+      expect(find.descendant(of: grid, matching: find.text('Add money')), findsNothing);
+    });
+
+    testWidgets('a switch off hides the feature: adding money pauses, and says so',
+        (tester) async {
+      final api = FakeCustomerApi()..config = const AppConfig(switches: {'wallet_topup': false});
+      final app = await pump(tester, api);
+      expect(find.descendant(of: find.byType(ActionGrid), matching: find.text('Add money')),
+          findsNothing);
+      app.read(routerProvider).push('/wallet/add');
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Adding money in the app is paused'), findsOneWidget);
+    });
+
+    testWidgets("the salon's announcement is on the home screen", (tester) async {
+      final api = FakeCustomerApi()
+        ..announcementList = [
+          Announcement(
+            id: 'a1',
+            title: 'Closed on Diwali',
+            body: 'Back on the 2nd',
+            icon: 'event',
+            endsAt: DateTime.now().add(const Duration(days: 2)),
+          ),
+        ];
+      await pump(tester, api);
+      expect(find.text('Closed on Diwali'), findsOneWidget);
+      expect(find.text('Back on the 2nd'), findsOneWidget);
+    });
+
+    testWidgets('below the lowest build allowed, the app only asks for an update',
+        (tester) async {
+      final api = FakeCustomerApi()..config = const AppConfig(minBuild: 5, latestBuild: 5);
+      await pump(tester, api, build: 3);
+      expect(find.text('Please update the app'), findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
+    });
+
+    testWidgets('below the newest, it suggests updating - and can be dismissed', (tester) async {
+      final api = FakeCustomerApi()..config = const AppConfig(minBuild: 1, latestBuild: 9);
+      await pump(tester, api, build: 5);
+      expect(find.text('A new version of the app is ready.'), findsOneWidget);
+      await tester.tap(find.byTooltip('Close'));
+      await tester.pumpAndSettle();
+      expect(find.text('A new version of the app is ready.'), findsNothing);
+    });
+
+    testWidgets('categories show what the salon offers, and open search narrowed', (tester) async {
+      final app = await pump(tester, FakeCustomerApi());
+      expect(find.text('What are you looking for?'), findsOneWidget);
+      await tester.tap(find.text('Beard'));
+      await tester.pumpAndSettle();
+      expect(app.read(routerProvider).state.uri.queryParameters['kind'], 'beard');
+      expect(find.text('Beard trim'), findsOneWidget);
+      expect(find.text('Haircut'), findsNothing, reason: 'narrowed to the kind tapped');
+    });
+  });
+
   group('search and booking', () {
     testWidgets('search finds a service and books it with only that chosen', (tester) async {
       final api = FakeCustomerApi();
@@ -309,4 +384,13 @@ class _Autofill implements OtpAutofill {
 
   @override
   Future<void> cancel() async {}
+}
+
+class _Build implements AppVersion {
+  const _Build(this.n);
+
+  final int n;
+
+  @override
+  Future<int> build() async => n;
 }

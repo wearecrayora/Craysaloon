@@ -1347,3 +1347,103 @@ export async function listSalonNames(): Promise<{ id: string; display_name: stri
   return sql<{ id: string; display_name: string }[]>`
     select id, display_name from public.salons order by display_name`;
 }
+
+// ---------------------------------------------------------------------------
+// The app, run from the console (0119): home layout, switches, versions,
+// announcements. Every write is an audited app_admin function.
+// ---------------------------------------------------------------------------
+
+export type AppConfigRow = {
+  salon_id: string;
+  home_tiles: string[];
+  home_sections: string[];
+  switches: Record<string, boolean>;
+  min_build: number;
+  latest_build: number;
+  update_url: string | null;
+  version: number;
+  updated_at: string;
+};
+
+export async function getAppConfig(actorAdminId: string, salonId: string): Promise<AppConfigRow | null> {
+  const sql = client();
+  const [row] = await sql<{ r: AppConfigRow | null }[]>`
+    select app_admin.get_app_config(${actorAdminId}::uuid, ${salonId}::uuid) as r`;
+  return row?.r ?? null;
+}
+
+export async function setAppConfig(
+  actorAdminId: string,
+  salonId: string,
+  tiles: string[],
+  sections: string[],
+  switches: Record<string, boolean>,
+  reason: string,
+) {
+  const sql = client();
+  await sql`
+    select app_admin.set_app_config(
+      ${actorAdminId}::uuid, ${salonId}::uuid, ${sql.array(tiles)}::text[],
+      ${sql.array(sections)}::text[], ${sql.json(switches)}::jsonb, ${reason})`;
+}
+
+export async function setAppVersions(
+  actorAdminId: string,
+  minBuild: number,
+  latestBuild: number,
+  updateUrl: string | null,
+  reason: string,
+): Promise<number> {
+  const sql = client();
+  const [row] = await sql<{ r: { salons: number } }[]>`
+    select app_admin.set_app_versions(
+      ${actorAdminId}::uuid, ${minBuild}::int, ${latestBuild}::int, ${updateUrl}, ${reason}) as r`;
+  return row?.r?.salons ?? 0;
+}
+
+export type AnnouncementInput = {
+  title: string;
+  body: string | null;
+  titleHi: string | null;
+  bodyHi: string | null;
+  icon: string;
+  startsAt: string | null;
+  endsAt: string;
+};
+
+/** Null salonIds = every live or in-setup salon (super-admins only). */
+export async function publishAnnouncement(
+  actorAdminId: string,
+  salonIds: string[] | null,
+  a: AnnouncementInput,
+): Promise<number> {
+  const sql = client();
+  const ids = salonIds ? sql.array(salonIds) : null;
+  const [row] = await sql<{ r: { salons: number } }[]>`
+    select app_admin.publish_announcement(
+      ${actorAdminId}::uuid, ${ids}::uuid[], ${a.title}, ${a.body}, ${a.titleHi}, ${a.bodyHi},
+      ${a.icon}, ${a.startsAt}::timestamptz, ${a.endsAt}::timestamptz) as r`;
+  return row?.r?.salons ?? 0;
+}
+
+export async function endAnnouncement(actorAdminId: string, id: string) {
+  const sql = client();
+  await sql`select app_admin.end_announcement(${actorAdminId}::uuid, ${id}::uuid)`;
+}
+
+export type AnnouncementRow = {
+  id: string;
+  title: string;
+  body: string | null;
+  icon: string;
+  starts_at: string;
+  ends_at: string;
+  ended_at: string | null;
+  live: boolean;
+};
+
+export async function listAnnouncements(actorAdminId: string, salonId: string): Promise<AnnouncementRow[]> {
+  const sql = client();
+  return sql<AnnouncementRow[]>`
+    select * from app_admin.list_announcements(${actorAdminId}::uuid, ${salonId}::uuid)`;
+}

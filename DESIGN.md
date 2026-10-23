@@ -599,10 +599,19 @@ targets are larger than the marks. On mobile, tap-to-pin rather than hover.
   it, the whole 88dp+ tile the target. This is the action itself, so it is **not** the
   "icon tile above a heading" of §14. Menus are labelled groups of `MenuRow`s
   (`core/ui/menu.dart`): a 40dp soft square, title, one line, chevron.
-- **A picture for every service.** `serviceIcon()` (`core/ui/service_icon.dart`) reads the
-  service's name and category (English, Hindi, Hinglish) and picks from the one outline set;
-  anything unrecognised gets the neutral spa mark - a wrong guess is worse than a neutral one.
-  The salon uploads nothing per service.
+- **A picture for every service.** `serviceKind()` (`core/ui/service_icon.dart`) reads the
+  service's name and category (English, Hindi, Hinglish); each kind has an outline icon and,
+  where one fits, a **photograph** (`kindImage`, 23 Oct 2026): tools and products, never people,
+  never a legible product brand, licensed in `assets/images/CREDITS.md`. Photos appear on the
+  home categories row, the services cards and search - always beside or above words, never behind
+  them. Anything unrecognised gets the neutral spa mark. The salon uploads nothing per service;
+  its own photos would replace these.
+- **Colour (23 Oct 2026, "more colourful").** The background carries the salon's primary
+  (top-left) and accent (right) as soft washes, every stop checked at 4.5:1. The home greeting
+  sits on a card in the brand's `primaryContainer` with its computed ink and a salon photo beside
+  it; announcements on the same pair. Buttons: every label against every surface it can sit on -
+  both ends of the domed primary, the raised secondary, the tonal, fields, tabs, tile icons - is
+  asserted for the three test brands, light and dark (`test/button_contrast_test.dart`).
 
 ---
 

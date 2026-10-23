@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:sentry_flutter/sentry_flutter.dart' show Breadcrumb, Sentry;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../local/outbox.dart' show Outbox;
+import '../../domain/app_config/app_config.dart';
 import '../../domain/customer/customer.dart';
 import '../../domain/dashboard/dashboard.dart';
 import '../../domain/join/cray_api.dart';
@@ -28,7 +30,7 @@ import '../../domain/wallet/wallet.dart';
 class SupabaseCrayApi
     implements CrayApi, SalonReads, SalonWrites, SalonBookings, PrivacyApi, WalletApi,
         PushApi, ReferralApi, DashboardApi, VisitApi, SalonAccountApi, CustomerApi,
-        SalonHoursApi, StaffLoginsApi, SessionApi {
+        SalonHoursApi, StaffLoginsApi, SessionApi, AppConfigApi {
   SupabaseCrayApi(this._client);
 
   final SupabaseClient _client;
@@ -1355,6 +1357,65 @@ class SupabaseCrayApi
     } catch (_) {
       throw const CrayApiException(CrayErrorKind.network);
     }
+  }
+
+  @override
+  Future<AppConfig?> myAppConfig() async {
+    try {
+      final body = _asMap(await _client.rpc<dynamic>('my_app_config'));
+      return body == null ? null : AppConfig.fromJson(body);
+    } on PostgrestException catch (e) {
+      throw CrayApiException(_postgrestKind(e));
+    } catch (_) {
+      throw const CrayApiException(CrayErrorKind.network);
+    }
+  }
+
+  @override
+  Future<List<Announcement>> announcements() async {
+    // RLS returns only what is live (0119); the order is the app's choice.
+    final rows = await _rows(
+      () => _client
+          .from('salon_announcements')
+          .select('id,title,body,title_hi,body_hi,icon,ends_at')
+          .order('ends_at')
+          .limit(5),
+    );
+    return [
+      for (final r in rows)
+        Announcement(
+          id: r['id'] as String,
+          title: r['title'] as String,
+          body: r['body'] as String?,
+          titleHi: r['title_hi'] as String?,
+          bodyHi: r['body_hi'] as String?,
+          icon: r['icon'] as String? ?? 'campaign',
+          endsAt: _time(r['ends_at']) ?? DateTime.now(),
+        ),
+    ];
+  }
+
+  @override
+  Stream<void> configChanges(String salonId) {
+    late final RealtimeChannel channel;
+    final controller = StreamController<void>.broadcast(
+      onCancel: () => _client.removeChannel(channel),
+    );
+    channel = _client
+        .channel('app-config-$salonId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'salon_app_config',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'salon_id',
+            value: salonId,
+          ),
+          callback: (_) => controller.add(null),
+        )
+        .subscribe();
+    return controller.stream;
   }
 
   @override

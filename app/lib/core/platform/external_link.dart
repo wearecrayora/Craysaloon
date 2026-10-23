@@ -51,3 +51,14 @@ Uri sitePageFor(String page, Locale locale) =>
     locale.languageCode == 'hi' && locale.scriptCode != 'Latn'
     ? Uri.parse('${JoinLink.origin}/$page-hi')
     : Uri.parse('${JoinLink.origin}/$page');
+
+/// Where "Update" goes (0119): the link the console set, else the app's Play
+/// Store page. On iOS the console's link is the App Store page once there is
+/// one; until then the Play link simply opens in the browser.
+Future<void> openUpdate(String? consoleUrl) async {
+  final given = (consoleUrl ?? '').trim();
+  final url = given.startsWith('https://')
+      ? Uri.parse(given)
+      : Uri.parse('https://play.google.com/store/apps/details?id=com.crayora.craysalon');
+  await const UrlLauncherExternalLink().open(url);
+}

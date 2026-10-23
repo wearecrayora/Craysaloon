@@ -434,6 +434,16 @@ const PROFILE_TEST = 'supabase/tests/privacy/profile_test.sql';
 const PROFILE_CANARY = `grant update (phone) on public.customers to authenticated;`;
 const PROFILE_MUST_FAIL = [/the phone number is the binding/];
 
+// 0119: an announcement is readable only between its dates. Drop the window
+// from the policy and the app shows expired news, forever.
+const APP_CONFIG_TEST = 'supabase/tests/app/app_config_test.sql';
+const ANNOUNCEMENT_CANARY = `
+  drop policy salon_announcements on public.salon_announcements;
+  create policy salon_announcements on public.salon_announcements
+    for select to authenticated using (salon_id = app.current_salon_id());
+`;
+const ANNOUNCEMENT_MUST_FAIL = [/only the live announcement is readable/];
+
 const BILLING_TEST = 'supabase/tests/billing/billing_test.sql';
 const GRACE_CANARY = `
   do $canary$
@@ -737,6 +747,12 @@ try {
       PROFILE_TEST,
       PROFILE_CANARY,
       PROFILE_MUST_FAIL,
+    ),
+    await check(
+      'app config / an announcement readable outside its dates',
+      APP_CONFIG_TEST,
+      ANNOUNCEMENT_CANARY,
+      ANNOUNCEMENT_MUST_FAIL,
     ),
     await check(
       'billing / a salon_writable that ignores a lapsed subscription',

@@ -29,6 +29,10 @@ import '../join/join_controller.dart';
 import '../notifications/push_registration.dart';
 import '../visit/visit_cards.dart';
 import '../wallet/wallet_controller.dart';
+import '../../core/platform/external_link.dart' show openUpdate;
+import '../app_config/app_config_providers.dart';
+import '../booking/kind_label.dart';
+import 'live_refresh.dart';
 import 'salon_account.dart';
 
 /// Injected so the offer can be tested without a launcher, and so iOS gets the
@@ -177,20 +181,94 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
     final profile = ref.watch(myProfileProvider).value;
     final firstName = profile?.firstName;
     final billCount = ref.watch(billsProvider).value?.length ?? 0;
+    final config = appConfig(ref);
+
+    // Each tile the console can place, in the order it chose (0119). A tile
+    // the app cannot show here - a switch off, a plan without it, a child's
+    // account - is simply left out; an unknown name is skipped.
+    ActionTile? tile(String key) => switch (key) {
+      'book' => ActionTile(
+        icon: Icons.event_available_outlined,
+        label: l10n.navBook,
+        onTap: () => context.go('/book'),
+      ),
+      'add_money' when config.on('wallet_topup') => ActionTile(
+        icon: Icons.add_card_outlined,
+        label: l10n.walletAddMoney,
+        onTap: () => context.push('/wallet/add'),
+      ),
+      'bookings' => ActionTile(
+        icon: Icons.receipt_long_outlined,
+        label: l10n.bookingsTitle,
+        onTap: () => context.go('/bookings'),
+      ),
+      'bills' => ActionTile(
+        icon: Icons.request_quote_outlined,
+        label: l10n.meTileBills,
+        badge: billCount > 0 ? '$billCount' : null,
+        onTap: () => context.push('/documents'),
+      ),
+      // Only when the salon's plan carries it (0087) and the switch is on.
+      'refer' when hasFeature(ref, 'referrals') => ActionTile(
+        icon: Icons.card_giftcard_outlined,
+        label: l10n.referTitle,
+        onTap: () => context.push('/refer'),
+      ),
+      'birthday'
+          when profile != null && !profile.isMinor && config.on('birthday') =>
+        ActionTile(
+          icon: Icons.cake_outlined,
+          label: l10n.homeTileBirthday,
+          onTap: () => editBirthday(context, ref, profile, salonName),
+        ),
+      'profile' => ActionTile(
+        icon: Icons.person_outline,
+        label: l10n.meEditProfile,
+        onTap: () => context.push('/me/edit'),
+      ),
+      'your_data' => ActionTile(
+        icon: Icons.privacy_tip_outlined,
+        label: l10n.yourDataTitle,
+        onTap: () => context.push('/your-data'),
+      ),
+      'search' when config.on('search') => ActionTile(
+        icon: Icons.search,
+        label: l10n.homeTileSearch,
+        onTap: () => context.push('/search'),
+      ),
+      _ => null,
+    };
+
+    final sections = <Widget>[
+      for (final s in config.homeSections)
+        ...switch (s) {
+          'categories' => [const _CategoriesRow()],
+          'quick' => [
+            SectionHeader(l10n.homeQuickTitle),
+            ActionGrid(tiles: [for (final k in config.homeTiles) ?tile(k)]),
+          ],
+          'services' => [const _ServicesRow()],
+          'wallet' => [
+            const SizedBox(height: 24),
+            _WalletCard(salonName: salonName),
+          ],
+          _ => const <Widget>[],
+        },
+    ];
 
     return Scaffold(
       appBar: AppBar(
         title: const SalonTitle(),
         actions: [
           // On the home screen, not three levels into a settings menu: a right
-          // nobody can find is a right nobody has (DPDP ss.6(4), 11-13).
+          // nobody can find is a right nobody has (DPDP ss.6(4), 11-13). Never
+          // configurable away.
           IconButton(
             onPressed: () => context.push('/your-data'),
             icon: const Icon(Icons.shield_outlined),
             tooltip: l10n.yourDataTitle,
           ),
-          // The profile, one tap from anywhere it is needed: the round mark
-          // with their initials, as on any app they already use.
+          // The profile, one tap from anywhere it is needed.
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: IconButton(
@@ -202,166 +280,419 @@ class _SalonHomeState extends ConsumerState<SalonHome> {
         ],
       ),
       // The search bar stays put while the rest scrolls under it, as on a
-      // shopping app's home: the question people open it with is always in
-      // reach.
+      // shopping app's home - unless the console switched search off.
       body: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 4, 16, 8),
-            child: _SearchBar(),
-          ),
-          Expanded(child: RefreshIndicator(
-        // A "your bill is ready" push can arrive while this screen is open;
-        // pulling down shows it - and re-reads the balance, which is never
-        // served from a cache.
-        onRefresh: () async {
-          ref.invalidate(visitsTodayProvider);
-          ref.invalidate(billsProvider);
-          ref.invalidate(walletProvider);
-          ref.invalidate(upcomingProvider);
-          ref.invalidate(nextDueProvider);
-          ref.invalidate(bookableServicesProvider);
-        },
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-          children: [
-            Text(
-              firstName == null
-                  ? l10n.homeGreetingNoName
-                  : _greeting(l10n, firstName, DateTime.now()),
-              style: text.headlineMedium,
+          if (config.on('search'))
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 4, 16, 8),
+              child: _SearchBar(),
             ),
-            const SizedBox(height: 4),
-            Text(
-              _today(context),
-              style: text.bodyMedium?.copyWith(color: text.bodySmall?.color),
-            ),
-            const SizedBox(height: 20),
-            // Once, right after joining, and never again (ARCHITECTURE 7.3):
-            // near the top, where it is seen, since it will not come back.
-            if (_showOffer) ...[
-              Appear(
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.add_to_home_screen_outlined),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                l10n.shortcutTitle(salonName),
-                                style: text.titleMedium,
+          Expanded(
+            child: RefreshIndicator(
+              // A "your bill is ready" push can arrive while this screen is
+              // open; pulling down shows it - and re-reads the balance, which
+              // is never served from a cache.
+              onRefresh: () async => refreshServerReads(ref),
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                children: [
+                  _Hero(
+                    greeting: firstName == null
+                        ? l10n.homeGreetingNoName
+                        : _greeting(l10n, firstName, DateTime.now()),
+                    today: _today(context),
+                  ),
+                  const SizedBox(height: 16),
+                  const _UpdateBanner(),
+                  if (config.on('announcements')) const _Announcements(),
+                  // Once, right after joining, and never again (ARCH 7.3).
+                  if (_showOffer) ...[
+                    Appear(
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.add_to_home_screen_outlined),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      l10n.shortcutTitle(salonName),
+                                      style: text.titleMedium,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 8),
+                              Text(l10n.shortcutBody, style: text.bodySmall),
+                              const SizedBox(height: 16),
+                              FilledButton(
+                                onPressed: () async {
+                                  // Android shows its own dialog; a false answer
+                                  // means it was not accepted, and the app says
+                                  // nothing rather than claim an icon exists.
+                                  final accepted = await ref
+                                      .read(homeShortcutProvider)
+                                      .offer(label: salonName);
+                                  await _dismissOffer(
+                                    confirmation: accepted
+                                        ? l10n.shortcutAdded
+                                        : null,
+                                  );
+                                },
+                                child: Text(l10n.shortcutAdd),
+                              ),
+                              const SizedBox(height: 8),
+                              OutlinedButton(
+                                onPressed: () => _dismissOffer(),
+                                child: Text(l10n.shortcutNotNow),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(l10n.shortcutBody, style: text.bodySmall),
-                        const SizedBox(height: 16),
-                        FilledButton(
-                          onPressed: () async {
-                            // Android shows its own dialog; a false answer means
-                            // the request was not accepted, and the app says
-                            // nothing rather than claiming an icon exists.
-                            final accepted = await ref
-                                .read(homeShortcutProvider)
-                                .offer(label: salonName);
-                            await _dismissOffer(
-                              confirmation: accepted
-                                  ? l10n.shortcutAdded
-                                  : null,
-                            );
-                          },
-                          child: Text(l10n.shortcutAdd),
-                        ),
-                        const SizedBox(height: 8),
-                        OutlinedButton(
-                          onPressed: () => _dismissOffer(),
-                          child: Text(l10n.shortcutNotNow),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                    const SizedBox(height: 12),
+                  ],
+                  // Through the birthday month: what to claim at the counter.
+                  if (config.on('birthday')) const _BirthdayCard(),
+                  if (_confirmation != null) ...[
+                    Text(_confirmation!, style: text.bodySmall),
+                    const SizedBox(height: 12),
+                  ],
+                  // These three are never moved by the console: a bill to pay,
+                  // today's booking with its code, and the next one are what
+                  // somebody is waiting on, so they come first, always.
+                  const BillsCard(),
+                  const TodayVisitsCard(),
+                  const _NextCard(),
+                  ...sections,
+                ],
               ),
-              const SizedBox(height: 12),
-            ],
-            // Through the birthday month: what to claim at the counter (0113).
-            const _BirthdayCard(),
-            if (_confirmation != null) ...[
-              Text(_confirmation!, style: text.bodySmall),
-              const SizedBox(height: 12),
-            ],
-            // A bill to pay comes FIRST: it is the one thing on this screen with
-            // somebody waiting on it at the counter.
-            const BillsCard(),
-            // Today's booking and the code to read to the stylist (0084).
-            const TodayVisitsCard(),
-            const _NextCard(),
-            // Everything a customer can do, as tiles they can see - nothing
-            // behind a menu they would have to know to open.
-            SectionHeader(l10n.homeQuickTitle),
-            ActionGrid(
-              tiles: [
-                ActionTile(
-                  icon: Icons.event_available_outlined,
-                  label: l10n.navBook,
-                  onTap: () => context.go('/book'),
-                ),
-                ActionTile(
-                  icon: Icons.add_card_outlined,
-                  label: l10n.walletAddMoney,
-                  onTap: () => context.push('/wallet/add'),
-                ),
-                ActionTile(
-                  icon: Icons.receipt_long_outlined,
-                  label: l10n.bookingsTitle,
-                  onTap: () => context.go('/bookings'),
-                ),
-                ActionTile(
-                  icon: Icons.request_quote_outlined,
-                  label: l10n.meTileBills,
-                  badge: billCount > 0 ? '$billCount' : null,
-                  onTap: () => context.push('/documents'),
-                ),
-                // Only when the salon's plan carries it (0087). The server
-                // refuses the code either way; this avoids a tile that cannot work.
-                if (hasFeature(ref, 'referrals'))
-                  ActionTile(
-                    icon: Icons.card_giftcard_outlined,
-                    label: l10n.referTitle,
-                    onTap: () => context.push('/refer'),
-                  ),
-                if (profile != null && !profile.isMinor)
-                  ActionTile(
-                    icon: Icons.cake_outlined,
-                    label: l10n.homeTileBirthday,
-                    onTap: () => editBirthday(context, ref, profile, salonName),
-                  ),
-                ActionTile(
-                  icon: Icons.person_outline,
-                  label: l10n.meEditProfile,
-                  onTap: () => context.push('/me/edit'),
-                ),
-                ActionTile(
-                  icon: Icons.privacy_tip_outlined,
-                  label: l10n.yourDataTitle,
-                  onTap: () => context.push('/your-data'),
-                ),
-              ],
             ),
-            const _ServicesRow(),
-            const SizedBox(height: 24),
-            _WalletCard(salonName: salonName),
-          ],
-        ),
-      )),
+          ),
         ],
       ),
+    );
+  }
+}
+
+/// The greeting, on a card in the salon's own soft colour with one of its
+/// photos - the colourful top of the page, as a shopping app's home has.
+/// The words sit on the brand's container colour with its computed ink, the
+/// pair the publish step proves (DESIGN 3.3); the photo is beside them, never
+/// behind them.
+class _Hero extends StatelessWidget {
+  const _Hero({required this.greeting, required this.today});
+
+  final String greeting;
+  final String today;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+    final g = CrayGlass.of(context);
+    final ink = scheme.onPrimaryContainer;
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(g.radius + 8),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            scheme.primaryContainer,
+            Color.lerp(scheme.primaryContainer, g.cardTop, 0.35)!,
+          ],
+        ),
+        border: Border.all(color: g.line),
+        boxShadow: g.shadows,
+      ),
+      // As tall as the words need; the photo fills that height beside them.
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      greeting,
+                      style: text.headlineSmall?.copyWith(color: ink),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(today, style: text.bodyMedium?.copyWith(color: ink)),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 112,
+              child: Image.asset(
+                'assets/images/salon_bright.jpg',
+                fit: BoxFit.cover,
+                excludeFromSemantics: true,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// "A new version is available" - when the console says a newer build exists
+/// (0119). Dismissed for this session; the forced update is UpdateGate's.
+class _UpdateBanner extends ConsumerStatefulWidget {
+  const _UpdateBanner();
+
+  @override
+  ConsumerState<_UpdateBanner> createState() => _UpdateBannerState();
+}
+
+class _UpdateBannerState extends ConsumerState<_UpdateBanner> {
+  bool _dismissed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final config = appConfig(ref);
+    final build = ref.watch(buildNumberProvider).value ?? 0;
+    if (_dismissed || build == 0 || config.latestBuild <= build) {
+      return const SizedBox.shrink();
+    }
+    final l10n = AppL10n.of(context);
+    final text = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Appear(
+        child: GlassPanel(
+          padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+          child: Row(
+            children: [
+              const Icon(Icons.system_update_outlined),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(l10n.updateAvailable, style: text.bodyMedium),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+                onPressed: () => openUpdate(config.updateUrl),
+                child: Text(l10n.updateNow),
+              ),
+              IconButton(
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                onPressed: () => setState(() => _dismissed = true),
+                icon: const Icon(Icons.close),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The salon's announcements, as cards you swipe through - its own news,
+/// between the dates the console set (0119). Never auto-advancing: a card
+/// that moves while you read it is a card you cannot read.
+class _Announcements extends ConsumerWidget {
+  const _Announcements();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final list = ref.watch(announcementsProvider).value ?? const [];
+    if (list.isEmpty) return const SizedBox.shrink();
+    final hindi =
+        Localizations.localeOf(context).languageCode == 'hi' &&
+        Localizations.localeOf(context).scriptCode != 'Latn';
+    final height =
+        112 * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.2);
+    // Room between cards only when there is more than one to swipe to.
+    final double gap = list.length > 1 ? 12 : 0;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: SizedBox(
+        height: height,
+        child: PageView.builder(
+          controller: PageController(
+            viewportFraction: list.length > 1 ? 0.9 : 1,
+          ),
+          padEnds: false,
+          itemCount: list.length,
+          itemBuilder: (context, i) {
+            final a = list[i];
+            final title = hindi && (a.titleHi ?? '').isNotEmpty
+                ? a.titleHi!
+                : a.title;
+            final body = hindi && (a.bodyHi ?? '').isNotEmpty
+                ? a.bodyHi
+                : a.body;
+            return Padding(
+              padding: EdgeInsets.only(right: gap),
+              child: _AnnouncementCard(title: title, body: body, icon: a.icon),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _AnnouncementCard extends StatelessWidget {
+  const _AnnouncementCard({
+    required this.title,
+    required this.body,
+    required this.icon,
+  });
+
+  final String title;
+  final String? body;
+  final String icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+    final g = CrayGlass.of(context);
+    final ink = scheme.onSecondaryContainer;
+    return Semantics(
+      container: true,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(g.radius + 4),
+          color: scheme.secondaryContainer,
+          border: Border.all(color: g.line),
+          boxShadow: g.shadows,
+        ),
+        child: Row(
+          children: [
+            Icon(
+              switch (icon) {
+                'event' => Icons.event_outlined,
+                'celebration' => Icons.celebration_outlined,
+                'info' => Icons.info_outline,
+                'schedule' => Icons.schedule,
+                'new' => Icons.fiber_new_outlined,
+                _ => Icons.campaign_outlined,
+              },
+              size: 32,
+              color: ink,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: text.titleMedium?.copyWith(color: ink),
+                  ),
+                  if ((body ?? '').isNotEmpty)
+                    Text(
+                      body!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: text.bodyMedium?.copyWith(color: ink),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// "What are you looking for?" - the kinds of service this salon actually
+/// offers, each with its photograph, as a grocery app's categories. A tap
+/// opens search narrowed to that kind.
+class _CategoriesRow extends ConsumerWidget {
+  const _CategoriesRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppL10n.of(context);
+    final text = Theme.of(context).textTheme;
+    final services =
+        ref.watch(bookableServicesProvider).value ?? const <Service>[];
+    final kinds = <ServiceKind>[
+      for (final k in ServiceKind.values)
+        if (kindImage(k) != null &&
+            services.any((s) => serviceKind(s.name, category: s.category) == k))
+          k,
+    ];
+    // ServiceKind.styling shares the hair photo; one tile for both.
+    kinds.remove(ServiceKind.styling);
+    if (kinds.length < 2) return const SizedBox.shrink();
+    final scale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SectionHeader(l10n.homeCategoriesTitle),
+        SizedBox(
+          height: 124 + 24 * scale,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: kinds.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
+            itemBuilder: (context, i) {
+              final k = kinds[i];
+              return Pressable(
+                onTap: () => context.push('/search?kind=${k.name}'),
+                child: SizedBox(
+                  width: 96,
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 96,
+                        height: 96,
+                        clipBehavior: Clip.antiAlias,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: CrayGlass.of(context).line,
+                            width: 2,
+                          ),
+                          boxShadow: CrayGlass.of(context).shadows,
+                        ),
+                        child: Image.asset(
+                          kindImage(k)!,
+                          fit: BoxFit.cover,
+                          excludeFromSemantics: true,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        kindLabel(l10n, k),
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: text.labelMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -403,10 +734,11 @@ class _SearchBarState extends ConsumerState<_SearchBar> {
     final l10n = AppL10n.of(context);
     final g = CrayGlass.of(context);
     final text = Theme.of(context).textTheme;
-    final names = (ref.watch(bookableServicesProvider).value ?? const <Service>[])
-        .map((s) => s.name)
-        .take(6)
-        .toList();
+    final names =
+        (ref.watch(bookableServicesProvider).value ?? const <Service>[])
+            .map((s) => s.name)
+            .take(6)
+            .toList();
     final hint = names.isEmpty || Motion.isReduced(context)
         ? l10n.searchHint
         : l10n.searchFor(names[_i % names.length]);
@@ -445,7 +777,10 @@ class _SearchBarState extends ConsumerState<_SearchBar> {
                       opacity: animation,
                       child: SlideTransition(
                         position: Tween(
-                          begin: Offset(0, child.key == ValueKey(hint) ? 0.6 : -0.6),
+                          begin: Offset(
+                            0,
+                            child.key == ValueKey(hint) ? 0.6 : -0.6,
+                          ),
                           end: Offset.zero,
                         ).animate(animation),
                         child: child,
@@ -483,7 +818,8 @@ class _ServicesRow extends ConsumerWidget {
     if (services.hasError || (list != null && list.isEmpty)) {
       return const SizedBox.shrink();
     }
-    final height = 176 * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
+    final height =
+        232 * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.8);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -537,16 +873,30 @@ class _ServiceCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: scheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(g.radius),
-                ),
-                child: Icon(
-                  serviceIcon(service.name, category: service.category),
-                  color: scheme.onPrimaryContainer,
+              // The kind's photograph where there is one, else its icon in a
+              // soft brand square - every card carries a picture.
+              ClipRRect(
+                borderRadius: BorderRadius.circular(g.radius - 2),
+                child: SizedBox(
+                  height: 72,
+                  width: double.infinity,
+                  child: switch (kindImage(
+                    serviceKind(service.name, category: service.category),
+                  )) {
+                    final String asset => Image.asset(
+                      asset,
+                      fit: BoxFit.cover,
+                      excludeFromSemantics: true,
+                    ),
+                    null => ColoredBox(
+                      color: scheme.primaryContainer,
+                      child: Icon(
+                        serviceIcon(service.name, category: service.category),
+                        size: 32,
+                        color: scheme.onPrimaryContainer,
+                      ),
+                    ),
+                  },
                 ),
               ),
               const SizedBox(height: 8),
@@ -558,7 +908,10 @@ class _ServiceCard extends StatelessWidget {
                   style: text.titleMedium,
                 ),
               ),
-              Text(l10n.bookMinutes(service.durationMinutes), style: text.bodySmall),
+              Text(
+                l10n.bookMinutes(service.durationMinutes),
+                style: text.bodySmall,
+              ),
               Text(
                 rupees(service.pricePaise),
                 style: text.titleMedium?.copyWith(fontFeatures: moneyFeatures),
@@ -745,14 +1098,16 @@ class _WalletCard extends ConsumerWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(
-                  child: FilledButton.tonal(
-                    style: _tonal(context),
-                    onPressed: () => context.push('/wallet/add'),
-                    child: Text(l10n.walletAddMoney),
+                if (switchOn(ref, 'wallet_topup')) ...[
+                  Expanded(
+                    child: FilledButton.tonal(
+                      style: _tonal(context),
+                      onPressed: () => context.push('/wallet/add'),
+                      child: Text(l10n.walletAddMoney),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
+                  const SizedBox(width: 8),
+                ],
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => context.go('/wallet'),
@@ -880,7 +1235,6 @@ ButtonStyle _tonal(BuildContext context) {
   );
 }
 
-
 /// The salon's birthday offer, in the customer's birthday month (0113): the
 /// thing to show at the counter. Nothing at all in any other month.
 class _BirthdayCard extends ConsumerWidget {
@@ -909,7 +1263,10 @@ class _BirthdayCard extends ConsumerWidget {
                     children: [
                       Text(l10n.homeBirthdayTitle, style: text.titleMedium),
                       const SizedBox(height: 2),
-                      Text(l10n.homeBirthdayBody(offer), style: text.bodyMedium),
+                      Text(
+                        l10n.homeBirthdayBody(offer),
+                        style: text.bodyMedium,
+                      ),
                     ],
                   ),
                 ),

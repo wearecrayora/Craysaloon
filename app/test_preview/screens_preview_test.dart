@@ -302,6 +302,13 @@ void main() {
         container.read(routerProvider).go(route);
       }
       await tester.pumpAndSettle();
+      // Photos decode off the test clock: load every one on screen, then draw.
+      await tester.runAsync(() async {
+        for (final e in find.byType(Image).evaluate()) {
+          await precacheImage((e.widget as Image).image, e);
+        }
+      });
+      await tester.pumpAndSettle();
       await tester.runAsync(() async {
         final boundary =
             key.currentContext!.findRenderObject()! as RenderRepaintBoundary;

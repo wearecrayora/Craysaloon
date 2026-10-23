@@ -102,6 +102,9 @@ select is(
         -- Read-only and STABLE: the operator list for super-admins (0115).
         -- Switching one off is what audits.
         'list_operators',
+        -- Read-only and STABLE: the app config and announcements a console
+        -- page shows (0119). Every change to them audits.
+        'get_app_config', 'list_announcements',
         -- Infrastructure: it changes grants, not tenant data, and is called
         -- from migrations rather than from the console (0020).
         'close_privileges'

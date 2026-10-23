@@ -149,11 +149,12 @@ class BrandTokens {
 
   Color get _meshMixBase => _isLight ? const Color(0xFFF7F5F2) : const Color(0xFF1E1C1F);
 
-  /// The one wash of the salon's colour, top-left - faint, a hint of whose
-  /// app this is rather than a coloured page. Accent and low are kept as
-  /// tokens (and contrast-checked) but no longer painted.
-  Color get meshPrimaryGlow => Color.lerp(_meshMixBase, primary, _isLight ? 0.16 : 0.18)!;
-  Color get meshAccentGlow => Color.lerp(_meshMixBase, accent, _isLight ? 0.16 : 0.14)!;
+  /// The salon's colours in the background (23 Oct 2026, "more colourful"):
+  /// its primary washing in from the top-left and its accent from the right,
+  /// mixed toward the base so text on every stop clears 4.5:1. Low is kept as
+  /// a token (and checked) but not painted.
+  Color get meshPrimaryGlow => Color.lerp(_meshMixBase, primary, _isLight ? 0.26 : 0.24)!;
+  Color get meshAccentGlow => Color.lerp(_meshMixBase, accent, _isLight ? 0.22 : 0.16)!;
   Color get meshPrimaryLow => Color.lerp(_meshMixBase, primary, _isLight ? 0.10 : 0.12)!;
 
   /// Reads the published document. Returns null if it carries no resolved set

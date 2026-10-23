@@ -599,5 +599,21 @@
   "bookingStepDone": "Poora hua",
   "bookingBookedTitle": "Aapki booking ho gayi!",
   "bookingBookedBody": "{date} ko {time} baje milte hain.",
-  "searchFor": "\"{name}\" khojein"
+  "searchFor": "\"{name}\" khojein",
+  "homeTileSearch": "Khojein",
+  "homeCategoriesTitle": "Aap kya dhoondh rahe hain?",
+  "updateAvailable": "App ka naya version taiyaar hai.",
+  "updateNow": "Update karein",
+  "updateRequiredTitle": "Kripya app update karein",
+  "updateRequiredBody": "Yeh version ab salon ke saath kaam nahi karta. Update mein ek minute lagta hai, aur aapki bookings, wallet aur bill sab surakshit rehte hain.",
+  "walletTopupPaused": "App mein paise jodna abhi ruka hua hai. Aap counter par pay kar sakte hain.",
+  "kindHair": "Baal",
+  "kindBeard": "Daadhi",
+  "kindNails": "Nakhoon",
+  "kindFacial": "Facial",
+  "kindSpa": "Spa",
+  "kindMakeup": "Makeup",
+  "kindColour": "Rang",
+  "kindWax": "Waxing",
+  "kindOther": "Aur"
 }
